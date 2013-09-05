@@ -32,23 +32,27 @@ void histBackProjectNoUI::run()
         return;
     }
 
-    input_hsv_ = convert_to_hsv(input_);
-    model_hsv_ = convert_to_hsv(model_);
+    try{
+        input_hsv_ = convert_to_hsv(input_);
+        model_hsv_ = convert_to_hsv(model_);
 
-    auto custom_one_dim_results = custom_back_project(1);
-    auto custom_two_dim_results = custom_back_project(2);
-    auto opencv_one_dim_results = openCV_back_project(1);
-    auto opencv_two_dim_results = openCV_back_project(2);    
+        auto custom_one_dim_results = custom_back_project(1);
+        auto custom_two_dim_results = custom_back_project(2);
+        auto opencv_one_dim_results = openCV_back_project(1);
+        auto opencv_two_dim_results = openCV_back_project(2);
 
-    cv::imwrite("map_of_1_dim_histogram(custom).png", custom_one_dim_results.first);
-    cv::imwrite("result_of_1_dim_histogram(custom).png", custom_one_dim_results.second);
-    cv::imwrite("map_of_2 dim_histogram(custom).png", custom_two_dim_results.first);
-    cv::imwrite("result_of_2_dim_histogram(custom).png", custom_two_dim_results.second);
+        cv::imwrite("map_of_1_dim_histogram(custom).png", custom_one_dim_results.first);
+        cv::imwrite("result_of_1_dim_histogram(custom).png", custom_one_dim_results.second);
+        cv::imwrite("map_of_2 dim_histogram(custom).png", custom_two_dim_results.first);
+        cv::imwrite("result_of_2_dim_histogram(custom).png", custom_two_dim_results.second);
 
-    cv::imwrite("map_of_1_dim_histogram(openCV).png", opencv_one_dim_results.first);
-    cv::imwrite("result_of_1_dim histogram(openCV).png", opencv_one_dim_results.second);
-    cv::imwrite("map_of_2_dim_histogram(openCV).png", opencv_two_dim_results.first);
-    cv::imwrite("result_of_2_dim histogram(openCV).png", opencv_two_dim_results.second);
+        cv::imwrite("map_of_1_dim_histogram(openCV).png", opencv_one_dim_results.first);
+        cv::imwrite("result_of_1_dim histogram(openCV).png", opencv_one_dim_results.second);
+        cv::imwrite("map_of_2_dim_histogram(openCV).png", opencv_two_dim_results.first);
+        cv::imwrite("result_of_2_dim histogram(openCV).png", opencv_two_dim_results.second);
+    }catch(std::exception const &ex){
+        std::cerr<<ex.what()<<std::endl;
+    }
 }
 
 /**********************************************************
