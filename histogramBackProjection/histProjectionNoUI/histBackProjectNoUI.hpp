@@ -6,6 +6,9 @@
 class histBackProjectNoUI
 {
 public:
+    histBackProjectNoUI(histBackProjectNoUI const&) = delete;
+    histBackProjectNoUI& operator=(histBackProjectNoUI const&) = delete;
+
     std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension);
     std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension);
 
