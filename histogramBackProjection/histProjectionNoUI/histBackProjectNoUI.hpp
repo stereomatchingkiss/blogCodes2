@@ -6,6 +6,7 @@
 class histBackProjectNoUI
 {
 public:
+    histBackProjectNoUI() = default;
     histBackProjectNoUI(histBackProjectNoUI const&) = delete;
     histBackProjectNoUI& operator=(histBackProjectNoUI const&) = delete;
 
