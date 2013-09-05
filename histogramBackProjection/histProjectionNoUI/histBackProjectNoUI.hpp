@@ -6,16 +6,16 @@
 class histBackProjectNoUI
 {
 public:
+    std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension);
+    std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension);
+
     void run();
 
 private:
     cv::Mat convert_to_hsv(cv::Mat const &input) const;
-    std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension);
 
     cv::Mat generate_probability_map(int histogram_dimension);
-    void generate_ratio(int histogram_dimension);
-
-    std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension);
+    void generate_ratio(int histogram_dimension);    
 
     void remove_noise(cv::Mat &probability_map);
     cv::Mat separate_target_and_background(cv::Mat &probability_map);
