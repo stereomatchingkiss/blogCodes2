@@ -49,8 +49,6 @@ void histBackProjectNoUI::run()
     cv::imwrite("result_of_1_dim histogram(openCV).png", opencv_one_dim_results.second);
     cv::imwrite("map_of_2_dim_histogram(openCV).png", opencv_two_dim_results.first);
     cv::imwrite("result_of_2_dim histogram(openCV).png", opencv_two_dim_results.second);
-
-    cv::waitKey();
 }
 
 /**********************************************************
