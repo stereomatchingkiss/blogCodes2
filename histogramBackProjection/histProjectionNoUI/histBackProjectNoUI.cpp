@@ -121,8 +121,8 @@ void histBackProjectNoUI::run()
 
 void histBackProjectNoUI::set_input_and_model(cv::Mat &src, cv::Mat &model)
 {
-    input_hsv_ = convert_to_hsv(input_);
-    model_hsv_ = convert_to_hsv(model_);
+    input_hsv_ = convert_to_hsv(src);
+    model_hsv_ = convert_to_hsv(model);
 }
 
 /**********************************************************
