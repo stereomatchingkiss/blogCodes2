@@ -22,6 +22,70 @@ inline cv::MatND get_hist(cv::Mat &input, int histogram_dimension)
 
 }
 
+/**
+ * @brief overload of custom_back_project
+ */
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::custom_back_project(int histogram_dimension)
+{
+    return custom_back_project(histogram_dimension, cv::Size(11, 11), cv::MORPH_ELLIPSE);
+}
+
+/**
+ * @brief implementation of back projection
+ * @param histogram_dimension : the dimension of the histograms
+ * @param filter_size : size of the noise removing(?) filter
+ * @param morph_type : shape of the morphology filter
+ * @return first : probability map; second : final results(separated target)
+ */
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::custom_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type)
+{
+    generate_ratio(histogram_dimension);
+    std::pair<cv::Mat, cv::Mat> results;
+    results.first = generate_probability_map(histogram_dimension);
+    remove_noise(probability_map_, filter_size, morph_type);
+    results.first = probability_map_.clone();
+    results.second = separate_target_and_background(probability_map_);
+
+    return results;
+}
+
+/**
+ * @brief use the function cv::calcBackProject() to implement histogram backProjection
+ * @param histogram_dimension : the dimension of the histograms
+ * @param filter_size : size of the noise removing(?) filter
+ * @param morph_type : shape of the morphology filter
+ * @return first : probability map; second : final results(separated target)
+ */
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::openCV_back_project(int histogram_dimension)
+{
+   return openCV_back_project(histogram_dimension, cv::Size(11, 11), cv::MORPH_ELLIPSE);
+}
+
+/**
+ * @brief use the function cv::calcBackProject() to implement histogram backProjection
+ * @param histogram_dimension : the dimension of the histograms
+ * @param filter_size
+ * @param morph_type
+ * @return
+ */
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::openCV_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type)
+{
+    auto model_hist = get_hist(model_hsv_, histogram_dimension);
+    cv::Mat probability_map;
+    if(histogram_dimension == 2){
+        probability_map = OCV::calc_back_project<2>({input_hsv_}, {0, 1}, model_hist, {{ {0, 180}, {0, 256} }});
+    }else{
+        probability_map = OCV::calc_back_project<1>({input_hsv_}, {0}, model_hist, {{ {0, 180} }});
+    }
+
+    std::pair<cv::Mat, cv::Mat> results;
+    results.first = probability_map.clone();
+    remove_noise(probability_map, filter_size, morph_type);
+    results.second = separate_target_and_background(probability_map);
+
+    return results;
+}
+
 void histBackProjectNoUI::run()
 {
     model_ = cv::imread("/Users/Qt/program/blogsCodes/pic/rose_region.png");
@@ -71,23 +135,6 @@ cv::Mat histBackProjectNoUI::convert_to_hsv(cv::Mat const &input) const
     return hsv;
 }
 
-/**
- * @brief implementation of back projection
- * @param histogram_dimension : the dimension of the histograms
- * @return first : probability map; second : final results(separated target)
- */
-std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::custom_back_project(int histogram_dimension)
-{
-    generate_ratio(histogram_dimension);
-    std::pair<cv::Mat, cv::Mat> results;
-    results.first = generate_probability_map(histogram_dimension);
-    remove_noise(probability_map_);
-    results.first = probability_map_.clone();
-    results.second = separate_target_and_background(probability_map_);
-
-    return results;
-}
-
 cv::Mat histBackProjectNoUI::generate_probability_map(int histogram_dimension)
 {               
     if(histogram_dimension == 2){
@@ -122,34 +169,9 @@ void histBackProjectNoUI::generate_ratio(int histogram_dimension)
     ratio_ = model_hist / (input_hist + 1);
 }
 
-/**
- * @brief use the function cv::calcBackProject() to implement histogram backProjection
- * @param histogram_dimension : the dimension of the histograms
- * @return first : probability map; second : final results(separated target)
- */
-std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::openCV_back_project(int histogram_dimension)
+void histBackProjectNoUI::remove_noise(cv::Mat &probability_map, cv::Size const &filter_size, int morph_type)
 {
-    auto model_hist = get_hist(model_hsv_, histogram_dimension);
-    //cv::normalize(model_hist, model_hist, 0, 255, cv::NORM_MINMAX);
-
-    cv::Mat probability_map;
-    if(histogram_dimension == 2){
-        probability_map = OCV::calc_back_project<2>({input_hsv_}, {0, 1}, model_hist, {{ {0, 180}, {0, 256} }});
-    }else{
-        probability_map = OCV::calc_back_project<1>({input_hsv_}, {0}, model_hist, {{ {0, 180} }});
-    }
-
-    std::pair<cv::Mat, cv::Mat> results;
-    results.first = probability_map.clone();
-    remove_noise(probability_map);
-    results.second = separate_target_and_background(probability_map);
-
-    return results;
-}
-
-void histBackProjectNoUI::remove_noise(cv::Mat &probability_map)
-{
-    cv::Mat disc = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(11, 11));
+    cv::Mat disc = cv::getStructuringElement(morph_type, filter_size);
     cv::filter2D(probability_map, probability_map, -1, disc);
     cv::normalize(probability_map, probability_map, 0, 255, CV_MINMAX);
     probability_map.convertTo(probability_map, CV_8U);

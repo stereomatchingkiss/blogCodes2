@@ -11,7 +11,9 @@ public:
     histBackProjectNoUI& operator=(histBackProjectNoUI const&) = delete;
 
     std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension);
+    std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type);
     std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension);
+    std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type);
 
     void run();
 
@@ -21,7 +23,7 @@ private:
     cv::Mat generate_probability_map(int histogram_dimension);
     void generate_ratio(int histogram_dimension);    
 
-    void remove_noise(cv::Mat &probability_map);
+    void remove_noise(cv::Mat &probability_map, cv::Size const &filter_size, int morph_type);
     cv::Mat separate_target_and_background(cv::Mat &probability_map);
 
 private:
