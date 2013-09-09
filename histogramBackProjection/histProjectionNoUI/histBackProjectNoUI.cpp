@@ -119,17 +119,23 @@ void histBackProjectNoUI::run()
     }
 }
 
+void histBackProjectNoUI::set_input_and_model(cv::Mat &src, cv::Mat &model)
+{
+    input_hsv_ = convert_to_hsv(input_);
+    model_hsv_ = convert_to_hsv(model_);
+}
+
 /**********************************************************
  ****************** implementation ************************
  **********************************************************/
 
 cv::Mat histBackProjectNoUI::convert_to_hsv(cv::Mat const &input) const
 {
-    if(input.channels() == 4){
-        cv::cvtColor(input, input, CV_BGRA2BGR);
+    cv::Mat hsv = input.clone();
+    if(hsv.channels() == 4){
+        cv::cvtColor(hsv, hsv, CV_BGRA2BGR);
     }
 
-    cv::Mat hsv;
     cv::cvtColor(input, hsv, CV_BGR2HSV);
 
     return hsv;
