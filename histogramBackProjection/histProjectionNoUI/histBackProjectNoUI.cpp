@@ -136,7 +136,7 @@ cv::Mat histBackProjectNoUI::convert_to_hsv(cv::Mat const &input) const
         cv::cvtColor(hsv, hsv, CV_BGRA2BGR);
     }
 
-    cv::cvtColor(input, hsv, CV_BGR2HSV);
+    cv::cvtColor(hsv, hsv, CV_BGR2HSV);
 
     return hsv;
 }
