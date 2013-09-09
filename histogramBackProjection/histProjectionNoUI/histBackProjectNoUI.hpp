@@ -17,7 +17,7 @@ public:
 
     void run();
 
-    void set_input_and_model(cv::Mat &src, cv::Mat &model);
+    void set_input_and_model(cv::Mat const &src, cv::Mat const &model);
 
 private:
     cv::Mat convert_to_hsv(cv::Mat const &input) const;

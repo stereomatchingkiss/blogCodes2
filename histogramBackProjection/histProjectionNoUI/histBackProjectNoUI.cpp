@@ -119,8 +119,10 @@ void histBackProjectNoUI::run()
     }
 }
 
-void histBackProjectNoUI::set_input_and_model(cv::Mat &src, cv::Mat &model)
+void histBackProjectNoUI::set_input_and_model(cv::Mat const &src, cv::Mat const &model)
 {
+    input_ = src.clone();
+    model_ = model.clone();
     input_hsv_ = convert_to_hsv(src);
     model_hsv_ = convert_to_hsv(model);
 }
