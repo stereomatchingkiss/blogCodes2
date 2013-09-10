@@ -18,18 +18,9 @@ LIBS += -L../../../3rdLibs/openCV/OpenCV-2.4.5/builded/bin -lopencv_core245 -lop
 }
 mac{
 
-# Bundle identifier for your application
-#BUNDLEID = com.yourcompany.MyApp
-
 CONFIG -= app_bundle
 
 DEFINES += MAC_OS
-
-#RC_FILE = color_management.icns
-
-#INCLUDEPATH += /opt/local/include
-
-#LIBS += -L/opt/local/lib/ -lopencv_core.2.4.6  -lopencv_imgproc.2.4.6
 
 INCLUDEPATH += /usr/local/include
 
