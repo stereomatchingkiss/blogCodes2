@@ -20,7 +20,7 @@ basicEdge::basicEdge() :
     }
 }
 
-void basicEdge::run()
+void basicEdge::run() const
 {
     if(input_.empty()){
         std::cerr<<"input is empty"<<std::endl;
@@ -30,7 +30,7 @@ void basicEdge::run()
     run_impl(input_);
 }
 
-void basicEdge::run(cv::Mat const &src)
+void basicEdge::run(cv::Mat const &src) const
 {
     if(src.empty()){
         std::cerr<<"src is empty"<<std::endl;
@@ -40,7 +40,7 @@ void basicEdge::run(cv::Mat const &src)
     run_impl(src);
 }
 
-void basicEdge::run_impl(cv::Mat const &src)
+void basicEdge::run_impl(cv::Mat const &src) const
 {
     cv::Mat dst;
 
