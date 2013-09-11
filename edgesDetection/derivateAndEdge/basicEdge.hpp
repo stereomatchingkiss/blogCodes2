@@ -15,7 +15,7 @@ private:
     void run_impl(cv::Mat const &src) const;
 
 private:
-    cv::Mat input_;
+    cv::Mat default_input_;
 
     cv::Mat const sobel_x_filter_;
     cv::Mat const sobel_y_filter_;

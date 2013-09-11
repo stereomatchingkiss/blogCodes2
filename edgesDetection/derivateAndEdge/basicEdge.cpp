@@ -13,8 +13,8 @@ basicEdge::basicEdge() :
                                                0,  0,  0,
                                                1,  2,  1)}
 {        
-    input_ = cv::imread("/Users/Qt/program/blogsCodes/pic/uncompr.tif");
-    if(input_.empty()){
+    default_input_ = cv::imread("/Users/Qt/program/blogsCodes/pic/uncompr.tif");
+    if(default_input_.empty()){
         std::cerr<<"input is empty"<<std::endl;
         return;
     }
@@ -22,12 +22,12 @@ basicEdge::basicEdge() :
 
 void basicEdge::run() const
 {
-    if(input_.empty()){
+    if(default_input_.empty()){
         std::cerr<<"input is empty"<<std::endl;
         return;
     }
 
-    run_impl(input_);
+    run_impl(default_input_);
 }
 
 void basicEdge::run(cv::Mat const &src) const
