@@ -8,7 +8,11 @@ class basicEdge
 public:
     basicEdge();
 
-    void run(cv::Mat const &src = cv::Mat());
+    void run(cv::Mat const &src);
+    void run();
+
+private:
+    void run_impl(cv::Mat const &src);
 
 private:
     cv::Mat input_;
