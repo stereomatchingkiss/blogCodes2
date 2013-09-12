@@ -12,8 +12,11 @@ public:
 
     std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension);
     std::pair<cv::Mat, cv::Mat> custom_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type);
+    std::pair<cv::Mat, cv::Mat> custom_back_project(cv::Mat const &src, cv::Mat const &model, int histogram_dimension, const cv::Size &filter_size, int morph_type);
+
     std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension);
     std::pair<cv::Mat, cv::Mat> openCV_back_project(int histogram_dimension, cv::Size const &filter_size, int morph_type);
+    std::pair<cv::Mat, cv::Mat> openCV_back_project(cv::Mat const &src, cv::Mat const &model, int histogram_dimension, cv::Size const &filter_size, int morph_type);
 
     void run();
 

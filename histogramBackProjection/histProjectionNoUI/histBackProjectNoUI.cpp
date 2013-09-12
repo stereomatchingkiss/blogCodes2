@@ -49,6 +49,12 @@ std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::custom_back_project(int histogr
     return results;
 }
 
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::custom_back_project(cv::Mat const &src, cv::Mat const &model, int histogram_dimension, const cv::Size &filter_size, int morph_type)
+{
+    set_input_and_model(src, model);
+    return custom_back_project(histogram_dimension, filter_size, morph_type);
+}
+
 /**
  * @brief use the function cv::calcBackProject() to implement histogram backProjection
  * @param histogram_dimension : the dimension of the histograms
@@ -84,6 +90,12 @@ std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::openCV_back_project(int histogr
     results.second = separate_target_and_background(probability_map);
 
     return results;
+}
+
+std::pair<cv::Mat, cv::Mat> histBackProjectNoUI::openCV_back_project(cv::Mat const &src, cv::Mat const &model, int histogram_dimension, cv::Size const &filter_size, int morph_type)
+{
+    set_input_and_model(src, model);
+    return openCV_back_project(histogram_dimension, filter_size, morph_type);
 }
 
 void histBackProjectNoUI::run()
