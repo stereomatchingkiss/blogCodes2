@@ -1,6 +1,5 @@
 #include <QApplication>
 
-#include "histogramBackProjection.hpp"
 #include "histBackProjectUI.hpp"
 
 int main(int argc, char *argv[])
