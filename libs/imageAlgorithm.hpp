@@ -51,15 +51,15 @@ cv::Mat calc_back_project(std::initializer_list<cv::Mat> images, std::initialize
  * @brief encapsulation of cv::caclHist, all of the meaning of the parameters are same as the cv::caclHist, but these api
  * are easier to use. ex : cv::Mat hist = calc_histogram({hsv}, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});
  */
-void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray &output, std::initializer_list<int> channels,
+void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray output, std::initializer_list<int> channels,
                     std::initializer_list<int> hist_sizes, std::initializer_list<float[2]> ranges,
-                    cv::InputArray const &mask = cv::Mat(), bool uniform = true,
+                    cv::InputArray mask = cv::Mat(), bool uniform = true,
                     bool accumulate = false);
 
 inline
 cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels,
                          std::initializer_list<int> hist_sizes, std::initializer_list<float[2]> ranges,
-                         cv::InputArray const &mask = cv::Mat(), bool uniform = true,
+                         cv::InputArray mask = cv::Mat(), bool uniform = true,
                          bool accumulate = false)
 {
     cv::MatND output;
@@ -69,9 +69,9 @@ cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer
 }
 
 template<size_t N>
-void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray &output, std::initializer_list<int> channels,
+void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray output, std::initializer_list<int> channels,
                     std::initializer_list<int> hist_sizes, std::array<float[2], N> const &ranges,
-                    cv::InputArray const &mask = cv::Mat(), bool uniform = true,
+                    cv::InputArray mask = cv::Mat(), bool uniform = true,
                     bool accumulate = false)
 {
     std::array<float const*, N> d_ranges;
@@ -99,6 +99,25 @@ inline void mix_channels(cv::Mat const &src, cv::Mat &dst, std::initializer_list
 {
     cv::mixChannels(&src, 1, &dst, 1, std::begin(from_to), from_to.size() / 2);
 }
+
+/*class histProject
+{
+public:
+    histProject() = default;
+    histProject(histProject const&) = delete;
+    histProject& operator=(histProject const&) = delete;
+
+    //cv::Mat get_projection_bit_map(cv::Mat const &input, cv::Mat const &model, double threshold);
+    cv::Mat get_projection_map_hue(cv::Mat const &input, cv::Mat const &model);
+    cv::Mat get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model);
+
+private:
+    void convert_to_hsv(cv::Mat const &input, cv::Mat &output);
+
+private:
+    cv::Mat input_hsv_;
+    cv::Mat model_hsv_;
+};*/
 
 }
 
