@@ -86,7 +86,7 @@ template<size_t N>
 inline
 cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels,
                          std::initializer_list<int> hist_sizes, std::array<float[2], N> const &ranges,
-                         cv::InputArray const &mask = cv::Mat(), bool uniform = true,
+                         cv::InputArray mask = cv::Mat(), bool uniform = true,
                          bool accumulate = false)
 {
     cv::MatND output;
@@ -100,24 +100,28 @@ inline void mix_channels(cv::Mat const &src, cv::Mat &dst, std::initializer_list
     cv::mixChannels(&src, 1, &dst, 1, std::begin(from_to), from_to.size() / 2);
 }
 
-/*class histProject
+class histProject
 {
 public:
     histProject() = default;
     histProject(histProject const&) = delete;
     histProject& operator=(histProject const&) = delete;
 
-    //cv::Mat get_projection_bit_map(cv::Mat const &input, cv::Mat const &model, double threshold);
     cv::Mat get_projection_map_hue(cv::Mat const &input, cv::Mat const &model);
-    cv::Mat get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model);
+    void get_projection_map_hue(cv::Mat const &input, cv::Mat const &model, cv::Mat &output);
+    cv::Mat get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model, int min_saturation = 65);
+    void get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model, cv::Mat &output, int min_saturation = 65);
 
 private:
     void convert_to_hsv(cv::Mat const &input, cv::Mat &output);
 
 private:
     cv::Mat input_hsv_;
+    cv::Mat model_hist_;
     cv::Mat model_hsv_;
-};*/
+
+    cv::Mat saturation_mask_; //temporary saturation for filter out low saturation pixels of the model_hsv_
+};
 
 }
 
