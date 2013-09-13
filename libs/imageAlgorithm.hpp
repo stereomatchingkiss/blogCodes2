@@ -107,8 +107,8 @@ public:
     histProject(histProject const&) = delete;
     histProject& operator=(histProject const&) = delete;
 
-    cv::Mat get_projection_map_hue(cv::Mat const &input, cv::Mat const &model);
-    void get_projection_map_hue(cv::Mat const &input, cv::Mat const &model, cv::Mat &output);
+    cv::Mat get_projection_map_hue(cv::Mat const &input, cv::Mat const &model, int min_saturation = 65);
+    void get_projection_map_hue(cv::Mat const &input, cv::Mat const &model, cv::Mat &output, int min_saturation = 65);
     cv::Mat get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model, int min_saturation = 65);
     void get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model, cv::Mat &output, int min_saturation = 65);
 
@@ -117,10 +117,11 @@ private:
 
 private:
     cv::Mat input_hsv_;
+    cv::Mat map_saturation_mask_;
     cv::Mat model_hist_;
-    cv::Mat model_hsv_;
+    cv::Mat model_hsv_;    
 
-    cv::Mat saturation_mask_; //temporary saturation for filter out low saturation pixels of the model_hsv_
+    cv::Mat model_saturation_mask_; //temporary saturation for filter out low saturation pixels of the model_hsv_
 };
 
 }
