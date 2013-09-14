@@ -11,9 +11,19 @@
 namespace OCV
 {
 
+/**
+ * @brief encapsulation of cv::calcBackProject, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use.
+ * ex : calc_back_project({hsv}, {0, 1}, hist, map, { {0, 180}, {0, 256} });
+ */
 void calc_back_project(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels, cv::InputArray hist, cv::OutputArray backProject,
                        std::initializer_list<float[2]> ranges, double scale = 1, bool uniform = true);
 
+/**
+ * @brief encapsulation of cv::calcBackProject, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use.
+ * ex : cv::Mat hist = calc_back_project({hsv}, {0, 1}, hist, { {0, 180}, {0, 256} });
+ */
 inline
 cv::Mat calc_back_project(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels, cv::InputArray hist,
                        std::initializer_list<float[2]> ranges, double scale = 1, bool uniform = true)
@@ -24,6 +34,11 @@ cv::Mat calc_back_project(std::initializer_list<cv::Mat> images, std::initialize
     return output;
 }
 
+/**
+ * @brief encapsulation of cv::calcBackProject, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use.This api could reduce the times of memory allocation when compare to non-template version
+ * ex : calc_back_project({hsv}, {0, 1}, hist, map, {{ {0, 180}, {0, 256} }});
+ */
 template<size_t N>
 void calc_back_project(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels, cv::InputArray hist, cv::OutputArray backProject,
                        std::array<float[2], N> ranges, double scale = 1, bool uniform = true)
@@ -36,6 +51,11 @@ void calc_back_project(std::initializer_list<cv::Mat> images, std::initializer_l
     cv::calcBackProject(std::begin(images), images.size(), std::begin(channels), hist, backProject, &d_ranges[0], scale, uniform);
 }
 
+/**
+ * @brief encapsulation of cv::calcBackProject, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use.This api could reduce the times of memory allocation when compare to non-template version
+ * ex : cv::Mat hist = calc_back_project({hsv}, {0, 1}, hist, {{ {0, 180}, {0, 256} }});
+ */
 template<size_t N>
 inline
 cv::Mat calc_back_project(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels, cv::InputArray hist,
@@ -56,6 +76,12 @@ void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray outpu
                     cv::InputArray mask = cv::Mat(), bool uniform = true,
                     bool accumulate = false);
 
+/**
+ * @brief encapsulation of cv::caclHist, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use. ex : cv::Mat hist = calc_histogram({hsv}, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});
+ *
+ * @return histogram
+ */
 inline
 cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels,
                          std::initializer_list<int> hist_sizes, std::initializer_list<float[2]> ranges,
@@ -68,6 +94,11 @@ cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer
     return output;
 }
 
+/**
+ * @brief encapsulation of cv::caclHist, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use. ex : cv::Mat hist = calc_histogram({hsv}, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});This api
+ * could reduce the times of memory allocation when compare to non-template version
+ */
 template<size_t N>
 void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray output, std::initializer_list<int> channels,
                     std::initializer_list<int> hist_sizes, std::array<float[2], N> const &ranges,
@@ -82,6 +113,13 @@ void calc_histogram(std::initializer_list<cv::Mat> images, cv::OutputArray outpu
     cv::calcHist(std::begin(images), images.size(), std::begin(channels), mask, output, channels.size(), std::begin(hist_sizes), &d_ranges[0], uniform ,accumulate);
 }
 
+/**
+ * @brief encapsulation of cv::caclHist, all of the meaning of the parameters are same as the cv::caclHist, but these api
+ * are easier to use. ex : cv::Mat hist = calc_histogram({hsv}, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});This api
+ * could reduce the times of memory allocation when compare to non-template version
+ *
+ * @return histogram
+ */
 template<size_t N>
 inline
 cv::MatND calc_histogram(std::initializer_list<cv::Mat> images, std::initializer_list<int> channels,
@@ -117,11 +155,10 @@ private:
 
 private:
     cv::Mat input_hsv_;
-    cv::Mat map_saturation_mask_;
-    cv::Mat model_hist_;
-    cv::Mat model_hsv_;    
-
+    cv::Mat map_saturation_mask_;   
     cv::Mat model_saturation_mask_; //temporary saturation for filter out low saturation pixels of the model_hsv_
+    cv::Mat roi_hist_;
+    cv::Mat roi_hsv_;
 };
 
 }
