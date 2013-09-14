@@ -64,16 +64,13 @@ void histProject::get_projection_map_hue(cv::Mat const &input, cv::Mat const &ro
     convert_to_hsv(input, input_hsv_);
     convert_to_hsv(roi, roi_hsv_);
 
-    if(min_saturation > 0){
-        model_saturation_mask_.create(roi_hsv_.size(), roi_hsv_.depth());
-        mix_channels(roi_hsv_, model_saturation_mask_, {1, 0});
-        cv::threshold(model_saturation_mask_, model_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
+    if(min_saturation > 0){        
+        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_);
         calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, {{ {0, 180} }}, model_saturation_mask_);
 
-        map_saturation_mask_.create(input_hsv_.size(), input_hsv_.depth());
-        mix_channels(input_hsv_, map_saturation_mask_, {1, 0});
-        cv::threshold(map_saturation_mask_, map_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
+        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_);
         OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, {{ {0, 180} }});
+
         output &= map_saturation_mask_;
     }else{
         calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, {{ {0, 180} }});
@@ -107,16 +104,13 @@ void histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const
 {
     convert_to_hsv(input, input_hsv_);
     convert_to_hsv(roi, roi_hsv_);
-    if(min_saturation > 0){
-        model_saturation_mask_.create(roi_hsv_.size(), roi_hsv_.depth());
-        mix_channels(roi_hsv_, model_saturation_mask_, {1, 0});
-        cv::threshold(model_saturation_mask_, model_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
+    if(min_saturation > 0){        
+        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_);
         calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }}, model_saturation_mask_);
 
-        map_saturation_mask_.create(input_hsv_.size(), input_hsv_.depth());
-        mix_channels(input_hsv_, map_saturation_mask_, {1, 0});
-        cv::threshold(map_saturation_mask_, map_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
+        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_);
         OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, {{ {0, 180}, {0, 256} }});
+
         output &= map_saturation_mask_;
     }else{
         calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});
@@ -137,6 +131,18 @@ void histProject::convert_to_hsv(cv::Mat const &input, cv::Mat &output)
     }
 
     cv::cvtColor(output, output, CV_BGR2HSV);
+}
+
+/**
+ * @brief create mask which filter out low saturation pixels of input
+ * @param input : input image, color-space should be hsv
+ * @param output : mask after filter
+ */
+void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output)
+{
+    output.create(input.size(), input.depth());
+    mix_channels(input, output, {1, 0});
+    cv::threshold(output, output, min_saturation, 255, cv::THRESH_BINARY);
 }
 
 }
