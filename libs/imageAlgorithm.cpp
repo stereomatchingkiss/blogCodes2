@@ -72,6 +72,7 @@ void histProject::get_projection_map_hue(cv::Mat const &input, cv::Mat const &ro
 
         map_saturation_mask_.create(input_hsv_.size(), input_hsv_.depth());
         mix_channels(input_hsv_, map_saturation_mask_, {1, 0});
+        cv::threshold(map_saturation_mask_, map_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
         OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, {{ {0, 180} }});
         output &= map_saturation_mask_;
     }else{
@@ -114,6 +115,7 @@ void histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const
 
         map_saturation_mask_.create(input_hsv_.size(), input_hsv_.depth());
         mix_channels(input_hsv_, map_saturation_mask_, {1, 0});
+        cv::threshold(map_saturation_mask_, map_saturation_mask_, min_saturation, 255, cv::THRESH_BINARY);
         OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, {{ {0, 180}, {0, 256} }});
         output &= map_saturation_mask_;
     }else{
