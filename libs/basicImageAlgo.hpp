@@ -72,8 +72,8 @@ UnaryFunc for_each_channels_impl(Mat &&input, UnaryFunc func)
     for(int row = 0; row != rows; ++row){
         auto input_ptr = input.template ptr<T>(row);
         for(size_t i = 0; i != pixels_per_row; ++i){
-            func(*input_ptr);
-            ++input_ptr;
+            func(input_ptr[i]);
+            //++input_ptr;
         }
     }
 
@@ -118,8 +118,8 @@ BinaryFunc for_each_channels(Mat &&input_1, Mat &&input_2, BinaryFunc func)
         auto input_1_ptr = input_1.template ptr<T>(row);
         auto input_2_ptr = input_2.template ptr<T>(row);
         for(int col = 0; col != cols; ++col){
-            func(*input_1_ptr, *input_2_ptr);
-            ++input_1_ptr; ++input_2_ptr;
+            func(input_1_ptr[col], input_2_ptr[col]);
+            //++input_1_ptr; ++input_2_ptr;
         }
     }
 
@@ -162,8 +162,8 @@ UnaryFunc for_each_continuous_channels(Mat &&input, UnaryFunc func)
     int const total = input.total() * input.channels();
     auto input_ptr = input.template ptr<T>(0);
     for(int i = 0; i != total; ++i){
-        func(*input_ptr);
-        ++input_ptr;
+        func(input_ptr[i]);
+        //++input_ptr;
     }
 
     return func;
