@@ -202,6 +202,7 @@ public:
 
 private:
     void convert_to_hsv(cv::Mat const &input, cv::Mat &output);
+    void filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation);
 
 private:
     cv::Mat input_hsv_;

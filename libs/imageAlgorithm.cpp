@@ -65,16 +65,16 @@ void histProject::get_projection_map_hue(cv::Mat const &input, cv::Mat const &ro
     convert_to_hsv(roi, roi_hsv_);
 
     if(min_saturation > 0){        
-        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_);
-        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, {{ {0, 180} }}, model_saturation_mask_);
+        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_, min_saturation);
+        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, { {0, 180} }, model_saturation_mask_);
 
-        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_);
-        OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, {{ {0, 180} }});
+        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_, min_saturation);
+        OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, { {0, 180} });
 
         output &= map_saturation_mask_;
     }else{
-        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, {{ {0, 180} }});
-        OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, {{ {0, 180} }});
+        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, { {0, 180} });
+        OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, { {0, 180} });
     }
 }
 
@@ -105,16 +105,16 @@ void histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const
     convert_to_hsv(input, input_hsv_);
     convert_to_hsv(roi, roi_hsv_);
     if(min_saturation > 0){        
-        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_);
-        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }}, model_saturation_mask_);
+        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_, min_saturation);
+        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} }, model_saturation_mask_);
 
-        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_);
-        OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, {{ {0, 180}, {0, 256} }});
+        filter_low_saturation_pixels(input_hsv_, map_saturation_mask_, min_saturation);
+        OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, { {0, 180}, {0, 256} });
 
         output &= map_saturation_mask_;
     }else{
-        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, {{ {0, 180}, {0, 256} }});
-        OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, {{ {0, 180}, {0, 256} }});
+        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} });
+        OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, { {0, 180}, {0, 256} });
     }
 }
 
@@ -137,8 +137,9 @@ void histProject::convert_to_hsv(cv::Mat const &input, cv::Mat &output)
  * @brief create mask which filter out low saturation pixels of input
  * @param input : input image, color-space should be hsv
  * @param output : mask after filter
+ * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
  */
-void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output)
+void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation)
 {
     output.create(input.size(), input.depth());
     mix_channels(input, output, {1, 0});
