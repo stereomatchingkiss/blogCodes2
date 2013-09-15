@@ -201,8 +201,8 @@ public:
     void get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &model, cv::Mat &output, int min_saturation = 65);
 
 private:
-    void convert_to_hsv(cv::Mat const &input, cv::Mat &output);
-    void filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation);
+    void convert_to_hsv(cv::Mat const &input, cv::Mat &output) const;
+    void filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation) const;
 
 private:
     cv::Mat input_hsv_;

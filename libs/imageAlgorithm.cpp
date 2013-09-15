@@ -123,7 +123,7 @@ void histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const
  * @param input  : bgra or bgr
  * @param output : hsv image
  */
-void histProject::convert_to_hsv(cv::Mat const &input, cv::Mat &output)
+void histProject::convert_to_hsv(cv::Mat const &input, cv::Mat &output) const
 {
     input.copyTo(output);
     if(output.channels() == 4){
@@ -139,7 +139,7 @@ void histProject::convert_to_hsv(cv::Mat const &input, cv::Mat &output)
  * @param output : mask after filter
  * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
  */
-void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation)
+void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &output, int min_saturation) const
 {
     output.create(input.size(), input.depth());
     mix_channels(input, output, {1, 0});
