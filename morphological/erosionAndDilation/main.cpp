@@ -34,22 +34,13 @@ int main()
 
     cv::Mat dilation_result = dilation(input);
     cv::Mat erosion_result = erosion(input);
-    dilation_result = dilation(dilation_result);
-    erosion_result = erosion(erosion_result);
-
-    cv::imshow("dilate", dilation_result);
-    cv::imshow("erode", erosion_result);
-    cv::imshow("original", input);
+    cv::Mat dilation_again = dilation(dilation_result);
+    cv::Mat erode_again = erosion(erosion_result);
 
     cv::imwrite("dilate.png", dilation_result);
     cv::imwrite("erode.png", erosion_result);
-
-    /*cv::cvtColor(input, input, CV_BGR2GRAY);
-    cv::threshold(input, input, 0, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
-
-    cv::imshow("", input);
-    cv::imwrite("/Users/Qt/program/blogsCodes/pic/childAndDog2.png", input);
-    cv::waitKey();*/
+    cv::imwrite("dilate_again.png", dilation_again);
+    cv::imwrite("erode_again.png", erode_again);
 
     return 0;
 }
