@@ -144,7 +144,7 @@ void HoughLinesStandard_RF( const cv::Mat& img, float rho, float theta,
     int *accum = _accum;
     memset( accum, 0, sizeof(accum[0]) * (numangle+2) * (numrho+2) );
     for(int i = 0; i < height; ++i){
-        auto const img_ptr = img.ptr<uchar>(i);
+        uchar const *img_ptr = img.ptr<uchar>(i);
         for(int j = 0; j < width; ++j){
             //access the pixel with cheaper operation
             //original one need (i * img.step + j)
@@ -192,8 +192,37 @@ void HoughLinesStandard_RF( const cv::Mat& img, float rho, float theta,
     }
 }
 
-int main()
+int video_capture()
 {
+    cv::VideoCapture cap;
+    cap.open(0);
+
+    if( !cap.isOpened() )
+    {
+        std::cerr << "***Could not initialize capturing...***\n";
+        std::cerr << "Current parameter's value: \n";
+        return -1;
+    }
+
+    cv::Mat frame;
+    while(1){
+        cap >> frame;
+        if(frame.empty()){
+            std::cerr<<"frame is empty"<<std::endl;
+            break;
+        }
+
+        cv::imshow("", frame);
+        cv::waitKey(10);
+    }
+
+    return 1;
+}
+
+int main()
+{    
+    //video_capture();
+
     cv::Mat image = cv::imread("/Users/Qt/program/blogsCodes/pic/balls00.jpg", CV_LOAD_IMAGE_GRAYSCALE);
     if(image.empty()){
         std::cerr<<"input is empty"<<std::endl;
@@ -204,6 +233,20 @@ int main()
     cv::Canny(image, contours, 125, 350);
     cv::Mat contoursInv;
     cv::threshold(contours,contoursInv, 128,255,cv::THRESH_BINARY_INV);
+    /*cv::imshow("Canny Contours",contoursInv);
+    cv::imshow("contours", contours);
+
+    std::vector<cv::Vec4i> lines;
+    cv::HoughLinesP(contours, lines, 1, 3.1415926/180, 80, 100, 20);
+    cv::Mat color_dst;
+    cv::cvtColor(contours, color_dst, CV_GRAY2BGR);
+    for( size_t i = 0; i < lines.size(); i++ ){
+        cv::line(color_dst, cv::Point(lines[i][0], lines[i][1]),
+                cv::Point(lines[i][2], lines[i][3]), cv::Scalar(0,0,255), 2, 8);
+    }
+    cv::imshow("hough lines", color_dst);
+
+    cv::waitKey();*/
 
     {
         timeEstimate<> t;

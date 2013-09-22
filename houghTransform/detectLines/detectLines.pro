@@ -35,5 +35,6 @@ INCLUDEPATH += ../../libs
 SOURCES += main.cpp
 
 HEADERS += \
-    ../../libs/timeEstimate.hpp
+    ../../libs/timeEstimate.hpp \
+    ../../libs/timeElapsed.hpp
 
