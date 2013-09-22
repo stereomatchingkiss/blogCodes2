@@ -26,7 +26,7 @@ cv::Mat erosion(cv::Mat const &input)
 
 int main()
 {
-    cv::Mat input = cv::imread("/Users/Qt/program/blogsCodes/pic/childAndDog2.png");
+    cv::Mat input = cv::imread("/Users/Qt/program/blogsCodes/pic/childAndDogBinary.png");
     if(input.empty()){
         std::cerr<<"input is empty"<<std::endl;
         return -1;
@@ -36,6 +36,10 @@ int main()
     cv::Mat erosion_result = erosion(input);
     cv::Mat dilation_again = dilation(dilation_result);
     cv::Mat erode_again = erosion(erosion_result);
+
+    //cv::morphologyEx(input, input, cv::MORPH_GRADIENT, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 3)));
+    //cv::imshow("", input);
+    //cv::waitKey();
 
     cv::imwrite("dilate.png", dilation_result);
     cv::imwrite("erode.png", erosion_result);
