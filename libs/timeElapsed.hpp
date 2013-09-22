@@ -12,7 +12,7 @@
  * Ratio  : represents a time interval. ex : milliseconds, microseconds and so on
  * DurationType : return type of the elapsed time
  */
-template<typename ClockType = std::chrono::system_clock, typename Ratio = std::milli, typename DurationType = float>
+template<typename ClockType = std::chrono::steady_clock, typename Ratio = std::milli, typename DurationType = float>
 class timeElapsed
 {
 public:
