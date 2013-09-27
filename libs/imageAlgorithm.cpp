@@ -146,4 +146,23 @@ void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &ou
     cv::threshold(output, output, min_saturation, 255, cv::THRESH_BINARY);
 }
 
+/**
+ * @brief remove the contours by contours area(pixels surrounded by the contours)
+ * @param contours : the contours
+ * @param cmin : contour size lower than cmin will be removed
+ * @param cmax : contour size higher than cmax will be removed
+ */
+void remove_contours(std::vector<std::vector<cv::Point> > &contours, double cmin, double cmax)
+{
+    auto it = std::begin(contours);
+    while(it != std::end(contours)){
+        auto size = cv::contourArea(*it);
+        if(size < cmin || size > cmax){
+            it = contours.erase(it);
+        }else{
+            ++it;
+        }
+    }
+}
+
 }

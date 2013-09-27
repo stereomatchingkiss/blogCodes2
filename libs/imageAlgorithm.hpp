@@ -188,6 +188,8 @@ inline void mix_channels(cv::Mat const &src, cv::Mat &dst, std::initializer_list
     cv::mixChannels(&src, 1, &dst, 1, std::begin(from_to), from_to.size() / 2);
 }
 
+void remove_contours(std::vector<std::vector<cv::Point> > &contours, double cmin, double cmax);
+
 class histProject
 {
 public:
