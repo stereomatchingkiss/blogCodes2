@@ -46,11 +46,10 @@ int contours_method(std::initializer_list<std::string> number)
         cv::imwrite("rawContours" + num + ".png", mask);
 
         OCV::remove_contours(contours, 10000, 50000);
-        mask.setTo(255);
-        cv::drawContours(mask, contours, -1, cv::Scalar(0), CV_FILLED);
+        mask.setTo(0);
+        cv::drawContours(mask, contours, -1, cv::Scalar(255), CV_FILLED);
 
-        cv::Mat result;
-        mask = ~mask; //invert mask
+        cv::Mat result;       
         cv::imwrite("finalMask" + num + ".png", mask);
         color_image.copyTo(result, mask);
 
