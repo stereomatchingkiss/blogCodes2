@@ -155,11 +155,11 @@ void histProject::filter_low_saturation_pixels(cv::Mat const &input, cv::Mat &ou
  * @param cmax : contour size higher than cmax will be removed
  */
 void remove_contours(std::vector<std::vector<cv::Point> > &contours, double cmin, double cmax)
-{        
-    auto it = std::remove_if(std::begin(contours), std::end(contours), [=](std::vector<cv::Point> const &data)
+{            
+    auto it = std::partition(std::begin(contours), std::end(contours), [=](std::vector<cv::Point> const &data)
     {
        auto const size = cv::contourArea(data);
-       return size < cmin || size > cmax;
+       return !(size < cmin || size > cmax);
     });
     contours.erase(it, std::end(contours));
 }
