@@ -76,8 +76,8 @@ void zhan_suen_thinning(cv::Mat &input, cv::Mat &output)
     }
 
     cv::Mat prev = cv::Mat::zeros(input.size(), CV_8UC1);
-    if(input.data != output.data){
-        output = input.clone();
+    if(input.data != output.data){        
+        input.copyTo(output);
     }
     cv::Mat diff;
     output /= 255;
