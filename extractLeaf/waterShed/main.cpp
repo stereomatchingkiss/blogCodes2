@@ -1,5 +1,4 @@
 #include <iostream>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -16,75 +15,108 @@ typedef std::vector<std::vector<cv::Point> > ContoursType;
 
 std::string const Folder("/Users/Qt/program/blogsCodes/pic/");
 
-int contours_method(std::initializer_list<std::string> number)
+/**
+ * @brief   segment all of the leafs
+ * @param   the number of the images want to segment
+ * @return  the leafs
+ */
+std::vector<cv::Mat> contours_method(std::initializer_list<std::string> number)
 {
+    std::vector<cv::Mat> results;
     for(auto const &num : number){
         cv::Mat color_image = cv::imread(Folder + "leaf" + num + ".png");
         if(color_image.empty()){
             std::cerr<<"input is empty"<<std::endl;
-            return -1;
+            return results;
         }
-        cv::imshow("image", color_image);
 
         cv::Mat image;
         cv::cvtColor(color_image, image, CV_BGR2GRAY);
 
-        //binarize the image
+        //step 1 : binarize the image
         cv::Mat binary;
         cv::threshold(image, binary, 140, 255, cv::THRESH_BINARY);
 
-        //remove small objects and noise
+        //step 2 : remove small objects and noise
         auto const structure = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
         cv::Mat fore_ground;
         cv::erode(binary, fore_ground, structure, cv::Point(-1, -1), 4);
-        //fill the holes of foreground
-        //cv::morphologyEx(fore_ground, fore_ground, cv::MORPH_CLOSE, structure);
 
-        //possible foreground(set as 255)
+        //step 3 : find possible foreground(set as 255)
         ContoursType contours;
         cv::findContours(fore_ground, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
         OCV::remove_contours(contours, 8000, 50000);
         fore_ground.setTo(0);
         cv::drawContours(fore_ground, contours, -1, cv::Scalar(255), CV_FILLED);
-        cv::imshow("foregroundFinal", fore_ground);
         cv::imwrite("foregroundFinal" + num + ".png", fore_ground);
 
-        //possible background(set as 128)
+        //step 4 : find possible background(set as 128)
         //0 represent uncertain pixels
         cv::Mat back_ground;
         cv::dilate(binary, back_ground, structure, cv::Point(-1, -1), 4);
         cv::threshold(back_ground, back_ground, 1, 128, cv::THRESH_BINARY_INV);
-        cv::imshow("backGround", back_ground);
         cv::imwrite("backGround" + num + ".png", back_ground);
 
-        //create markers and mask
+        //step 5 : create markers and mask
         cv::Mat markers = back_ground + fore_ground;
-        cv::imshow("markers", markers);
         cv::imwrite("markers" + num + ".png", markers);
         cv::Mat mask;
         markers.convertTo(mask, CV_32S);
         cv::watershed(color_image, mask);
         mask.convertTo(mask, CV_8U);
         cv::threshold(mask, mask, 150, 255, CV_THRESH_BINARY);
-        cv::imshow("mask", mask);
         cv::imwrite("mask" + num + ".png", mask);
 
-        //final results
+        //step 6 : final results
         cv::Mat result;
         cv::imwrite("finalMask" + num + ".png", mask);
         color_image.copyTo(result, mask);
-        cv::imshow("result", result);
         cv::imwrite("result" + num + ".png", result);
 
-        cv::waitKey();
+        results.push_back(result);
     }
 
-    return 0;
+    return results;
+}
+
+/**
+ * @brief cut the leafs to single leaf
+ * @param input  input image
+ * @param name   name of the image want to be saved
+ */
+void cut_to_single_leaf_simple(cv::Mat const &input, std::string const &name)
+{
+    cv::Mat mask;
+    //step 1 : convert the input to gray image
+    cv::cvtColor(input, mask, CV_BGR2GRAY);
+    //step 2 : binarize it
+    cv::threshold(mask, mask, 128, 255, CV_THRESH_BINARY);
+    //step 3 : do serious erosion
+    cv::erode(mask, mask, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)), cv::Point(-1, -1), 5);
+    //step 4 : find and remove the outliers contours
+    ContoursType contours;
+    cv::findContours(mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    OCV::remove_contours(contours, 500, 120000);
+    cv::Mat result;
+    //step 5 : draw the contours one by one
+    for(size_t i = 0; i != contours.size(); ++i){
+        mask.setTo(0);
+        cv::drawContours(mask, contours, i, cv::Scalar(255), CV_FILLED);
+        //step 6 : dilate and close the contours
+        cv::dilate(mask, mask, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)), cv::Point(-1, -1), 6);
+        cv::morphologyEx(mask, mask, CV_MOP_CLOSE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15)));
+        input.copyTo(result, mask);
+        cv::imwrite(name + std::to_string(i) + ".png", result);
+        cv::imshow("", result);
+        cv::waitKey();
+        result.setTo(0);
+    }
 }
 
 int main()
 {
-    contours_method({"00", "01", "02"});
+    std::vector<cv::Mat> results = contours_method({"00", "01", "02"});
+    cut_to_single_leaf_simple(results[1], "singleLeaf01_");
 
     return 0;
 }
