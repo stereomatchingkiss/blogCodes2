@@ -11,7 +11,7 @@
 //not a big deal to use global parameter or
 //global typedef in this small program
 
-typedef std::vector<std::vector<cv::Point> > ContoursType;
+using ContoursType = std::vector<std::vector<cv::Point> >;
 
 std::string const Folder("/Users/Qt/program/blogsCodes/pic/");
 
@@ -51,7 +51,7 @@ std::vector<cv::Mat> contours_method(std::initializer_list<std::string> number)
         cv::imwrite("foregroundFinal" + num + ".png", fore_ground);
 
         //step 4 : find possible background(set as 128)
-        //0 represent uncertain pixels
+        //         0 represent uncertain pixels
         cv::Mat back_ground;
         cv::dilate(binary, back_ground, structure, cv::Point(-1, -1), 4);
         cv::threshold(back_ground, back_ground, 1, 128, cv::THRESH_BINARY_INV);
@@ -62,12 +62,13 @@ std::vector<cv::Mat> contours_method(std::initializer_list<std::string> number)
         cv::imwrite("markers" + num + ".png", markers);
         cv::Mat mask;
         markers.convertTo(mask, CV_32S);
+        //step 6 : apply watershed
         cv::watershed(color_image, mask);
         mask.convertTo(mask, CV_8U);
         cv::threshold(mask, mask, 150, 255, CV_THRESH_BINARY);
         cv::imwrite("mask" + num + ".png", mask);
 
-        //step 6 : final results
+        //step 7 : final results
         cv::Mat result;
         cv::imwrite("finalMask" + num + ".png", mask);
         color_image.copyTo(result, mask);
@@ -97,14 +98,15 @@ void cut_to_single_leaf_simple(cv::Mat const &input, std::string const &name)
     ContoursType contours;
     cv::findContours(mask, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
     OCV::remove_contours(contours, 500, 120000);
+    //step 5 : process the contours one by one
     cv::Mat result;
-    //step 5 : draw the contours one by one
     for(size_t i = 0; i != contours.size(); ++i){
         mask.setTo(0);
         cv::drawContours(mask, contours, i, cv::Scalar(255), CV_FILLED);
         //step 6 : dilate and close the contours
         cv::dilate(mask, mask, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)), cv::Point(-1, -1), 6);
         cv::morphologyEx(mask, mask, CV_MOP_CLOSE, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(15, 15)));
+        //step 7 : generate result
         input.copyTo(result, mask);
         cv::imwrite(name + std::to_string(i) + ".png", result);
         cv::imshow("", result);
