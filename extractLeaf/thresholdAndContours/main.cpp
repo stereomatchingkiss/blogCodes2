@@ -12,7 +12,7 @@
 //not a big deal to use global parameter or
 //global typedef in this small program
 
-typedef std::vector<std::vector<cv::Point> > ContoursType;
+using ContoursType = std::vector<std::vector<cv::Point> >;
 
 std::string const Folder("/Users/Qt/program/blogsCodes/pic/");
 
