@@ -198,9 +198,14 @@ public:
     histProject& operator=(histProject const&) = delete;
 
     cv::Mat get_projection_map_hue(cv::Mat const &input, cv::Mat const &roi, int min_saturation = 65);
+    cv::Mat get_projection_map_hue_lazy(cv::Mat const &input, cv::Mat const &roi, int min_saturation = 65);
     void get_projection_map_hue(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation = 65);
+    void get_projection_map_hue_lazy(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation = 65);
+
     cv::Mat get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &roi, int min_saturation = 65);
+    cv::Mat get_projection_map_hue_sat_lazy(cv::Mat const &input, cv::Mat const &roi, int min_saturation = 65);
     void get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation = 65);
+    void get_projection_map_hue_sat_lazy(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation = 65);
 
 private:
     void convert_to_hsv(cv::Mat const &input, cv::Mat &output) const;

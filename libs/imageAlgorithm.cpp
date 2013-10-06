@@ -56,26 +56,54 @@ cv::Mat histProject::get_projection_map_hue(cv::Mat const &input, cv::Mat const 
 
 /**
  * @brief easy class for histogram backprojection, this api only take one dimension histogram(hue) for back projection
+ *        this api expect the roi already convert to the color space of hsv
+ * @param input : the target image
+ * @param roi : region of interest, should convert to hsv
+ * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
+ * @return probability map
+ */
+cv::Mat histProject::get_projection_map_hue_lazy(cv::Mat const &input, cv::Mat const &roi, int min_saturation)
+{
+    cv::Mat map;
+    get_projection_map_hue_lazy(input, roi, map, min_saturation);
+
+    return map;
+}
+
+/**
+ * @brief easy class for histogram backprojection, this api only take one dimension histogram(hue) for back projection
  * @param input : the target image
  * @param roi : region of interest
  * @param output : probability map
  * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
  */
 void histProject::get_projection_map_hue(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation)
+{    
+    convert_to_hsv(roi, roi_hsv_);    
+    get_projection_map_hue_lazy(input, roi_hsv_, output, min_saturation);
+}
+
+/**
+ * @brief easy class for histogram backprojection, this api only take one dimension histogram(hue) for back projection
+ *        this api expect the roi already convert to the color space of hsv
+ * @param input : the target image
+ * @param roi : region of interest, should convert to hsv
+ * @param output : probability map
+ * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
+ */
+void histProject::get_projection_map_hue_lazy(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation)
 {
     convert_to_hsv(input, input_hsv_);
-    convert_to_hsv(roi, roi_hsv_);
-
-    if(min_saturation > 0){        
-        filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_, min_saturation);
-        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, { {0, 180} }, model_saturation_mask_);
+    if(min_saturation > 0){
+        filter_low_saturation_pixels(roi, model_saturation_mask_, min_saturation);
+        calc_histogram<1>({roi}, roi_hist_, {0}, {180}, { {0, 180} }, model_saturation_mask_);
 
         filter_low_saturation_pixels(input_hsv_, map_saturation_mask_, min_saturation);
         OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, { {0, 180} });
 
         output &= map_saturation_mask_;
     }else{
-        calc_histogram<1>({roi_hsv_}, roi_hist_, {0}, {180}, { {0, 180} });
+        calc_histogram<1>({roi}, roi_hist_, {0}, {180}, { {0, 180} });
         OCV::calc_back_project<1>({input_hsv_}, {0}, roi_hist_, output, { {0, 180} });
     }
 }
@@ -96,26 +124,48 @@ cv::Mat histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat co
 }
 
 /**
- * @brief easy class for histogram backprojection, this api take two dimensions histogram(hue) for back projection
+ * @brief easy class for histogram backprojection, this api take two dimensions histogram(hue, saturation) for back projection
+ *        this api expect the roi already convert to the color space of hsv
  * @param input : the target image
- * @param roi : region of interest
+ * @param roi : region of interest, should convert to hsv
+ * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
+ * @return probability map
+ */
+cv::Mat histProject::get_projection_map_hue_sat_lazy(cv::Mat const &input, cv::Mat const &roi, int min_saturation)
+{
+    cv::Mat map;
+    get_projection_map_hue_sat_lazy(input, roi, map, min_saturation);
+
+    return map;
+}
+
+/**
+ * @brief easy class for histogram backprojection, this api take two dimensions histogram(hue) for back projection
+ *        this api expect the roi already convert to the color space of hsv
+ * @param input : the target image
+ * @param roi : region of interest, should convert to hsv
  * @param output : probability map
  * @param min_saturation : min saturation, if > 0, the program will filter out the pixels lower than min saturation;else do nothing
  */
 void histProject::get_projection_map_hue_sat(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation)
+{    
+    convert_to_hsv(roi, roi_hsv_);
+    get_projection_map_hue_sat_lazy(input, roi_hsv_, output, min_saturation);
+}
+
+void histProject::get_projection_map_hue_sat_lazy(cv::Mat const &input, cv::Mat const &roi, cv::Mat &output, int min_saturation)
 {
     convert_to_hsv(input, input_hsv_);
-    convert_to_hsv(roi, roi_hsv_);
-    if(min_saturation > 0){        
+    if(min_saturation > 0){
         filter_low_saturation_pixels(roi_hsv_, model_saturation_mask_, min_saturation);
-        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} }, model_saturation_mask_);
+        calc_histogram<2>({roi}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} }, model_saturation_mask_);
 
         filter_low_saturation_pixels(input_hsv_, map_saturation_mask_, min_saturation);
         OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, { {0, 180}, {0, 256} });
 
         output &= map_saturation_mask_;
     }else{
-        calc_histogram<2>({roi_hsv_}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} });
+        calc_histogram<2>({roi}, roi_hist_, {0, 1}, {180, 256}, { {0, 180}, {0, 256} });
         OCV::calc_back_project<2>({input_hsv_}, {0, 1}, roi_hist_, output, { {0, 180}, {0, 256} });
     }
 }
