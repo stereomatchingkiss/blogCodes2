@@ -42,9 +42,7 @@ void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int k
     cv::Sobel(input, dy, CV_32F, 0, 1, ksize, scale);
 
     cv::Size size = input.size();
-    //step 4 : convolution and save dx*dx, dx*dy, dy*dy in cov
-    //I prefer auto because the types of dx, dy and cov may
-    //changed in the future
+    //step 4 : convolution and save dx*dx, dx*dy, dy*dy in cov    
     using Type = float;
     cv::Mat cov(size, CV_32FC3);
     for(int i = 0; i < size.height; ++i){
