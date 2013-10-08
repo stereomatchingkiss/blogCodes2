@@ -33,7 +33,6 @@ int main()
         }
 
         cv::imwrite("result.jpg", color_input);
-        cv::waitKey();
     }catch(std::exception const &ex){
         std::cerr<<ex.what()<<std::endl;
     }

@@ -16,8 +16,7 @@
  */
 void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int ksize, float k)
 {
-    //step 1 : make sure the type of the input is valid, in a real project I would prefer
-    //exception to handle this error
+    //step 1 : make sure the type of the input is valid
     if(!(input.type() == CV_8U || input.type() == CV_32F)){
         throw std::runtime_error(COMMON_DEBUG_MESSAGE +
                                  "input.type() != CV_8U || input.type() != CV_32F\n");
@@ -44,15 +43,18 @@ void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int k
 
     cv::Size size = input.size();
     //step 4 : convolution and save dx*dx, dx*dy, dy*dy in cov
+    //I prefer auto because the types of dx, dy and cov may
+    //changed in the future
+    using Type = float;
     cv::Mat cov(size, CV_32FC3);
     for(int i = 0; i < size.height; ++i){
-        auto cov_data = cov.ptr<float>(i);
-        auto const dxdata = dx.ptr<float>(i);
-        auto const dydata = dy.ptr<float>(i);
+        Type *cov_data = cov.ptr<Type>(i);
+        Type const *dxdata = dx.ptr<Type>(i);
+        Type const *dydata = dy.ptr<Type>(i);
 
         for(int j = 0; j < size.width; ++j){
-            auto const dx = dxdata[j];
-            auto const dy = dydata[j];
+            Type const dx = dxdata[j];
+            Type const dy = dydata[j];
             *cov_data = dx*dx; ++cov_data;
             *cov_data = dx*dy; ++cov_data;
             *cov_data = dy*dy; ++cov_data;
@@ -70,13 +72,13 @@ void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int k
 
     //step 7 : find out Mc and save it to the output Mat
     for(int i = 0; i < size.height; ++i){
-        float const *cov_data = cov.ptr<float>(i);
-        float *dst = output.ptr<float>(i);
+        Type const *cov_data = cov.ptr<Type>(i);
+        Type *dst = output.ptr<float>(i);
         for(int j = 0; j < size.width; ++j){
-            float a = *cov_data; ++cov_data;
-            float b = *cov_data; ++cov_data;
-            float c = *cov_data; ++cov_data;
-            float const temp = a + c;
+            Type const a = *cov_data; ++cov_data;
+            Type const b = *cov_data; ++cov_data;
+            Type const c = *cov_data; ++cov_data;
+            Type const temp = a + c;
             dst[j] = a*c - b*b - k*(temp)*(temp);
         }
     }
