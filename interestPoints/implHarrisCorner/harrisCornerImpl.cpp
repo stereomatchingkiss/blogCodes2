@@ -4,8 +4,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <bugLocation.hpp>
-
 /**
  * @brief implement   harris corners, these codes are design for learning purpose but not for real case
  * @param input       Input single-channel 8-bit or floating-point image.
@@ -17,10 +15,7 @@
 void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int ksize, float k)
 {
     //step 1 : make sure the type of the input is valid
-    if(!(input.type() == CV_8U || input.type() == CV_32F)){
-        throw std::runtime_error(COMMON_DEBUG_MESSAGE +
-                                 "input.type() != CV_8U || input.type() != CV_32F\n");
-    }
+    CV_Assert(input.type() == CV_8U || input.type() == CV_32F);
 
     output.create(input.size(), CV_32F);
 
@@ -42,7 +37,7 @@ void harris_corners(cv::Mat const &input, cv::Mat &output, int block_size, int k
     cv::Sobel(input, dy, CV_32F, 0, 1, ksize, scale);
 
     cv::Size size = input.size();
-    //step 4 : convolution and save dx*dx, dx*dy, dy*dy in cov    
+    //step 4 : convolution and save dx*dx, dx*dy, dy*dy in cov
     using Type = float;
     cv::Mat cov(size, CV_32FC3);
     for(int i = 0; i < size.height; ++i){
