@@ -62,25 +62,6 @@ inline UnaryFunc for_each_channel(Mat &&input, int channel, UnaryFunc func)
 }
 
 /**
- *@brief implement details of for_each_channels, user should not use this function
- */
-template<typename T, typename UnaryFunc, typename Mat>
-UnaryFunc for_each_channels_impl(Mat &&input, UnaryFunc func)
-{
-    int const rows = input.rows;
-    size_t const pixels_per_row = input.cols * input.channels();
-    for(int row = 0; row != rows; ++row){
-        auto input_ptr = input.template ptr<T>(row);
-        for(size_t i = 0; i != pixels_per_row; ++i){
-            func(input_ptr[i]);
-            //++input_ptr;
-        }
-    }
-
-    return func;
-}
-
-/**
  *@brief apply stl like for_each algorithm on a channel
  *
  * @param T : the type of the channel(ex, uchar, float, double and so on)
@@ -91,12 +72,23 @@ UnaryFunc for_each_channels_impl(Mat &&input, UnaryFunc func)
  */
 template<typename T, typename UnaryFunc, typename Mat>
 inline UnaryFunc for_each_channels(Mat &&input, UnaryFunc func)
-{
+{   
+    int rows = input.rows;
+    int cols = input.cols;
+
     if(input.isContinuous()){
-        return for_each_continuous_channels<T>(std::forward<Mat>(input), func);
-    }else{
-        return for_each_channels_impl<T>(std::forward<Mat>(input), func);
+        cols = input.total() * input.channels();
+        rows = 1;
     }
+
+    for(int row = 0; row != rows; ++row){
+        auto input_ptr = input.template ptr<T>(row);
+        for(int col = 0; col != cols; ++col){
+            func(input_ptr[col]);
+        }
+    }
+
+    return func;
 }
 
 template<typename T, typename BinaryFunc, typename Mat>
