@@ -8,6 +8,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include <utility/utility.hpp>
 #include <warpImage/warpUtility.hpp>
 
 #define DRAW_OUTPUT
@@ -83,7 +84,7 @@ int main()
     cv::Scalar color[] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255} };
     for(size_t i = 0; i != corners.size(); ++i){
         for(auto const &point : corners[i]){
-            cv::circle(src_corners, point, 3, color[i % 3]);
+            cv::circle(src_corners, point, 10, color[i % 3]);
         }
     }
     cv::imshow("src corners", src_corners);

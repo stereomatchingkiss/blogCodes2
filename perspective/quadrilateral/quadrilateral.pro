@@ -68,5 +68,6 @@ SOURCES += main.cpp \
     ../../libs/utility/utility.cpp
 
 HEADERS += \
-    ../../libs/warpImage/warpUtility.hpp
+    ../../libs/warpImage/warpUtility.hpp \
+    ../../libs/utility/utility.hpp
 
