@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "utility.hpp"
 
 namespace OCV
@@ -13,7 +15,7 @@ void remove_contours(std::vector<std::vector<cv::Point> > &contours, double cmin
 {
     auto it = std::partition(std::begin(contours), std::end(contours), [=](std::vector<cv::Point> const &data)
     {
-       auto const size = cv::contourArea(data);
+       auto const size = std::abs(cv::contourArea(data));
        return !(size < cmin || size > cmax);
     });
     contours.erase(it, std::end(contours));
