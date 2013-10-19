@@ -92,8 +92,11 @@ int main()
 
     //step 4 : correct the perspective distortion of the quadrilateral by warpPerspective
     cv::Mat target(150, 150, src.type());
-    std::vector<cv::Point2f> target_points{{0, 0}, {target.cols - 1, 0},
-                                           {target.cols - 1, target.rows - 1}, {0, target.rows - 1}};
+    std::vector<cv::Point2f> target_points
+    {
+        {0, 0}, {target.cols - 1, 0},
+        {target.cols - 1, target.rows - 1}, {0, target.rows - 1}
+    };
     std::vector<cv::Point2f> points;
     for(size_t i = 0; i != corners.size(); ++i){
         OCV::convert_points(corners[i], points);
