@@ -89,8 +89,7 @@ void kmeansSegment::kmeans_result(cv::Mat &inout, cv::Mat const &labels, cv::Mat
 void kmeansSegment::kmeans_sample(cv::Mat const &input, cv::Mat &output)
 {
     if(output.type() != CV_32F || output.rows != static_cast<int>(input.total()) || output.channels() != input.channels()){
-        output.create(input.total(), input.channels(), CV_32F);
-        output.reshape(0); //make sure it is continous
+        output.create(input.total(), input.channels(), CV_32F);        
     }
 
     auto output_ptr = output.ptr<float>(0);
