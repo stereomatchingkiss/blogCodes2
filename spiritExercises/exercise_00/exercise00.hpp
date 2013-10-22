@@ -56,7 +56,7 @@ namespace client
     template<typename Iterator>
     bool parse_video_data(Iterator begin, Iterator end, std::vector<videoData> &data)
     {
-        bool r = qi::parse(begin, end, *(qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n') >> "\n\n"), data);
+        bool r = qi::parse(begin, end, *(qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n') >> *(qi::char_("\n"))), data);
 
         if(!r || begin != end){
             return false;
@@ -119,8 +119,6 @@ namespace client
         return r;
     }
 
-}
-
 /**
 
 Original :
@@ -139,7 +137,7 @@ If you are a premiere member of the lynda.com online training library, or if you
 00:00:05,190 --> 00:00:11,800
 are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.
 */
-inline void test_exercise_00()
+void exercise_00()
 {
     std::string strs{"0.5\">If you are a premiere member of the lynda.com online training library, or if you\n\n"
                      "5.19\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"
@@ -157,6 +155,7 @@ inline void test_exercise_00()
     std::string result;
     std::back_insert_iterator<std::string> sink(number);
     size_t const Size = video.size() - 1;
+    //use karma to generate it is a little bit overkill, it is only for practice
     client::videoGrammar<std::back_insert_iterator<std::string>> grammar;
     client::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
@@ -167,6 +166,13 @@ inline void test_exercise_00()
     }
 
     std::cout<<result<<std::endl;
+}
+
+}
+
+inline void test_exercise_00()
+{
+    client::exercise_00();
 }
 
 #endif // EXERCISE00_HPP
