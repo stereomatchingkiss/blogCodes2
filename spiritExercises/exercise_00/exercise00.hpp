@@ -71,12 +71,13 @@ namespace client
         videoGrammar()
             : videoGrammar::base_type(final_rule)
         {
-            using karma::uint_;
-            using karma::right_align;
             using karma::int_;
+            using karma::repeat;
+            using karma::right_align;
+            using karma::uint_;
 
-            first_rule = right_align(2, '0')[int_] <<":"<< right_align(2, '0')[int_]<<":"<<
-                                                     right_align(2, '0')[int_] <<","<< right_align(2, '0')[int_];
+            first_rule = repeat(2)[right_align(2, '0')[int_ <<":"]]<<
+                         right_align(2, '0')[int_] <<","<< right_align(2, '0')[int_];
 
             second_rule = first_rule << " --> " << first_rule << "\n";
             final_rule = uint_ << "\n"<< second_rule;
