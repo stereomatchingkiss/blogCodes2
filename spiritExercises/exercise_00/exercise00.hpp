@@ -137,7 +137,7 @@ void exercise_00()
         return;
     }
 
-    std::string number;
+    std::string number(31, '0');
     std::string result{std::move(strs)};
     result.clear();
     std::back_insert_iterator<std::string> sink(number);
@@ -149,10 +149,10 @@ void exercise_00()
     spiritParser::videoGrammar<std::back_insert_iterator<std::string>> grammar;
     spiritParser::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
+        number.clear();
         spiritParser::generate_times(sink, grammar, data, i + 1, video[i].first, video[i + 1].first);
         result += number;
-        result += video[i].second;
-        number.clear();
+        result += video[i].second;        
     }
 
     std::cout<<result<<std::endl;
