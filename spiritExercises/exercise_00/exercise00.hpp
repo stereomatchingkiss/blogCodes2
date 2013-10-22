@@ -34,21 +34,17 @@ struct transformData
 
 }
 
-//[tutorial_employee_adapt_struct
 BOOST_FUSION_ADAPT_STRUCT(
         client::videoData,
         (float, time)
         (std::string, content)
         )
-//]
 
-//[tutorial_employee_adapt_struct
 BOOST_FUSION_ADAPT_STRUCT(
         client::transformData,
         (size_t, index)
         (std::vector<std::vector<int>>, nums)
         )
-//]
 
 namespace client
 {
