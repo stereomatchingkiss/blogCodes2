@@ -8,6 +8,7 @@
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
+#include <boost/fusion/adapted/std_pair.hpp>
 
 #include <boost/spirit/include/karma.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -35,12 +36,6 @@ struct transformData
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
-        spiritParser::videoData,
-        (float, time)
-        (std::string, content)
-        )
-
-BOOST_FUSION_ADAPT_STRUCT(
         spiritParser::transformData,
         (size_t, index)
         (std::vector<std::vector<int>>, nums)
@@ -49,10 +44,10 @@ BOOST_FUSION_ADAPT_STRUCT(
 namespace spiritParser
 {
 
-    template<typename Iterator>
-    bool parse_video_data(Iterator begin, Iterator end, std::vector<videoData> &data)
+    template<typename Iterator, typename T>
+    bool parse_video_data(Iterator begin, Iterator end, T &data)
     {
-        bool r = qi::parse(begin, end, *(qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n') >> *(qi::char_("\n"))), data);
+        bool r = qi::parse(begin, end, (qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n')) % *(qi::char_("\n")), data);
 
         if(!r || begin != end){
             return false;
@@ -140,7 +135,8 @@ void exercise_00()
                      "5.19\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"
                      "11.8\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"};
 
-    std::vector<spiritParser::videoData> video;
+    //std::vector<spiritParser::videoData> video;
+    std::vector<std::pair<float, std::string>> video;
     spiritParser::parse_video_data(std::begin(strs), std::end(strs), video);
 
     if(video.size() < 2) {
@@ -160,9 +156,9 @@ void exercise_00()
     spiritParser::videoGrammar<std::back_insert_iterator<std::string>> grammar;
     spiritParser::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
-        spiritParser::generate_times(sink, grammar, data, i + 1, video[i].time, video[i + 1].time);
+        spiritParser::generate_times(sink, grammar, data, i + 1, video[i].first, video[i + 1].first);
         result += number;
-        result += video[i].content;
+        result += video[i].second;
         number.clear();
     }
 
