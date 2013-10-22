@@ -8,7 +8,7 @@
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
-#include <boost/fusion/adapted/std_pair.hpp>
+#include <boost/fusion/adapted/std_pair.hpp> //without this, spirit can't accept the type with std::pair
 
 #include <boost/spirit/include/karma.hpp>
 #include <boost/spirit/include/qi.hpp>
@@ -21,7 +21,7 @@ namespace karma = boost::spirit::karma;
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
-struct transformData
+struct transformTimeLabels
 {
     size_t index;
     std::vector<std::vector<int>> nums;
@@ -29,8 +29,10 @@ struct transformData
 
 }
 
+//we need boost fusion adapt struct to expose the data structure to fusion
+//else the spirit can't accept the type "transformTimeLabels
 BOOST_FUSION_ADAPT_STRUCT(
-        spiritParser::transformData,
+        spiritParser::transformTimeLabels,
         (size_t, index)
         (std::vector<std::vector<int>>, nums)
         )
@@ -51,7 +53,7 @@ namespace spiritParser
     }
 
     template<typename OutputIterator>
-    struct videoGrammar : karma::grammar<OutputIterator, transformData()>
+    struct videoGrammar : karma::grammar<OutputIterator, transformTimeLabels()>
     {
         videoGrammar()
             : videoGrammar::base_type(final_rule)
@@ -69,17 +71,17 @@ namespace spiritParser
 
         }
 
-        karma::rule<OutputIterator, transformData()> final_rule;
+        karma::rule<OutputIterator, transformTimeLabels()> final_rule;
         karma::rule<OutputIterator, std::vector<std::vector<int>>()> second_rule;
         karma::rule<OutputIterator, std::vector<int>()> first_rule;
     };
 
     void generate_nums(std::vector<int> &nums, float data)
     {
-        nums[0] = (int)data/3600;
-        nums[1] = (int)std::floor(data)/60%60;
-        nums[2] = (int)std::floor(data)%60;
-        nums[3] = (int)((data-std::floor(data))*1000.0);
+        nums[0] = static_cast<int>(data / 3600);
+        nums[1] = static_cast<int>(std::floor(data) / 60) % 60;
+        nums[2] = static_cast<int>(std::floor(data)) % 60;
+        nums[3] = static_cast<int>((data - std::floor(data)) * 1000.0);
     }
 
     /**
@@ -87,13 +89,8 @@ namespace spiritParser
  *  transform to : 00:00:00,500 --> 00:00:05,190
  */
     template<typename Iterator, typename Grammar>
-    bool generate_times(Iterator sink, Grammar &grammar, transformData &data, size_t index, float fir, float sec)
-    {
-
-        using karma::int_;
-        using karma::uint_;
-        using karma::right_align;
-
+    bool generate_times(Iterator sink, Grammar &grammar, transformTimeLabels &data, size_t index, float fir, float sec)
+    {        
         data.index = index;
         generate_nums(data.nums[0], fir);
         generate_nums(data.nums[1], sec);
@@ -147,11 +144,12 @@ void exercise_00()
     //should be able to do the job(even it may slower than spirit).
     //However, for practice, I chose spirit::karma to generate the time label
     spiritParser::videoGrammar<std::back_insert_iterator<std::string>> grammar;
-    spiritParser::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
+    spiritParser::transformTimeLabels data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
         number.clear();
         spiritParser::generate_times(sink, grammar, data, i + 1, video[i].first, video[i + 1].first);
         result += number;
+        result += "\n\n";
         result += video[i].second;        
     }
 
