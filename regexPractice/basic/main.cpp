@@ -1,7 +1,23 @@
+#include <clocale>
+#include <cmath>
 #include <iostream>
 #include <iterator>
 #include <regex>
 #include <string>
+
+void find_chinese()
+{
+    try{
+        std::wstring ws_str = L"性 \t\r\n`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?爱";
+        std::wregex wrx(L"性[(\\W|_]*爱", std::regex_constants::extended);
+        std::wstring wfmt(L"革命");
+        std::locale::global(std::locale("en_US.UTF-8"));
+        std::wstring ws_res = std::regex_replace(ws_str, wrx, wfmt);
+        std::wcout<<ws_res<<std::endl;
+    }catch(std::exception const &ex){
+        std::cout<<ex.what()<<std::endl;
+    }
+}
 
 void find_multiple_words()
 {
@@ -56,11 +72,13 @@ void find_patterns_one()
                                "00004470  A3 44 41 09 E5 B2 B3 E9  9C 87 E5 A4 A9 00 00 00   .DA..... ........ ");
 
         std::regex pattern_0("30[ ]+01[ ]+14[ ]+.{2}[ ]+.{2}[ ]+(44[ ]+41)|"
-                             "30.{20}\\n.{8}  01 14 .{2} .{2} (44 41)|"
-                             "30 01.{20}\\n.{8}  14 .{2} .{2} (44 41)|"
-                             "30 01 14.{20}\\n.{8}  .{2} .{2} (44 41)|"
-                             "30 01 14 .{2}.{20}\\n.{8}  .{2} (44 41)|"
-                             "30 01 14 .{2} .{2}.{20}\\n.{8}  (44 41)"
+                             "30.{29}  01 14 .{2} .{2} (44 41)|"
+                             "30 01.{29}  14 .{2} .{2} (44 41)|"
+                             "30 01 14.{29}  .{2} .{2} (44 41)|"
+                             "30 01 14 .{2}.{29}  .{2} (44 41)|"
+                             "30 01 14 .{2} .{2}.{29}  (44 41)|"
+                             "30 01 14 .{2} .{2} (44.{29}  41)",
+                             std::regex_constants::optimize
                              );
 
         /*std::regex pattern_1("30 01 14 .{2}.{20}\\n.{8}  .{2} (44 41)");
@@ -71,12 +89,20 @@ void find_patterns_one()
         for(size_t i = 0; i != match.size(); ++i){
             std::cout<<"match string "<<i<<" : "<<match[i]<<std::endl;
             std::cout<<"match position "<<i<<" : "<<match.position(i)<<std::endl<<std::endl;
+        }
+
+        std::regex_search(strs.substr(match.position(1), strs.size() - match.position(1)), match, pattern_0);
+        for(size_t i = 0; i != match.size(); ++i){
+            std::cout<<"match string "<<i<<" : "<<match[i]<<std::endl;
+            std::cout<<"match position "<<i<<" : "<<match.position(i)<<std::endl<<std::endl;
         }*/
 
+        size_t loop = 0;
         for(std::sregex_iterator begin(std::begin(strs), std::end(strs), pattern_0), end; begin != end; ++begin){
+            std::cout<<"match "<<loop++<<std::endl;
             for(size_t i = 0; i != begin->size(); ++i){
                 if(begin->position(i) >= 0){
-                    std::cout<<"match string "<<i<<" : "<<begin->str()<<std::endl;
+                    std::cout<<"match string "<<i<<" : "<<begin->str(i)<<std::endl;
                     std::cout<<"match position "<<i<<" : "<<begin->position(i)<<std::endl<<std::endl;
                 }
             }
@@ -113,14 +139,48 @@ void regex_replace_two()
     std::cout<<result<<std::endl;
 }
 
+void regex_replace_three()
+{
+    std::string strs{"0.5\">If you are a premiere member of the lynda.com online training library, or if you\n\n"
+                     "5.19\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"};
+
+    std::regex pattern(R"delimeter(([0-9.]+)[^\n]+\n+)delimeter"
+                       R"delimeter(([0-9.]+)[^\n]+\n+)delimeter");
+    std::smatch match;
+    std::regex_search(strs, match, pattern);
+
+    size_t loop = 0;
+    //std::string result;
+    //std::string new_line;
+    for(std::sregex_iterator begin(std::begin(strs), std::end(strs), pattern), end; begin != end; ++begin){
+        std::cout<<"loop "<<loop++<<std::endl;
+        size_t const Size = begin->size();
+        for(size_t i = Size > 1 ? 1 : 0; i != Size; ++i){
+            std::cout<<"match string "<<i<<" : "<<begin->str(i)<<std::endl<<std::endl;
+        }
+
+        if(Size == 3){
+            //size_t string_position = strs.find_first_of("\"");
+            float const first_num = std::stof(begin->str(1));
+            //float const second_num = std::stof(begin->str(2));
+            std::cout<< (int)(first_num / 3600) <<", "<< ((int)(first_num / 60) % 60) <<", " <<
+                        ((int)first_num % 60)<<", "<<(int)((first_num - std::floor(first_num)) * 1000)
+                        <<std::endl;
+        }
+        //std::cout<<strs<<std::endl;
+    }
+}
+
 int main()
 {
+    //find_chinese();
     //find_multiple_words();
     //find_multiple_words_two();
     //find_multiple_words_three();
-    find_patterns_one();
+    //find_patterns_one();
     //regex_replace_one();
     //regex_replace_two();
+    regex_replace_three();
 
     return 0;
 }
