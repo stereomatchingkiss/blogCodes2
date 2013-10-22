@@ -21,12 +21,6 @@ namespace karma = boost::spirit::karma;
 namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
-struct videoData
-{
-    float time;
-    std::string content;
-};
-
 struct transformData
 {
     size_t index;
@@ -135,7 +129,6 @@ void exercise_00()
                      "5.19\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"
                      "11.8\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"};
 
-    //std::vector<spiritParser::videoData> video;
     std::vector<std::pair<float, std::string>> video;
     spiritParser::parse_video_data(std::begin(strs), std::end(strs), video);
 
