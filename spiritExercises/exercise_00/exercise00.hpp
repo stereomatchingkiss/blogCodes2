@@ -153,7 +153,8 @@ void exercise_00()
     }
 
     std::string number;
-    std::string result;
+    std::string result{std::move(strs)};
+    result.clear();
     std::back_insert_iterator<std::string> sink(number);
     size_t const Size = video.size() - 1;
     //use karma to generate it is a little bit overkill, it is only for practice
