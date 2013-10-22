@@ -13,7 +13,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 
-namespace client
+namespace spiritParser
 {
 
 namespace karma = boost::spirit::karma;
@@ -35,18 +35,18 @@ struct transformData
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
-        client::videoData,
+        spiritParser::videoData,
         (float, time)
         (std::string, content)
         )
 
 BOOST_FUSION_ADAPT_STRUCT(
-        client::transformData,
+        spiritParser::transformData,
         (size_t, index)
         (std::vector<std::vector<int>>, nums)
         )
 
-namespace client
+namespace spiritParser
 {
 
     template<typename Iterator>
@@ -140,8 +140,8 @@ void exercise_00()
                      "5.19\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"
                      "11.8\">are watching this tutorial on a DVD, you have access to the exercise files used throughout the title.\n\n"};
 
-    std::vector<client::videoData> video;
-    client::parse_video_data(std::begin(strs), std::end(strs), video);
+    std::vector<spiritParser::videoData> video;
+    spiritParser::parse_video_data(std::begin(strs), std::end(strs), video);
 
     if(video.size() < 2) {
         std::cerr<<"not enough of data"<<std::endl;
@@ -157,10 +157,10 @@ void exercise_00()
     //since the length of the time label are known, sprintf or stringstream
     //should be able to do the job(even it may slower than spirit).
     //However, for practice, I chose spirit::karma to generate the time label
-    client::videoGrammar<std::back_insert_iterator<std::string>> grammar;
-    client::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
+    spiritParser::videoGrammar<std::back_insert_iterator<std::string>> grammar;
+    spiritParser::transformData data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
-        client::generate_times(sink, grammar, data, i + 1, video[i].time, video[i + 1].time);
+        spiritParser::generate_times(sink, grammar, data, i + 1, video[i].time, video[i + 1].time);
         result += number;
         result += video[i].content;
         number.clear();
@@ -173,7 +173,7 @@ void exercise_00()
 
 inline void test_exercise_00()
 {
-    client::exercise_00();
+    spiritParser::exercise_00();
 }
 
 #endif // EXERCISE00_HPP
