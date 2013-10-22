@@ -76,7 +76,7 @@ namespace spiritParser
         karma::rule<OutputIterator, std::vector<int>()> first_rule;
     };
 
-    void generate_nums(std::vector<int> &nums, float data)
+    inline void generate_nums(std::vector<int> &nums, float data)
     {
         nums[0] = static_cast<int>(data / 3600);
         nums[1] = static_cast<int>(std::floor(data) / 60) % 60;
