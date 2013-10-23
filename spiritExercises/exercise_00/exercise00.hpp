@@ -43,7 +43,7 @@ namespace spiritParser
     template<typename Iterator, typename T>
     bool parse_video_data(Iterator begin, Iterator end, T &data)
     {
-        bool r = qi::parse(begin, end, (qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n')) % *(qi::char_("\n")), data);
+        bool r = qi::parse(begin, end, (qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n')) % *(qi::eol), data);
 
         if(!r || begin != end){
             return false;
@@ -102,6 +102,11 @@ namespace spiritParser
         return r;
     }
 
+}
+
+namespace
+{
+
 /**
 
 Original :
@@ -140,17 +145,17 @@ void exercise_00()
     std::back_insert_iterator<std::string> sink(number);
     size_t const Size = video.size() - 1;
     //use karma to generate the time label is a little bit overkill
-    //since the length of the time label are known, sprintf or stringstream
-    //should be able to do the job(even it may slower than spirit).
-    //However, for practice, I chose spirit::karma to generate the time label
+    //sprintf or stringstream should be able to do the job(even it
+    //may slower than spirit).However, for practice, I chose
+    //spirit::karma to generate the time label
     spiritParser::videoGrammar<std::back_insert_iterator<std::string>> grammar;
     spiritParser::transformTimeLabels data{0, std::vector<std::vector<int>>(2, std::vector<int>(4))};
     for(size_t i = 0; i != Size; ++i){
         number.clear();
         spiritParser::generate_times(sink, grammar, data, i + 1, video[i].first, video[i + 1].first);
         result += number;
+        result += video[i].second;
         result += "\n\n";
-        result += video[i].second;        
     }
 
     std::cout<<result<<std::endl;
@@ -160,7 +165,7 @@ void exercise_00()
 
 inline void test_exercise_00()
 {
-    spiritParser::exercise_00();
+    exercise_00();
 }
 
 #endif // EXERCISE00_HPP
