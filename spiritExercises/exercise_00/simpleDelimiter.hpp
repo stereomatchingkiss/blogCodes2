@@ -22,6 +22,12 @@ bool simple_tokenizer(Iterator begin, Iterator end, char const *delimiter, std::
     return r;
 }
 
+template<typename Iterator, typename T>
+inline bool simple_tokenizer(Iterator begin, Iterator end, std::string const &delimiter, std::vector<T> &output)
+{
+    return simple_tokenizer(begin, end, delimiter.c_str(), output);
+}
+
 }
 
 void test_simple_delimiter();
