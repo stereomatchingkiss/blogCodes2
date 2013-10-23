@@ -10,8 +10,8 @@ namespace spiritParser
 
 namespace qi = boost::spirit::qi;
 
-template<typename Iterator, typename T>
-bool simple_tokenizer(Iterator begin, Iterator end, char const *delimiter, std::vector<T> &output)
+template<typename Iterator>
+bool simple_tokenizer(Iterator begin, Iterator end, char const *delimiter, std::vector<std::string> &output)
 {
     bool r = qi::parse(begin, end, *~qi::char_(delimiter) % delimiter, output);
 
@@ -22,8 +22,8 @@ bool simple_tokenizer(Iterator begin, Iterator end, char const *delimiter, std::
     return r;
 }
 
-template<typename Iterator, typename T>
-inline bool simple_tokenizer(Iterator begin, Iterator end, std::string const &delimiter, std::vector<T> &output)
+template<typename Iterator>
+inline bool simple_tokenizer(Iterator begin, Iterator end, std::string const &delimiter, std::vector<std::string> &output)
 {
     return simple_tokenizer(begin, end, delimiter.c_str(), output);
 }
