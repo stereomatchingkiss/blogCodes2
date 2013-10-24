@@ -25,7 +25,7 @@ struct recursiveBraces : qi::grammar<Iterator, qi::ascii::space_type>
     qi::rule<Iterator, qi::ascii::space_type> finalRules;
 };
 
-inline void parse_recursive_braces()
+void parse_recursive_braces()
 {
     std::string const braces[] =
     {
