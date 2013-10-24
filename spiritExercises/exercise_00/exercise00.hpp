@@ -43,7 +43,7 @@ namespace spiritParser
     template<typename Iterator, typename T>
     bool parse_video_data(Iterator begin, Iterator end, T &data)
     {
-        bool r = qi::parse(begin, end, (qi::float_ >> qi::skip["\">"] >> *~qi::char_('\n')) % *(qi::eol), data);
+        bool r = qi::parse(begin, end, (qi::float_ >> qi::omit["\">"] >> *~qi::char_('\n')) % *(qi::eol), data);
 
         if(!r || begin != end){
             return false;
