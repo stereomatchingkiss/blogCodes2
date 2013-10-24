@@ -11,18 +11,18 @@ namespace spiritParser
 namespace qi = boost::spirit::qi;
 
 template<typename Iterator>
-struct recursiveBraces : qi::grammar<Iterator, std::string(), qi::ascii::space_type>
+struct recursiveBraces : qi::grammar<Iterator, qi::ascii::space_type>
 {
-    recursiveBraces() : recursiveBraces::base_type(expression)
+    recursiveBraces() : recursiveBraces::base_type(finalRules)
     {
         braces = "(" >> *expression >> ")";
         expression = +braces;
         finalRules = +expression;
     }
 
-    qi::rule<Iterator, std::string(), qi::ascii::space_type> braces;
-    qi::rule<Iterator, std::string(), qi::ascii::space_type> expression;
-    qi::rule<Iterator, std::string(), qi::ascii::space_type> finalRules;
+    qi::rule<Iterator, qi::ascii::space_type> braces;
+    qi::rule<Iterator, qi::ascii::space_type> expression;
+    qi::rule<Iterator, qi::ascii::space_type> finalRules;
 };
 
 inline void parse_recursive_braces()
