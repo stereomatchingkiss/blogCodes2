@@ -12,6 +12,7 @@
 #include <boost/fusion/include/io.hpp>
 
 #include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/qi_auto.hpp>
 
 #include "stackOverflowQ00.hpp"
 
@@ -125,6 +126,13 @@ void test_spirit_qi(int iteration)
             data.clearTimeSymb();
         }
     }
+}
+
+void test_so_00()
+{
+    int const ITERATIONS = 500 * 10000;
+    test_strcpy_s(ITERATIONS);
+    test_spirit_qi(ITERATIONS);
 }
 
 

@@ -4,11 +4,6 @@
 void test_spirit_qi(int iteration);
 void test_strcpy_s(int iteration);
 
-inline void test_so_00()
-{
-    int const ITERATIONS = 500 * 10000;
-    test_strcpy_s(ITERATIONS);
-    test_spirit_qi(ITERATIONS);
-}
+void test_so_00();
 
 #endif // STACKOVERFLOWQ00_HPP
