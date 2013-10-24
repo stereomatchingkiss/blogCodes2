@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     exercise00.cpp \
     lexWordCount.cpp \
     simpleDelimiter.cpp \
-    stackOverflowQ00.cpp
+    stackOverflowQ00.cpp \
+    recursiveBraces.cpp
 
 HEADERS += \
     exercise00.hpp \
@@ -23,5 +24,6 @@ HEADERS += \
     simpleDelimiter.hpp \
     ../../libs/timeEstimate.hpp \
     ../../libs/timeElapsed.hpp \
-    stackOverflowQ00.hpp
+    stackOverflowQ00.hpp \
+    recursiveBraces.hpp
 
