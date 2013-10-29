@@ -9,6 +9,10 @@
 struct plate
 {    
     plate();
+    plate(plate const &data) = default;
+    plate& operator=(plate const &data) = default;
+    plate(plate &&data) noexcept;
+    plate& operator=(plate &&data) noexcept;
     plate(cv::Mat &img, cv::Rect const &pos);
     std::string str();
 

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include <iterator>
 #include <random>
 #include <ctime>
@@ -6,29 +7,21 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <basicImageAlgo.hpp>
+//#include <basicImageAlgo.hpp>
 
 #include "detectRegions.hpp"
 
-detectRegions::detectRegions() : saveRegions(false), showSteps(true)
+detectRegions::detectRegions() :
+    //saveRegions(false),
+    showSteps(true)
 {
 }
 
-std::vector<plate> detectRegions::run(cv::Mat &input)
+std::vector<plate>& detectRegions::run(cv::Mat &input)
 {
     segment(input);
 
-    return {};
-}
-
-void detectRegions::setFileName(std::string const &name)
-{
-    filename = name;
-}
-
-void detectRegions::setFileName(std::string &&name)
-{
-    filename = std::move(name);
+    return plates;
 }
 
 /**********************************************************
@@ -38,6 +31,7 @@ void detectRegions::setFileName(std::string &&name)
 void detectRegions::cleanSegmentData()
 {
     contours.clear();
+    plates.clear();
     pointInterestLP.clear();
     //result.setTo(0);
 }
@@ -51,8 +45,7 @@ void detectRegions::fillPlate(cv::Mat const &input, cv::RotatedRect const &rect)
     //get the min size between width and height
     float minSize = (rect.size.width < rect.size.height) ? rect.size.width : rect.size.height;
     minSize = minSize - minSize * 0.5;
-    //initialize rand and get 5 points around center for floodfill algorithm
-    srand ( std::time(nullptr) );
+    //initialize rand and get 5 points around center for floodfill algorithm  
     std::default_random_engine generator(std::time(nullptr));
     //Initialize floodfill parameters and variables
     floodMask.create(input.rows + 2, input.cols + 2, CV_8U);
@@ -65,11 +58,9 @@ void detectRegions::fillPlate(cv::Mat const &input, cv::RotatedRect const &rect)
     int const flags = connectivity + (newMaskVal << 8 ) + CV_FLOODFILL_FIXED_RANGE + CV_FLOODFILL_MASK_ONLY;
     for(int j = 0; j != NumSeeds; ++j){
         cv::Point seed;
-        std::uniform_int_distribution<int> distribution(0, static_cast<int>(minSize) - (minSize / 2));
-        //seed.x = rect.center.x + distribution(generator);
-        //seed.y = rect.center.y + distribution(generator);
-        seed.x = rect.center.x+rand()%(int)minSize-(minSize/2);
-        seed.y = rect.center.y+rand()%(int)minSize-(minSize/2);
+        std::uniform_int_distribution<int> distribution(0, static_cast<int>(minSize));
+        seed.x = rect.center.x + distribution(generator) - (minSize / 2);
+        seed.y = rect.center.y + distribution(generator) - (minSize / 2);
         cv::circle(result, seed, 1, cv::Scalar(0,255,255), -1);
         cv::floodFill(input, floodMask, seed, cv::Scalar(255,0,0), nullptr, cv::Scalar::all(loDiff), cv::Scalar::all(upDiff), flags);
     }    
@@ -119,24 +110,27 @@ void detectRegions::rotatedRect(cv::Mat const &input, cv::RotatedRect const &min
     // rotated rectangle drawing
     cv::Point2f rect_points[4];
     minRect.points(rect_points);
-    for( int j = 0; j < 4; j++ ){
-        cv::line( result, rect_points[j], rect_points[(j+1)%4], cv::Scalar(0, 0, 255), 1, 8 );
+    for( int j = 0; j != 4; ++j){
+        cv::line( result, rect_points[j], rect_points[(j + 1) % 4], cv::Scalar(0, 0, 255), 1, 8 );
     }
 
     //Get rotation matrix
     float const aspect = static_cast<float>(minRect.size.width) / static_cast<float>(minRect.size.height);
-    float angle = minRect.angle;
+    float const angle = aspect < 1 ? minRect.angle + 90 : minRect.angle;
     if(aspect < 1){
-        angle += 90;
+        std::cout<<"aspect < 1"<<std::endl;                
     }
+    std::cout<<"angle = "<<angle<<std::endl;
     cv::Mat const rotmat = cv::getRotationMatrix2D(minRect.center, angle, 1);
 
     //Create and rotate image
-    cv::warpAffine(input, imgRotated, rotmat, input.size(), CV_INTER_CUBIC);    
+    cv::warpAffine(input, imgRotated, rotmat, input.size(), CV_INTER_CUBIC);
 }
 
-std::vector<plate> detectRegions::segment(cv::Mat &input)
+std::vector<plate>& detectRegions::segment(cv::Mat &input)
 {
+    cleanSegmentData();
+
     //convert image to gray
     cv::Mat img_gray;
     cv::cvtColor(input, img_gray, CV_BGR2GRAY);
@@ -201,12 +195,14 @@ std::vector<plate> detectRegions::segment(cv::Mat &input)
         if(verifySizes(minRect)){
             //Create and rotate image
             rotatedRect(input, minRect);
-            cv::imshow("rotated", imgRotated);
 
             //Crop image
             cv::Mat grayResult = cropImage(minRect);
-            cv::imshow("result", grayResult);
-            cv::waitKey();
+            //cv::imshow("rotated", imgRotated);
+            //cv::imshow("result", grayResult);
+            //cv::imshow("input", input);
+            //cv::waitKey();
+            plates.emplace_back(grayResult, minRect.boundingRect());
             //grayResult=histeq(grayResult);
             //output.push_back(Plate(grayResult,minRect.boundingRect()));
         }
@@ -217,9 +213,7 @@ std::vector<plate> detectRegions::segment(cv::Mat &input)
         //cv::waitKey();
     }
 
-    cleanSegmentData();
-
-    return {};
+    return plates;
 }
 
 bool detectRegions::verifySizes(cv::RotatedRect const &mr) const

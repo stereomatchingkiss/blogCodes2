@@ -49,7 +49,7 @@ LIBS += -L/usr/local/lib/ -lopencv_core.2.4.5
 LIBS += -L/usr/local/lib/ -lopencv_highgui.2.4.5
 LIBS += -L/usr/local/lib/ -lopencv_imgproc.2.4.5
 #LIBS += -L/usr/local/lib/ -lopencv_legacy.2.4.5
-#LIBS += -L/usr/local/lib/ -lopencv_ml.2.4.5
+LIBS += -L/usr/local/lib/ -lopencv_ml.2.4.5
 #LIBS += -L/usr/local/lib/ -lopencv_nonfree.2.4.5
 #LIBS += -L/usr/local/lib/ -lopencv_objdetect.2.4.5
 #LIBS += -L/usr/local/lib/ -lopencv_ocl.2.4.5
@@ -66,10 +66,12 @@ DEFINES += DISABLED_QT
 
 SOURCES += main.cpp \
     plate.cpp \
-    detectRegions.cpp
+    detectRegions.cpp \
+    OCR.cpp
 
 HEADERS += \
     plate.hpp \
     detectRegions.hpp \
-    ../../libs/basicImageAlgo.hpp
+    ../../libs/basicImageAlgo.hpp \
+    OCR.hpp
 
