@@ -71,7 +71,7 @@ inline UnaryFunc for_each_channel(Mat &&input, int channel, UnaryFunc func)
  *  return func
  */
 template<typename T, typename UnaryFunc, typename Mat>
-inline UnaryFunc for_each_channels(Mat &&input, UnaryFunc func)
+UnaryFunc for_each_channels(Mat &&input, UnaryFunc func)
 {   
     int rows = input.rows;
     int cols = input.cols;
