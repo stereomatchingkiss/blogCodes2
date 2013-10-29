@@ -82,9 +82,10 @@ UnaryFunc for_each_channels(Mat &&input, UnaryFunc func)
     }
 
     for(int row = 0; row != rows; ++row){
-        auto input_ptr = input.template ptr<T>(row);
-        for(int col = 0; col != cols; ++col){
-            func(input_ptr[col]);
+        auto begin = input.template ptr<T>(row);
+        auto end = begin + cols;
+        for(; begin != end; ++begin){
+            func(*begin);
         }
     }
 
@@ -151,11 +152,10 @@ UnaryFunc for_each_continuous_channel(Mat &&input, int channel, UnaryFunc func)
 template<typename T, typename UnaryFunc, typename Mat>
 UnaryFunc for_each_continuous_channels(Mat &&input, UnaryFunc func)
 {
-    int const total = input.total() * input.channels();
-    auto input_ptr = input.template ptr<T>(0);
-    for(int i = 0; i != total; ++i){
-        func(input_ptr[i]);
-        //++input_ptr;
+    int const total = input.total() * input.channels();  
+    for(auto begin = input.template ptr<T>(0), end = begin + total;
+        begin != end; ++begin){
+        func(*begin);
     }
 
     return func;
