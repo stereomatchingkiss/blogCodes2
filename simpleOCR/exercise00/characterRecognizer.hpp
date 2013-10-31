@@ -12,13 +12,13 @@
 class characterRecognizer
 {
 public:
-    explicit characterRecognizer(std::string const &file_name = "");
+    characterRecognizer(std::string const &file_name, std::string const &training_name, std::string const &label_name);
     characterRecognizer& operator=(characterRecognizer const&) = delete;
     characterRecognizer(characterRecognizer const&) = delete;
 
     int classify(cv::Mat const &input);
 
-    void read(std::string const &file_name);
+    void read(std::string const &file_name, std::string const &training_name, std::string const &label_name);
     void read(cv::Mat const &train_data, cv::Mat const &train_labels);
 
     void train(int nlayers, int num_charecter);

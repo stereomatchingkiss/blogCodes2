@@ -78,7 +78,8 @@ int main()
         }
 
         //step 5 : train and classify the digits
-        characterRecognizer cr(prefix + "simpleOCR/build-exercise00-Qt5_1_1_clang_3_2-Release/digits.xml");
+        characterRecognizer cr(prefix + "simpleOCR/build-exercise00-Qt5_1_1_clang_3_2-Release/digits.xml",
+                               "TrainingData10x10", "Labels");
         cr.train(10, 10);
 
         for(size_t i = 0, size = target_digits.size(); i != size; ++i){

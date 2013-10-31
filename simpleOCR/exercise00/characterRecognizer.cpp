@@ -4,10 +4,11 @@
 
 #include "characterRecognizer.hpp"
 
-characterRecognizer::characterRecognizer(std::string const &file_name) : num_charecter(0)
+characterRecognizer::characterRecognizer(std::string const &file_name, std::string const &training_name, std::string const &label_name)
+    : num_charecter(0)
 {
     if(!file_name.empty()){
-        read(file_name);
+        read(file_name, training_name, label_name);
     }
 }
 
@@ -31,11 +32,11 @@ int characterRecognizer::classify(cv::Mat const &input)
  * @brief set up the training data and training labels from file
  * @param file_name : name of the files(with full path)
  */
-void characterRecognizer::read(std::string const &file_name)
+void characterRecognizer::read(std::string const &file_name, std::string const &training_name, std::string const &label_name)
 {
     cv::FileStorage fs(file_name, cv::FileStorage::READ);
-    fs["TrainingData10x10"] >> training_data;
-    fs["Labels"] >> training_labels;
+    fs[training_name] >> training_data;
+    fs[label_name] >> training_labels;
 }
 
 /**
