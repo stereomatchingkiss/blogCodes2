@@ -12,6 +12,7 @@
 class characterRecognizer
 {
 public:
+    characterRecognizer() = default;
     characterRecognizer(std::string const &file_name, std::string const &training_name, std::string const &label_name);
     characterRecognizer& operator=(characterRecognizer const&) = delete;
     characterRecognizer(characterRecognizer const&) = delete;
