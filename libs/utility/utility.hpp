@@ -9,10 +9,13 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "../basicImageAlgo.hpp"
+
 namespace OCV
 {
 
-void draw_rects(cv::Mat &inout, std::vector<cv::Rect> const &rects);
+void draw_rect(cv::Mat &inout, cv::Rect const &rect, cv::Scalar const &color = cv::Scalar(255, 0, 0));
+void draw_rects(cv::Mat &inout, std::vector<cv::Rect> const &rects, cv::Scalar const &color = cv::Scalar(255, 0, 0));
 
 /**
  * @brief generate points from the rectangle by clockwise order(top left,
@@ -39,6 +42,26 @@ inline void mix_channels(cv::Mat const &src, cv::Mat &dst, std::initializer_list
 }
 
 void remove_contours(std::vector<std::vector<cv::Point> > &contours, double cmin, double cmax);
+
+template<typename T = uchar, typename U = float>
+void transform_to_svm_training_data(cv::Mat &input)
+{
+    if(input.isContinuous()){
+        input = input.reshape(1, 1);
+        input.convertTo(input, cv::DataType<U>().depth);
+        return;
+    }
+
+    cv::Mat output(1, input.total() * input.channels(), cv::DataType<U>().depth);
+    auto output_ptr = output.ptr<U>(0);
+    OCV::for_each_channels<T>(input, [&](T a)
+    {
+        *output_ptr = a;
+        ++output_ptr;
+    });
+
+    input = output;
+}
 
 }
 

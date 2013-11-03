@@ -3,10 +3,19 @@
 namespace OCV
 {
 
-void draw_rects(cv::Mat &inout, std::vector<cv::Rect> const &rects)
+void draw_rect(cv::Mat &inout, cv::Rect const &rect, cv::Scalar const &color)
 {
     cv::Point2f points[4];
-    cv::Scalar const color = cv::Scalar(255, 0, 0);
+    get_rect_points(rect, points);
+    cv::line(inout, {points[0].x, points[0].y}, {points[1].x, points[1].y}, color, 2);
+    cv::line(inout, {points[1].x, points[1].y}, {points[2].x, points[2].y}, color, 2);
+    cv::line(inout, {points[2].x, points[2].y}, {points[3].x, points[3].y}, color, 2);
+    cv::line(inout, {points[3].x, points[3].y}, {points[0].x, points[0].y}, color, 2);
+}
+
+void draw_rects(cv::Mat &inout, std::vector<cv::Rect> const &rects, cv::Scalar const &color)
+{
+    cv::Point2f points[4];
     for(auto const &rect : rects){
         get_rect_points(rect, points);
         cv::line(inout, {points[0].x, points[0].y}, {points[1].x, points[1].y}, color, 2);
