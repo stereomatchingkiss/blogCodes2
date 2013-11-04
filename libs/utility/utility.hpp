@@ -14,6 +14,8 @@
 namespace OCV
 {
 
+void cvt_to_gray(cv::Mat &src, cv::Mat &dst, bool copy = false, int dstCn = 0, int flag = CV_BGR2GRAY);
+
 void draw_rect(cv::Mat &inout, cv::Rect const &rect, cv::Scalar const &color = cv::Scalar(255, 0, 0));
 void draw_rects(cv::Mat &inout, std::vector<cv::Rect> const &rects, cv::Scalar const &color = cv::Scalar(255, 0, 0));
 
