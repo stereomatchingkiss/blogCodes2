@@ -14,6 +14,15 @@ detectObject::detectObject() :
 {
 }
 
+/**
+ * @brief search for just a single object in the image, such as the largest face, storing the result into 'largestObject'.
+ * Can use Haar cascades or LBP cascades for Face Detection, or even eye, mouth, or car detection.
+ * Input is temporarily shrunk to 'scaled_width' for much faster detection, since 200 is enough to find faces.
+ * @param img : input img
+ * @param cascade : the cascade, could be LBP or harr
+ * @param scaled_width : desired width of the face
+ * @return the rect which represent the position and size of the face in img
+ */
 cv::Rect detectObject::detect_largest_object(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width)
 {       
     // Only search for just 1 object (the biggest in the image).
@@ -27,7 +36,7 @@ cv::Rect detectObject::detect_largest_object(cv::Mat const &img, cv::CascadeClas
     min_neighbors_ = 4;
 
     // Perform Object or Face Detection, looking for just 1 object (the biggest in the image).
-    detectObjectsCustom(img, cascade, std::abs(scaled_width));
+    detect_objects_custom(img, cascade, std::abs(scaled_width));
 
     return !objects_.empty() ? objects_[0] : cv::Rect(-1,-1,-1,-1);
 }
@@ -36,10 +45,19 @@ cv::Rect detectObject::detect_largest_object(cv::Mat const &img, cv::CascadeClas
  ****************** implementation ************************
  **********************************************************/
 
-void detectObject::detectObjectsCustom(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width)
+/**
+ * @brief Search for objects such as faces in the image using the given parameters
+   Can use Haar cascades or LBP cascades for Face Detection, or even eye, mouth, or car detection.
+   Input is temporarily shrunk to 'scaled_width' for much faster detection, since 200 is enough to find faces.
+ * @param img : input img
+ * @param cascade : the cascade, could be LBP or harr
+ * @param scaled_width : desired width of the face
+ */
+void detectObject::detect_objects_custom(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width)
 {
-    // If the input image is not grayscale, then convert the BGR or BGRA color image to grayscale.   
-    OCV::cvt_to_gray(img, gray_);
+    // If the input image is not grayscale, then convert the BGR or BGRA color image to grayscale.
+    cv::Mat temp = img;
+    OCV::cvt_to_gray(temp, gray_, true);
 
     // Possibly shrink the image, to run much faster.
     float const scale = img.cols / static_cast<float>(scaled_width);

@@ -14,7 +14,7 @@ public:
     cv::Rect detect_largest_object(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width = 320);
 
 private:
-    void detectObjectsCustom(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width);   
+    void detect_objects_custom(cv::Mat const &img, cv::CascadeClassifier &cascade, int scaled_width);
 
 private:
     int flags_;
@@ -28,7 +28,6 @@ private:
 
     std::vector<cv::Rect> objects_; //Vector of rectangles where each rectangle contains the detected object.
 
-    int scale_width_; //scale the original image to the size "scale_width_", the height will respect aspect ratio
     cv::Mat shrink_input_;
     float search_scale_factor_; //How detailed should the search be. Must be larger than 1.0.
                                 //Parameter specifying how much the image size is reduced at each image scale
