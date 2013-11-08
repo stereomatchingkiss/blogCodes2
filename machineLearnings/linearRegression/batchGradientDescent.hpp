@@ -4,6 +4,11 @@
 #include <opencv2/core/core.hpp>
 
 /**
+ * implement batch gradient descent, not an effecient implementation, but
+ * should be easy to read
+ **/
+
+/**
  *@brief linear regression
  *@param features input sequence
  *@param labels output sequence
