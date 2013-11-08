@@ -75,14 +75,13 @@ LIBS += -L/usr/local/lib/ -lopencv_imgproc.2.4.5
 }
 
 INCLUDEPATH += ../../libs
+INCLUDEPATH += ../libs
 DEFINES += DISABLED_QT
 
 SOURCES += main.cpp \
     ../../libs/qwtHelp/qwtUtility.cpp
 
 HEADERS  += \
-    batchGradientDescent.hpp \
-    readNumber.hpp \
     ../../libs/qwtHelp/qwtUtility.hpp
 
 FORMS    +=

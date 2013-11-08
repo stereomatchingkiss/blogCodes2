@@ -6,10 +6,12 @@
 
 #include <QApplication>
 
+#include <qwt_plot_renderer.h>
+
 #include <qwtHelp/qwtUtility.hpp>
 
-#include "batchGradientDescent.hpp"
-#include "readNumber.hpp"
+#include <batchGradientDescent.hpp>
+#include <readNumber.hpp>
 
 int main(int argc, char *argv[])
 {    
@@ -28,6 +30,8 @@ int main(int argc, char *argv[])
         std::cout<<theta<<std::endl;        
 
         auto plot = create_plot("Linear regression");
+        plot->setAxisTitle(QwtPlot::xBottom, "ages");
+        plot->setAxisTitle(QwtPlot::yLeft, "height");
         auto curve_origin = create_plot_curve("training data", QwtPlotCurve::NoCurve);
         auto origin_points = create_points(x_axis.ptr<Type>(0), x_axis.ptr<Type>(0) + x_axis.rows, labels.ptr<Type>(0));
 
@@ -37,12 +41,18 @@ int main(int argc, char *argv[])
 
         curve_origin->setSamples(origin_points);
         curve_origin->attach( plot.get() );
+        plot->resize( 600, 400 );
+        plot->replot();
+        QwtPlotRenderer render;
+        render.renderDocument(plot.get(), "true.png", {600, 400});
 
         curve_new->setSamples(points_new);
         curve_new->attach( plot.get() );
 
         plot->resize( 600, 400 );
+        plot->replot();
         plot->show();
+        render.renderDocument(plot.get(), "true_vs_predict.png", {600, 400});
 
         return a.exec();
 
