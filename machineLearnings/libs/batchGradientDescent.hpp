@@ -35,7 +35,7 @@ cv::Mat_<T> linear_regression(cv::Mat_<T> const &features, cv::Mat_<T> const &la
  *@param iterate iterate time
  *@return theta, the parameters of batch gradient descent searching
  */
-template<typename T = float>
+template<typename T>
 cv::Mat_<T> batch_gradient_descent(cv::Mat_<T> const &features, cv::Mat_<T> const &labels, T alpha = 0.07, size_t iterate = 1)
 {
     cv::Mat_<T> theta = cv::Mat_<T>::zeros(features.cols, 1);
