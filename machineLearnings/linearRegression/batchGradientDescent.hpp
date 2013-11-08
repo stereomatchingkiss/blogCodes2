@@ -29,8 +29,9 @@ cv::Mat_<T> linear_regression(cv::Mat_<T> const &features, cv::Mat_<T> const &la
  *@brief batch gradient descent
  *@param features input sequence
  *@param labels output sequence
- *@param alpha determine the step of each iteration, smaller alpha would cause longer time to iterate but with more
- * accurate result and vice versa, but this function has a fixed iteration time, so alpha only affect accuracy.
+ *@param alpha determine the step of each iteration, smaller alpha would cause longer time to iterate but with higher
+ * chance to converge;larger a;pha will run faster but with higher chance to divert.
+ * Since this function has a fixed iteration time, so alpha only affect accuracy.
  *@param iterate iterate time
  *@return theta, the parameters of batch gradient descent searching
  */
