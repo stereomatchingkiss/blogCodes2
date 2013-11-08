@@ -12,10 +12,10 @@
 #include "readNumber.hpp"
 
 int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-
+{    
     try{
+        QApplication a(argc, argv);
+
         using Type = float;
 
         cv::Mat_<Type> const x_axis = read_number("../linearRegression/ex2x.dat");
@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
     }catch(std::exception const &ex){
         std::cerr<<ex.what()<<std::endl;
     }
-
 
     return 0;
 }
