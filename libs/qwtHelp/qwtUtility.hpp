@@ -11,8 +11,7 @@
 
 std::unique_ptr<QwtPlot> create_plot(QString const &title);
 
-std::unique_ptr<QwtPlotCurve> create_plot_curve(QString const &title, QwtPlotCurve::CurveStyle style = QwtPlotCurve::Lines,
-                                                bool default_symbol = true);
+std::unique_ptr<QwtPlotCurve> create_plot_curve(QString const &title, QwtPlotCurve::CurveStyle style = QwtPlotCurve::Lines);
 
 /**
  * @brief create points for Qwt, user should make sure the range of y_begin is same or bigger than [x_begin, x_end)

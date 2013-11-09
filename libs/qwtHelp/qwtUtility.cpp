@@ -22,21 +22,14 @@ std::unique_ptr<QwtPlot> create_plot(QString const &title)
  * @brief create QwtPlotCurve with some default setting
  * @param title : title of the plot
  * @param style : the style of curve
- * @param default_symbol : true : add default symbol;false, don't add symbol
  * @return QwtPlotCurve with some default setting
  */
-std::unique_ptr<QwtPlotCurve> create_plot_curve(QString const &title, QwtPlotCurve::CurveStyle style, bool default_symbol)
+std::unique_ptr<QwtPlotCurve> create_plot_curve(QString const &title, QwtPlotCurve::CurveStyle style)
 {
     std::unique_ptr<QwtPlotCurve> curve(new QwtPlotCurve(title));
     curve->setPen( Qt::blue, 4 );
     curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
     curve->setStyle(style);
-
-    if(default_symbol){
-        std::unique_ptr<QwtSymbol> symbol(new QwtSymbol( QwtSymbol::Ellipse,
-                                                         QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) ));
-        curve->setSymbol( symbol.release() );
-    }
 
     return curve;
 }
