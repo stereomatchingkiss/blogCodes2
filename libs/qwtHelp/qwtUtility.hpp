@@ -17,8 +17,8 @@ std::unique_ptr<QwtPlotCurve> create_plot_curve(QString const &title, QwtPlotCur
  * @brief create points for Qwt, user should make sure the range of y_begin is same or bigger than [x_begin, x_end)
  * @return the points
  */
-template<typename ForwardIter>
-QPolygonF create_points(ForwardIter x_begin, ForwardIter x_end, ForwardIter y_begin)
+template<typename ForwardIter, typename ForwardIter2>
+QPolygonF create_points(ForwardIter x_begin, ForwardIter x_end, ForwardIter2 y_begin)
 {
     QPolygonF points;
     for(; x_begin != x_end; ++x_begin, ++y_begin){
