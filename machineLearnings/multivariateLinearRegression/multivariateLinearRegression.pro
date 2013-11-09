@@ -79,14 +79,13 @@ INCLUDEPATH += ../libs
 DEFINES += DISABLED_QT
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     ../../libs/qwtHelp/qwtUtility.cpp \
     ../../libs/qwtHelp/simple2DCurve.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     ../libs/readNumber.hpp \
     ../libs/batchGradientDescent.hpp \
     ../../libs/qwtHelp/qwtUtility.hpp \
     ../../libs/qwtHelp/simple2DCurve.hpp
 
-FORMS    += mainwindow.ui
+FORMS    +=
