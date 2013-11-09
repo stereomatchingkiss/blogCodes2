@@ -37,6 +37,15 @@ private:
     std::vector<std::unique_ptr<QwtPlotCurve>> curves_;
 };
 
+/**
+ * @brief insert curve into the 2d plot
+ * @param x_begin begin position of x-axis
+ * @param x_end past the position of x_axis
+ * @param y_begin begin position of y-axis, the number of elements of y-axis must not less than x-axis
+ * @param title of the curve
+ * @param color of the curve
+ * @param style of the curve
+ */
 template<typename ForwardIter, typename ForwardIter2>
 void simple2DPlot::insert_curve(ForwardIter x_begin, ForwardIter x_end, ForwardIter2 y_begin, QString const &title,
                                 QColor const &color, QwtPlotCurve::CurveStyle style)
