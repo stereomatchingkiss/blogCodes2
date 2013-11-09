@@ -80,13 +80,13 @@ DEFINES += DISABLED_QT
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    simple2DCurve.cpp \
-    ../../libs/qwtHelp/qwtUtility.cpp
+    ../../libs/qwtHelp/qwtUtility.cpp \
+    ../../libs/qwtHelp/simple2DCurve.cpp
 
 HEADERS  += mainwindow.h \
     ../libs/readNumber.hpp \
     ../libs/batchGradientDescent.hpp \
-    simple2DCurve.hpp \
-    ../../libs/qwtHelp/qwtUtility.hpp
+    ../../libs/qwtHelp/qwtUtility.hpp \
+    ../../libs/qwtHelp/simple2DCurve.hpp
 
 FORMS    += mainwindow.ui

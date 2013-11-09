@@ -13,8 +13,7 @@
 #include <readNumber.hpp>
 
 #include <qwtHelp/qwtUtility.hpp>
-
-#include "simple2DCurve.hpp"
+#include <qwtHelp/simple2DCurve.hpp>
 
 template<typename T>
 void mat_info(T const &mat)
