@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
         normalize(col_one);
         normalize(col_two);
 
-        simple2DPlot plot(nullptr, "Cost of Linear regression", "iterate times", "costs");
+        simple2DPlot plot("Cost of Linear regression", "iterate times", "costs");
         size_t const iterate_times = 50;
         Type const ratio[] = {0.01, 0.03, 0.1, 0.3, 1, 1.2};
         QColor const colors[] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {255, 128, 128}, {128, 0, 128}};

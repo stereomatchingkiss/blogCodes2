@@ -21,6 +21,12 @@ simple2DPlot::simple2DPlot(QWidget *parent, QString const &plot_name, QString co
     setAxisTitle(QwtPlot::yLeft, y_axis_name);
 }
 
+simple2DPlot::simple2DPlot(QString const &plot_name, QString const &x_axis_name, QString const &y_axis_name, QWidget *parent)
+    :simple2DPlot(parent, plot_name, x_axis_name, y_axis_name)
+{
+
+}
+
 /**
  * @brief delete all of the curves
  */
