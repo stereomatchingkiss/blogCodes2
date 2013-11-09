@@ -79,9 +79,11 @@ INCLUDEPATH += ../libs
 DEFINES += DISABLED_QT
 
 SOURCES += main.cpp \
-    ../../libs/qwtHelp/qwtUtility.cpp
+    ../../libs/qwtHelp/qwtUtility.cpp \
+    ../../libs/qwtHelp/simple2DCurve.cpp
 
 HEADERS  += \
-    ../../libs/qwtHelp/qwtUtility.hpp
+    ../../libs/qwtHelp/qwtUtility.hpp \
+    ../../libs/qwtHelp/simple2DCurve.hpp
 
 FORMS    +=

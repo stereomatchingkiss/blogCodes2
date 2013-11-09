@@ -8,7 +8,7 @@
 
 #include <qwt_plot_renderer.h>
 
-#include <qwtHelp/qwtUtility.hpp>
+#include <qwtHelp/simple2DCurve.hpp>
 
 #include <batchGradientDescent.hpp>
 #include <readNumber.hpp>
@@ -29,31 +29,26 @@ int main(int argc, char *argv[])
         cv::Mat_<Type> const theta = batch_gradient_descent<Type>(features, labels, 0.07, 1500);
         std::cout<<theta<<std::endl;        
 
-        auto plot = create_plot("Linear regression");
-        plot->setAxisTitle(QwtPlot::xBottom, "ages");
-        plot->setAxisTitle(QwtPlot::yLeft, "height");
-        auto curve_origin = create_plot_curve("training data", QwtPlotCurve::Dots);
-        auto origin_points = create_points(x_axis.ptr<Type>(0), x_axis.ptr<Type>(0) + x_axis.rows, labels.ptr<Type>(0));
+        simple2DPlot plot("Linear regression", "ages", "height");
+        plot.insert_curve(std::begin(x_axis), std::end(x_axis), std::begin(labels));
+        plot.get_curve(0).setPen(QColor(255 ,0, 0), 5);
+        plot.get_curve(0).setTitle("training data");
+        plot.get_curve(0).setStyle(QwtPlotCurve::Dots);
+        plot.replot();
+
+        QwtPlotRenderer render;
+        render.renderDocument(&plot, "true.png", {600, 400});
 
         cv::Mat_<Type> const new_features = features * theta;
-        auto curve_new = create_plot_curve("batch gradient descent", QwtPlotCurve::Lines);
-        auto points_new = create_points(x_axis.ptr<Type>(0), x_axis.ptr<Type>(0) + x_axis.rows, new_features.ptr<Type>(0));
+        plot.insert_curve(std::begin(x_axis), std::end(x_axis), std::begin(new_features));
+        plot.get_curve(1).setPen(QColor(0 ,0, 255));
+        plot.get_curve(1).setTitle("batch gradient descent");
 
-        curve_origin->setSamples(origin_points);
-        curve_origin->attach( plot.get() );
-        plot->resize( 600, 400 );
-        plot->replot();
-        QwtPlotRenderer render;
-        render.renderDocument(plot.get(), "true.png", {600, 400});
+        plot.replot();
+        render.renderDocument(&plot, "true_vs_predict.png", {600, 400});
 
-        curve_new->setSamples(points_new);
-        curve_new->setPen(QColor(255, 0, 0));
-        curve_new->attach( plot.get() );
-
-        plot->resize( 600, 400 );
-        plot->replot();
-        plot->show();
-        render.renderDocument(plot.get(), "true_vs_predict.png", {600, 400});
+        plot.resize(600, 400);
+        plot.show();
 
         return a.exec();
 
