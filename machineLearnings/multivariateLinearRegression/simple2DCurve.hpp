@@ -22,6 +22,8 @@ class simple2DPlot : public QwtPlot
 {
 public:
     simple2DPlot(QWidget *parent, QString const &plot_name, QString const &x_axis_name, QString const &y_axis_name);
+    simple2DPlot(simple2DPlot const&) = delete;
+    simple2DPlot& operator=(simple2DPlot const&) = delete;
 
     void clear();
 
