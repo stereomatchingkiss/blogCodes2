@@ -66,13 +66,10 @@ int main(int argc, char *argv[])
         size_t const iterate_times = 50;
         Type const ratio[] = {0.01, 0.03, 0.1, 0.3, 1, 1.2};
         QColor const colors[] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {255, 255, 0}, {255, 128, 128}, {128, 0, 128}};
-        std::vector<Type> iterates;
+        std::vector<Type> iterates(50);
+        std::iota(std::begin(iterates), std::end(iterates), 1);
         for(size_t i = 0; i != sizeof(ratio) / sizeof(Type); ++i){
-            cv::Mat_<Type> costs = batch_gradient_descent_cost<Type>(features, labels, ratio[i], iterate_times);
-
-            iterates.resize(iterate_times);
-            std::iota(std::begin(iterates), std::end(iterates), 1);
-
+            cv::Mat_<Type> const costs = batch_gradient_descent_cost<Type>(features, labels, ratio[i], iterate_times);
             plot.insert_curve(std::begin(iterates), std::end(iterates), costs.ptr<Type>(0),
                               QString::fromStdString(std::to_string(ratio[i])),
                               colors[i], QwtPlotCurve::Steps);
