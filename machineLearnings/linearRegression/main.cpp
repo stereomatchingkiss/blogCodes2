@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
         auto plot = create_plot("Linear regression");
         plot->setAxisTitle(QwtPlot::xBottom, "ages");
         plot->setAxisTitle(QwtPlot::yLeft, "height");
-        auto curve_origin = create_plot_curve("training data", QwtPlotCurve::NoCurve);
+        auto curve_origin = create_plot_curve("training data", QwtPlotCurve::Dots);
         auto origin_points = create_points(x_axis.ptr<Type>(0), x_axis.ptr<Type>(0) + x_axis.rows, labels.ptr<Type>(0));
 
         cv::Mat_<Type> const new_features = features * theta;
-        auto curve_new = create_plot_curve("batch gradient descent", QwtPlotCurve::Lines, false);
+        auto curve_new = create_plot_curve("batch gradient descent", QwtPlotCurve::Lines);
         auto points_new = create_points(x_axis.ptr<Type>(0), x_axis.ptr<Type>(0) + x_axis.rows, new_features.ptr<Type>(0));
 
         curve_origin->setSamples(origin_points);
@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
         render.renderDocument(plot.get(), "true.png", {600, 400});
 
         curve_new->setSamples(points_new);
+        curve_new->setPen(QColor(255, 0, 0));
         curve_new->attach( plot.get() );
 
         plot->resize( 600, 400 );
