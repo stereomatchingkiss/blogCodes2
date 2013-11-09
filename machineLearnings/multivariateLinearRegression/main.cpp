@@ -37,7 +37,7 @@ void normalize(cv::Mat_<T> &input)
 template<typename T>
 cv::Mat_<T> normal_equation(cv::Mat_<T> const &features, cv::Mat_<T> const &labels)
 {
-    cv::Mat_<Type> const inverse = (features.t() * features).inv();
+    cv::Mat_<T> const inverse = (features.t() * features).inv();
     return inverse * features.t() * labels;
 }
 
