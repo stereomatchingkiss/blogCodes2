@@ -70,9 +70,10 @@ int main(int argc, char *argv[])
         std::iota(std::begin(iterates), std::end(iterates), 1);
         for(size_t i = 0; i != sizeof(ratio) / sizeof(Type); ++i){
             cv::Mat_<Type> const costs = batch_gradient_descent_cost<Type>(features, labels, ratio[i], iterate_times);
-            plot.insert_curve(std::begin(iterates), std::end(iterates), costs.ptr<Type>(0),
-                              QString::fromStdString(std::to_string(ratio[i])),
-                              colors[i], QwtPlotCurve::Steps);
+            plot.insert_curve(std::begin(iterates), std::end(iterates), std::begin(costs));
+            plot.get_curve(i).setTitle(QString::fromStdString(std::to_string(ratio[i])));
+            plot.get_curve(i).setPen(colors[i]);
+            plot.get_curve(i).setStyle(QwtPlotCurve::Steps);
         }
 
         plot.resize(600, 400);
