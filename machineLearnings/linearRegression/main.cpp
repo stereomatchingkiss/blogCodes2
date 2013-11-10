@@ -35,9 +35,7 @@ int main(int argc, char *argv[])
         plot.get_curve(0).setTitle("training data");
         plot.get_curve(0).setStyle(QwtPlotCurve::Dots);
         plot.replot();
-
-        QwtPlotRenderer render;
-        render.renderDocument(&plot, "true.png", {600, 400});
+        plot.render_document("true.png", {600, 400});
 
         cv::Mat_<Type> const new_features = features * theta;
         plot.insert_curve(std::begin(x_axis), std::end(x_axis), std::begin(new_features));
@@ -45,7 +43,7 @@ int main(int argc, char *argv[])
         plot.get_curve(1).setTitle("batch gradient descent");
 
         plot.replot();
-        render.renderDocument(&plot, "true_vs_predict.png", {600, 400});
+        plot.render_document("true_vs_predict.png", {600, 400});
 
         plot.resize(600, 400);
         plot.show();
