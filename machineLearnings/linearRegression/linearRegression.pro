@@ -84,6 +84,8 @@ SOURCES += main.cpp \
 
 HEADERS  += \
     ../../libs/qwtHelp/qwtUtility.hpp \
-    ../../libs/qwtHelp/simple2DCurve.hpp
+    ../../libs/qwtHelp/simple2DCurve.hpp \
+    ../libs/readNumber.hpp \
+    ../libs/batchGradientDescent.hpp
 
 FORMS    +=

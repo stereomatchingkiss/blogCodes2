@@ -20,8 +20,8 @@ int main(int argc, char *argv[])
 
         using Type = float;
 
-        cv::Mat_<Type> const x_axis = read_number("../linearRegression/ex2x.dat");
-        cv::Mat_<Type> const labels = read_number("../linearRegression/ex2y.dat");
+        cv::Mat_<Type> const x_axis = read_number<Type>("../linearRegression/ex2x.dat");
+        cv::Mat_<Type> const labels = read_number<Type>("../linearRegression/ex2y.dat");
         //attach "1" to the first cols of x_axis
         cv::Mat_<Type> features = cv::Mat_<Type>::ones(x_axis.rows, x_axis.cols + 1);        
         x_axis.col(0).copyTo(features.col(1));
