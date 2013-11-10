@@ -10,6 +10,7 @@
 
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
+#include <qwt_plot_renderer.h>
 
 #include <qwtHelp/qwtUtility.hpp>
 
@@ -31,12 +32,16 @@ public:
     QwtPlotCurve& get_curve(size_t id);
 
     template<typename ForwardIter, typename ForwardIter2>
-    void insert_curve(ForwardIter x_begin, ForwardIter x_end, ForwardIter2 y_begin, QString const &title = "");
+    void insert_curve(ForwardIter x_begin, ForwardIter x_end, ForwardIter2 y_begin, QString const &title = "");    
 
     void remove_curve(size_t id);
 
+    void render_document(QString const &file_name, QSizeF const &size_mm, int resolution = 85);
+
 private:
     std::vector<std::unique_ptr<QwtPlotCurve>> curves_;
+
+    QwtPlotRenderer renderer_;
 };
 
 /**

@@ -59,3 +59,15 @@ void simple2DPlot::remove_curve(size_t id)
         throw std::out_of_range("out of range");
     }
 }
+
+/**
+ * @brief Renderer for exporting a plot to a document, a printer or anything else,
+ * that is supported by QPainter/QPaintDevice.
+ * @param file_name  Path of the file, where the document will be stored
+ * @param size_mm 	 Size for the document in millimeters.
+ * @param resolution Resolution in dots per Inch (dpi)
+ */
+void simple2DPlot::render_document(QString const &file_name, QSizeF const &size_mm, int resolution)
+{
+    renderer_.renderDocument(this, file_name, size_mm, resolution);
+}
