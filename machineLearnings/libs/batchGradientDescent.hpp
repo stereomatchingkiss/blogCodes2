@@ -15,9 +15,7 @@ template<typename T>
 T cost_function(cv::Mat_<T> const &features, cv::Mat_<T> const &labels, cv::Mat_<T> const &theta)
 {
     cv::Mat_<T> const temp = features * theta - labels;
-    cv::Mat_<T> const temp_t = temp.t();
-
-    cv::Mat_<T> results = temp_t * temp;
+    cv::Mat_<T> results = temp.t() * temp;
     results /= 2 * labels.rows;
 
     return *results.template ptr<T>(0);
@@ -63,6 +61,16 @@ cv::Mat_<T> batch_gradient_descent(cv::Mat_<T> const &features, cv::Mat_<T> cons
     return theta;
 }
 
+/**
+ *@brief find the costs of each iteration
+ *@param features input sequence
+ *@param labels output sequence
+ *@param alpha determine the step of each iteration, smaller alpha would cause longer time to iterate but with higher
+ * chance to converge;larger a;pha will run faster but with higher chance to divert.
+ * Since this function has a fixed iteration time, so alpha only affect accuracy.
+ *@param iterate iterate time
+ *@return the costs of each iteration
+ */
 template<typename T>
 cv::Mat_<T> batch_gradient_descent_cost(cv::Mat_<T> const &features, cv::Mat_<T> const &labels, T alpha = 0.07, size_t iterate = 1)
 {
