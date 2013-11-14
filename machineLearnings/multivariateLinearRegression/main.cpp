@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
-#include <string>
 #include <vector>
 
 #include <opencv2/core/core.hpp>
@@ -64,7 +63,7 @@ void cost_vs_iteration(simple2DPlot &plot, cv::Mat_<T> const &features, cv::Mat_
     for(size_t i = 0; i != sizeof(ratio) / sizeof(T); ++i){
         cv::Mat_<T> const costs = batch_gradient_descent_cost<T>(features, labels, ratio[i], iterate_times);
         plot.insert_curve(std::begin(iterates), std::end(iterates), std::begin(costs));
-        plot.get_curve(i).setTitle(QString::fromStdString(std::to_string(ratio[i])));
+        plot.get_curve(i).setTitle(QString::number(ratio[i]));
         plot.get_curve(i).setPen(colors[i]);
         plot.get_curve(i).setStyle(QwtPlotCurve::Lines);
     }
