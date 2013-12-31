@@ -14,7 +14,8 @@ int main(int argc, char *argv[])
     simpleJNI *jni = new simpleJNI(&viewer);
     viewer.engine()->rootContext()->setContextProperty(QLatin1String("simpleJNI"),
                                                      jni);
-    viewer.setMainQmlFile(QStringLiteral("qml/androidTest/main.qml"));
+    viewer.setSource(QStringLiteral("qrc:///qml/androidTest/main.qml"));
+    //view.setSource(QUrl(QStringLiteral("qrc:/qml/main.qml")));
     viewer.showExpanded();
 
     //QQuickView view;

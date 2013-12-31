@@ -1,6 +1,5 @@
 #include "simpleJNI.hpp"
 
-#include <QDebug>
 #include <QtAndroidExtras/QAndroidJniObject>
 
 simpleJNI::simpleJNI(QObject *parent) :
@@ -11,10 +10,12 @@ simpleJNI::simpleJNI(QObject *parent) :
 
 QString simpleJNI::printHelloWorld()
 {
-    QAndroidJniObject str = QAndroidJniObject::callStaticObjectMethod<jstring>("adv/appBucksAdv",
-                                       "getString",
-                                       "(V)Ljava/lang/String;"
-                                       );
+    QAndroidJniObject str = QAndroidJniObject::callStaticObjectMethod("adv/appBucksAdv",
+                                       "printHelloWorld",
+                                       "(I)Ljava/lang/String;",
+                                       23);
 
     return str.toString();
+}
+str.toString();
 }

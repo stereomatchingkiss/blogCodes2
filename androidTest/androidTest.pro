@@ -37,3 +37,6 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 HEADERS += \
     qtquick2applicationviewer/qtquick2applicationviewer.h \
     simpleJNI.hpp
+
+RESOURCES += \
+    qml.qrc
