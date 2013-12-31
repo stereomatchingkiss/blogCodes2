@@ -17,8 +17,8 @@ Rectangle {
     MouseArea{
         anchors.fill: parent
 
-        onClicked: {
-            text.text = text.text + simpleJNI.printHelloWorld() + "\n"
+        onClicked: {            
+            console.log("clicked\n")
         }
     }
 }

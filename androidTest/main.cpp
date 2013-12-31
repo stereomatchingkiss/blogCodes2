@@ -14,13 +14,8 @@ int main(int argc, char *argv[])
     simpleJNI *jni = new simpleJNI(&viewer);
     viewer.engine()->rootContext()->setContextProperty(QLatin1String("simpleJNI"),
                                                      jni);
-    viewer.setSource(QStringLiteral("qrc:///qml/androidTest/main.qml"));
-    //view.setSource(QUrl(QStringLiteral("qrc:/qml/main.qml")));
-    viewer.showExpanded();
-
-    //QQuickView view;
-    //view.setSource(QUrl("/Users/Qt/program/experiment_apps_and_libs/androidTest/qml/androidTest/main.qml"));
-    //view.show();
+    viewer.setSource(QStringLiteral("qrc:///qml/androidTest/main.qml"));    
+    viewer.showExpanded();    
 
     return app.exec();
 }

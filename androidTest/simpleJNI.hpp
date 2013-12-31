@@ -2,14 +2,16 @@
 #define SIMPLEJNI_HPP
 
 #include <QObject>
+#include <QtAndroidExtras/QAndroidJniObject>
 
 class simpleJNI : public QObject
 {
     Q_OBJECT
 public:
-    explicit simpleJNI(QObject *parent = nullptr);
+    explicit simpleJNI(QObject *parent = nullptr);   
 
-    Q_INVOKABLE QString printHelloWorld();
+private:
+    QAndroidJniObject advClass_;
 
 };
 
