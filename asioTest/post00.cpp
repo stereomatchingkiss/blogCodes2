@@ -17,7 +17,8 @@ void WorkerThread( boost::asio::io_service &io_service, boost::mutex &mutex )
                   << "] Thread Start" << std::endl;
     }
 
-    io_service.run(); //without this line, the handler(functor) wouldn't run
+    //without this line, the handler(functor) wouldn't run by post
+    io_service.run();
 
     {
         boost::lock_guard<boost::mutex> guard(mutex);
@@ -80,6 +81,7 @@ void post_example_00()
                     );
     }
 
+    //without posting the jobs, the io_service wouldn't execute the handlers
     io_service.post(boost::bind( CalculateFib, 3, boost::ref(mutex) ));
     io_service.post(boost::bind( CalculateFib, 4, boost::ref(mutex) ));
     io_service.post(boost::bind( CalculateFib, 5, boost::ref(mutex) ));
