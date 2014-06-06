@@ -30,9 +30,11 @@ LIBS += $${BOOST_LIB}/libboost_timer-vc90-mt-1_55.lib
 
 SOURCES += main.cpp \
     post00.cpp \
-    noWork00.cpp
+    noWork00.cpp \
+    dispatch00.cpp
 
 HEADERS += \
     post00.hpp \
-    noWork00.hpp
+    noWork00.hpp \
+    dispatch00.hpp
 
