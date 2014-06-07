@@ -5,6 +5,8 @@
 #include <boost/bind.hpp>
 #include <iostream>
 
+namespace{
+
 boost::mutex global_stream_lock;
 
 void WorkerThread( boost::shared_ptr< boost::asio::io_service > io_service )
@@ -46,6 +48,8 @@ void Run3( boost::shared_ptr< boost::asio::io_service > io_service )
         io_service->post( boost::bind( &Post, x * 2 + 1 ) );
         boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );
     }
+}
+
 }
 
 void dispatch_example_00()
