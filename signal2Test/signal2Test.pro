@@ -1,8 +1,10 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG -= qt
 CONFIG += c++11
+
+QT       += core
 
 win32{
 BOOST_PATH = ../../3rdLibs/boost/boost_1_55_0
@@ -14,12 +16,14 @@ include(mingw32.pri)
 }
 
 SOURCES += main.cpp \
-    connectTest.cpp
+    connectTest.cpp \
+    runsomething.cpp
 
 OTHER_FILES += \
     mingw32.pri \
     vc90_32.pri
 
 HEADERS += \
-    connectTest.hpp
+    connectTest.hpp \
+    runSomething.hpp
 

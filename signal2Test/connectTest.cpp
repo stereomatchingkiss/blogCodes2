@@ -1,3 +1,6 @@
+#include"connectTest.hpp"
+#include "runSomething.hpp"
+
 #include <functional>
 #include <boost/signals2.hpp>
 #include <boost/thread.hpp>
@@ -26,6 +29,23 @@ void worker_thread2()
     signal();
 }
 
+void worker_thread3(runSomething &obj)
+{
+    std::cout<<"worker thread : "<<boost::this_thread::get_id()<<std::endl;
+    obj.print_value(3);
+}
+
+}
+
+void connect_by_qt()
+{
+   std::cout<<"main thread : "<<boost::this_thread::get_id()<<std::endl;
+
+   runSomething obj;
+   //obj.print_value(44);
+   boost::strict_scoped_thread<> scoped(boost::thread(
+                                            boost::bind(&worker_thread3, boost::ref(obj)))
+                                        );
 }
 
 void connect_from_main_thread()

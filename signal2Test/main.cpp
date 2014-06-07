@@ -4,7 +4,8 @@
 
 int main()
 {
-    connect_from_main_thread();
+    connect_by_qt();
+    //connect_from_main_thread();
     //connect_from_non_main_thread();
 
     return 0;
