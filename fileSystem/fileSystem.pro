@@ -14,7 +14,7 @@ win32{
 LIBS += $${BOOST_LIB}/libboost_filesystem-mgw48-mt-s-1_55.a
 LIBS += $${BOOST_LIB}/libboost_system-mgw48-mt-s-1_55.a
 
-QMAKE_LFLAGS = -static-libgcc -static-libstdc++
+QMAKE_LFLAGS = -static-libgcc -static-libstdc++ -static
 }
 
 SOURCES += main.cpp \
