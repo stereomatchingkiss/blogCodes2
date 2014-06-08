@@ -1,5 +1,6 @@
 #include "waitConditionTest.hpp"
 
+#include <boost/atomic.hpp>
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/scoped_thread.hpp>
@@ -9,21 +10,13 @@ namespace{
 boost::mutex global_mutex;
 boost::mutex output_lock;
 boost::condition_variable wait;
-bool ready = false;
+boost::atomic<bool> main_thread_ready(false);
+boost::atomic<bool> worker_thread_ready(false);
 
 inline
 bool is_ready()
-{
-    boost::lock_guard<boost::mutex> lk(output_lock);
-    return ready;
-}
-
-inline
-bool set_ready(bool value)
-{
-    boost::lock_guard<boost::mutex> lk(output_lock);
-    ready = value;
-    return ready;
+{    
+    return worker_thread_ready.load() && main_thread_ready.load();
 }
 
 void worker_thr()
@@ -39,13 +32,13 @@ void worker_thr()
         ++num;
     }
 
-    set_ready(true);
+    worker_thread_ready.store(true);
     wait.notify_one();
 }
 
 void main_thr()
 {
-    while(!is_ready()){
+    while(!worker_thread_ready.load()){
         {
             boost::lock_guard<boost::mutex> lk(global_mutex);
             std::cout<<"main thread running : "
@@ -53,6 +46,8 @@ void main_thr()
         }
         boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
     }
+    main_thread_ready.store(true);
+    wait.notify_one();
 }
 
 void run_func_in_main_thread(boost::function<void()> main_thread,
