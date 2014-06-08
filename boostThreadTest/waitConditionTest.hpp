@@ -1,0 +1,6 @@
+#ifndef WAITCONDITIONTEST_HPP
+#define WAITCONDITIONTEST_HPP
+
+void wait_condition_00();
+
+#endif // WAITCONDITIONTEST_HPP
