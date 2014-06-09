@@ -16,7 +16,8 @@ include(mingw32.pri)
 SOURCES += main.cpp \
     waitConditionTest.cpp \
     waitFutureTest.cpp \
-    asioAndSignal2.cpp
+    asioAndSignal2.cpp \
+    asioSignal2Test.cpp
 
 OTHER_FILES += \
     mingw32.pri \
@@ -25,5 +26,6 @@ OTHER_FILES += \
 HEADERS += \
     waitConditionTest.hpp \
     waitFutureTest.hpp \
-    asioAndSignal2.hpp
+    asioAndSignal2.hpp \
+    asioSignal2Test.hpp
 
