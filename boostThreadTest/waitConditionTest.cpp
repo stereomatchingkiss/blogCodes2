@@ -1,25 +1,16 @@
 #include "waitConditionTest.hpp"
 
-#include <boost/atomic.hpp>
+#define BOOST_THREAD_PROVIDES_FUTURE
+
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
-#include <boost/thread/scoped_thread.hpp>
+#include <boost/thread/future.hpp>
 
 namespace{
 
 boost::mutex global_mutex;
-boost::mutex output_lock;
-boost::condition_variable wait;
-boost::atomic<bool> main_thread_ready(false);
-boost::atomic<bool> worker_thread_ready(false);
 
-inline
-bool is_ready()
-{    
-    return worker_thread_ready.load() && main_thread_ready.load();
-}
-
-void worker_thr()
+int worker_thr()
 {
     size_t num = 0;
     while(num < 10){
@@ -32,35 +23,34 @@ void worker_thr()
         ++num;
     }
 
-    worker_thread_ready.store(true);
-    wait.notify_one();
+    return num;
 }
 
 void main_thr()
-{
-    while(!worker_thread_ready.load()){
-        {
-            boost::lock_guard<boost::mutex> lk(global_mutex);
-            std::cout<<"main thread running : "
-                    <<boost::this_thread::get_id()<<std::endl;
-        }
-        boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
+{    
+    {
+        boost::lock_guard<boost::mutex> lk(global_mutex);
+        std::cout<<"main thread running : "
+                <<boost::this_thread::get_id()<<std::endl;
     }
-    main_thread_ready.store(true);
-    wait.notify_one();
+    boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
+}
+
+void print_value(int value)
+{
+    std::cout<<"value : "<<value<<std::endl;
 }
 
 void run_func_in_main_thread(boost::function<void()> main_thread,
-                             boost::function<void()> worker_thread)
+                             boost::function<int()> worker_thread)
 {
+    boost::future<int> future = boost::async(boost::launch::async, worker_thread);
 
-    //boost::strict_scoped_thread<> scope(boost::thread(worker_thread));
-    boost::thread t1(worker_thread);
-    main_thread();
-    {
-        boost::unique_lock<boost::mutex> lk(global_mutex);
-        wait.wait(lk, is_ready);
+    while(!future.has_value()){
+        main_thread();
     }
+
+    print_value(future.get());
     std::cout<<"all done"<<std::endl;
 }
 
