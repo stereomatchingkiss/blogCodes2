@@ -44,7 +44,7 @@ void print_value(int value)
 void run_func_in_main_thread(boost::function<void()> main_thread,
                              boost::function<int()> worker_thread)
 {
-    boost::future<int> future = boost::async(boost::launch::async, worker_thread);
+    auto future = boost::async(boost::launch::async, worker_thread);
 
     while(!future.has_value()){
         main_thread();
