@@ -1,7 +1,8 @@
 #include "waitConditionTest.hpp"
 
 #define BOOST_THREAD_PROVIDES_FUTURE
-
+#define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
+#include <boost/chrono.hpp>
 #include <boost/function.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/future.hpp>
@@ -36,6 +37,7 @@ void main_thr()
     boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
 }
 
+inline
 void print_value(int value)
 {
     std::cout<<"value : "<<value<<std::endl;
@@ -46,12 +48,13 @@ void run_func_in_main_thread(boost::function<void()> main_thread,
 {
     auto future = boost::async(boost::launch::async, worker_thread);
 
-    while(!future.has_value()){
+    future.then([](boost::future<int> f) { return print_value(f.get()); });
+
+    for(size_t i = 0; i != 10; ++i){
         main_thread();
     }
 
-    print_value(future.get());
-    std::cout<<"all done"<<std::endl;
+    std::cout<<"main thread done"<<std::endl;
 }
 
 }
