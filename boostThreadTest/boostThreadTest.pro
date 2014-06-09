@@ -17,7 +17,8 @@ SOURCES += main.cpp \
     waitConditionTest.cpp \
     waitFutureTest.cpp \
     asioAndSignal2.cpp \
-    asioSignal2Test.cpp
+    asioSignal2Test.cpp \
+    guiThreadDispatcherTest.cpp
 
 OTHER_FILES += \
     mingw32.pri \
@@ -27,5 +28,7 @@ HEADERS += \
     waitConditionTest.hpp \
     waitFutureTest.hpp \
     asioAndSignal2.hpp \
-    asioSignal2Test.hpp
+    asioSignal2Test.hpp \
+    guiThreadDispatcher.hpp \
+    guiThreadDispatcherTest.hpp
 
