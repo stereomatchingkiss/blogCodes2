@@ -14,7 +14,7 @@ boost::mutex global_mutex;
 int worker_thr()
 {
     size_t num = 0;
-    while(num < 10){
+    while(num < 3){
         {
             boost::lock_guard<boost::mutex> lk(global_mutex);
             std::cout<<num<<" : worker thread running : "
@@ -37,20 +37,24 @@ void main_thr()
     boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
 }
 
-inline
 void print_value(int value)
 {
+    boost::lock_guard<boost::mutex> lk(global_mutex);
+    std::cout<<"print_value id : "
+            <<boost::this_thread::get_id()<<std::endl;
     std::cout<<"value : "<<value<<std::endl;
 }
+
+//boost::future<void> future2;
 
 void run_func_in_main_thread(boost::function<void()> main_thread,
                              boost::function<int()> worker_thread)
 {
     auto future = boost::async(boost::launch::async, worker_thread);
+    //if you don't return the future, the print_value will not called
+    auto future2 = future.then([](boost::future<int> f) { print_value(f.get()); });
 
-    future.then([](boost::future<int> f) { return print_value(f.get()); });
-
-    for(size_t i = 0; i != 10; ++i){
+    for(size_t i = 0; i != 7; ++i){
         main_thread();
     }
 
