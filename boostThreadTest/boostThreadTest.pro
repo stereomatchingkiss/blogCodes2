@@ -14,12 +14,14 @@ include(mingw32.pri)
 }
 
 SOURCES += main.cpp \
-    waitConditionTest.cpp
+    waitConditionTest.cpp \
+    waitFutureTest.cpp
 
 OTHER_FILES += \
     mingw32.pri \
     vc90_32.pri
 
 HEADERS += \
-    waitConditionTest.hpp
+    waitConditionTest.hpp \
+    waitFutureTest.hpp
 
