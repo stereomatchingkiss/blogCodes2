@@ -16,12 +16,14 @@ include(mingw32.pri)
 SOURCES += main.cpp \
     post00.cpp \
     noWork00.cpp \
-    dispatch00.cpp
+    dispatch00.cpp \
+    getLocalHostAddr.cpp
 
 HEADERS += \
     post00.hpp \
     noWork00.hpp \
-    dispatch00.hpp
+    dispatch00.hpp \
+    getLocalHostAddr.hpp
 
 OTHER_FILES += \
     mingw32.pri \
