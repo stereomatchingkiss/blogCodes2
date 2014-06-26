@@ -44,7 +44,8 @@ void Run3( boost::shared_ptr< boost::asio::io_service > io_service )
 {
     for( int x = 0; x < 3; ++x )
     {
-        io_service->post( boost::bind( &Dispatch, x * 2 ) );
+        //if we change dispatch to post, the order will become sequential
+        io_service->dispatch( boost::bind( &Dispatch, x * 2 ) );
         io_service->post( boost::bind( &Post, x * 2 + 1 ) );
         boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );
     }
