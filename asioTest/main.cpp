@@ -1,3 +1,4 @@
+#include "getLocalHostAddr.hpp"
 #include "noWork00.hpp"
 #include "dispatch00.hpp"
 #include "post00.hpp"
@@ -8,6 +9,7 @@
 #include <vector>
 
 int main()
+<<<<<<< HEAD
 {
     std::vector<std::string> const Names{"dispatch example 00", "no work 00",
                                          "post example 00"};
@@ -26,6 +28,13 @@ int main()
     }else{
         std::cout<<"out of range"<<std::endl;
     }
+=======
+{    
+    //dispatch_example_00();
+    get_local_host_address();
+    //no_work_00();
+    //post_example_00();
+>>>>>>> b2a494d1e66e3288af66a8ddfb2c1d84f94efe52
 
     return 0;
 }
