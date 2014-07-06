@@ -17,13 +17,15 @@ SOURCES += main.cpp \
     post00.cpp \
     noWork00.cpp \
     dispatch00.cpp \
-    getLocalHostAddr.cpp
+    getLocalHostAddr.cpp \
+    timer00.cpp
 
 HEADERS += \
     post00.hpp \
     noWork00.hpp \
     dispatch00.hpp \
-    getLocalHostAddr.hpp
+    getLocalHostAddr.hpp \
+    timer00.hpp
 
 OTHER_FILES += \
     mingw32.pri \
