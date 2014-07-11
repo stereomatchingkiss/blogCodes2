@@ -5,8 +5,10 @@ CONFIG -= qt
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    Q7.cc
+    Q7.cc \
+    PQ1.cpp
 
 HEADERS += \
-    Q7.h
+    Q7.h \
+    PQ1.hpp
 
