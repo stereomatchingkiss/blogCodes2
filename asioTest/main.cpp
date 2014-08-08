@@ -4,6 +4,8 @@
 #include "post00.hpp"
 #include "timer00.hpp"
 
+#include <testFunction/testHelper.hpp>
+
 #include <functional>
 #include <iostream>
 #include <string>
@@ -15,26 +17,12 @@ int main()
                                          "post example 00", "timer example 00",
                                          "getLocalHostAddr"};
 
-    for(size_t i = 0; i != Names.size(); ++i){
-        std::cout<<i<<" : "<<Names[i]<<std::endl;
-    }
+    std::vector<std::function<void()>> func{
+                                       dispatch_example_00, no_work_00,
+                                       post_example_00, timer_00,
+                                       get_local_host_address};
 
-    size_t input = 0;
-    std::cin>>input;
-    if(input < Names.size()){
-        std::vector<std::function<void()>> func{
-                                           dispatch_example_00, no_work_00,
-                                           post_example_00, timer_00,
-                                           get_local_host_address
-    };
-
-        func[input]();
-    }else{
-        std::cout<<"out of range"<<std::endl;
-    }
-    std::cout<<"program exist"<<std::endl;
-    std::cin.get();
-    std::cin.get();
+    register_test_case(Names, func);
 
     return 0;
 }
