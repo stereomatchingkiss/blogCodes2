@@ -1,0 +1,6 @@
+#ifndef EXAMPLECOLLECTION00_HPP
+#define EXAMPLECOLLECTION00_HPP
+
+void deadline_timer_00();
+
+#endif // EXAMPLECOLLECTION00_HPP
