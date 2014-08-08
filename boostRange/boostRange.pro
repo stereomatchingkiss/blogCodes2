@@ -11,14 +11,9 @@ INCLUDEPATH += ../libs
 
 win32{
 QMAKE_LFLAGS = -static-libgcc -static-libstdc++ -static
+
+LIBS += $${BOOST_PATH}/mingw32_4_8_2/libboost_date_time-mgw48-1_55.a
 }
 
-SOURCES += main.cpp \
-    find_if.cpp \
-    if.cpp
-
-HEADERS += \
-    ../libs/testFunction/testHelper.hpp \
-    find_if.hpp \
-    if.hpp
+SOURCES += main.cpp
 
