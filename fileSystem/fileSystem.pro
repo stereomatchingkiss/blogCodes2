@@ -18,8 +18,10 @@ QMAKE_LFLAGS = -static-libgcc -static-libstdc++ -static
 }
 
 SOURCES += main.cpp \
-    moveLibs.cpp
+    moveLibs.cpp \
+    getFilePaths.cpp
 
 HEADERS += \
-    moveLibs.hpp
+    moveLibs.hpp \
+    getFilePaths.hpp
 

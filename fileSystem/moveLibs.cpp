@@ -3,6 +3,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
+#include <iostream>
+
 void move_libs(std::string const &target, std::set<std::string> const &filter)
 {
     namespace bf = boost::filesystem;
