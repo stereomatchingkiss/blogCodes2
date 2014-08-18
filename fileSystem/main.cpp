@@ -1,6 +1,8 @@
 #include "getFilePaths.hpp"
 #include "moveLibs.hpp"
 
+#include <boost/algorithm/string/find.hpp>
+
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
@@ -12,17 +14,27 @@
 void generate_files_of_wlg_project()
 {
     auto const CurrentPath = boost::filesystem::current_path().generic_string();
-    auto const Result = get_file_paths_r(CurrentPath, {".cc", ".cpp", ".h", ".hpp"});
+    auto const Result = get_file_paths_r(CurrentPath, {".c", ".cc", ".cpp", ".h", ".hpp"});
 
     std::ofstream header("header.txt");
     std::ofstream impl("impl.txt");
     for(auto const &Str : Result){
         boost::filesystem::path path(Str);
-        auto const Extension = path.extension().generic_string();
-        if(Extension == ".cc" || Extension == ".cpp"){
-            impl<<path.generic_string()<<std::endl;
-        }else{
-            header<<path.generic_string()<<std::endl;
+
+        if(!boost::algorithm::find_last(Str, "T-i386-bsd") &&
+                !boost::algorithm::find_last(Str, "T-i386-ntvc") &&
+                !boost::algorithm::find_last(Str, "T-i386-sol") &&
+                !boost::algorithm::find_last(Str, "T-mips-bsd") &&
+                !boost::algorithm::find_last(Str, "T-mips-bsd32") &&
+                !boost::algorithm::find_last(Str, "T-mips-linux") &&
+                !boost::algorithm::find_last(Str, "T-sparc-sol")){
+
+            auto const &Extension = path.extension().generic_string();
+            if(Extension == ".c" || Extension == ".cc" || Extension == ".cpp"){
+                impl<<path.generic_string()<<std::endl;
+            }else{
+                header<<path.generic_string()<<std::endl;
+            }
         }
     }
 }
