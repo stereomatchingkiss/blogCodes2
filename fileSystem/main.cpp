@@ -4,13 +4,34 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #include <boost/filesystem.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <set>
 #include <string>
 
+void generate_files_of_wlg_project()
+{
+    auto const CurrentPath = boost::filesystem::current_path().generic_string();
+    auto const Result = get_file_paths_r(CurrentPath, {".cc", ".cpp", ".h", ".hpp"});
+
+    std::ofstream header("header.txt");
+    std::ofstream impl("impl.txt");
+    for(auto const &Str : Result){
+        boost::filesystem::path path(Str);
+        auto const Extension = path.extension().generic_string();
+        if(Extension == ".cc" || Extension == ".cpp"){
+            impl<<path.generic_string()<<std::endl;
+        }else{
+            header<<path.generic_string()<<std::endl;
+        }
+    }
+}
+
 int main(int argc, char *argv[])
 {    
-    if(argc == 1){
+    generate_files_of_wlg_project();
+
+    /*if(argc == 1){
         //move_libs();
         auto const Result = get_file_paths_r
                 (boost::filesystem::current_path().generic_string(),
@@ -27,7 +48,7 @@ int main(int argc, char *argv[])
             }
         }
         move_libs(argv[1], filter);
-    }
+    }*/
 
     return 0;
 }
