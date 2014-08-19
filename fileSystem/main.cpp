@@ -31,9 +31,9 @@ void generate_files_of_wlg_project()
 
             auto const &Extension = path.extension().generic_string();
             if(Extension == ".c" || Extension == ".cc" || Extension == ".cpp"){
-                impl<<path.generic_string()<<std::endl;
+                impl<<path.generic_string()<<" \\"<<std::endl;
             }else{
-                header<<path.generic_string()<<std::endl;
+                header<<path.generic_string()<<" \\"<<std::endl;
             }
         }
     }
