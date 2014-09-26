@@ -41,7 +41,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         using qi::repeat;
 
         dash_ = *qi::omit["-"] >> qi::eol;
-        revision_ = *~qi::char_('\n') >> qi::eol;
+        //r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines
+        revision_ = "r" >> qi::uint_ >> qi::omit[*~qi::char_('\n')] >> qi::eol;
         change_path_tag_ = qi::omit[*~qi::char_('\n')] >> qi::eol;
         commit_files_ = *(qi::blank >> *~qi::char_('\n') >>
                         qi::eol) >> qi::eol;
@@ -58,7 +59,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     }
 
     qi::rule<Iterator, void()> dash_;
-    qi::rule<Iterator, std::string()> revision_;
+    qi::rule<Iterator, size_t()> revision_;
     qi::rule<Iterator, void()> change_path_tag_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_month_;
@@ -74,7 +75,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 
 BOOST_FUSION_ADAPT_STRUCT(
         parseSVNLog::logStructure,
-        (std::string, revision_)
+        (size_t, revision_)
         (std::vector<std::string>, commit_files_)
         (std::string, commit_month_)
         (size_t, commit_day_)
