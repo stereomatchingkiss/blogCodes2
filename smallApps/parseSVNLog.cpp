@@ -30,8 +30,11 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
 
 namespace{
 
+//using logGrammarType = parseSVNLog::logStructure;
+using logGrammarType = std::vector<parseSVNLog::logStructure>;
+
 template <typename Iterator>
-struct logGrammar : qi::grammar<Iterator, parseSVNLog::logStructure()>
+struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 {
     logGrammar() : logGrammar::base_type(result_)
     {
@@ -45,12 +48,12 @@ struct logGrammar : qi::grammar<Iterator, parseSVNLog::logStructure()>
         commit_month_ = *qi::alpha >> qi::blank;
         commit_day_ = qi::int_ >> qi::blank;
         commit_year_ = qi::int_ >> qi::blank;
-        commit_user_ = *~qi::char_('\n') >> qi::eol;
+        commit_user_ = *~qi::char_('\n') >> *qi::eol;
         commit_comments_ = *(qi::omit['-'] >> *~qi::char_('\n') >> qi::eol)
-                           ;
-        result_ = dash_ >> revision_ >> change_path_tag_ >> commit_files_
+                           >> *qi::eol;
+        result_ = *(dash_ >> revision_ >> change_path_tag_ >> commit_files_
                         >> commit_month_ >> commit_day_ >> commit_year_
-                        >> commit_user_ >> commit_comments_;
+                        >> commit_user_ >> commit_comments_);
         //result_ = *log_struct_;
     }
 
@@ -63,7 +66,7 @@ struct logGrammar : qi::grammar<Iterator, parseSVNLog::logStructure()>
     qi::rule<Iterator, size_t()> commit_year_;
     qi::rule<Iterator, std::string()> commit_user_;
     qi::rule<Iterator, std::vector<std::string>()> commit_comments_;
-    qi::rule<Iterator, parseSVNLog::logStructure()> result_;
+    qi::rule<Iterator, logGrammarType()> result_;
     //qi::rule<Iterator, std::vector<parseSVNLog::logStructure>()> result_;
 };
 
@@ -91,15 +94,15 @@ parseSVNLog::parse_logs(const std::string &file_name) const
     //std::cout<<Content<<std::endl<<std::endl;
 
     //std::vector<logStructure> logs;
-    logStructure logs;
+    logGrammarType logs;
     logGrammar<std::string::const_iterator> grammar;
     parse_log_data(std::begin(Content), std::end(Content), grammar, logs);
 
-    std::cout<<"log records : "<<logs<<std::endl;
+    //std::cout<<"log records : "<<logs<<std::endl;
 
     //std::cout<<"log records : "<<logs.size()<<std::endl;
 
-    return {logs};
+    return logs;
 }
 
 std::string parseSVNLog::read_whole_file(const std::string &file_name) const
