@@ -5,11 +5,21 @@ CONFIG -= qt
 
 CONFIG += c++11
 
-QMAKE_LFLAGS = -static-libgcc -static-libstdc++ -static
+win32{
+BOOST_PATH = ../../3rdLibs/boost/boost_1_55_0
+
+INCLUDEPATH += $${BOOST_PATH}
+INCLUDEPATH += ../libs
+
+include(../mingw32.pri)
+#include(vc90_32.pri)
+}
 
 SOURCES += main.cpp \
-    processtestResult.cpp
+    processtestResult.cpp \
+    parseSVNLog.cpp
 
 HEADERS += \
-    processtestResult.hpp
+    processtestResult.hpp \
+    parseSVNLog.hpp
 
