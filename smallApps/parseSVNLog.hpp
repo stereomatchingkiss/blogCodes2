@@ -9,6 +9,8 @@ class parseSVNLog
 public:
     struct logStructure
     {
+        logStructure();
+
         std::string revision_; //by now this contains lot of message, temp solution
         std::vector<std::string> commit_files_;
         std::string commit_month_;
@@ -20,7 +22,8 @@ public:
 
     parseSVNLog();
 
-    std::vector<logStructure> parse_logs(std::string const &file_name) const;
+    std::vector<parseSVNLog::logStructure>
+    parse_logs(std::string const &file_name) const;
 
 private:
     std::string read_whole_file(std::string const &file_name) const;
