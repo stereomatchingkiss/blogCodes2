@@ -57,9 +57,10 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                                            qi::eol) >> *qi::eol;
-        commit_user_ = qi::omit[*qi::alnum] >> qi::blank
-                                            >> qi::omit[qi::uint_] % qi::blank
-                                            >> *~qi::char_('\n') >> qi::eol;
+        commit_user_ = (qi::omit[*qi::alnum] >> qi::blank
+                                             >> qi::omit[qi::uint_] % qi::blank
+                                             >> *~qi::char_('\n') >> qi::eol) |
+                *~qi::char_('\n') >> qi::eol;
         commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
 
         /*std::cout<<qi::parse(std::begin(Text), std::end(Text),
@@ -78,9 +79,9 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
                         >> commit_month_ >> commit_day_ >> commit_year_
                         >> commit_user_ >> commit_comments_);*/
         result_ = *(revision_ >> branch_ >> commit_year_
-                            >> commit_month_ >> commit_day_
-                            >> commit_files_ >> commit_user_
-                            >> commit_comments_);
+                    >> commit_month_ >> commit_day_
+                    >> commit_files_ >> commit_user_
+                    >> commit_comments_);
     }
 
     qi::rule<Iterator, void()> dash_;
@@ -154,7 +155,7 @@ parseSVNLog::parse_logs(const std::string &file_name) const
 
     //commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
     std::string const Text = "- refine macros name\n"
-            "- use exception to handler errors of rtdb\n";
+                             "- use exception to handler errors of rtdb\n";
     std::vector<std::string> comments;
     std::cout<<qi::parse(std::begin(Text), std::end(Text),
                          *(!qi::eol >> *~qi::char_("\n") >> qi::eol),
