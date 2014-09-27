@@ -19,13 +19,15 @@ namespace ascii = boost::spirit::ascii;
 template<typename Iterator, typename Grammar, typename T>
 bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
 {
+    auto const OriginBegin = begin;
     bool r = qi::parse(begin, end,
                        grammar,
                        output);
 
      if(!r || begin != end){
-         std::cout<<"parse fail at "<<(end - begin)<<std::endl;
-         //std::cout<<std::string(begin, end)<<std::endl;
+         std::cout<<"parse fail at "<<(begin - OriginBegin)<<std::endl;
+         std::cout<<std::string(OriginBegin, begin)<<std::endl;
+         std::cout<<"-----------success?-------------------"<<std::endl;
          return false;
      }
 
@@ -46,7 +48,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     {        
         dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         //r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines
-        revision_ = qi::omit["r"] >> qi::uint_;
+        revision_ = dash_ >> qi::omit["r"] >> qi::uint_;
         change_path_tag_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = change_path_tag_ >> *(qi::blank >> *~qi::char_('\n') >>
                         qi::eol) >> *qi::eol;
@@ -55,7 +57,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         commit_year_ = qi::uint_ >> *qi::blank;
         commit_user_ = *~qi::char_('\n') >> *qi::eol;
         commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
-        result_ = *(dash_ >> revision_ >> commit_files_
+        result_ = *(revision_ >> commit_files_
                         >> commit_month_ >> commit_day_ >> commit_year_
                         >> commit_user_ >> commit_comments_);        
     }
