@@ -25,9 +25,9 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
                        output);
 
     if(!r || begin != end){
-        std::cout<<"parse fail at "<<(begin - OriginBegin)<<std::endl;
-        std::cout<<std::string(OriginBegin, begin)<<std::endl;
-        std::cout<<"-----------success?-------------------"<<std::endl;
+        std::cerr<<"parse fail at "<<(begin - OriginBegin)<<std::endl;
+        //std::cout<<std::string(OriginBegin, begin)<<std::endl;
+        //std::cout<<"-----------success?-------------------"<<std::endl;
         return false;
     }
 
@@ -55,7 +55,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                                            qi::eol) >> *qi::eol;
         commit_user_ = (qi::omit[*qi::alnum] >> qi::blank
-                                             >> qi::omit[qi::uint_] % qi::blank
+                                             >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
                                              >> *~qi::char_('\n') >> qi::eol) |
                 *~qi::char_('\n') >> qi::eol;
         commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
@@ -104,7 +104,9 @@ parseSVNLog::parse_logs(const std::string &file_name) const
 
     logGrammarType logs;
     logGrammar<std::string::const_iterator> grammar;
-    parse_log_data(std::begin(Content), std::end(Content), grammar, logs);    
+    parse_log_data(std::begin(Content), std::end(Content), grammar, logs);
+
+
 
     return logs;
 }
