@@ -2,7 +2,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#define FUSION_MAX_VECTOR_SIZE 11
+//#define FUSION_MAX_VECTOR_SIZE 11
 
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
@@ -80,9 +80,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, size_t()> commit_month_;
     qi::rule<Iterator, size_t()> commit_day_;
     qi::rule<Iterator, size_t()> commit_year_;
-    qi::rule<Iterator, std::vector<size_t>()> hh_mm_ss_;
-    //qi::rule<Iterator, size_t()> commit_minute_;
-    //qi::rule<Iterator, size_t()> commit_second_;
+    qi::rule<Iterator, parseSVNLog::hh_mm_ss()> hh_mm_ss_;
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_user_;
@@ -93,13 +91,21 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 }
 
 BOOST_FUSION_ADAPT_STRUCT(
+        parseSVNLog::hh_mm_ss,
+        (size_t, hh_)
+        (size_t, mm_)
+        (size_t, ss_)
+        )
+
+
+BOOST_FUSION_ADAPT_STRUCT(
         parseSVNLog::logStructure,
         (size_t, revision_)
         (std::string, branch_)
         (size_t, commit_year_)
         (size_t, commit_month_)
         (size_t, commit_day_)
-        (std::vector<size_t>, hh_mm_ss_)
+        (parseSVNLog::hh_mm_ss, hh_mm_ss_)
         (std::vector<std::string>, commit_files_)
         (std::string, commit_user_)
         (std::vector<std::string>, commit_comments_)
@@ -111,24 +117,7 @@ parseSVNLog::parseSVNLog()
 
 std::vector<parseSVNLog::logStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
-{    
-    std::string const Text = "2014-09-26 15:54:24";
-    size_t year;
-    size_t month;
-    size_t day;
-    size_t hour;
-    size_t min;
-    size_t sec;
-
-    qi::parse(std::begin(Text), std::end(Text),
-              qi::uint_ >> "-" >> qi::uint_ >> "-"
-              >>qi::uint_ >> qi::blank >> qi::uint_ >> ":"
-              >>qi::uint_ >> ":">>qi::uint_,
-              year, month, day,
-              hour, min, sec);
-    std::cout<<year<<"-"<<month<<"-"<<day<<" ";
-    std::cout<<hour<<":"<<min<<":"<<sec<<std::endl;
-
+{        
     auto const Content = read_whole_file(file_name);
 
     logGrammarType logs;
@@ -165,8 +154,10 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
     out<<log.revision_<<", "<<log.branch_<<std::endl;
     out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
     out<<log.commit_day_<<", ";
-    out<<log.hh_mm_ss_[0]<<":"<<log.hh_mm_ss_[1];
-    out<<":"<<log.hh_mm_ss_[2]<<std::endl;
+    //out<<log.hh_mm_ss_[0]<<":"<<log.hh_mm_ss_[1];
+    //out<<":"<<log.hh_mm_ss_[2]<<std::endl;
+    out<<log.hh_mm_ss_.hh_<<":"<<log.hh_mm_ss_.mm_;
+    out<<":"<<log.hh_mm_ss_.ss_<<std::endl;
     for(auto const &Str : log.commit_files_){
         out<<Str<<std::endl;
     }
