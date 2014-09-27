@@ -11,8 +11,8 @@ void generate_changes_log(std::ostream &out,
                           parseSVNLog::logStructure const &log,
                           std::map<size_t, std::string> const &month_table)
 {
-    out<<month_table.at(log.commit_month_)<<" "<<log.commit_day_<<", ";
-    out<<log.commit_year_<<"   "<<std::left<<std::setw(7)<<log.commit_user_<<" ";
+    out<<month_table.at(log.yy_mm_dd_.mm_)<<" "<<log.yy_mm_dd_.mm_<<", ";
+    out<<log.yy_mm_dd_.dd_<<"   "<<std::left<<std::setw(7)<<log.commit_user_<<" ";
 
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){

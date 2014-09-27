@@ -18,6 +18,32 @@
 #include <fstream>
 #include <iterator>
 
+BOOST_FUSION_ADAPT_STRUCT(
+        parseSVNLog::hh_mm_ss,
+        (size_t, hh_)
+        (size_t, mm_)
+        (size_t, ss_)
+        )
+
+BOOST_FUSION_ADAPT_STRUCT(
+        parseSVNLog::yy_mm_dd,
+        (size_t, yy_)
+        (size_t, mm_)
+        (size_t, dd_)
+        )
+
+
+BOOST_FUSION_ADAPT_STRUCT(
+        parseSVNLog::logStructure,
+        (size_t, revision_)
+        (std::string, branch_)
+        (parseSVNLog::yy_mm_dd, yy_mm_dd_)
+        (parseSVNLog::hh_mm_ss, hh_mm_ss_)
+        (std::vector<std::string>, commit_files_)
+        (std::string, commit_user_)
+        (std::vector<std::string>, commit_comments_)
+        )
+
 namespace{
 
 namespace qi = boost::spirit::qi;
@@ -41,10 +67,6 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
     return true;
 }
 
-}
-
-namespace{
-
 using logGrammarType = std::vector<parseSVNLog::logStructure>;
 
 template <typename Iterator>
@@ -55,9 +77,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         revision_ =  dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
         branch_ = *~qi::char_('|');
-        commit_year_ = "| " >> qi::uint_;
-        commit_month_ = "-" >> qi::uint_ >> "-";
-        commit_day_ = qi::uint_ >> qi::blank;
+        yy_mm_dd_ = "| " >> qi::uint_ >> "-" >> qi::uint_ >> "-"
+                         >> qi::uint_ >> qi::blank;
         hh_mm_ss_ = qi::uint_ >> ":" >> qi::uint_ >> ":" >> qi::uint_;
         omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
@@ -68,18 +89,15 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
                 *~qi::char_('\n') >> qi::eol;
         commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
 
-        result_ = *(revision_ >> branch_ >> commit_year_
-                    >> commit_month_ >> commit_day_
+        result_ = *(revision_ >> branch_ >> yy_mm_dd_
                     >> hh_mm_ss_ >> commit_files_
                     >> commit_user_ >> commit_comments_);
     }
 
     qi::rule<Iterator, void()> dash_;
     qi::rule<Iterator, size_t()> revision_;
-    qi::rule<Iterator, std::string()> branch_;
-    qi::rule<Iterator, size_t()> commit_month_;
-    qi::rule<Iterator, size_t()> commit_day_;
-    qi::rule<Iterator, size_t()> commit_year_;
+    qi::rule<Iterator, std::string()> branch_;    
+    qi::rule<Iterator, parseSVNLog::yy_mm_dd()> yy_mm_dd_;
     qi::rule<Iterator, parseSVNLog::hh_mm_ss()> hh_mm_ss_;
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
@@ -89,27 +107,6 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 };
 
 }
-
-BOOST_FUSION_ADAPT_STRUCT(
-        parseSVNLog::hh_mm_ss,
-        (size_t, hh_)
-        (size_t, mm_)
-        (size_t, ss_)
-        )
-
-
-BOOST_FUSION_ADAPT_STRUCT(
-        parseSVNLog::logStructure,
-        (size_t, revision_)
-        (std::string, branch_)
-        (size_t, commit_year_)
-        (size_t, commit_month_)
-        (size_t, commit_day_)
-        (parseSVNLog::hh_mm_ss, hh_mm_ss_)
-        (std::vector<std::string>, commit_files_)
-        (std::string, commit_user_)
-        (std::vector<std::string>, commit_comments_)
-        )
 
 parseSVNLog::parseSVNLog()
 {
@@ -152,10 +149,12 @@ std::string parseSVNLog::read_whole_file(const std::string &file_name) const
 std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log)
 {    
     out<<log.revision_<<", "<<log.branch_<<std::endl;
-    out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
-    out<<log.commit_day_<<", ";
+    //out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
+    //out<<log.commit_day_<<", ";
     //out<<log.hh_mm_ss_[0]<<":"<<log.hh_mm_ss_[1];
     //out<<":"<<log.hh_mm_ss_[2]<<std::endl;
+    out<<log.yy_mm_dd_.yy_<<"-"<<log.yy_mm_dd_.mm_<<"-";
+    out<<log.yy_mm_dd_.dd_<<", ";
     out<<log.hh_mm_ss_.hh_<<":"<<log.hh_mm_ss_.mm_;
     out<<":"<<log.hh_mm_ss_.ss_<<std::endl;
     for(auto const &Str : log.commit_files_){
@@ -172,8 +171,17 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
 
 
 parseSVNLog::logStructure::logStructure() :
-    revision_{0},
-    commit_year_{1000},
-    commit_month_{0},
-    commit_day_{32}
+    revision_{0}
+{}
+
+
+parseSVNLog::hh_mm_ss::hh_mm_ss() :
+    hh_{0}, mm_{0}, ss_{0}
+{}
+
+
+parseSVNLog::yy_mm_dd::yy_mm_dd() :
+    yy_{0},
+    mm_{0},
+    dd_{0}
 {}
