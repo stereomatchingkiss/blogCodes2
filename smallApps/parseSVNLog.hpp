@@ -16,7 +16,7 @@ public:
         size_t commit_year_;
         size_t commit_month_;
         size_t commit_day_;
-        //std::vector<std::string> commit_files_;
+        std::vector<std::string> commit_files_;
         //std::string commit_month_;
         //size_t commit_day_;
         //size_t commit_year_;

@@ -53,7 +53,10 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         branch_ = *~qi::char_('|');
         commit_year_ = "| " >> qi::uint_;
         commit_month_ = "-" >> qi::uint_ >> "-";
-        commit_day_ = qi::uint_ >> qi::omit[*~qi::char_('\n')] >> *qi::eol;
+        commit_day_ = qi::uint_ >> qi::omit[*~qi::char_('\n')];
+        omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
+        commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
+                                           qi::eol) >> *qi::eol;
 
         /*omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
@@ -67,7 +70,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
                         >> commit_month_ >> commit_day_ >> commit_year_
                         >> commit_user_ >> commit_comments_);*/
         result_ = revision_ >> branch_ >> commit_year_ >>
-                  commit_month_ >> commit_day_;
+                  commit_month_ >> commit_day_ >> commit_files_;
     }
 
     //qi::rule<Iterator, void()> dash_;
@@ -76,6 +79,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, size_t()> commit_month_;
     qi::rule<Iterator, size_t()> commit_day_;
     qi::rule<Iterator, size_t()> commit_year_;
+    qi::rule<Iterator, void()> omit_strings_;
+    qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     /*qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_month_;
@@ -96,6 +101,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         (size_t, commit_year_)
         (size_t, commit_month_)
         (size_t, commit_day_)
+        (std::vector<std::string>, commit_files_)
         //(std::vector<std::string>, commit_files_)
         //(std::string, commit_month_)
         //(size_t, commit_day_)
@@ -164,10 +170,10 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
     std::cout<<log.revision_<<", "<<log.branch_<<std::endl;
     std::cout<<log.commit_year_<<"-"<<log.commit_month_<<"-";
     std::cout<<log.commit_day_<<std::endl;
-    /*for(auto const &Str : log.commit_files_){
+    for(auto const &Str : log.commit_files_){
         std::cout<<Str<<std::endl;
     }
-    std::cout<<log.commit_month_<<" "<<log.commit_day_;
+    /*std::cout<<log.commit_month_<<" "<<log.commit_day_;
     std::cout<<" "<<log.commit_year_<<" "<<log.commit_user_name_<<std::endl;
 
     for(auto const &Str : log.commit_comments_){
