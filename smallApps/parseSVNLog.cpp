@@ -1,8 +1,13 @@
 #include "parseSVNLog.hpp"
 
+#include <boost/algorithm/string.hpp>
+
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/adapted/std_pair.hpp> //without this, spirit can't accept the type with std::pair
+
+#include <boost/range.hpp>
+#include <boost/range/algorithm.hpp>
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
@@ -45,7 +50,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 {
     logGrammar() : logGrammar::base_type(result_)
     {
-        dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;        
+        dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         revision_ =  dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
         branch_ = *~qi::char_('|');
         commit_year_ = "| " >> qi::uint_;
@@ -56,7 +61,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
                                            qi::eol) >> *qi::eol;
         commit_user_ = (qi::omit[*qi::alnum] >> qi::blank
                                              >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
-                                             >> *~qi::char_('\n') >> qi::eol) |
+                >> *~qi::char_('\n') >> qi::eol) |
                 *~qi::char_('\n') >> qi::eol;
         commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
 
@@ -75,8 +80,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_user_;
-    qi::rule<Iterator, std::vector<std::string>()> commit_comments_;    
-    qi::rule<Iterator, logGrammarType()> result_;    
+    qi::rule<Iterator, std::vector<std::string>()> commit_comments_;
+    qi::rule<Iterator, logGrammarType()> result_;
 };
 
 }
@@ -100,13 +105,20 @@ parseSVNLog::parseSVNLog()
 std::vector<parseSVNLog::logStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
 {    
-    auto const Content = read_whole_file(file_name);    
+    auto const Content = read_whole_file(file_name);
 
     logGrammarType logs;
     logGrammar<std::string::const_iterator> grammar;
     parse_log_data(std::begin(Content), std::end(Content), grammar, logs);
 
-
+    for(auto &log : logs){
+        auto const It = boost::remove_if(log.commit_files_, [](std::string const &data)
+        {
+           return data.size() < 5;
+        });
+        log.commit_files_.erase(It, std::end(log.commit_files_));
+        boost::algorithm::trim(log.commit_user_);
+    }
 
     return logs;
 }
