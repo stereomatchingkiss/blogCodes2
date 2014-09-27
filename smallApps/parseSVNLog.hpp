@@ -12,11 +12,12 @@ public:
         logStructure();
 
         size_t revision_; //by now this contains lot of message, temp solution
-        std::vector<std::string> commit_files_;
-        std::string commit_month_;
-        size_t commit_day_;
+        std::string branch_;
         size_t commit_year_;
-        std::string commit_user_name_;
+        size_t commit_month_;
+        size_t commit_day_;
+        std::vector<std::string> commit_files_;
+        std::string commit_user_;
         std::vector<std::string> commit_comments_;
     };
 
