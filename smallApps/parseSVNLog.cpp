@@ -23,7 +23,13 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
                        grammar,
                        output);
 
-    return !r || begin != end;
+     if(!r || begin != end){
+         std::cout<<"parse fail at "<<(end - begin)<<std::endl;
+         //std::cout<<std::string(begin, end)<<std::endl;
+         return false;
+     }
+
+     return true;
 }
 
 }
@@ -37,25 +43,21 @@ template <typename Iterator>
 struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 {
     logGrammar() : logGrammar::base_type(result_)
-    {
-        using qi::repeat;
-
-        dash_ = *qi::omit["-"] >> qi::eol;
+    {        
+        dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         //r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines
-        revision_ = "r" >> qi::uint_ >> qi::omit[*~qi::char_('\n')] >> qi::eol;
-        change_path_tag_ = qi::omit[*~qi::char_('\n')] >> qi::eol;
-        commit_files_ = *(qi::blank >> *~qi::char_('\n') >>
-                        qi::eol) >> qi::eol;
-        commit_month_ = *qi::alpha >> qi::blank;
-        commit_day_ = qi::int_ >> qi::blank;
-        commit_year_ = qi::int_ >> qi::blank;
+        revision_ = qi::omit["r"] >> qi::uint_;
+        change_path_tag_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
+        commit_files_ = change_path_tag_ >> *(qi::blank >> *~qi::char_('\n') >>
+                        qi::eol) >> *qi::eol;
+        commit_month_ = *qi::alpha >> *qi::blank;
+        commit_day_ = qi::uint_ >> -qi::omit[","] >> *qi::blank;
+        commit_year_ = qi::uint_ >> *qi::blank;
         commit_user_ = *~qi::char_('\n') >> *qi::eol;
-        commit_comments_ = *(qi::omit['-'] >> *~qi::char_('\n') >> qi::eol)
-                           >> *qi::eol;
-        result_ = *(dash_ >> revision_ >> change_path_tag_ >> commit_files_
+        commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
+        result_ = *(dash_ >> revision_ >> commit_files_
                         >> commit_month_ >> commit_day_ >> commit_year_
-                        >> commit_user_ >> commit_comments_);
-        //result_ = *log_struct_;
+                        >> commit_user_ >> commit_comments_);        
     }
 
     qi::rule<Iterator, void()> dash_;
@@ -91,8 +93,17 @@ parseSVNLog::parseSVNLog()
 std::vector<parseSVNLog::logStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
 {
+    /*std::string const Text = "r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines";
+    size_t num = 0;
+    std::cout<<qi::parse(std::begin(Text), std::end(Text),
+                         qi::omit["r"] >> qi::uint_
+                         >> qi::omit[*~qi::char_('\n')] >> *qi::eol, num)<<std::endl;
+    std::cout<<num<<std::endl;*/
+
+
     auto const Content = read_whole_file(file_name);
     //std::cout<<Content<<std::endl<<std::endl;
+    //std::cout<<Content.size()<<std::endl;
 
     //std::vector<logStructure> logs;
     logGrammarType logs;
@@ -138,6 +149,7 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
 
 
 parseSVNLog::logStructure::logStructure() :
+    revision_(0),
     commit_day_(1),
     commit_year_(2014)
 {}
