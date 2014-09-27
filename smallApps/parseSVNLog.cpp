@@ -2,6 +2,8 @@
 
 #include <boost/algorithm/string.hpp>
 
+#define FUSION_MAX_VECTOR_SIZE 11
+
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/io.hpp>
 #include <boost/fusion/adapted/std_pair.hpp> //without this, spirit can't accept the type with std::pair
@@ -55,7 +57,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         branch_ = *~qi::char_('|');
         commit_year_ = "| " >> qi::uint_;
         commit_month_ = "-" >> qi::uint_ >> "-";
-        commit_day_ = qi::uint_ >> qi::omit[*~qi::char_('\n')];
+        commit_day_ = qi::uint_ >> qi::blank;
+        hh_mm_ss_ = qi::uint_ >> ":" >> qi::uint_ >> ":" >> qi::uint_;
         omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                                            qi::eol) >> *qi::eol;
@@ -67,8 +70,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 
         result_ = *(revision_ >> branch_ >> commit_year_
                     >> commit_month_ >> commit_day_
-                    >> commit_files_ >> commit_user_
-                    >> commit_comments_);
+                    >> hh_mm_ss_ >> commit_files_
+                    >> commit_user_ >> commit_comments_);
     }
 
     qi::rule<Iterator, void()> dash_;
@@ -77,6 +80,9 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, size_t()> commit_month_;
     qi::rule<Iterator, size_t()> commit_day_;
     qi::rule<Iterator, size_t()> commit_year_;
+    qi::rule<Iterator, std::vector<size_t>()> hh_mm_ss_;
+    //qi::rule<Iterator, size_t()> commit_minute_;
+    //qi::rule<Iterator, size_t()> commit_second_;
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_user_;
@@ -93,6 +99,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         (size_t, commit_year_)
         (size_t, commit_month_)
         (size_t, commit_day_)
+        (std::vector<size_t>, hh_mm_ss_)
         (std::vector<std::string>, commit_files_)
         (std::string, commit_user_)
         (std::vector<std::string>, commit_comments_)
@@ -105,6 +112,23 @@ parseSVNLog::parseSVNLog()
 std::vector<parseSVNLog::logStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
 {    
+    std::string const Text = "2014-09-26 15:54:24";
+    size_t year;
+    size_t month;
+    size_t day;
+    size_t hour;
+    size_t min;
+    size_t sec;
+
+    qi::parse(std::begin(Text), std::end(Text),
+              qi::uint_ >> "-" >> qi::uint_ >> "-"
+              >>qi::uint_ >> qi::blank >> qi::uint_ >> ":"
+              >>qi::uint_ >> ":">>qi::uint_,
+              year, month, day,
+              hour, min, sec);
+    std::cout<<year<<"-"<<month<<"-"<<day<<" ";
+    std::cout<<hour<<":"<<min<<":"<<sec<<std::endl;
+
     auto const Content = read_whole_file(file_name);
 
     logGrammarType logs;
@@ -140,7 +164,9 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
 {    
     out<<log.revision_<<", "<<log.branch_<<std::endl;
     out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
-    out<<log.commit_day_<<std::endl;
+    out<<log.commit_day_<<", ";
+    out<<log.hh_mm_ss_[0]<<":"<<log.hh_mm_ss_[1];
+    out<<":"<<log.hh_mm_ss_[2]<<std::endl;
     for(auto const &Str : log.commit_files_){
         out<<Str<<std::endl;
     }
@@ -155,8 +181,8 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
 
 
 parseSVNLog::logStructure::logStructure() :
-    revision_(0),
-    commit_year_(1000),
-    commit_month_(0),
-    commit_day_(32)
+    revision_{0},
+    commit_year_{1000},
+    commit_month_{0},
+    commit_day_{32}
 {}

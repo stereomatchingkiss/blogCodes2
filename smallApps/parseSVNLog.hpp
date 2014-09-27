@@ -16,6 +16,10 @@ public:
         size_t commit_year_;
         size_t commit_month_;
         size_t commit_day_;
+        std::vector<size_t> hh_mm_ss_;
+        //size_t commit_hour_;
+        //size_t commit_minute_;
+        //size_t commit_second_;
         std::vector<std::string> commit_files_;
         std::string commit_user_;
         std::vector<std::string> commit_comments_;
