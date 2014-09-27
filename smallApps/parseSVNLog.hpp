@@ -17,10 +17,11 @@ public:
         size_t commit_month_;
         size_t commit_day_;
         std::vector<std::string> commit_files_;
+        std::string commit_user_;
         //std::string commit_month_;
         //size_t commit_day_;
         //size_t commit_year_;
-        //std::string commit_user_name_;
+
         //std::vector<std::string> commit_comments_;
     };
 

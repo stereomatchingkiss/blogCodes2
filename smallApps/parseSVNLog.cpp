@@ -57,7 +57,13 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                                            qi::eol) >> *qi::eol;
-
+        commit_user_ = qi::omit[*qi::alnum] >> qi::blank
+                                            >> qi::omit[qi::uint_] % qi::blank
+                                            >> *~qi::char_('\n') >> qi::eol;
+        //commit_user_ =  ((qi::omit[*qi::alpha] >> qi::blank >>
+        //                                          qi::omit[qi::uint_] >> qi::blank >>
+        //                                         *~qi::char_('\n') >> qi::eol) | *~qi::char_('\n') >> qi::eol)
+        //               >>*qi::eol;
         /*omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                         qi::eol) >> *qi::eol;
@@ -69,8 +75,9 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         result_ = *(revision_ >> commit_files_
                         >> commit_month_ >> commit_day_ >> commit_year_
                         >> commit_user_ >> commit_comments_);*/
-        result_ = revision_ >> branch_ >> commit_year_ >>
-                  commit_month_ >> commit_day_ >> commit_files_;
+        result_ = revision_ >> branch_ >> commit_year_
+                            >> commit_month_ >> commit_day_
+                            >> commit_files_ >> commit_user_;
     }
 
     //qi::rule<Iterator, void()> dash_;
@@ -81,6 +88,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, size_t()> commit_year_;
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
+    qi::rule<Iterator, std::string()> commit_user_;
     /*qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_month_;
@@ -102,6 +110,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         (size_t, commit_month_)
         (size_t, commit_day_)
         (std::vector<std::string>, commit_files_)
+        (std::string, commit_user_)
         //(std::vector<std::string>, commit_files_)
         //(std::string, commit_month_)
         //(size_t, commit_day_)
@@ -117,7 +126,7 @@ parseSVNLog::parseSVNLog()
 std::vector<parseSVNLog::logStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
 {
-    std::string const Text = "r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines";
+    /*std::string const Text = "r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines";
     size_t num = 0;
     std::string branch;
     size_t year, month, day;
@@ -132,7 +141,16 @@ parseSVNLog::parse_logs(const std::string &file_name) const
             >> qi::uint_ >> qi::omit[*qi::char_],
             num, branch, year, month, day)<<std::endl;
     std::cout<<num<<", "<<branch<<", ";
-    std::cout<<year<<", "<<month<<", "<<day<<std::endl;
+    std::cout<<year<<", "<<month<<", "<<day<<std::endl;*/
+
+    std::string const Text = "Sep 26 2014 NWTHAM";
+    std::string user_name;
+    std::cout<<qi::parse(std::begin(Text), std::end(Text),
+                         qi::omit[*qi::alnum] >> qi::blank >>
+               qi::omit[qi::uint_] % qi::blank >>
+               *~qi::char_('\n') >> qi::eol,
+            user_name)<<std::endl;
+    std::cout<<"user name = "<<user_name<<std::endl;
 
 
     auto const Content = read_whole_file(file_name);
@@ -173,6 +191,7 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
     for(auto const &Str : log.commit_files_){
         std::cout<<Str<<std::endl;
     }
+    std::cout<<"commit user : "<<log.commit_user_<<std::endl;
     /*std::cout<<log.commit_month_<<" "<<log.commit_day_;
     std::cout<<" "<<log.commit_year_<<" "<<log.commit_user_name_<<std::endl;
 
