@@ -48,9 +48,9 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     {        
         dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         //r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines
-        revision_ = dash_ >> qi::omit["r"] >> qi::uint_;
-        change_path_tag_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
-        commit_files_ = change_path_tag_ >> *(qi::blank >> *~qi::char_('\n') >>
+        revision_ = dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
+        omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
+        commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                         qi::eol) >> *qi::eol;
         commit_month_ = *qi::alpha >> *qi::blank;
         commit_day_ = qi::uint_ >> -qi::omit[","] >> *qi::blank;
@@ -64,7 +64,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 
     qi::rule<Iterator, void()> dash_;
     qi::rule<Iterator, size_t()> revision_;
-    qi::rule<Iterator, void()> change_path_tag_;
+    qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_month_;
     qi::rule<Iterator, size_t()> commit_day_;

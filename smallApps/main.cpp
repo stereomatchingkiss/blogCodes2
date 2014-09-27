@@ -8,7 +8,8 @@ int main()
 {
     try{
         parseSVNLog log;
-        for(auto const &Log : log.parse_logs("log.txt")){
+        auto const Logs = log.parse_logs("log.txt");
+        for(auto const &Log : Logs){
             std::cout<<Log<<std::endl;
         }
 
