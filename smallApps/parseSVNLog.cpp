@@ -124,16 +124,16 @@ std::string parseSVNLog::read_whole_file(const std::string &file_name) const
 
 std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log)
 {    
-    std::cout<<log.revision_<<", "<<log.branch_<<std::endl;
-    std::cout<<log.commit_year_<<"-"<<log.commit_month_<<"-";
-    std::cout<<log.commit_day_<<std::endl;
+    out<<log.revision_<<", "<<log.branch_<<std::endl;
+    out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
+    out<<log.commit_day_<<std::endl;
     for(auto const &Str : log.commit_files_){
-        std::cout<<Str<<std::endl;
+        out<<Str<<std::endl;
     }
-    std::cout<<log.commit_user_<<std::endl;
+    out<<log.commit_user_<<std::endl;
 
     for(auto const &Str : log.commit_comments_){
-        std::cout<<Str<<std::endl;
+        out<<Str<<std::endl;
     }
 
     return out;
