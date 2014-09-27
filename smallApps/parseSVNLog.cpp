@@ -38,18 +38,18 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
 
 namespace{
 
-using logGrammarType = parseSVNLog::logStructure;
-//using logGrammarType = std::vector<parseSVNLog::logStructure>;
+//using logGrammarType = parseSVNLog::logStructure;
+using logGrammarType = std::vector<parseSVNLog::logStructure>;
 
 template <typename Iterator>
 struct logGrammar : qi::grammar<Iterator, logGrammarType()>
 {
     logGrammar() : logGrammar::base_type(result_)
     {
-        //dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
+        dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
         //r6249 | sysdev | 2014-09-26 15:54:24 +0800 (Fri, 26 Sep 2014) | 3 lines
         //revision_ = dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
-        revision_ =  qi::omit["r"] >> qi::uint_ >> " | ";
+        revision_ =  dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
         branch_ = *~qi::char_('|');
         commit_year_ = "| " >> qi::uint_;
         commit_month_ = "-" >> qi::uint_ >> "-";
@@ -60,10 +60,12 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         commit_user_ = qi::omit[*qi::alnum] >> qi::blank
                                             >> qi::omit[qi::uint_] % qi::blank
                                             >> *~qi::char_('\n') >> qi::eol;
-        //commit_user_ =  ((qi::omit[*qi::alpha] >> qi::blank >>
-        //                                          qi::omit[qi::uint_] >> qi::blank >>
-        //                                         *~qi::char_('\n') >> qi::eol) | *~qi::char_('\n') >> qi::eol)
-        //               >>*qi::eol;
+        commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
+
+        /*std::cout<<qi::parse(std::begin(Text), std::end(Text),
+                             *(!qi::eol >> *~qi::char_("\n") >> qi::eol),
+                             comments)<<std::endl;*/
+
         /*omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
                         qi::eol) >> *qi::eol;
@@ -75,12 +77,13 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         result_ = *(revision_ >> commit_files_
                         >> commit_month_ >> commit_day_ >> commit_year_
                         >> commit_user_ >> commit_comments_);*/
-        result_ = revision_ >> branch_ >> commit_year_
+        result_ = *(revision_ >> branch_ >> commit_year_
                             >> commit_month_ >> commit_day_
-                            >> commit_files_ >> commit_user_;
+                            >> commit_files_ >> commit_user_
+                            >> commit_comments_);
     }
 
-    //qi::rule<Iterator, void()> dash_;
+    qi::rule<Iterator, void()> dash_;
     qi::rule<Iterator, size_t()> revision_;
     qi::rule<Iterator, std::string()> branch_;
     qi::rule<Iterator, size_t()> commit_month_;
@@ -89,6 +92,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_user_;
+    qi::rule<Iterator, std::vector<std::string>()> commit_comments_;
     /*qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_month_;
@@ -111,12 +115,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         (size_t, commit_day_)
         (std::vector<std::string>, commit_files_)
         (std::string, commit_user_)
-        //(std::vector<std::string>, commit_files_)
-        //(std::string, commit_month_)
-        //(size_t, commit_day_)
-        //(size_t, commit_year_)
-        //(std::string, commit_user_name_)
-        //(std::vector<std::string>, commit_comments_)
+        (std::vector<std::string>, commit_comments_)
         )
 
 parseSVNLog::parseSVNLog()
@@ -143,21 +142,31 @@ parseSVNLog::parse_logs(const std::string &file_name) const
     std::cout<<num<<", "<<branch<<", ";
     std::cout<<year<<", "<<month<<", "<<day<<std::endl;*/
 
-    std::string const Text = "Sep 26 2014 NWTHAM";
+    /*std::string const Text = "Sep 26 2014 NWTHAM";
     std::string user_name;
     std::cout<<qi::parse(std::begin(Text), std::end(Text),
                          qi::omit[*qi::alnum] >> qi::blank >>
                qi::omit[qi::uint_] % qi::blank >>
                *~qi::char_('\n') >> qi::eol,
             user_name)<<std::endl;
-    std::cout<<"user name = "<<user_name<<std::endl;
+    std::cout<<"user name = "<<user_name<<std::endl;*/
 
+
+    //commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
+    std::string const Text = "- refine macros name\n"
+            "- use exception to handler errors of rtdb\n";
+    std::vector<std::string> comments;
+    std::cout<<qi::parse(std::begin(Text), std::end(Text),
+                         *(!qi::eol >> *~qi::char_("\n") >> qi::eol),
+                         comments)<<std::endl;
+    for(auto const &Str : comments){
+        std::cout<<Str<<std::endl;
+    }
 
     auto const Content = read_whole_file(file_name);
     //std::cout<<Content<<std::endl<<std::endl;
     //std::cout<<Content.size()<<std::endl;
 
-    //std::vector<logStructure> logs;
     logGrammarType logs;
     logGrammar<std::string::const_iterator> grammar;
     parse_log_data(std::begin(Content), std::end(Content), grammar, logs);
@@ -166,7 +175,7 @@ parseSVNLog::parse_logs(const std::string &file_name) const
 
     //std::cout<<"log records : "<<logs.size()<<std::endl;
 
-    return {logs};
+    return logs;
 }
 
 std::string parseSVNLog::read_whole_file(const std::string &file_name) const
@@ -192,12 +201,10 @@ std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log
         std::cout<<Str<<std::endl;
     }
     std::cout<<"commit user : "<<log.commit_user_<<std::endl;
-    /*std::cout<<log.commit_month_<<" "<<log.commit_day_;
-    std::cout<<" "<<log.commit_year_<<" "<<log.commit_user_name_<<std::endl;
 
     for(auto const &Str : log.commit_comments_){
         std::cout<<Str<<std::endl;
-    }*/
+    }
 
     return out;
 }
