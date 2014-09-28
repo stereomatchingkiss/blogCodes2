@@ -43,7 +43,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     logGrammar() : logGrammar::base_type(result_)
     {
         dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
-        revision_ =  dash_ >> qi::omit["r"] >> qi::uint_ >> " | ";
+        revision_ =  dash_ >> "r" >> qi::uint_ >> " | ";
         branch_ = *~qi::char_('|');
         yy_mm_dd_ = "| " >> qi::uint_ >> "-" >> qi::uint_ >> "-"
                          >> qi::uint_ >> qi::blank;
