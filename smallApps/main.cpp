@@ -18,17 +18,12 @@ void generate_changes_log(std::ostream &out,
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){
         if(i != 0){
-            if(log.commit_files_[i].size() > 5){
-                out<<Space<<" * "<<log.commit_files_[i].substr(5)<<"\n";
-            }
+            out<<Space<<" * "<<log.commit_files_[i].substr(5)<<"\n";
         }else{
-            //out<<"size : "<<log.commit_files_[i].size()<<std::endl;
-            if(log.commit_files_[i].size() > 5){
-                out<<"   * "<<log.commit_files_[i].substr(5)<<"\n";
-            }
+            out<<"   * "<<log.commit_files_[i].substr(5)<<"\n";
         }
     }
-    //std::cout<<"message size : "<<log.commit_messages_.size()<<std::endl;
+
     for(auto const &Comment : log.commit_comments_){
         out<<Space<<" "<<Comment<<"\n";
     }
@@ -38,8 +33,6 @@ void generate_changes_log(std::ostream &out,
 int main()
 {
     try{
-        parseSVNLog log;
-        auto const Logs = log.parse_logs("log.txt");
         std::map<size_t, std::string> const MonthTable
         {
             {1, "Jan"}, {2, "Feb"}, {3, "Mar"}, {4, "Apr"},
@@ -47,8 +40,8 @@ int main()
             {9, "Sep"}, {10, "Oct"}, {11, "Nov"}, {12, "Dec"}
         };
         std::ofstream out("out.log");
-        for(auto const &Log : Logs){
-            //std::cout<<Log<<std::endl;
+        for(auto const &Log : parseSVNLog().parse_logs("log.txt")){
+            std::cout<<Log<<std::endl;
             generate_changes_log(out, Log, MonthTable);
         }
 
