@@ -86,7 +86,7 @@ parseSVNLog::parse_logs(const std::string &file_name) const
     auto const Content = read_whole_file(file_name);
 
     logGrammarType logs;
-    logGrammar<std::string::const_iterator> grammar;
+    logGrammar<decltype(std::begin(Content))> grammar;
     parse_log_data(std::begin(Content), std::end(Content), grammar, logs);
 
     for(auto &log : logs){
