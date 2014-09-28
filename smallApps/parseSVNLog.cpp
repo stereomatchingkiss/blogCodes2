@@ -1,48 +1,16 @@
 #include "parseSVNLog.hpp"
+#include "svnLogStructure.hpp"
 
 #include <boost/algorithm/string.hpp>
-
-//#define FUSION_MAX_VECTOR_SIZE 11
-
-#include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/fusion/include/io.hpp>
-#include <boost/fusion/adapted/std_pair.hpp> //without this, spirit can't accept the type with std::pair
 
 #include <boost/range.hpp>
 #include <boost/range/algorithm.hpp>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix.hpp>
 
 #include <algorithm>
 #include <fstream>
 #include <iterator>
-
-BOOST_FUSION_ADAPT_STRUCT(
-        parseSVNLog::hh_mm_ss,
-        (size_t, hh_)
-        (size_t, mm_)
-        (size_t, ss_)
-        )
-
-BOOST_FUSION_ADAPT_STRUCT(
-        parseSVNLog::yy_mm_dd,
-        (size_t, yy_)
-        (size_t, mm_)
-        (size_t, dd_)
-        )
-
-
-BOOST_FUSION_ADAPT_STRUCT(
-        parseSVNLog::logStructure,
-        (size_t, revision_)
-        (std::string, branch_)
-        (parseSVNLog::yy_mm_dd, yy_mm_dd_)
-        (parseSVNLog::hh_mm_ss, hh_mm_ss_)
-        (std::vector<std::string>, commit_files_)
-        (std::string, commit_user_)
-        (std::vector<std::string>, commit_comments_)
-        )
 
 namespace{
 
@@ -67,7 +35,7 @@ bool parse_log_data(Iterator begin, Iterator end, Grammar &grammar, T &output)
     return true;
 }
 
-using logGrammarType = std::vector<parseSVNLog::logStructure>;
+using logGrammarType = std::vector<svnLogStructure>;
 
 template <typename Iterator>
 struct logGrammar : qi::grammar<Iterator, logGrammarType()>
@@ -97,8 +65,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, void()> dash_;
     qi::rule<Iterator, size_t()> revision_;
     qi::rule<Iterator, std::string()> branch_;    
-    qi::rule<Iterator, parseSVNLog::yy_mm_dd()> yy_mm_dd_;
-    qi::rule<Iterator, parseSVNLog::hh_mm_ss()> hh_mm_ss_;
+    qi::rule<Iterator, yy_mm_dd()> yy_mm_dd_;
+    qi::rule<Iterator, hh_mm_ss()> hh_mm_ss_;
     qi::rule<Iterator, void()> omit_strings_;
     qi::rule<Iterator, std::vector<std::string>()> commit_files_;
     qi::rule<Iterator, std::string()> commit_user_;
@@ -112,7 +80,7 @@ parseSVNLog::parseSVNLog()
 {
 }
 
-std::vector<parseSVNLog::logStructure>
+std::vector<svnLogStructure>
 parseSVNLog::parse_logs(const std::string &file_name) const
 {        
     auto const Content = read_whole_file(file_name);
@@ -145,43 +113,3 @@ std::string parseSVNLog::read_whole_file(const std::string &file_name) const
 
     return content;
 }
-
-std::ostream &operator<<(std::ostream &out, const parseSVNLog::logStructure &log)
-{    
-    out<<log.revision_<<", "<<log.branch_<<std::endl;
-    //out<<log.commit_year_<<"-"<<log.commit_month_<<"-";
-    //out<<log.commit_day_<<", ";
-    //out<<log.hh_mm_ss_[0]<<":"<<log.hh_mm_ss_[1];
-    //out<<":"<<log.hh_mm_ss_[2]<<std::endl;
-    out<<log.yy_mm_dd_.yy_<<"-"<<log.yy_mm_dd_.mm_<<"-";
-    out<<log.yy_mm_dd_.dd_<<", ";
-    out<<log.hh_mm_ss_.hh_<<":"<<log.hh_mm_ss_.mm_;
-    out<<":"<<log.hh_mm_ss_.ss_<<std::endl;
-    for(auto const &Str : log.commit_files_){
-        out<<Str<<std::endl;
-    }
-    out<<log.commit_user_<<std::endl;
-
-    for(auto const &Str : log.commit_comments_){
-        out<<Str<<std::endl;
-    }
-
-    return out;
-}
-
-
-parseSVNLog::logStructure::logStructure() :
-    revision_{0}
-{}
-
-
-parseSVNLog::hh_mm_ss::hh_mm_ss() :
-    hh_{0}, mm_{0}, ss_{0}
-{}
-
-
-parseSVNLog::yy_mm_dd::yy_mm_dd() :
-    yy_{0},
-    mm_{0},
-    dd_{0}
-{}

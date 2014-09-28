@@ -1,5 +1,6 @@
 #include "parseSVNLog.hpp"
 //#include "processtestResult.hpp"
+#include "svnLogStructure.hpp"
 
 #include <exception>
 #include <fstream>
@@ -8,7 +9,7 @@
 #include <map>
 
 void generate_changes_log(std::ostream &out,
-                          parseSVNLog::logStructure const &log,
+                          svnLogStructure const &log,
                           std::map<size_t, std::string> const &month_table)
 {
     out<<month_table.at(log.yy_mm_dd_.mm_)<<" "<<log.yy_mm_dd_.mm_<<", ";

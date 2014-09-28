@@ -17,9 +17,11 @@ include(../mingw32.pri)
 
 SOURCES += main.cpp \
     processtestResult.cpp \
-    parseSVNLog.cpp
+    parseSVNLog.cpp \
+    svnLogStructure.cpp
 
 HEADERS += \
     processtestResult.hpp \
-    parseSVNLog.hpp
+    parseSVNLog.hpp \
+    svnLogStructure.hpp
 
