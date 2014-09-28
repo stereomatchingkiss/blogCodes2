@@ -1,0 +1,2 @@
+bootstrap.bat mingw
+b2 toolset=gcc cxxflags="-std=c++11" --build-type=complete
