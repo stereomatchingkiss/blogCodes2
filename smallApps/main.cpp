@@ -24,7 +24,7 @@ void generate_changes_log(std::ostream &out,
         }else{
             //out<<"size : "<<log.commit_files_[i].size()<<std::endl;
             if(log.commit_files_[i].size() > 5){
-                out<<"* "<<log.commit_files_[i].substr(5)<<"\n";
+                out<<"   * "<<log.commit_files_[i].substr(5)<<"\n";
             }
         }
     }
@@ -48,7 +48,7 @@ int main()
         };
         std::ofstream out("out.log");
         for(auto const &Log : Logs){
-            std::cout<<Log<<std::endl;
+            //std::cout<<Log<<std::endl;
             generate_changes_log(out, Log, MonthTable);
         }
 
