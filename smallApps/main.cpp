@@ -30,7 +30,7 @@ void generate_changes_log(std::ostream &out,
     out<<"\n";
 }
 
-int main()
+int main(int argc, char const *argv[])
 {
     try{
         std::map<size_t, std::string> const MonthTable
@@ -39,8 +39,11 @@ int main()
             {5, "May"}, {6, "Jun"}, {7, "Jul"}, {8, "Aug"},
             {9, "Sep"}, {10, "Oct"}, {11, "Nov"}, {12, "Dec"}
         };
-        std::ofstream out("out.log");
-        for(auto const &Log : parseSVNLog().parse_logs("log.txt")){
+
+        std::string const InFile = argc > 1 ? argv[1] : "log.txt";
+        std::string const OutFile = argc > 2 ? argv[2] : "out.txt";
+        std::ofstream out(OutFile);
+        for(auto const &Log : parseSVNLog().parse_logs(InFile)){
             std::cout<<Log<<std::endl;
             generate_changes_log(out, Log, MonthTable);
         }
