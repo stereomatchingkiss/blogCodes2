@@ -43,7 +43,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     logGrammar() : logGrammar::base_type(result_)
     {
         dash_ = *qi::eol>> qi::omit[*qi::char_("-")] >> +qi::eol;
-        revision_ =  dash_ >> "r" >> qi::uint_ >> " | ";
+        revision_ =  -dash_ >> "r" >> qi::uint_ >> " | ";
         branch_ = *~qi::char_('|');
         yy_mm_dd_ = "| " >> qi::uint_ >> "-" >> qi::uint_ >> "-"
                          >> qi::uint_ >> qi::blank;
@@ -55,7 +55,8 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
                                              >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
                 >> *~qi::char_('\n') >> qi::eol) |
                 *~qi::char_('\n') >> qi::eol;
-        commit_comments_ = *(!qi::eol >> *~qi::char_("\n") >> qi::eol);
+        commit_comments_ = *((!qi::eol || !dash_)
+                >> *~qi::char_("\n") >> qi::eol);
 
         result_ = *(revision_ >> branch_ >> yy_mm_dd_
                     >> hh_mm_ss_ >> commit_files_
