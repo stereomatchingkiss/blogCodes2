@@ -104,13 +104,15 @@ parseSVNLog::parse_logs(const std::string &file_name) const
 
 std::string parseSVNLog::read_whole_file(const std::string &file_name) const
 {
-    std::ifstream in(file_name);
-    if(!in){
-        throw std::runtime_error("can not open file");
+    std::ifstream in(file_name, std::ios::in | std::ios::binary);
+    if(in){
+        std::string contents;
+        in.seekg(0, std::ios::end);
+        contents.resize(in.tellg());
+        in.seekg(0, std::ios::beg);
+        in.read(&contents[0], contents.size());
+        return(contents);
     }
-    std::string content;
-    std::copy(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>(),
-              std::back_inserter(content));
 
-    return content;
+    throw std::runtime_error("can not open file");
 }
