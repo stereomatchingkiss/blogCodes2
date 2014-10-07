@@ -2,18 +2,59 @@
 //#include "processtestResult.hpp"
 #include "svnLogStructure.hpp"
 
+#include <boost/algorithm/string.hpp>
+
+#include <boost/spirit/include/qi.hpp>
+
 #include <exception>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
 
+/**
+ * @brief parse_user_name from the commit message of svn
+ * @param input commit messages
+ * @return user name
+ * @warning under experiment
+ */
+std::string parse_user_name(std::vector<std::string> const &input)
+{
+    namespace qi = boost::spirit::qi;
+    namespace ascii = boost::spirit::ascii;
+
+    std::vector<std::string> names;
+    auto commit_user = (qi::omit[*qi::alnum] >> qi::blank
+                                             >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
+            >> *~qi::char_('\n') >> qi::eol);
+    for(auto const &Str : input){
+        qi::parse(std::begin(Str), std::end(Str),
+                  commit_user,
+                  names);
+    }
+
+    std::string result;
+    if(names.size() > 1){
+        for(auto &str : names){
+            boost::algorithm::trim(str);
+            result += std::move(str);
+            result += '&';
+        }
+        result.pop_back();
+    }else{
+        result = std::move(names[0]);
+    }
+
+    return result;
+}
+
 void generate_changes_log(std::ostream &out,
                           svnLogStructure const &log,
                           std::map<size_t, std::string> const &month_table)
 {
     out<<month_table.at(log.yy_mm_dd_.mm_)<<" "<<log.yy_mm_dd_.dd_<<", ";
-    out<<log.yy_mm_dd_.yy_;//<<"   "<<std::left<<std::setw(7)<<log.commit_user_<<" ";
+    out<<log.yy_mm_dd_.yy_<<"   ";
+    out<<std::left<<std::setw(7)<<parse_user_name(log.commit_comments_)<<" ";
 
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){

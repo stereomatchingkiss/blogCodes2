@@ -50,11 +50,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
         hh_mm_ss_ = qi::uint_ >> ":" >> qi::uint_ >> ":" >> qi::uint_;
         omit_strings_ = qi::repeat(2)[qi::omit[*~qi::char_('\n')] >> *qi::eol];
         commit_files_ = omit_strings_ >> *(qi::blank >> *~qi::char_('\n') >>
-                                           qi::eol) >> *qi::eol;
-        //commit_user_ = (qi::omit[*qi::alnum] >> qi::blank
-        //                                     >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
-        //        >> *~qi::char_('\n') >> qi::eol) |
-        //        *~qi::char_('\n') >> qi::eol;
+                                           qi::eol) >> *qi::eol;        
         commit_comments_ = *((!qi::eol || !dash_)
                 >> *~qi::char_("\n") >> qi::eol);
 
@@ -69,8 +65,7 @@ struct logGrammar : qi::grammar<Iterator, logGrammarType()>
     qi::rule<Iterator, yy_mm_dd()> yy_mm_dd_;
     qi::rule<Iterator, hh_mm_ss()> hh_mm_ss_;
     qi::rule<Iterator, void()> omit_strings_;
-    qi::rule<Iterator, std::vector<std::string>()> commit_files_;
-    //qi::rule<Iterator, std::string()> commit_user_;
+    qi::rule<Iterator, std::vector<std::string>()> commit_files_;    
     qi::rule<Iterator, std::vector<std::string>()> commit_comments_;
     qi::rule<Iterator, logGrammarType()> result_;
 };
@@ -96,7 +91,6 @@ parseSVNLog::parse_logs(const std::string &file_name) const
            return data.size() < 5;
         });
         log.commit_files_.erase(It, std::end(log.commit_files_));
-        //boost::algorithm::trim(log.commit_user_);
     }
 
     return logs;
