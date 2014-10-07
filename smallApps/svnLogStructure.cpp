@@ -31,7 +31,7 @@ std::ostream &operator<<(std::ostream &out, const svnLogStructure &log)
     for(auto const &Str : log.commit_files_){
         out<<Str<<std::endl;
     }
-    out<<log.commit_user_<<std::endl;
+    //out<<log.commit_user_<<std::endl;
 
     for(auto const &Str : log.commit_comments_){
         out<<Str<<std::endl;

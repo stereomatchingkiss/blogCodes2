@@ -13,7 +13,7 @@ void generate_changes_log(std::ostream &out,
                           std::map<size_t, std::string> const &month_table)
 {
     out<<month_table.at(log.yy_mm_dd_.mm_)<<" "<<log.yy_mm_dd_.dd_<<", ";
-    out<<log.yy_mm_dd_.yy_<<"   "<<std::left<<std::setw(7)<<log.commit_user_<<" ";
+    out<<log.yy_mm_dd_.yy_;//<<"   "<<std::left<<std::setw(7)<<log.commit_user_<<" ";
 
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
         std::string const OutFile = argc > 2 ? argv[2] : "out.txt";
         std::ofstream out(OutFile);
         for(auto const &Log : parseSVNLog().parse_logs(InFile)){
-            //std::cout<<Log<<std::endl;
+            std::cout<<Log<<std::endl;
             generate_changes_log(out, Log, MonthTable);
         }
 

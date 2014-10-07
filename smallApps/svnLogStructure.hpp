@@ -32,8 +32,7 @@ struct svnLogStructure
     std::string branch_;
     yy_mm_dd yy_mm_dd_;
     hh_mm_ss hh_mm_ss_;
-    std::vector<std::string> commit_files_;
-    std::string commit_user_;
+    std::vector<std::string> commit_files_;    
     std::vector<std::string> commit_comments_;
 };
 
@@ -57,8 +56,7 @@ BOOST_FUSION_ADAPT_STRUCT(
         (std::string, branch_)
         (yy_mm_dd, yy_mm_dd_)
         (hh_mm_ss, hh_mm_ss_)
-        (std::vector<std::string>, commit_files_)
-        (std::string, commit_user_)
+        (std::vector<std::string>, commit_files_)        
         (std::vector<std::string>, commit_comments_)
         )
 
