@@ -38,7 +38,7 @@ std::string parse_user_name(std::vector<std::string> const &input)
     for(auto &str : names){
         boost::algorithm::trim(str);
         if(!str.empty()){
-            result += std::move(str);
+            result += str;
             //std::cout<<"names : "<<str<<std::endl;
             result += '&';
         }
