@@ -17,7 +17,8 @@
  * @return user name
  * @warning under experiment
  */
-std::string parse_user_name(std::vector<std::string> const &input)
+std::pair<std::string, size_t>
+parse_user_name(std::vector<std::string> const &input)
 {
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
@@ -25,13 +26,18 @@ std::string parse_user_name(std::vector<std::string> const &input)
     using Rule = qi::rule<decltype(std::begin(input[0])), std::vector<std::string>()>;
 
     std::vector<std::string> names;
+    size_t valid_names = 0;
     Rule commit_user = *(qi::omit[*qi::alnum] >> qi::blank
                                               >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
             >> *~qi::char_('\n'));
     for(auto const &Str : input){
-        qi::parse(std::begin(Str), std::end(Str),
-                      commit_user,
-                      names);
+        auto it = std::begin(Str);
+        if(qi::parse(it, std::end(Str),
+                     commit_user,
+                     names) && it == std::end(Str)){
+            //std::cout<<input[i]<<std::endl;
+            ++valid_names;
+        }
     }
 
     std::string result;
@@ -45,7 +51,7 @@ std::string parse_user_name(std::vector<std::string> const &input)
     }
     result.pop_back();
 
-    return result;
+    return {result, valid_names};
 }
 
 void generate_changes_log(std::ostream &out,
@@ -54,7 +60,8 @@ void generate_changes_log(std::ostream &out,
 {
     out<<month_table.at(log.yy_mm_dd_.mm_)<<" "<<log.yy_mm_dd_.dd_<<", ";
     out<<log.yy_mm_dd_.yy_<<"   ";
-    out<<std::left<<std::setw(7)<<parse_user_name(log.commit_comments_)<<" ";
+    auto const NamesAndIndex = parse_user_name(log.commit_comments_);
+    out<<std::left<<std::setw(7)<<NamesAndIndex.first<<" ";
 
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){
@@ -65,8 +72,10 @@ void generate_changes_log(std::ostream &out,
         }
     }
 
-    for(auto const &Comment : log.commit_comments_){
-        out<<Space<<" "<<Comment<<"\n";
+    //std::cout<<NamesAndIndex<<std::endl;
+    for(size_t i = NamesAndIndex.second < 2 ? 1 : 0;
+        i != log.commit_comments_.size(); ++i){
+        out<<Space<<" "<<log.commit_comments_[i]<<"\n";
     }
     out<<"\n";
 }
