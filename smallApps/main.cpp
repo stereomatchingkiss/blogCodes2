@@ -29,12 +29,9 @@ std::string parse_user_name(std::vector<std::string> const &input)
                                               >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
             >> *~qi::char_('\n'));
     for(auto const &Str : input){
-        if(!qi::parse(std::begin(Str), std::end(Str),
+        qi::parse(std::begin(Str), std::end(Str),
                       commit_user,
-                      names)){
-            names.pop_back();
-            //std::cout<<"true : "<<Str<<std::endl;
-        }
+                      names);
     }
 
     std::string result;
@@ -42,7 +39,7 @@ std::string parse_user_name(std::vector<std::string> const &input)
         boost::algorithm::trim(str);
         if(!str.empty()){
             result += std::move(str);
-            std::cout<<"names : "<<str<<std::endl;
+            //std::cout<<"names : "<<str<<std::endl;
             result += '&';
         }
     }

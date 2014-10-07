@@ -91,6 +91,12 @@ parseSVNLog::parse_logs(const std::string &file_name) const
            return data.size() < 5;
         });
         log.commit_files_.erase(It, std::end(log.commit_files_));
+
+        auto const It2 = boost::remove_if(log.commit_comments_, [](std::string const &data)
+        {
+           return data.empty();
+        });
+        log.commit_comments_.erase(It2, std::end(log.commit_comments_));
     }
 
     return logs;
