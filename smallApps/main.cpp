@@ -1,5 +1,4 @@
 #include "parseSVNLog.hpp"
-//#include "processtestResult.hpp"
 #include "svnLogStructure.hpp"
 
 #include <boost/algorithm/string.hpp>
@@ -23,27 +22,31 @@ std::string parse_user_name(std::vector<std::string> const &input)
     namespace qi = boost::spirit::qi;
     namespace ascii = boost::spirit::ascii;
 
+    using Rule = qi::rule<decltype(std::begin(input[0])), std::vector<std::string>()>;
+
     std::vector<std::string> names;
-    auto commit_user = (qi::omit[*qi::alnum] >> qi::blank
-                                             >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
-            >> *~qi::char_('\n') >> qi::eol);
+    Rule commit_user = *(qi::omit[*qi::alnum] >> qi::blank
+                                              >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
+            >> *~qi::char_('\n'));
     for(auto const &Str : input){
-        qi::parse(std::begin(Str), std::end(Str),
-                  commit_user,
-                  names);
+        if(!qi::parse(std::begin(Str), std::end(Str),
+                      commit_user,
+                      names)){
+            names.pop_back();
+            //std::cout<<"true : "<<Str<<std::endl;
+        }
     }
 
     std::string result;
-    if(names.size() > 1){
-        for(auto &str : names){
-            boost::algorithm::trim(str);
+    for(auto &str : names){
+        boost::algorithm::trim(str);
+        if(!str.empty()){
             result += std::move(str);
+            std::cout<<"names : "<<str<<std::endl;
             result += '&';
         }
-        result.pop_back();
-    }else{
-        result = std::move(names[0]);
     }
+    result.pop_back();
 
     return result;
 }
@@ -85,13 +88,10 @@ int main(int argc, char const *argv[])
         std::string const OutFile = argc > 2 ? argv[2] : "out.txt";
         std::ofstream out(OutFile);
         for(auto const &Log : parseSVNLog().parse_logs(InFile)){
-            std::cout<<Log<<std::endl;
+            //std::cout<<Log<<std::endl;
             generate_changes_log(out, Log, MonthTable);
         }
 
-        //processPutGetTestResult process;
-        //process.compare_two_performance_test_file();
-        //process.generate_change_log("log.txt");
     }catch(std::exception const &ex){
         std::cerr<<ex.what()<<std::endl;
     }
