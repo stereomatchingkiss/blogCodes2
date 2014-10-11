@@ -17,7 +17,7 @@
  * @return user name
  * @warning under experiment
  */
-std::pair<std::string, size_t>
+std::pair<std::string, std::vector<char>>
 parse_user_name(std::vector<std::string> const &input)
 {
     namespace qi = boost::spirit::qi;
@@ -26,7 +26,7 @@ parse_user_name(std::vector<std::string> const &input)
     using Rule = qi::rule<decltype(std::begin(input[0])), std::vector<std::string>()>;
 
     std::vector<std::string> names;
-    size_t valid_names = 0;
+    std::vector<char> valid_names;
     Rule commit_user = *(qi::omit[*qi::alnum] >> qi::blank
                                               >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
             >> *~qi::char_('\n'));
@@ -36,8 +36,9 @@ parse_user_name(std::vector<std::string> const &input)
                      commit_user,
                      names) && it == std::end(Str)){
             //std::cout<<input[i]<<std::endl;
-            ++valid_names;
+            valid_names.emplace_back('1');
         }
+        valid_names.emplace_back('0');
     }
 
     std::string result;
@@ -73,9 +74,10 @@ void generate_changes_log(std::ostream &out,
     }
 
     //std::cout<<NamesAndIndex<<std::endl;
-    for(size_t i = NamesAndIndex.second < 2 ? 1 : 0;
-        i != log.commit_comments_.size(); ++i){
-        out<<Space<<" "<<log.commit_comments_[i]<<"\n";
+    for(size_t i = 0; i != log.commit_comments_.size(); ++i){
+        if(NamesAndIndex.second[i] != '1'){
+            out<<Space<<" "<<log.commit_comments_[i]<<"\n";
+        }
     }
     out<<"\n";
 }
