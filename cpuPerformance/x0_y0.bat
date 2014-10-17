@@ -1,6 +1,6 @@
 set var=x0_y0
 
-start "" "G:\Jobs\codes\sysdev\scada\src\unitTest\rtdbTestSuite\build-performanceTest-vc2008_Qt4_8_5-Release\release\performanceTest.exe"
+start "" "G:\Jobs\codes\sysdev\scada\src\unitTest\rtdbTestSuite\build-performanceTest-vc2008_Qt4_8_5-Release\release\performanceTest.exe" " " "x0_y0"
 
 start "" "python" cpuUsageMonitor.pyw rtdb "%var%"
 start "" "python" cpuUsageMonitor.pyw performanceTest "%var%"
