@@ -61,5 +61,6 @@ void cpu_usage_statistic(const std::string &file_name)
         std::cout<<min(acc[i])<<std::endl;
         std::cout<<mean(acc[i])<<std::endl;
         std::cout<<std::sqrt(variance(acc[i]))<<std::endl;
+        std::cout<<std::endl;
     }
 }
