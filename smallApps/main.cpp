@@ -1,3 +1,4 @@
+#include "appStatistic.hpp"
 #include "parseSVNLog.hpp"
 #include "svnLogStructure.hpp"
 
@@ -82,22 +83,33 @@ void generate_changes_log(std::ostream &out,
     out<<"\n";
 }
 
+void generate_changes_log()
+{
+    /*std::map<size_t, std::string> const MonthTable
+    {
+        {1, "Jan"}, {2, "Feb"}, {3, "Mar"}, {4, "Apr"},
+        {5, "May"}, {6, "Jun"}, {7, "Jul"}, {8, "Aug"},
+        {9, "Sep"}, {10, "Oct"}, {11, "Nov"}, {12, "Dec"}
+    };
+
+    std::string const InFile = argc > 1 ? argv[1] : "log.txt";
+    std::string const OutFile = argc > 2 ? argv[2] : "out.txt";
+    std::ofstream out(OutFile);
+    for(auto const &Log : parseSVNLog().parse_logs(InFile)){
+        //std::cout<<Log<<std::endl;
+        generate_changes_log(out, Log, MonthTable);
+    }*/
+}
+
 int main(int argc, char const *argv[])
 {
     try{
-        std::map<size_t, std::string> const MonthTable
-        {
-            {1, "Jan"}, {2, "Feb"}, {3, "Mar"}, {4, "Apr"},
-            {5, "May"}, {6, "Jun"}, {7, "Jul"}, {8, "Aug"},
-            {9, "Sep"}, {10, "Oct"}, {11, "Nov"}, {12, "Dec"}
-        };
+        //generate_changes_log();
 
-        std::string const InFile = argc > 1 ? argv[1] : "log.txt";
-        std::string const OutFile = argc > 2 ? argv[2] : "out.txt";
-        std::ofstream out(OutFile);
-        for(auto const &Log : parseSVNLog().parse_logs(InFile)){
-            //std::cout<<Log<<std::endl;
-            generate_changes_log(out, Log, MonthTable);
+        if(argc > 2){
+            cpu_usage_statistic(argv[1]);
+        }else if(argc > 1){
+            app_statistic(argv[1]);
         }
 
     }catch(std::exception const &ex){
