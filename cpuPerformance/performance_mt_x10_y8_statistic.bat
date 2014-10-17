@@ -1,2 +1,0 @@
-smallApps.exe performanceTest_mt_x10_y8.txt
-pause
