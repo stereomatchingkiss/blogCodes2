@@ -83,9 +83,9 @@ void generate_changes_log(std::ostream &out,
     out<<"\n";
 }
 
-void generate_changes_log()
+void generate_changes_log(int argc, char const *argv[])
 {
-    /*std::map<size_t, std::string> const MonthTable
+    std::map<size_t, std::string> const MonthTable
     {
         {1, "Jan"}, {2, "Feb"}, {3, "Mar"}, {4, "Apr"},
         {5, "May"}, {6, "Jun"}, {7, "Jul"}, {8, "Aug"},
@@ -98,13 +98,13 @@ void generate_changes_log()
     for(auto const &Log : parseSVNLog().parse_logs(InFile)){
         //std::cout<<Log<<std::endl;
         generate_changes_log(out, Log, MonthTable);
-    }*/
+    }
 }
 
 int main(int argc, char const *argv[])
 {
     try{
-        //generate_changes_log();
+        //generate_changes_log(argc, argv);
 
         if(argc > 2){
             cpu_usage_statistic(argv[1]);
