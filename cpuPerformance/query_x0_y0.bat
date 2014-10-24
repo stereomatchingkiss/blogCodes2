@@ -1,4 +1,4 @@
-set var=x0_y0
+set var=query_x0_y0
 set path=G:\Jobs\codes\sysdev\scada\src\unitTest\rtdbTestSuite\build-performanceTest-vc2008_Qt4_8_5-Release\release\performanceTest.exe
 
 start "" "%path%" "query" "%var%"
