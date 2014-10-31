@@ -14,11 +14,13 @@
 #include <string>
 #include <vector>
 
+void define_attribute();
+
 void define_keyword_for_attr();
 
-void filter_format_lambda();
-
 void example_00();
+
+void filter_format_lambda();
 
 void set_filter();
 
