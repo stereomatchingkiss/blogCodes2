@@ -1,4 +1,5 @@
 #include "example.hpp"
+#include "example_00.hpp"
 
 #include <testFunction/testHelper.hpp>
 
@@ -14,13 +15,15 @@ int main()
                                                 "set_format",
                                                 "filter_format_lambda",
                                                 "define_keyword_for_attr",
-                                                "define_attribute"},
+                                                "define_attribute",
+                                                "trivial_log"},
                        std::vector<std::function<void()>>{example_00,
                                                           set_filter,
                                                           set_format,
                                                           filter_format_lambda,
                                                           define_keyword_for_attr,
-                                                          define_attribute});
+                                                          define_attribute,
+                                                          trivial_log});
 
     return 0;
 }
