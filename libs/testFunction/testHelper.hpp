@@ -15,6 +15,7 @@ void register_test_case(T const &names, std::vector<std::function<void()>> const
     size_t input = 0;
     std::cin>>input;
     if(input < names.size()){
+        std::cout<<"\nexecute "<<input<<" : "<<names[input]<<"\n"<<std::endl;
         funcs[input]();
     }else{
         std::cout<<"out of range"<<std::endl;
