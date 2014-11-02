@@ -26,4 +26,6 @@ void set_filter();
 
 void set_format();
 
+void write_to_file();
+
 #endif // EXAMPLE_HPP

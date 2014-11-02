@@ -8,6 +8,7 @@
 #include <boost/utility/empty_deleter.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -170,4 +171,24 @@ void define_attribute()
     }
     BOOST_LOG_SEV(lg, 2) << "another error";
     sink->flush();
+}
+
+
+void write_to_file()
+{
+    using namespace boost::log;
+
+    using text_sink = sinks::synchronous_sink<sinks::text_ostream_backend>;
+    auto sink = boost::make_shared<text_sink>();
+
+    // Add a stream to write log to
+    sink->locked_backend()->add_stream(
+                boost::make_shared< std::ofstream >("write_to_file.log"));
+
+    // Register the sink in the logging core
+    core::get()->add_sink(sink);
+
+    sources::logger log;
+
+    BOOST_LOG(log)<<"write to file";
 }
