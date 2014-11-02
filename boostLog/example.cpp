@@ -185,10 +185,15 @@ void write_to_file()
     sink->locked_backend()->add_stream(
                 boost::make_shared< std::ofstream >("write_to_file.log"));
 
+    sink->set_filter(severity == 0);
+    sink->set_formatter(expressions::stream <<
+                        expressions::attr<int>("Severity") <<
+                        ": " << expressions::smessage);
     // Register the sink in the logging core
     core::get()->add_sink(sink);
 
-    sources::logger log;
+    sources::severity_logger<int> log;
 
-    BOOST_LOG(log)<<"write to file";
+    BOOST_LOG_SEV(log, 0)<<"write to file";
+    BOOST_LOG_SEV(log, 1)<<"write to file";
 }
