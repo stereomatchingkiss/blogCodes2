@@ -17,9 +17,11 @@ include(mingw32.pri)
 }
 
 SOURCES += main.cpp \
-    example.cpp
+    example.cpp \
+    advanceExample.cpp
 
 HEADERS += \
     ../libs/testFunction/testHelper.hpp \
-    example.hpp
+    example.hpp \
+    advanceExample.hpp
 
