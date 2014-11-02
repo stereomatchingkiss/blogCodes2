@@ -1,5 +1,7 @@
+#include "addAttr.hpp"
+#include "advanceExample.hpp"
 #include "example.hpp"
-#include "example_00.hpp"
+//#include "example_00.hpp"
 
 #include <testFunction/testHelper.hpp>
 
@@ -16,14 +18,20 @@ int main()
                                                 "filter_format_lambda",
                                                 "define_keyword_for_attr",
                                                 "define_attribute",
-                                                "trivial_log"},
+                                                //"trivial_log",
+                                                "write_to_file",
+                                                "source_specific_attr",
+                                                "add_attr"},
                        std::vector<std::function<void()>>{example_00,
                                                           set_filter,
                                                           set_format,
                                                           filter_format_lambda,
                                                           define_keyword_for_attr,
                                                           define_attribute,
-                                                          trivial_log});
+                                                          //trivial_log,
+                                                          write_to_file,
+                                                          source_specific_attr,
+                                                          add_attr});
 
     return 0;
 }
