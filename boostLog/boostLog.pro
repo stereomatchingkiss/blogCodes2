@@ -19,11 +19,13 @@ include(mingw32.pri)
 SOURCES += main.cpp \
     example.cpp \
     advanceExample.cpp \
-    addAttr.cpp
+    addAttr.cpp \
+    fmtStream.cpp
 
 HEADERS += \
     ../libs/testFunction/testHelper.hpp \
     example.hpp \
     advanceExample.hpp \
-    addAttr.hpp
+    addAttr.hpp \
+    fmtStream.hpp
 
