@@ -23,4 +23,24 @@ void register_test_case(T const &names, std::vector<std::function<void()>> const
     std::cout<<"program exist"<<std::endl;
 }
 
+template<typename T>
+void register_test_case(T const &name_func)
+{
+    for(size_t i = 0; i != name_func.size(); ++i){
+        std::cout<<i<<" : "<<name_func[i].first<<std::endl;
+    }
+
+    size_t input = 0;
+    std::cin>>input;
+    if(input < name_func.size()){
+        std::cout<<"\nexecute "<<input;
+        std::cout<<" : "<<name_func[input].first;
+        std::cout<<"\n"<<std::endl;
+        name_func[input].second();
+    }else{
+        std::cout<<"out of range"<<std::endl;
+    }
+    std::cout<<"program exist"<<std::endl;
+}
+
 #endif // TESTHELPER_HPP
