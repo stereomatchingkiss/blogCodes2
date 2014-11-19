@@ -24,15 +24,15 @@ struct employee
 };
 
 // define a multiply indexed set with indices by id and name
-using employee_set = multi_index_container<
-employee,
-indexed_by<
-// sort by employee::operator<
-ordered_unique<identity<employee> >,
-
-// sort by less<string> on name
-ordered_non_unique<member<employee,std::string,&employee::name> >
->
+using employee_set = multi_index_container
+<
+    employee,
+    indexed_by<
+        ordered_unique<identity<employee>>,
+    ordered_non_unique<
+        tag<name>,
+        member<employee,std::string,&employee::name>>
+    >
 >;
 
 int main()
@@ -41,7 +41,7 @@ int main()
     set.insert(employee(3, "ss"));
     set.insert(employee(4, "aa"));
     set.insert(employee(5, "hh"));
-    for(auto it : set.get<1>()){
+    for(auto it : set.get<name>()){
         std::cout<<it.id<<" : "<<it.name<<std::endl;
     }
 
