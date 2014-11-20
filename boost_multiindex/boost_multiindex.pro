@@ -18,6 +18,6 @@ include(mingw32.pri)
 
 SOURCES += main.cpp
 
-include(deployment.pri)
-qtcAddDeployment()
+#include(deployment.pri)
+#qtcAddDeployment()
 
