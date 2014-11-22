@@ -51,18 +51,19 @@ void print_name(employee_set const &set)
 void employee_sequence()
 {
     employee_set set;
-    set.get<name>().emplace("Drake");
-    set.get<name>().emplace("Mario");
-    set.get<name>().emplace("Pururin");
-    set.get<name>().emplace("God Hand");
-    set.get<name>().emplace("Cocolin");
-    set.get<name>().emplace("Naughty Dog");
-    set.get<name>().emplace("RockMan");
-    set.get<name>().emplace("Snake");
-    set.get<name>().emplace("Orochi");
-    set.get<name>().emplace("Orochi");
-    set.get<name>().emplace("Orochi");
-    set.get<name>().emplace("Orochi");
+    auto &names = set.get<name>();
+    names.emplace("Drake");
+    names.emplace("Mario");
+    names.emplace("Pururin");
+    names.emplace("God Hand");
+    names.emplace("Cocolin");
+    names.emplace("Naughty Dog");
+    names.emplace("RockMan");
+    names.emplace("Snake");
+    names.emplace("Orochi");
+    names.emplace("Orochi");
+    names.emplace("Orochi");
+    names.emplace("Orochi");
 
     std::cout<<"------------print by set---------------"<<std::endl;
     print_name(set);
