@@ -16,7 +16,7 @@ struct employee
     int         id;
     std::string name;
 
-    employee(int id,const std::string& name) :
+    employee(int id, std::string name) :
         id(id),
         name(name)
     {}
@@ -25,12 +25,13 @@ struct employee
 // define a multiply indexed set with indices by id and name
 using employee_set = multi_index_container
 <
-employee,
-indexed_by<
-ordered_unique<member<employee, int, &employee::id> >,
-ordered_non_unique<
-member<employee,std::string,&employee::name> >
->
+    employee,
+    indexed_by<
+        ordered_unique<member<employee, int, &employee::id> >,
+        ordered_non_unique<
+            member<employee,std::string,&employee::name>
+        >
+    >
 >;
 
 int main()
@@ -61,6 +62,13 @@ int main()
     NameIter it_name = set.get<1>().find("zero");
     if(it_name != set.get<1>().end()){
         std::cout<<"found name : "<<it_name->name<<" : "<<it_name->id<<std::endl;
+    }
+
+    std::cout<<set.size()<<std::endl;
+    auto temp = std::move(set);
+    std::cout<<set.size()<<std::endl;
+    for(auto it : temp.get<1>()){
+        std::cout<<it.name<<" : "<<it.id<<std::endl;
     }
 
     return 0;
