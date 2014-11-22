@@ -37,11 +37,12 @@ using employee_set = multi_index_container
     >
 >;
 
+template<size_t N = 1>
 void print_name(employee_set const &set)
 {
-    for(auto NameIt = set.get<name>().cbegin();
-        NameIt != set.get<name>().cend(); ++NameIt){
-        std::cout<<NameIt->name<<std::endl;
+    for(auto It = set.get<N>().cbegin();
+        It != set.get<N>().cend(); ++It){
+        std::cout<<It->name<<std::endl;
     }
 }
 
@@ -63,11 +64,10 @@ void employee_sequence()
     set.get<name>().emplace("Orochi");
     set.get<name>().emplace("Orochi");
 
-    std::cout<<"------------insert by set---------------"<<std::endl;
-    for(auto NameIt = set.cbegin();
-        NameIt != set.cend(); ++NameIt){
-        std::cout<<NameIt->name<<std::endl;
-    }
+    std::cout<<"------------print by set---------------"<<std::endl;
+    print_name(set);
+    std::cout<<"------------print by sequence---------------"<<std::endl;
+    print_name<0>(set);
 
     std::cout<<"------------insert by seq---------------"<<std::endl;
     auto found_by_name = set.get<1>().lower_bound("Orochi");
@@ -80,7 +80,6 @@ void employee_sequence()
 
     print_name(set);
     set.get<name>().emplace("School days");
-
     std::cout<<"------------insert by seq---------------"<<std::endl;
     print_name(set);
 }
