@@ -8,6 +8,8 @@
 #include <iostream>
 #include <string>
 
+namespace{
+
 using namespace boost::multi_index;
 
 struct name{};
@@ -34,6 +36,8 @@ using employee_set = multi_index_container
         >
     >
 >;
+
+}
 
 void employee_example()
 {
