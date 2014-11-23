@@ -71,8 +71,8 @@ void employee_sequence()
     print_name<0>(set);
 
     std::cout<<"------------insert by seq---------------"<<std::endl;
-    auto found_by_name = set.get<1>().lower_bound("Orochi");
-    while(found_by_name != set.get<name>().end() &&
+    auto found_by_name = names.lower_bound("Orochi");
+    while(found_by_name != names.end() &&
           found_by_name->name == "Orochi"){
           auto id_it = set.project<0>(found_by_name);
           set.emplace(id_it, "older");
@@ -80,7 +80,7 @@ void employee_sequence()
     }
 
     print_name(set);
-    set.get<name>().emplace("School days");
+    names.emplace("School days");
     std::cout<<"------------insert by seq---------------"<<std::endl;
     print_name(set);
 }
