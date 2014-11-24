@@ -16,8 +16,14 @@ include(mingw32.pri)
 #include(vc90_32.pri)
 }
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    employee.cpp \
+    employee_sequence.cpp
 
 #include(deployment.pri)
 #qtcAddDeployment()
+
+HEADERS += \
+    employee.hpp \
+    employee_sequence.hpp
 
