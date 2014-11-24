@@ -3,7 +3,7 @@
 #include "svnLogStructure.hpp"
 
 #include <boost/algorithm/string.hpp>
-
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/spirit/include/qi.hpp>
 
 #include <exception>
@@ -67,10 +67,12 @@ void generate_changes_log(std::ostream &out,
 
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){
+        std::string temp = log.commit_files_[i];
+        boost::replace_first(temp, "scada/trunk", "scada/");
         if(i != 0){
-            out<<Space<<" * "<<log.commit_files_[i].substr(5)<<"\n";
+            out<<Space<<" * "<<temp.substr(5)<<"\n";
         }else{
-            out<<"* "<<log.commit_files_[i].substr(5)<<"\n";
+            out<<"* "<<temp.substr(5)<<"\n";
         }
     }
 
@@ -101,16 +103,31 @@ void generate_changes_log(int argc, char const *argv[])
     }
 }
 
+/*void change_file_string(std::string const &file, std::string const &original,
+                        std::string const &new_str)
+{
+    std::ifstream in(file);
+    std::string temp;
+    std::string result;
+    while(std::getline(in, temp)){
+        boost::replace_first(temp, original, new_str);
+        result += temp;
+    }
+
+    std::ofstream out(file);
+    out<<result;
+}*/
+
 int main(int argc, char const *argv[])
 {
-    try{
-        //generate_changes_log(argc, argv);
+    try{        
+        generate_changes_log(argc, argv);
 
-        if(argc > 2){
+        /*if(argc > 2){
             cpu_usage_statistic(argv[1]);
         }else if(argc > 1){
             app_statistic(argv[1]);
-        }
+        }*/
 
     }catch(std::exception const &ex){
         std::cerr<<ex.what()<<std::endl;
