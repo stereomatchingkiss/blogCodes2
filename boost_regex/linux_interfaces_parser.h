@@ -2,7 +2,8 @@
 #define LINUX_INTERFACES_PARSER_H
 
 /**
- * @brief The parser of the /etc/network/interfaces
+ * @brief The parser of the /etc/network/interfaces\n
+ * not so efficient, but should adequate for the small project
  */
 
 #include <boost/scoped_ptr.hpp>
@@ -24,24 +25,40 @@ public:
     std::vector<std::string> get_routers(std::string const &interface_card) const;
 
     void set_contents(std::string const &input);
-    void set_contents(std::vector<std::string> const &input);
-
+    void set_contents(std::vector<std::string> const &input);    
 private:
+    struct router_info
+    {
+        std::string gateway;
+        std::string mask;
+        std::string route;
+    };
+
     struct log_info
     {
         std::string  address;
-        std::string  network;
-        std::string  netmask;
         std::string  broadcast;
         std::string  gateway;
         std::string  mtu;
+        std::string  netmask;
+        std::string  network;                
+        router_info  router;
     };
 
 private:
+    typedef std::vector<std::string>::const_iterator CIter;
+
+    void build_interface_info(std::vector<std::string> const &input,
+                              std::vector<std::pair<size_t, std::string> > const &eth_info);
+
+    std::string match_router(CIter begin, CIter end) const;
+
+    void set_interface_info(std::string const &interface, CIter begin, CIter end);
     void split_to_interface_structure(std::vector<std::string> const &input);
 
 private:
-    std::map<std::string, std::vector<std::string> > interface_info_;
+    std::map<std::string, log_info> interface_info_;
+    std::string const IPPattern_;
     boost::scoped_ptr<parser> parser_;
 };
 

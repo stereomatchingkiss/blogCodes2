@@ -47,7 +47,7 @@ std::string parser::get_match_word(const std::string &pattern,
                                    OutputIter end) const
 {
     for(OutputIter it = begin; it != end; ++it){
-        std::string result = parser_->get_match_word(pattern, *it);
+        std::string result = get_match_word(pattern, *it);
         if(!result.empty()){
             return result;
         }
