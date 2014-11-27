@@ -13,15 +13,13 @@ INCLUDEPATH += $${BOOST_PATH}
 INCLUDEPATH += ../libs
 
 include(mingw32.pri)
-#include(vc90_32.pri)
 }
 
 SOURCES += main.cpp \
-    parser.cpp
-
-include(deployment.pri)
-qtcAddDeployment()
+    parser.cpp \
+    linux_interfaces_parser.cc
 
 HEADERS += \
-    parser.hpp
+    parser.hpp \
+    linux_interfaces_parser.h
 
