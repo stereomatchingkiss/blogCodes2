@@ -87,7 +87,7 @@ void linux_interfaces_parser::build_interface_info(std::vector<std::string> cons
 linux_interfaces_parser::RouteInfo
 linux_interfaces_parser::match_router(CIter begin, CIter end) const
 {
-    std::string const RoutePrefix = "[^0-9]+";
+    std::string const RoutePrefix = "\\s*post-up[^0-9]+";
     std::string const IP = "(\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3})\\s*";
     std::string const Router = RoutePrefix + IP;
     std::string const Netmask = "netmask\\s+" + IP;
