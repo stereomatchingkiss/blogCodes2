@@ -64,6 +64,7 @@ std::vector<parser::StrVec> parser::get_many_match_words(const std::string &patt
     for(OutIter it = begin; it != end; ++it){
         StrVec temp = get_match_words(pattern, *it);
         if(!temp.empty()){
+            //in c++11, could use move to reduce one copy
             result.push_back(temp);
         }
     }
