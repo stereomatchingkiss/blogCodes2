@@ -23,13 +23,13 @@ public:
 
     template<typename OutIter>
     StrVec get_match_words(std::string const &pattern,
-                           ForwardIter begin,
-                           ForwardIter end) const;
+                           OutIter begin,
+                           OutIter end) const;
 
     template<typename OutIter>
     std::vector<StrVec> get_many_match_words(std::string const &pattern,
-                                             ForwardIter begin,
-                                             ForwardIter end) const;
+                                             OutIter begin,
+                                             OutIter end) const;
 
     std::string get_match_word(std::string const &pattern,
                                std::string const &input) const;
@@ -39,8 +39,8 @@ public:
 
     template<typename OutIter>
     std::string get_match_word(std::string const &pattern,
-                               ForwardIter begin,
-                               ForwardIter end) const;
+                               OutIter begin,
+                               OutIter end) const;
 
 private:
 };

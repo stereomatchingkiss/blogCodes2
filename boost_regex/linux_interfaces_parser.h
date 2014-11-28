@@ -3,7 +3,11 @@
 
 /**
  * @brief The parser of the /etc/network/interfaces\n
- * not so efficient, but should adequate for the small project
+ * not so efficient, but should adequate for the small project\n
+ *
+ *
+ * This class could eliminate some useless copy if\n
+ * the compiler support c++11
  */
 
 #include <boost/scoped_ptr.hpp>
@@ -27,7 +31,7 @@ public:
     void set_contents(std::string const &input);
     void set_contents(std::vector<std::string> const &input);    
 private:
-    struct router_info
+    struct router_infomation
     {
         std::string gateway;
         std::string mask;
@@ -42,16 +46,17 @@ private:
         std::string  mtu;
         std::string  netmask;
         std::string  network;                
-        router_info  router;
+        std::vector<router_infomation>  routers;
     };
 
 private:
     typedef std::vector<std::string>::const_iterator CIter;
+    typedef std::vector<router_infomation> RouteInfo;
 
     void build_interface_info(std::vector<std::string> const &input,
                               std::vector<std::pair<size_t, std::string> > const &eth_info);
 
-    std::string match_router(CIter begin, CIter end) const;
+    RouteInfo match_router(CIter begin, CIter end) const;
 
     void set_interface_info(std::string const &interface, CIter begin, CIter end);
     void split_to_interface_structure(std::vector<std::string> const &input);
