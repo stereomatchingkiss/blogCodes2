@@ -51,7 +51,9 @@ parse_user_name(std::vector<std::string> const &input)
             result += '&';
         }
     }
-    result.pop_back();
+    if(!result.empty()){
+        result.pop_back();
+    }
 
     return {result, valid_names};
 }
