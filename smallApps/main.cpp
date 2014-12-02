@@ -70,7 +70,7 @@ void generate_changes_log(std::ostream &out,
     std::string const Space("                      ");
     for(size_t i = 0; i != log.commit_files_.size(); ++i){
         std::string temp = log.commit_files_[i];
-        boost::replace_first(temp, "scada/trunk", "scada/");
+        boost::replace_first(temp, "scada/trunk", "scada");
         if(i != 0){
             out<<Space<<" * "<<temp.substr(5)<<"\n";
         }else{
