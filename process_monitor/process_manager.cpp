@@ -1,6 +1,7 @@
 #include "process_manager.hpp"
 #include "qprocess_guard.hpp"
 #include "start_qprocess_repeat.hpp"
+#include "utility.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -15,6 +16,7 @@ process_manager::process_manager(QString const &file)
     QString const Contents(file_read.readAll());
     auto const Splitted = Contents.split(QRegularExpression("\r\n|\n\r|\r|\n"));
 
+    close_running_process();
     for(auto const Data : Splitted){
         create_process(Data);
     }
@@ -25,18 +27,44 @@ process_manager::~process_manager()
 
 }
 
-void process_manager::create_process(const QString &data)
+void process_manager::close_running_process()
 {
-    if(get_argument(data)){
-       std::unique_ptr<QProcess> process(new QProcess);
-       start_qprocess_repeat start(*process, program_, arguments_);
-       std::unique_ptr<qprocess_guard> guard(new qprocess_guard(process.get()));
-
-       process_.insert(std::make_pair(program_, std::move(process)));
-       guard_process_.insert(std::make_pair(program_, std::move(guard)));
+    running_process_ = get_running_process();
+    for(auto const &Data : running_process_){
+        if(Data == "some path"){
+            QProcess taskkill;
+            taskkill.start(
+                        "taskkill",
+                        QStringList() << "/f" << "/im" << Data
+                        );
+            taskkill.waitForFinished();
+        }
     }
 }
 
+void process_manager::create_process(const QString &data)
+{
+    if(get_argument(data)){
+        std::unique_ptr<QProcess> process(new QProcess);
+        start_qprocess_repeat start(*process, program_, arguments_);
+        std::unique_ptr<qprocess_guard> guard(new qprocess_guard(process.get()));
+
+        process_.insert(std::make_pair(program_, std::move(process)));
+        guard_process_.insert(std::make_pair(program_, std::move(guard)));
+    }
+}
+
+/**
+ * @brief get the arguments of the program from the data
+ *
+ *
+ * The data begin with the process you want to execute\n
+ * and following the params you want to feed to the process.\n
+ * Example : tasklist /v /NH
+ *
+ * @param data contains the data
+ * @return true if the arguments can get from the data; else false
+ */
 bool process_manager::get_argument(const QString &data) const
 {
     static QRegularExpression reg("\\s+");

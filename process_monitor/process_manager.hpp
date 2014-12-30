@@ -22,6 +22,7 @@ public:
     ~process_manager();
 
 private:
+    void close_running_process();
     void create_process(QString const &data);
 
     bool get_argument(QString const &data) const;
@@ -32,6 +33,8 @@ private:
     std::map<QString, std::unique_ptr<qprocess_guard> > guard_process_;
     std::map<QString, std::unique_ptr<QProcess> > process_;
     QString program_;
+
+    QStringList running_process_;
 };
 
 #endif // PROCESS_MANAGER_H
