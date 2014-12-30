@@ -18,6 +18,9 @@ public:
                           const QStringList &arguments);
     ~start_qprocess_repeat();
 
+    start_qprocess_repeat(start_qprocess_repeat const&) = delete;
+    start_qprocess_repeat& operator=(start_qprocess_repeat const&) = delete;
+
 private slots:
     void restart(QProcess::ProcessError error);
 
