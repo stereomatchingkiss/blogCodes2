@@ -11,9 +11,10 @@ start_qprocess_repeat::start_qprocess_repeat(QProcess &process,
       process_(&process),
       program_(program)
 {
-    process.start(program, arguments);
     connect(&process, SIGNAL(error(QProcess::ProcessError)),
             this, SLOT(restart(QProcess::ProcessError error)));
+
+    process.start(program, arguments);
     process.waitForStarted();
 }
 
