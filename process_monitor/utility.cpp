@@ -2,17 +2,32 @@
 
 #include <QDebug>
 #include <QProcess>
+#include <QRegularExpression>
 
-QString get_running_process()
+#include <algorithm>
+#include <iterator>
+
+QStringList get_running_process()
 {
     QProcess tasklist;
     tasklist.start(
                 "PowerShell",
-                QStringList() << "get-process | get-item -erroraction silentlycontinue | format-table name, directory"
+                QStringList() << "Get-Process | Format-List Path"
                 );
     tasklist.waitForFinished();
-    QString output = tasklist.readAllStandardOutput();    ;
-    qDebug()<<output;
+    QString const Output = tasklist.readAllStandardOutput();
+    auto result = Output.split(QRegularExpression("\r\n|\n\r|\r|\n"));
+    result.removeDuplicates();
+    for(auto &data : result){
+        data.replace("Path : ", "");
+    }
 
-    return output;
+    auto it = std::remove_if(std::begin(result), std::end(result), [](QString const &a)
+    {
+        return a.isEmpty();
+    });
+    result.erase(it, std::end(result));
+    result.sort();
+
+    return result;
 }

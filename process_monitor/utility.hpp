@@ -3,7 +3,7 @@
 
 #include <QStringList>
 
-QString get_running_process();
+QStringList get_running_process();
 
 #endif // UTILITY_HPP
 
