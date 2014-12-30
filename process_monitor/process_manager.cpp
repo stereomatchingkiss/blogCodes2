@@ -13,7 +13,7 @@ process_manager::process_manager(QString const &file)
     file_read.open(QIODevice::ReadOnly);
 
     QString const Contents(file_read.readAll());
-    auto const Splitted = Contents.split(QRegularExpression("\r|\n|\r\n|\n\r"));
+    auto const Splitted = Contents.split(QRegularExpression("\r\n|\n\r|\r|\n"));
 
     for(auto const Data : Splitted){
         create_process(Data);
