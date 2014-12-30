@@ -7,6 +7,14 @@
 #include <algorithm>
 #include <iterator>
 
+/**
+ * @brief get the running process paths/names
+ *
+ *
+ * By now this function only support windows platform\n
+ * which support power shell
+ * @return running process paths/names
+ */
 QStringList get_running_process()
 {
     QProcess tasklist;

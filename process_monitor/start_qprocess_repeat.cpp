@@ -30,6 +30,12 @@ void start_qprocess_repeat::set_restart_limit(size_t restart_limit)
     restart_limit_ = restart_limit;
 }
 
+/**
+ * @brief restart the process if\n
+ * 1 : error == QProcess::FailedToStart\n
+ * 2 : restart time < restart limit
+ * @param error error codes
+ */
 void start_qprocess_repeat::restart(QProcess::ProcessError error)
 {
     qDebug()<<"process ["<<process_->program()<<"] error == "<<error;
