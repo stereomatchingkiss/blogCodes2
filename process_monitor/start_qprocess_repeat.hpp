@@ -21,6 +21,8 @@ public:
     start_qprocess_repeat(start_qprocess_repeat const&) = delete;
     start_qprocess_repeat& operator=(start_qprocess_repeat const&) = delete;
 
+    void set_restart_limit(size_t restart_limit);
+
 private slots:
     void restart(QProcess::ProcessError error);
 
@@ -29,6 +31,9 @@ private:
 
     QProcess *process_;
     QString program_;
+
+    size_t restart_limit_;
+    size_t restart_time_;
 };
 
 #endif // START_QPROCESS_REPEAT_H
