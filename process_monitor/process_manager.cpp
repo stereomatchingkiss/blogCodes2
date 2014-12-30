@@ -27,22 +27,27 @@ process_manager::~process_manager()
 
 void process_manager::create_process(const QString &data)
 {
-    QStringList const Arguments = get_argument(data);
-    QString const Program = Splitted[0];
-    if(!Splitted.empty()){
+    if(get_argument(data)){
        std::unique_ptr<QProcess> process(new QProcess);
-       start_qprocess_repeat start(*process, Program, Arguments);
+       start_qprocess_repeat start(*process, program_, arguments_);
        std::unique_ptr<qprocess_guard> guard(new qprocess_guard(process.get()));
 
-       process_.insert(std::make_pair(Program, std::move(process)));
-       guard_process_.insert(std::make_pair(Program, std::move(guard)));
+       process_.insert(std::make_pair(program_, std::move(process)));
+       guard_process_.insert(std::make_pair(program_, std::move(guard)));
     }
 }
 
-QStringList process_manager::get_argument(const QString &data) const
+bool process_manager::get_argument(const QString &data) const
 {
     static QRegularExpression reg("\\s+");
     auto const Splitted = data.split(reg);
+    QString program;
+    if(!Splitted.empty()){
+        program = Splitted[0];
+    }else{
+        return false;
+    }
+
     QStringList arguments;
     if(Splitted.size() > 1){
         for(int i = 1; i != Splitted.size(); ++i){
@@ -50,6 +55,6 @@ QStringList process_manager::get_argument(const QString &data) const
         }
     }
 
-    return arguments;
+    return true;
 }
 
