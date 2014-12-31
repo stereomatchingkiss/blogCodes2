@@ -14,7 +14,7 @@ start_qprocess_repeat::start_qprocess_repeat(QProcess &process,
       restart_time_(0)
 {
     connect(&process, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(restart(QProcess::ProcessError error)));
+            this, SLOT(restart(QProcess::ProcessError)));
 
     process.start(program, arguments);
     process.waitForStarted();
@@ -25,7 +25,7 @@ start_qprocess_repeat::~start_qprocess_repeat()
 
 }
 
-void start_qprocess_repeat::set_restart_limit(size_t restart_limit)
+void start_qprocess_repeat::set_restart_limit(size_t restart_limit) noexcept
 {
     restart_limit_ = restart_limit;
 }
@@ -44,7 +44,7 @@ void start_qprocess_repeat::restart(QProcess::ProcessError error)
             process_->start(program_, arguments_);
             process_->waitForStarted();
         }
+        ++restart_time_;
     }
-    ++restart_time_;
 }
 
