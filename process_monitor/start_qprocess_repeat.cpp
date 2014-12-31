@@ -25,6 +25,31 @@ start_qprocess_repeat::~start_qprocess_repeat()
 
 }
 
+start_qprocess_repeat&
+start_qprocess_repeat::operator=(start_qprocess_repeat &&data) noexcept
+{
+    arguments_ = std::move(data.arguments_);
+    process_ = data.process_;
+    data.process_ = nullptr;
+    program_ = std::move(data.program_);
+
+    restart_limit_ = data.restart_limit_;
+    restart_time_ = data.restart_time_;
+
+    return *this;
+}
+
+start_qprocess_repeat::
+start_qprocess_repeat(start_qprocess_repeat &&data) noexcept:
+    arguments_{std::move(data.arguments_)},
+    process_{data.process_},
+    program_{std::move(data.program_)},
+    restart_limit_{data.restart_limit_},
+    restart_time_{data.restart_time_}
+{
+
+}
+
 void start_qprocess_repeat::set_restart_limit(size_t restart_limit) noexcept
 {
     restart_limit_ = restart_limit;
@@ -36,7 +61,7 @@ void start_qprocess_repeat::set_restart_limit(size_t restart_limit) noexcept
  * 2 : restart time < restart limit
  * @param error error codes
  */
-void start_qprocess_repeat::restart(QProcess::ProcessError error)
+void start_qprocess_repeat::restart(QProcess::ProcessError error) noexcept
 {
     qDebug()<<"process ["<<process_->program()<<"] error == "<<error;
     if(restart_time_ < restart_limit_){

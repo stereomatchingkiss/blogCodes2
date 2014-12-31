@@ -21,10 +21,13 @@ public:
     start_qprocess_repeat(start_qprocess_repeat const&) = delete;
     start_qprocess_repeat& operator=(start_qprocess_repeat const&) = delete;
 
+    start_qprocess_repeat(start_qprocess_repeat &&) noexcept;
+    start_qprocess_repeat& operator=(start_qprocess_repeat &&) noexcept;
+
     void set_restart_limit(size_t restart_limit) noexcept;
 
 private slots:
-    void restart(QProcess::ProcessError error);
+    void restart(QProcess::ProcessError error) noexcept;
 
 private:
     QStringList arguments_;
