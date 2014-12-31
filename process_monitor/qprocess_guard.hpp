@@ -25,6 +25,9 @@ public:
     qprocess_guard(qprocess_guard const&) = delete;
     qprocess_guard& operator=(qprocess_guard const&) = delete;
 
+    qprocess_guard(qprocess_guard &&);
+    qprocess_guard& operator=(qprocess_guard &&data);
+
     void set_error_handle(std::function<void(QProcess&)> func);
     void set_finish_time(int msecs);
     void set_qprocess(QProcess *process);
