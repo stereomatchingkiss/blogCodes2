@@ -1,12 +1,14 @@
 #ifndef QPROCESS_GUARD_H
 #define QPROCESS_GUARD_H
 
+#include <QObject>
 #include <QProcess>
 
 #include <functional>
 
 /**
- *@brief close the QProcess(blocking) when destroy
+ *@brief 1 : close the QProcess(blocking) when destroy\n
+ * 2 : restart the process if the process down
  *
  *
  * By default, this class will call kill() to close the\n
@@ -14,25 +16,29 @@
  * process cannot be closed within 3 seconds
  */
 
-class QProcess;
-
-class qprocess_guard
+class qprocess_guard : public QObject
 {    
+    Q_OBJECT
+
 public:    
-    explicit qprocess_guard(QProcess *process = nullptr);
+    explicit qprocess_guard(QProcess *process = nullptr,
+                            QObject *parent = nullptr);
     ~qprocess_guard();
 
     qprocess_guard(qprocess_guard const&) = delete;
     qprocess_guard& operator=(qprocess_guard const&) = delete;
 
-    qprocess_guard(qprocess_guard &&) noexcept;
-    qprocess_guard& operator=(qprocess_guard &&data) noexcept;
+    void enable_restart(bool value) noexcept;
 
     void set_error_handle(std::function<void(QProcess&)> func);
     void set_finish_time(int msecs) noexcept;
     void set_qprocess(QProcess *process) noexcept;
 
+private slots:
+    void restart(QProcess::ProcessError error) noexcept;
+
 private:
+    bool enable_restart_;
     std::function<void(QProcess&)> error_handle_;
 
     int finish_time_;

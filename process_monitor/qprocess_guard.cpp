@@ -1,32 +1,16 @@
 #include "qprocess_guard.hpp"
 #include "kill_qprocess.hpp"
 
-#include <QProcess>
-
-qprocess_guard::qprocess_guard(QProcess *process) :
+qprocess_guard::qprocess_guard(QProcess *process,
+                               QObject *parent) :
+    QObject(parent),
+    enable_restart_(true),
     error_handle_{kill_qprocess},
     finish_time_{3000},
     process_{process}
 {
-
-}
-
-qprocess_guard &qprocess_guard::operator=(qprocess_guard &&data) noexcept
-{
-    error_handle_ = std::move(data.error_handle_);
-    finish_time_ = data.finish_time_;
-    process_ = data.process_;
-    data.process_ = nullptr;
-
-    return *this;
-}
-
-qprocess_guard::qprocess_guard(qprocess_guard &&data) noexcept :
-    error_handle_{std::move(data.error_handle_)},
-    finish_time_{data.finish_time_},
-    process_{data.process_}
-{
-    data.process_ = nullptr;
+    connect(process_, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(restart(QProcess::ProcessError)));
 }
 
 qprocess_guard::~qprocess_guard()
@@ -36,6 +20,11 @@ qprocess_guard::~qprocess_guard()
             error_handle_(*process_);
         }
     }
+}
+
+void qprocess_guard::enable_restart(bool value) noexcept
+{
+    enable_restart_ = value;
 }
 
 /**
@@ -55,5 +44,12 @@ void qprocess_guard::set_finish_time(int msecs) noexcept
 void qprocess_guard::set_qprocess(QProcess *process) noexcept
 {
     process_ = process;
+}
+
+void qprocess_guard::restart(QProcess::ProcessError error) noexcept
+{
+    if(process_ && error == QProcess::Crashed && enable_restart_){
+        process_->start(process_->program(), process_->arguments());
+    }
 }
 
