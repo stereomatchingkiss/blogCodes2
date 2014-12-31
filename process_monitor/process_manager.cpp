@@ -1,6 +1,5 @@
 #include "process_manager.hpp"
 #include "qprocess_guard.hpp"
-#include "start_qprocess_repeat.hpp"
 #include "utility.hpp"
 
 #include <QDir>
@@ -46,9 +45,10 @@ void process_manager::create_process(const QString &data)
 {
     if(get_argument(data)){
         std::unique_ptr<QProcess> process(new QProcess);
-        start_qprocess_repeat start(*process, program_, arguments_);
-        std::unique_ptr<qprocess_guard> guard(new qprocess_guard(process.get()));
-
+        std::unique_ptr<qprocess_guard> guard
+                (new qprocess_guard(process.get(),
+                                    program_,
+                                    arguments_));
         process_.insert(std::make_pair(program_, std::move(process)));
         guard_process_.insert(std::make_pair(program_, std::move(guard)));
     }
