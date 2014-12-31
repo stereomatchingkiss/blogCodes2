@@ -12,10 +12,10 @@ qprocess_guard::qprocess_guard(QProcess *process,
     error_handle_{kill_qprocess},
     finish_time_{3000},
     process_{process}
-{
-    process_->start(program, arguments);
+{    
     connect(process_, SIGNAL(error(QProcess::ProcessError)),
             this, SLOT(restart(QProcess::ProcessError)));
+    process_->start(program, arguments);
 }
 
 qprocess_guard::~qprocess_guard()
