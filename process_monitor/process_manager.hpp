@@ -1,11 +1,6 @@
 #ifndef PROCESS_MANAGER_H
 #define PROCESS_MANAGER_H
 
-/**
- * @brief open the process of list in file and reopen\n
- * those processes if they are down because some errors happens
- */
-
 #include "qprocess_guard.hpp"
 
 #include <QProcess>
@@ -15,6 +10,10 @@
 #include <memory>
 #include <utility>
 
+/**
+ * @brief open the process of list in file and reopen\n
+ * those processes if they are down because some errors happens
+ */
 class process_manager
 {
 public:
