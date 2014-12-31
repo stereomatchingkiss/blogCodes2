@@ -1,6 +1,8 @@
 #include "qprocess_guard.hpp"
 #include "kill_qprocess.hpp"
 
+#include <QDebug>
+
 qprocess_guard::qprocess_guard(QProcess *process,
                                QString const &program,
                                QStringList const &arguments,
@@ -54,6 +56,8 @@ void qprocess_guard::restart(QProcess::ProcessError error) noexcept
     if(process_ && enable_restart_){
         if(error == QProcess::Crashed){
             process_->start(process_->program(), process_->arguments());
+        }else if(error == QProcess::FailedToStart){
+            qDebug()<<process_->program()<<" failed to start";
         }
     }
 }
