@@ -21,7 +21,9 @@ class qprocess_guard : public QObject
     Q_OBJECT
 
 public:    
-    explicit qprocess_guard(QProcess *process = nullptr,
+    explicit qprocess_guard(QProcess *process,
+                            QString const &program,
+                            QStringList const &arguments,
                             QObject *parent = nullptr);
     ~qprocess_guard();
 
