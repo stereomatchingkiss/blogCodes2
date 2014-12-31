@@ -8,6 +8,6 @@
 
 class QProcess;
 
-void kill_qprocess(QProcess &process);
+void kill_qprocess(QProcess &process) noexcept;
 
 #endif // KILL_QPROCESS_H
