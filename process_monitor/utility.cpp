@@ -35,7 +35,6 @@ QStringList get_running_process()
         return a.isEmpty();
     });
     result.erase(it, std::end(result));
-    result.sort();
 
     return result;
 }
