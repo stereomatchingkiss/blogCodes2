@@ -34,7 +34,6 @@ public:
 
     void set_error_handle(std::function<void(QProcess&)> func);
     void set_finish_time(int msecs) noexcept;
-    void set_qprocess(QProcess *process) noexcept;
 
 private slots:
     void restart(QProcess::ProcessError error) noexcept;

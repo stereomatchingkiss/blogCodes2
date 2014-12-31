@@ -46,11 +46,6 @@ void qprocess_guard::set_finish_time(int msecs) noexcept
     finish_time_ = msecs;
 }
 
-void qprocess_guard::set_qprocess(QProcess *process) noexcept
-{
-    process_ = process;
-}
-
 void qprocess_guard::restart(QProcess::ProcessError error) noexcept
 {
     if(process_ && enable_restart_){
