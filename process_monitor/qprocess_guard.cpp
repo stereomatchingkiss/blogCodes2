@@ -42,9 +42,9 @@ qprocess_guard::~qprocess_guard()
  * @brief setup the error handle
  * @param func the functor try to handle the error
  */
-void qprocess_guard::set_error_handle(std::function<void (QProcess &)> func)
+void qprocess_guard::set_error_handle(std::function<void(QProcess&)> func)
 {
-    error_handle_ = func;
+    error_handle_ = std::move(func);
 }
 
 void qprocess_guard::set_finish_time(int msecs) noexcept
