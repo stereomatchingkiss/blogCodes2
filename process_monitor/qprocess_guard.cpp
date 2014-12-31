@@ -11,7 +11,7 @@ qprocess_guard::qprocess_guard(QProcess *process) :
 
 }
 
-qprocess_guard &qprocess_guard::operator=(qprocess_guard &&data)
+qprocess_guard &qprocess_guard::operator=(qprocess_guard &&data) noexcept
 {
     error_handle_ = std::move(data.error_handle_);
     finish_time_ = data.finish_time_;
@@ -21,7 +21,7 @@ qprocess_guard &qprocess_guard::operator=(qprocess_guard &&data)
     return *this;
 }
 
-qprocess_guard::qprocess_guard(qprocess_guard &&data) :
+qprocess_guard::qprocess_guard(qprocess_guard &&data) noexcept :
     error_handle_{std::move(data.error_handle_)},
     finish_time_{data.finish_time_},
     process_{data.process_}
@@ -47,12 +47,12 @@ void qprocess_guard::set_error_handle(std::function<void (QProcess &)> func)
     error_handle_ = func;
 }
 
-void qprocess_guard::set_finish_time(int msecs)
+void qprocess_guard::set_finish_time(int msecs) noexcept
 {
     finish_time_ = msecs;
 }
 
-void qprocess_guard::set_qprocess(QProcess *process)
+void qprocess_guard::set_qprocess(QProcess *process) noexcept
 {
     process_ = process;
 }

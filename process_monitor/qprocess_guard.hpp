@@ -25,12 +25,12 @@ public:
     qprocess_guard(qprocess_guard const&) = delete;
     qprocess_guard& operator=(qprocess_guard const&) = delete;
 
-    qprocess_guard(qprocess_guard &&);
-    qprocess_guard& operator=(qprocess_guard &&data);
+    qprocess_guard(qprocess_guard &&) noexcept;
+    qprocess_guard& operator=(qprocess_guard &&data) noexcept;
 
     void set_error_handle(std::function<void(QProcess&)> func);
-    void set_finish_time(int msecs);
-    void set_qprocess(QProcess *process);
+    void set_finish_time(int msecs) noexcept;
+    void set_qprocess(QProcess *process) noexcept;
 
 private:
     std::function<void(QProcess&)> error_handle_;
