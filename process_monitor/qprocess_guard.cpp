@@ -2,6 +2,8 @@
 #include "kill_qprocess.hpp"
 
 qprocess_guard::qprocess_guard(QProcess *process,
+                               QString const &program,
+                               QStringList const &arguments,
                                QObject *parent) :
     QObject(parent),
     enable_restart_(true),
@@ -9,6 +11,7 @@ qprocess_guard::qprocess_guard(QProcess *process,
     finish_time_{3000},
     process_{process}
 {
+    process_->start(program, arguments);
     connect(process_, SIGNAL(error(QProcess::ProcessError)),
             this, SLOT(restart(QProcess::ProcessError)));
 }
@@ -48,8 +51,10 @@ void qprocess_guard::set_qprocess(QProcess *process) noexcept
 
 void qprocess_guard::restart(QProcess::ProcessError error) noexcept
 {
-    if(process_ && error == QProcess::Crashed && enable_restart_){
-        process_->start(process_->program(), process_->arguments());
+    if(process_ && enable_restart_){
+        if(error == QProcess::Crashed){
+            process_->start(process_->program(), process_->arguments());
+        }
     }
 }
 
