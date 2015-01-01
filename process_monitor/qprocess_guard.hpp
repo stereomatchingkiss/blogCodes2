@@ -32,15 +32,16 @@ public:
 
     void enable_restart(bool value) noexcept;
 
-    void set_error_handle(std::function<void(QProcess&)> func);
+    void set_close_handle(std::function<void(QProcess&)> func);
     void set_finish_time(int msecs) noexcept;
 
 private slots:
     void restart(QProcess::ProcessError error) noexcept;
 
 private:
-    bool enable_restart_;
-    std::function<void(QProcess&)> error_handle_;
+    std::function<void(QProcess&)> close_handle_;
+
+    bool enable_restart_;    
 
     int finish_time_;
 
