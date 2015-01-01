@@ -38,3 +38,10 @@ QStringList get_running_process()
 
     return result;
 }
+
+void kill_qprocess(QProcess &process) noexcept
+{
+    qDebug()<<"process id == "<<process.processId();
+    qDebug()<<"process error == "<<process.error();
+    process.kill();
+}

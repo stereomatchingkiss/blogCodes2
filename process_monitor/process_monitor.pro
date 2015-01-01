@@ -18,14 +18,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     qprocess_guard.cpp \
-    kill_qprocess.cpp \
     start_qprocess_repeat.cpp \
     process_manager.cpp \
     utility.cpp
 
 HEADERS += \
     qprocess_guard.hpp \
-    kill_qprocess.hpp \
     start_qprocess_repeat.hpp \
     process_manager.hpp \
     utility.hpp
