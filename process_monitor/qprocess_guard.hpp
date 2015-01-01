@@ -34,6 +34,7 @@ public:
 
     void set_close_handle(std::function<void(QProcess&)> func);
     void set_finish_time(int msecs) noexcept;
+    void set_restart_handle(std::function<void(QProcess&, QProcess::ProcessError)> func);
 
 private slots:
     void restart(QProcess::ProcessError error) noexcept;
@@ -47,6 +48,7 @@ private:
 
     QProcess *process_;
 
+    std::function<void(QProcess&, QProcess::ProcessError)> restart_handle_;
 };
 
 #endif // QPROCESS_GUARD_H

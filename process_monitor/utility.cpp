@@ -45,3 +45,13 @@ void kill_qprocess(QProcess &process) noexcept
     qDebug()<<"process error == "<<process.error();
     process.kill();
 }
+
+
+void restart_qprocess(QProcess &process, QProcess::ProcessError error) noexcept
+{
+    if(error == QProcess::Crashed){
+        process.start(process.program(), process.arguments());
+    }else if(error == QProcess::FailedToStart){
+        qDebug()<<process.program()<<" failed to start";
+    }
+}
