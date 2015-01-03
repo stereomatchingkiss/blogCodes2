@@ -7,7 +7,7 @@ qprocess_guard::qprocess_guard(QProcess *process,
                                QString const &program,
                                QStringList const &arguments,
                                QObject *parent) :
-    QObject(parent),    
+    QObject(parent),
     close_handle_{kill_qprocess},
     enable_restart_(true),
     finish_time_{3000},
@@ -21,6 +21,8 @@ qprocess_guard::qprocess_guard(QProcess *process,
 
 qprocess_guard::~qprocess_guard()
 {
+    disconnect(process_, SIGNAL(error(QProcess::ProcessError)),
+               this, SLOT(restart(QProcess::ProcessError)));
     if(process_ && process_->state() == QProcess::Running){
         if(!process_->waitForFinished(finish_time_)){
             close_handle_(std::ref(*process_));
@@ -54,7 +56,7 @@ void qprocess_guard::set_restart_handle(std::function<void (QProcess &, QProcess
 
 void qprocess_guard::restart(QProcess::ProcessError error) noexcept
 {
-    if(process_ && enable_restart_){        
+    if(process_ && enable_restart_){
         restart_handle_(std::ref(*process_), error);
     }
 }
