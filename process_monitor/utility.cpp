@@ -32,8 +32,8 @@ QStringList get_running_process()
 
     auto it = std::remove_if(std::begin(result), std::end(result), [](QString const &a)
     {
-        return a.isEmpty();
-    });
+            return a.isEmpty();
+});
     result.erase(it, std::end(result));
 
     return result;
@@ -54,4 +54,17 @@ void restart_qprocess(QProcess &process, QProcess::ProcessError error) noexcept
     }else if(error == QProcess::FailedToStart){
         qDebug()<<process.program()<<" failed to start";
     }
+}
+
+
+bool kill_process(const QString &process)
+{
+    QProcess task_kill;
+    task_kill.start(
+                process,
+                ///f /im notepad.exe
+                QStringList()<<"/f"<<"/im"<<process
+                );
+
+    return task_kill.waitForFinished();
 }
