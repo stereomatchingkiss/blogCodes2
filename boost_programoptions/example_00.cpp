@@ -14,7 +14,7 @@ using namespace boost::program_options;
 
 namespace{
 
-void on_age(int age)
+void on_age(float age)
 {
     std::cout << "On age: " << age << '\n';
 }
@@ -26,14 +26,24 @@ void to_cout(const std::vector<std::string> &v)
                   std::cout, "\n"});
 }
 
+void iteratate_map_cpp_98(variables_map const &map)
+{
+    typedef variables_map::const_iterator It;
+    std::cout<<"iterate map cpp98"<<std::endl;
+    for(It it = map.begin(); it != map.end(); ++it){
+        std::cout<<it->first<<", "<<(it->second).as<float>()<<std::endl;
+    }
+    std::cout<<"end\n"<<std::endl;
+}
+
 struct on_age_struct
 {
-    void operator()(int age) const
+    void operator()(float age) const
     {
         on_age(age);
     }
 
-    void on_age2(int age) const
+    void on_age2(float age) const
     {
         on_age(age);
     }
@@ -50,16 +60,18 @@ void basic_approach(int argc, char const *argv[])
         desc.add_options()
                 ("help,h", "Help screen")
                 ("pi", value<float>()->default_value(3.14f), "Pi")
-                ("age", value<int>()->notifier(std::bind(&on_age_struct::on_age2, &on, std::placeholders::_1)), "Age");
+                ("age", value<float>()->notifier(std::bind(&on_age_struct::on_age2, &on, std::placeholders::_1)), "Age");
 
         variables_map vm;
         store(parse_command_line(argc, argv, desc), vm);
         notify(vm);
 
+        iteratate_map_cpp_98(vm);
+
         if (vm.count("help"))
             std::cout << desc << '\n';
         else if (vm.count("age"))
-            std::cout << "Age: " << vm["age"].as<int>() << '\n';
+            std::cout << "Age: " << vm["age"].as<float>() << '\n';
         else if (vm.count("pi"))
             std::cout << "Pi: " << vm["pi"].as<float>() << '\n';
     }
