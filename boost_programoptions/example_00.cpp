@@ -60,20 +60,27 @@ void basic_approach(int argc, char const *argv[])
         desc.add_options()
                 ("help,h", "Help screen")
                 ("pi", value<float>()->default_value(3.14f), "Pi")
-                ("age", value<float>()->notifier(std::bind(&on_age_struct::on_age2, &on, std::placeholders::_1)), "Age");
+                ("age", value<float>()->notifier(std::bind(&on_age_struct::on_age2, &on, std::placeholders::_1)), "Age")
+                ("bool", value<bool>()->default_value(false), "bool");
 
         variables_map vm;
         store(parse_command_line(argc, argv, desc), vm);
         notify(vm);
 
-        iteratate_map_cpp_98(vm);
+        //iteratate_map_cpp_98(vm);
 
-        if (vm.count("help"))
+        if (vm.count("help")){
             std::cout << desc << '\n';
-        else if (vm.count("age"))
+        }
+        if (vm.count("age")){
             std::cout << "Age: " << vm["age"].as<float>() << '\n';
-        else if (vm.count("pi"))
+        }
+        if (vm.count("pi")){
             std::cout << "Pi: " << vm["pi"].as<float>() << '\n';
+        }
+        if(vm.count("bool")){
+            std::cout<<"bool: "<<vm["bool"].as<bool>() <<"\n";
+        }
     }
     catch (const error &ex)
     {
@@ -90,8 +97,8 @@ void special_config(int argc, const char *argv[])
         options_description desc{"Options"};
         desc.add_options()
                 ("help,h", "Help screen")
-                ("pi", value<float>()->implicit_value(3.14f), "Pi")
-                ("age", value<int>(&age), "Age")
+                ("p,p", value<float>()->implicit_value(3.14f), "Pi")
+                ("a,a", value<int>(&age), "Age")
                 ("phone", value<std::vector<std::string>>()->multitoken()->
                  zero_tokens()->composing(), "Phone")
                 ("unreg", "Unrecognized options");
@@ -110,15 +117,15 @@ void special_config(int argc, const char *argv[])
 
         if (vm.count("help"))
             std::cout << desc << '\n';
-        else if (vm.count("age"))
+        else if (vm.count("a"))
             std::cout << "Age: " << age << '\n';
         else if (vm.count("phone"))
             to_cout(vm["phone"].as<std::vector<std::string>>());
         else if (vm.count("unreg"))
             to_cout(collect_unrecognized(parsed_options.options,
                                          exclude_positional));
-        else if (vm.count("pi"))
-            std::cout << "Pi: " << vm["pi"].as<float>() << '\n';
+        else if (vm.count("p"))
+            std::cout << "Pi: " << vm["p"].as<float>() << '\n';
     }catch (const error &ex){
         std::cerr << ex.what() << '\n';
     }
