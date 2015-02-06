@@ -6,7 +6,7 @@ qt5_wrap_ui(main-win-ui ${HW_GUI_DIR}/MainWindow.ui)
 
 aux_source_directory(. SRC_LIST)
 
-set(incl_files ${HW_HEADER_DIR}/whatever.h)
+set(incl_files ${HW_HEADER_DIR}/whatever.h ${HW_HEADER_DIR}/mainwindow.h)
 set(moc_files ${main-win-src} ${whatever-src})
 set(ui_files ${main-win-ui})
 set(qt5_libs Qt5::Core Qt5::Widgets Qt5::Gui)
