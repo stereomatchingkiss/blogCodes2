@@ -6,7 +6,12 @@ qt5_wrap_ui(main-win-ui ${HW_GUI_DIR}/MainWindow.ui)
 
 aux_source_directory(. SRC_LIST)
 
-add_executable(${PROJECT_NAME} ${SRC_LIST} ${main-win-src}
-${main-win-ui} ${whatever-src})
+set(incl_files ${HW_HEADER_DIR}/whatever.h)
+set(moc_files ${main-win-src} ${whatever-src})
+set(ui_files ${main-win-ui})
+set(qt5_libs Qt5::Core Qt5::Widgets Qt5::Gui)
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Widgets Qt5::Gui)
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${moc_files}
+${ui_files} ${incl_files})
+
+target_link_libraries(${PROJECT_NAME} ${qt5_libs})
