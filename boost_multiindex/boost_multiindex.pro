@@ -18,12 +18,14 @@ include(mingw32.pri)
 
 SOURCES += main.cpp \
     employee.cpp \
-    employee_sequence.cpp
+    employee_sequence.cpp \
+    modify_example.cpp
 
 #include(deployment.pri)
 #qtcAddDeployment()
 
 HEADERS += \
     employee.hpp \
-    employee_sequence.hpp
+    employee_sequence.hpp \
+    modify_example.hpp
 
