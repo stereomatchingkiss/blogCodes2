@@ -35,9 +35,11 @@ drag_drop::~drag_drop()
 
 void drag_drop::on_pushButtonPrint_clicked()
 {
-    qDebug()<<"left";
-    qDebug()<<left_model_.stringList();
-    qDebug()<<"\nright"<<right_model_.stringList();
+    //qDebug()<<"left";
+    //qDebug()<<left_model_.stringList();
+    //qDebug()<<"\nright"<<right_model_.stringList();
+    left_model_.setStringList(QStringList()<<"baba"<<"doremi"<<"onpu"<<"majo rika");
+    right_model_.setStringList(QStringList()<<"dojimi"<<"hana"<<"terry"<<"kimi"<<"nana");
 }
 
 void drag_drop::sort_model(QModelIndex, QModelIndex)
@@ -71,8 +73,8 @@ void drag_drop::drop_action_impl(int row,
         model.insertRow(target.row());
         model.setData(target, text);
     }else if(target.model() == &model && row < target.row()){
+        //model.insertRow(target.row());
         model.insertRow(target.row() + 1);
-        //model.setData(index, text);
         model.setData(model.index(target.row() + 1, 0), text);
     }
 }

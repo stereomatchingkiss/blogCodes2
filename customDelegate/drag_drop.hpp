@@ -1,7 +1,7 @@
 #ifndef DRAG_DROP_HPP
 #define DRAG_DROP_HPP
 
-#include "custom_table_view.h"
+#include "custom_table_view.hpp"
 
 #include <QDialog>
 #include <QStringListModel>
