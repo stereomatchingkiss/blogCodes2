@@ -20,12 +20,12 @@ drag_drop::drag_drop(QWidget *parent) :
     connect(ui->listViewLeft,
             SIGNAL(my_drop_action(int,QModelIndex,QString,int)),
             this,
-            SLOT(left_drop_action(int,QModelIndex,QString,int)));
+            SLOT(drop_action(int,QModelIndex,QString,int)));
 
     connect(ui->listViewRight,
             SIGNAL(my_drop_action(int,QModelIndex,QString,int)),
             this,
-            SLOT(left_drop_action(int,QModelIndex,QString,int)));
+            SLOT(drop_action(int,QModelIndex,QString,int)));
 }
 
 drag_drop::~drag_drop()
@@ -48,10 +48,10 @@ void drag_drop::sort_model(QModelIndex, QModelIndex)
     right_model_.sort(0);
 }
 
-void drag_drop::left_drop_action(int row,
-                                 QModelIndex const &target,
-                                 QString const &text,
-                                 int)
+void drag_drop::drop_action(int row,
+                            QModelIndex const &target,
+                            QString const &text,
+                            int)
 {
     if(target.model() == &left_model_){
         qDebug()<<"drag to left model";

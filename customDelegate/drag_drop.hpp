@@ -25,10 +25,10 @@ private slots:
 
     void sort_model(QModelIndex, QModelIndex);
 
-    void left_drop_action(int row,
-                          QModelIndex const &target,
-                          QString const &text,
-                          int drop_type);
+    void drop_action(int row,
+                     QModelIndex const &target,
+                     QString const &text,
+                     int drop_type);
 
 private:
     void drop_action_impl(int row,

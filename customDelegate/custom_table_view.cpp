@@ -1,4 +1,4 @@
-#include "custom_table_view.h"
+#include "custom_table_view.hpp"
 
 #include <QByteArray>
 #include <QDataStream>
