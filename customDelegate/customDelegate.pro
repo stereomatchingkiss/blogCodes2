@@ -16,16 +16,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    dispatch_delegate.cc \
-    user_model.cc \
+    dispatch_delegate.cpp \
+    user_model.cpp \
     drag_drop.cpp \
     custom_table_view.cpp
 
-HEADERS  += mainwindow.h \
-    dispatch_delegate.h \
-    user_model.h \
+HEADERS  += mainwindow.hpp \
+    dispatch_delegate.hpp \
+    user_model.hpp \
     drag_drop.hpp \
-    custom_table_view.h
+    custom_table_view.hpp
 
 FORMS    += mainwindow.ui \
     drag_drop.ui
