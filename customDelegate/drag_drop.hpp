@@ -23,8 +23,6 @@ public:
 private slots:
     void on_pushButtonPrint_clicked();
 
-    void sort_model(QModelIndex, QModelIndex);
-
     void drop_action(int row,
                      QModelIndex const &target,
                      QString const &text,
