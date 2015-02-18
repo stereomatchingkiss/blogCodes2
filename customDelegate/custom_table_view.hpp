@@ -6,13 +6,7 @@
 class custom_table_view : public QListView
 {
     Q_OBJECT
-public:
-    enum DropType
-    {
-        MySelf,
-        Other
-    };
-
+public:    
     explicit custom_table_view(QWidget *parent = 0);
     ~custom_table_view();
 
@@ -21,8 +15,7 @@ public:
 signals:
     void my_drop_action(int source,
                         QModelIndex const &target,
-                        QString const &text,
-                        int drop_type);
+                        QString const &text);
 };
 
 #endif // CUSTOM_TABLE_VIEW_H

@@ -25,8 +25,7 @@ private slots:
 
     void drop_action(int row,
                      QModelIndex const &target,
-                     QString const &text,
-                     int drop_type);
+                     QString const &text);
 
 private:
     void drop_action_impl(int row,

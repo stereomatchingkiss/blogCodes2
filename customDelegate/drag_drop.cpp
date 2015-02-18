@@ -14,14 +14,14 @@ drag_drop::drag_drop(QWidget *parent) :
     ui->listViewRight->setModel(&right_model_);
 
     connect(ui->listViewLeft,
-            SIGNAL(my_drop_action(int,QModelIndex,QString,int)),
+            SIGNAL(my_drop_action(int,QModelIndex,QString)),
             this,
-            SLOT(drop_action(int,QModelIndex,QString,int)));
+            SLOT(drop_action(int,QModelIndex,QString)));
 
     connect(ui->listViewRight,
-            SIGNAL(my_drop_action(int,QModelIndex,QString,int)),
+            SIGNAL(my_drop_action(int,QModelIndex,QString)),
             this,
-            SLOT(drop_action(int,QModelIndex,QString,int)));
+            SLOT(drop_action(int,QModelIndex,QString)));
 }
 
 drag_drop::~drag_drop()
@@ -37,8 +37,7 @@ void drag_drop::on_pushButtonPrint_clicked()
 
 void drag_drop::drop_action(int row,
                             QModelIndex const &target,
-                            QString const &text,
-                            int)
+                            QString const &text)
 {
     if(target.model() == &left_model_){
         drop_action_impl(row, target, text, left_model_);
