@@ -13,6 +13,10 @@ drag_drop::drag_drop(QWidget *parent) :
     ui->listViewLeft->setModel(&left_model_);
     ui->listViewRight->setModel(&right_model_);
 
+    ui->listViewLeft->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->listViewLeft, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(handle_custom_context(QPoint)));
+
     connect(ui->listViewLeft,
             SIGNAL(my_drop_action(int,QModelIndex,QString)),
             this,
@@ -44,6 +48,11 @@ void drag_drop::drop_action(int row,
     }else{
         drop_action_impl(row, target, text, right_model_);
     }
+}
+
+void drag_drop::handle_custom_context(const QPoint &point)
+{
+    qDebug()<<point;
 }
 
 void drag_drop::drop_action_impl(int row,

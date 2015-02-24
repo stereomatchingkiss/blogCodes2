@@ -27,6 +27,8 @@ private slots:
                      QModelIndex const &target,
                      QString const &text);
 
+    void handle_custom_context(QPoint const &point);
+
 private:
     void drop_action_impl(int row,
                           QModelIndex const &target,
