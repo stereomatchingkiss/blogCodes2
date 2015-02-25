@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
+#include <QFileDialog>
 #include <QRegularExpression>
 #include <QStringList>
 #include <QTextStream>
@@ -45,6 +46,8 @@ int main(int argc, char *argv[])
 
     drag_drop dd;
     dd.show();
+
+    //QFileDialog::getSaveFileName(0, "waha", QDir::currentPath() + "/ppp");
 
     //split_string(read_from_file());
 

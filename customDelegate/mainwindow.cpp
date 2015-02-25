@@ -1,8 +1,8 @@
-#include "mainwindow.h"
+#include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
-#include "dispatch_delegate.h"
-#include "user_model.h"
+#include "dispatch_delegate.hpp"
+#include "user_model.hpp"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

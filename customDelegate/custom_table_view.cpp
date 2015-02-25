@@ -25,13 +25,14 @@ void custom_table_view::dropEvent(QDropEvent *event)
         QMap<int,  QVariant> roleDataMap;
         int row, col;
         stream >> row >> col >> roleDataMap;
+        qDebug()<<row<<", "<<col;
         auto const Text = roleDataMap[Qt::DisplayRole].toString();
 
         auto const TargetIndex = indexAt(event->pos());
-        if(TargetIndex.isValid()){
+        //if(TargetIndex.isValid()){
             event->acceptProposedAction();
             emit my_drop_action(row, TargetIndex, Text);
-        }
+        //}
     }
 }
 

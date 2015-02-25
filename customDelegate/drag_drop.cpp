@@ -20,12 +20,12 @@ drag_drop::drag_drop(QWidget *parent) :
     connect(ui->listViewLeft,
             SIGNAL(my_drop_action(int,QModelIndex,QString)),
             this,
-            SLOT(drop_action(int,QModelIndex,QString)));
+            SLOT(drop_action_from_left(int,QModelIndex,QString)));
 
     connect(ui->listViewRight,
             SIGNAL(my_drop_action(int,QModelIndex,QString)),
             this,
-            SLOT(drop_action(int,QModelIndex,QString)));
+            SLOT(drop_action_from_right(int,QModelIndex,QString)));
 }
 
 drag_drop::~drag_drop()
@@ -39,15 +39,20 @@ void drag_drop::on_pushButtonPrint_clicked()
     right_model_.setStringList(QStringList()<<"dojimi"<<"hana"<<"terry"<<"kimi"<<"nana");
 }
 
-void drag_drop::drop_action(int row,
-                            QModelIndex const &target,
-                            QString const &text)
+void drag_drop::drop_action_from_left(int row,
+                                      QModelIndex const &target,
+                                      QString const &text)
+{    
+    qDebug()<<__FUNCTION__;
+    drop_action_impl(row, target, text, left_model_);
+}
+
+void drag_drop::drop_action_from_right(int row,
+                                       QModelIndex const &target,
+                                       QString const &text)
 {
-    if(target.model() == &left_model_){
-        drop_action_impl(row, target, text, left_model_);
-    }else{
-        drop_action_impl(row, target, text, right_model_);
-    }
+    qDebug()<<__FUNCTION__;
+    drop_action_impl(row, target, text, right_model_);
 }
 
 void drag_drop::handle_custom_context(const QPoint &point)
@@ -59,12 +64,22 @@ void drag_drop::drop_action_impl(int row,
                                  const QModelIndex &target,
                                  const QString &text,
                                  QStringListModel &model)
-{
-    if(row >= target.row()){
-        model.insertRow(target.row());
-        model.setData(target, text);
-    }else if(target.model() == &model && row < target.row()){
-        model.insertRow(target.row() + 1);
-        model.setData(model.index(target.row() + 1, 0), text);
+{            
+    qDebug()<<"drop impl";
+    if(target.isValid()){
+        if(row >= target.row()){
+            qDebug()<<"row >= target.row";
+            model.insertRow(target.row());
+            model.setData(target, text);
+        }else if(row < target.row()){
+            qDebug()<<"row < target.row";
+            model.insertRow(target.row() + 1);
+            model.setData(model.index(target.row() + 1, 0), text);
+        }
+    }else{
+        qDebug()<<"insert data";
+        int const Row = model.rowCount();
+        model.insertRow(Row);
+        model.setData(model.index(Row, 0), text);
     }
 }

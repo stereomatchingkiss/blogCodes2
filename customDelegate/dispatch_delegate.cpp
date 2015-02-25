@@ -1,6 +1,6 @@
-#include "dispatch_delegate.h"
+#include "dispatch_delegate.hpp"
 
-#include "user_model.h"
+#include "user_model.hpp"
 
 #include <QApplication>
 #include <QDebug>

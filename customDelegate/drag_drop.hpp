@@ -23,9 +23,12 @@ public:
 private slots:
     void on_pushButtonPrint_clicked();
 
-    void drop_action(int row,
-                     QModelIndex const &target,
-                     QString const &text);
+    void drop_action_from_left(int row,
+                               QModelIndex const &target,
+                               QString const &text);
+    void drop_action_from_right(int row,
+                                QModelIndex const &target,
+                                QString const &text);
 
     void handle_custom_context(QPoint const &point);
 
