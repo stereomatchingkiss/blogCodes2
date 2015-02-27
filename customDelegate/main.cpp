@@ -61,11 +61,11 @@ void write_to_file()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    //MainWindow w;
+    //w.show();
 
-    //drag_drop dd;
-    //dd.show();
+    drag_drop dd;
+    dd.show();
 
     /*auto file = QFileDialog::getSaveFileName(0, "waha", QDir::currentPath() + "/ppp");
     QSaveFile safe(file);

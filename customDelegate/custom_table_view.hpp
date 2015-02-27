@@ -16,7 +16,7 @@ protected:
 signals:
     void my_drop_action(int source,
                         QModelIndex const &target,
-                        QString const &text);
+                        QStringList const &text);
 };
 
 #endif // CUSTOM_TABLE_VIEW_H

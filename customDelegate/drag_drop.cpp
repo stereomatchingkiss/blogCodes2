@@ -13,19 +13,22 @@ drag_drop::drag_drop(QWidget *parent) :
     ui->listViewLeft->setModel(&left_model_);
     ui->listViewRight->setModel(&right_model_);
 
+    ui->listViewLeft->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    ui->listViewRight->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
     ui->listViewLeft->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->listViewLeft, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handle_custom_context(QPoint)));
 
     connect(ui->listViewLeft,
-            SIGNAL(my_drop_action(int,QModelIndex,QString)),
+            SIGNAL(my_drop_action(int,QModelIndex,QStringList)),
             this,
-            SLOT(drop_action_from_left(int,QModelIndex,QString)));
+            SLOT(drop_action_from_left(int,QModelIndex,QStringList)));
 
     connect(ui->listViewRight,
-            SIGNAL(my_drop_action(int,QModelIndex,QString)),
+            SIGNAL(my_drop_action(int,QModelIndex,QStringList)),
             this,
-            SLOT(drop_action_from_right(int,QModelIndex,QString)));
+            SLOT(drop_action_from_right(int,QModelIndex,QStringList)));
 }
 
 drag_drop::~drag_drop()
@@ -41,7 +44,7 @@ void drag_drop::on_pushButtonPrint_clicked()
 
 void drag_drop::drop_action_from_left(int row,
                                       QModelIndex const &target,
-                                      QString const &text)
+                                      QStringList const &text)
 {    
     qDebug()<<__FUNCTION__;
     drop_action_impl(row, target, text, left_model_);
@@ -49,7 +52,7 @@ void drag_drop::drop_action_from_left(int row,
 
 void drag_drop::drop_action_from_right(int row,
                                        QModelIndex const &target,
-                                       QString const &text)
+                                       QStringList const &text)
 {
     qDebug()<<__FUNCTION__;
     drop_action_impl(row, target, text, right_model_);
@@ -62,25 +65,36 @@ void drag_drop::handle_custom_context(const QPoint &point)
 
 void drag_drop::drop_action_impl(int row,
                                  const QModelIndex &target,
-                                 const QString &text,
+                                 const QStringList &text,
                                  QStringListModel &model)
 {            
     qDebug()<<"target row : "<<row;
     qDebug()<<"drop impl";
     if(target.isValid()){
         if(row >= target.row()){
-            qDebug()<<"row >= target.row";
-            model.insertRow(target.row());
-            model.setData(target, text);
+            qDebug()<<"row >= target.row";            
+            int target_row = target.row();
+            model.insertRows(target.row(), text.size());
+            for(int i = 0; i != text.size(); ++i){
+                model.setData(model.index(target_row, 0), text[i]);
+                ++target_row;
+            }
         }else if(row < target.row()){
             qDebug()<<"row < target.row";
-            model.insertRow(target.row() + 1);
-            model.setData(model.index(target.row() + 1, 0), text);
+            int target_row = target.row() + 1;
+            model.insertRows(target_row, text.size());
+            for(int i = 0; i != text.size(); ++i){
+                model.setData(model.index(target_row, 0), text[i]);
+                ++target_row;
+            }
         }
     }else{
-        qDebug()<<"insert data";
-        int const Row = model.rowCount();
-        model.insertRow(Row);
-        model.setData(model.index(Row, 0), text);
+        qDebug()<<"insert data";        
+        int target_row = model.rowCount();
+        model.insertRows(target_row, text.size());
+        for(int i = 0; i != text.size(); ++i){
+            model.setData(model.index(target_row, 0), text[i]);
+            ++target_row;
+        }
     }
 }

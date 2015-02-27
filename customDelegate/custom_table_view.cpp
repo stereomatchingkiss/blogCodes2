@@ -6,6 +6,7 @@
 #include <QDropEvent>
 #include <QMap>
 #include <QMimeData>
+#include <QStandardItemModel>
 
 custom_table_view::custom_table_view(QWidget *parent) :
     QListView(parent)
@@ -27,11 +28,17 @@ void custom_table_view::dropEvent(QDropEvent *event)
         stream >> row >> col >> roleDataMap;
         qDebug()<<row<<", "<<col;
         auto const Text = roleDataMap[Qt::DisplayRole].toString();
+        QStandardItemModel model;
+        QStringList result;
+        model.dropMimeData(event->mimeData(), Qt::CopyAction, 0, 0, QModelIndex());
+        for(int i = 0; i != model.rowCount(); ++i){
+            result.push_back(model.data(model.index(i, 0), Qt::DisplayRole).toString());
+        }
 
         auto const TargetIndex = indexAt(event->pos());
         //if(TargetIndex.isValid()){
             event->acceptProposedAction();
-            emit my_drop_action(row, TargetIndex, Text);
+            emit my_drop_action(row, TargetIndex, result);
         //}
     }
 }
