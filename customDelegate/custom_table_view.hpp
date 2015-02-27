@@ -10,6 +10,7 @@ public:
     explicit custom_table_view(QWidget *parent = 0);
     ~custom_table_view();
 
+protected:
     void dropEvent(QDropEvent *event);
 
 signals:

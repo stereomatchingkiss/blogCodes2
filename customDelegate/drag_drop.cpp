@@ -65,6 +65,7 @@ void drag_drop::drop_action_impl(int row,
                                  const QString &text,
                                  QStringListModel &model)
 {            
+    qDebug()<<"target row : "<<row;
     qDebug()<<"drop impl";
     if(target.isValid()){
         if(row >= target.row()){
