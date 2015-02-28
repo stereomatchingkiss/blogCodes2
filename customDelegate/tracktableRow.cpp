@@ -29,11 +29,10 @@ void trackTableRow::dropEvent(QDropEvent *event)
     }
 
     QByteArray encoded = event->mimeData()->data(event->mimeData()->formats()[0]);
-    QDataStream stream(&encoded, QIODevice::ReadOnly);
-    QMap<int,QVariant> roleDataMap;
-    int row, col;
-    stream >> row >> col >> roleDataMap;
-    qDebug()<<row<<", "<<col;
+    QDataStream stream(&encoded, QIODevice::ReadOnly);    
+    int row;
+    stream >> row;
+    qDebug()<<row;
 
     QStandardItemModel model;
     model.dropMimeData(event->mimeData(), Qt::CopyAction, 0, 0, QModelIndex());
@@ -43,14 +42,14 @@ void trackTableRow::dropEvent(QDropEvent *event)
 
     QVector<QVector<QVariant>> result;
     for(int row = 0; row != model.rowCount(); ++row){
-        //qDebug()<<"drop row == "<<model.index(row, 0).row();
-        result.push_back(QVector<QVariant>());
-        auto &vec = result.back();
+        //qDebug()<<"drop row == "<<model.index(row, 0).row();        
+        QVector<QVariant> vec;
         for(int col = 0; col != model.columnCount(); ++col){
             vec.push_back(model.item(row, col)->data(Qt::DisplayRole));
         }
+        result.push_back(vec);
     }
-    auto const TargetIndex = indexAt(event->pos());
+    QModelIndex const TargetIndex = indexAt(event->pos());
     //if(TargetIndex.isValid()){
     event->acceptProposedAction();
     emit my_drop_action(row, TargetIndex, result);

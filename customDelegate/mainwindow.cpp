@@ -50,11 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tableView->verticalHeader()->setDragDropMode(QAbstractItemView::DragDrop);
     //ui->tableView->verticalHeader()->setDragDropMode(QAbstractItemView::InternalMove);
 
-    ui->tableView->setDragEnabled(true);
-    ui->tableView->setAcceptDrops(true);
-    ui->tableView->viewport()->setAcceptDrops(true);
+    //ui->tableView->setDragEnabled(true);
+    //ui->tableView->setAcceptDrops(true);
+    //ui->tableView->viewport()->setAcceptDrops(true);
     ui->tableView->setDragDropOverwriteMode(false);
-    ui->tableView->setDropIndicatorShown(true);
+    //ui->tableView->setDropIndicatorShown(true);
 
     ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
