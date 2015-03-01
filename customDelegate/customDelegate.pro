@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     drag_drop.cpp \
     custom_table_view.cpp \
     tracktableRow.cpp \
-    range_delegate.cpp
+    range_delegate.cpp \
+    regex_delegate.cpp
 
 HEADERS  += mainwindow.hpp \
     dispatch_delegate.hpp \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.hpp \
     drag_drop.hpp \
     custom_table_view.hpp \
     trackTableRow.hpp \
-    range_delegate.hpp
+    range_delegate.hpp \
+    regex_delegate.hpp
 
 FORMS    += mainwindow.ui \
     drag_drop.ui

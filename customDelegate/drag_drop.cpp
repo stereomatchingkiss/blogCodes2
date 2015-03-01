@@ -8,10 +8,13 @@ drag_drop::drag_drop(QWidget *parent) :
     left_model_(QStringList()<<"baba"<<"doremi"<<"onpu"<<"majo rika"),
     right_model_(QStringList()<<"dojimi"<<"hana"<<"terry"<<"kimi"<<"nana"),
     ui(new Ui::drag_drop)
-{
+{    
     ui->setupUi(this);
     ui->listViewLeft->setModel(&left_model_);
     ui->listViewRight->setModel(&right_model_);
+
+    ui->listViewLeft->set_name("list view left");
+    ui->listViewRight->set_name("list view right");
 
     ui->listViewLeft->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->listViewRight->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -68,7 +71,7 @@ void drag_drop::drop_action_impl(int row,
                                  const QStringList &text,
                                  QStringListModel &model)
 {            
-    qDebug()<<"target row : "<<row;
+    qDebug()<<"source row : "<<row;
     qDebug()<<"drop impl";
     if(target.isValid()){
         if(row >= target.row()){

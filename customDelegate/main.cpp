@@ -1,5 +1,6 @@
 #include "drag_drop.hpp"
 #include "mainwindow.hpp"
+#include "range_delegate.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -89,16 +90,23 @@ int main(int argc, char *argv[])
     test_set.emplace(-1, 4);
     for(auto const &data : test_set){
         std::cout<<data.a_<<", "<<data.b_<<std::endl;
-    }
+    }*/
 
-    QStandardItemModel model;
-    model.setItem(0, 0, new QStandardItem{"wahaha1"});
-    model.setItem(0, 1, new QStandardItem{"wahaha2"});
-    model.setItem(1, 0, new QStandardItem{"wahaha3"});
-    model.setItem(1, 1, new QStandardItem{"wahaha4"});
+    /*QStandardItemModel model;
+    auto int_value = new QStandardItem;
+    int_value->setData(1000, Qt::DisplayRole);
+    model.setItem(0, 0, int_value);
+
     QTableView view;
+    auto range = new range_delegate({0, 100});
     view.setModel(&model);
-    view.show();*/
+    view.setItemDelegateForColumn(0, range);
+    model.setData(model.index(0, 0), 1000);
+    view.show();
+
+    QVariant var;
+    var = QColor(Qt::red);
+    qDebug()<<var.value<QColor>();*/
 
     return a.exec();
 }

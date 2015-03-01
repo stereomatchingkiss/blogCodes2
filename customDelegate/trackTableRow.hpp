@@ -20,6 +20,11 @@ signals:
                         QModelIndex const &target,
                         QVector<QVector<QVariant>> value);
 
+private:
+    void insert_drop_data(QStandardItemModel const &drag_model,
+                          QStandardItemModel *drop_model,
+                          int target_row);
+
 };
 
 #endif // TRACKTABLEROW_H

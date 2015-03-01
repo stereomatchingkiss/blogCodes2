@@ -29,6 +29,7 @@ void MainWindow::init_model()
     model_.setData(model_.index(7, 1), 7, Qt::DisplayRole);
 
     ui->tableView->setModel(&model_);
+    ui->tableViewNative->setModel(&model_);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -55,10 +56,14 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tableView->viewport()->setAcceptDrops(true);
     ui->tableView->setDragDropOverwriteMode(false);
     //ui->tableView->setDropIndicatorShown(true);
-
     ui->tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setDragDropMode(QAbstractItemView::InternalMove);
+
+    //ui->tableViewNative->setDragDropOverwriteMode(false);
+    //ui->tableViewNative->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    //ui->tableViewNative->setSelectionBehavior(QAbstractItemView::SelectRows);
+    //ui->tableViewNative->setDragDropMode(QAbstractItemView::InternalMove);
 
     connect(ui->tableView, SIGNAL(my_drop_action(int,QModelIndex,QVector<QVector<QVariant>>)),
             this, SLOT(drop_action_impl(int,QModelIndex,QVector<QVector<QVariant>>)));
@@ -130,4 +135,9 @@ void MainWindow::on_pushButton_clicked()
     }
     ui->tableView->reset();
     init_model();
+}
+
+void MainWindow::on_pushButtonNative_clicked()
+{
+
 }
