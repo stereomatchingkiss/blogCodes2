@@ -24,12 +24,10 @@ void trackTableRow::insert_drop_data(QStandardItemModel const &drag_model,
                                      int target_row)
 {
     drop_model->insertRows(target_row, drag_model.rowCount());
-    for(int i = 0; i != drag_model.rowCount(); ++i){
-        //auto const &Vec = result[i];
-        drop_model->setData(drop_model->index(target_row, 0),
-                            drag_model.data(drag_model.index(i, 0)).toString());
-        drop_model->setData(drop_model->index(target_row, 1),
-                            drag_model.data(drag_model.index(i, 1)).toInt());
+    for(int row = 0; row != drag_model.rowCount(); ++row){
+        for(int col = 0; col != drag_model.columnCount(); ++col){
+            drop_model->setItem(target_row, col, drag_model.item(row, col)->clone());
+        }
         ++target_row;
     }
 }

@@ -15,11 +15,6 @@ public:
 protected:
     void dropEvent(QDropEvent *event);
 
-signals:
-    void my_drop_action(int source,
-                        QModelIndex const &target,
-                        QVector<QVector<QVariant>> value);
-
 private:
     void insert_drop_data(QStandardItemModel const &drag_model,
                           QStandardItemModel *drop_model,
