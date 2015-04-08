@@ -13,6 +13,8 @@
 #include <iomanip>
 #include <map>
 
+namespace{
+
 /**
  * @brief parse_user_name from the commit message of svn
  * @param input commit messages
@@ -90,6 +92,8 @@ void generate_changes_log(std::ostream &out,
         }
         out<<"\n";
     }
+}
+
 }
 
 void generate_changes_log(int argc, char const *argv[])
