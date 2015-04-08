@@ -15,13 +15,19 @@
 
 namespace{
 
+enum class NameTag
+{
+    HasName,
+    NoName
+};
+
 /**
  * @brief parse_user_name from the commit message of svn
  * @param input commit messages
  * @return user name
  * @warning under experiment
  */
-std::pair<std::string, std::vector<char>>
+std::pair<std::string, std::vector<NameTag>>
 parse_user_name(std::vector<std::string> const &input)
 {
     namespace qi = boost::spirit::qi;
@@ -30,7 +36,7 @@ parse_user_name(std::vector<std::string> const &input)
     using Rule = qi::rule<decltype(std::begin(input[0])), std::vector<std::string>()>;
 
     std::vector<std::string> names;
-    std::vector<char> valid_names;
+    std::vector<NameTag> valid_names;
     Rule commit_user = *(qi::omit[*qi::alnum] >> qi::blank
                                               >> (qi::omit[qi::uint_] >> -qi::omit[',']) % qi::blank
             >> *~qi::char_('\n'));
@@ -40,11 +46,14 @@ parse_user_name(std::vector<std::string> const &input)
                      commit_user,
                      names) && it == std::end(Str)){
             //std::cout<<input[i]<<std::endl;
-            valid_names.emplace_back('1');
+            valid_names.emplace_back(NameTag::HasName);
         }
-        valid_names.emplace_back('0');
+        valid_names.emplace_back(NameTag::NoName);
     }
 
+    //deal with the cases of multiple users commit, like
+    //"Mar 12, 2015 Apple"
+    //"Mar 12, 2015 Orange"
     std::string result;
     for(auto &str : names){
         boost::algorithm::trim(str);
@@ -86,7 +95,7 @@ void generate_changes_log(std::ostream &out,
 
         //std::cout<<NamesAndIndex<<std::endl;
         for(size_t i = 0; i != log.commit_comments_.size(); ++i){
-            if(NamesAndIndex.second[i] != '1'){
+            if(NamesAndIndex.second[i] != NameTag::HasName){
                 out<<Space<<" "<<log.commit_comments_[i]<<"\n";
             }
         }
