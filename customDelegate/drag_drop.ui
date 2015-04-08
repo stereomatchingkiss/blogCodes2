@@ -73,7 +73,7 @@
   <customwidget>
    <class>custom_table_view</class>
    <extends>QListView</extends>
-   <header location="global">custom_table_view.h</header>
+   <header location="global">custom_table_view.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

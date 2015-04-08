@@ -23,17 +23,19 @@ public:
 private slots:
     void on_pushButtonPrint_clicked();
 
-    void sort_model(QModelIndex, QModelIndex);
+    void drop_action_from_left(int row,
+                               QModelIndex const &target,
+                               QStringList const &text);
+    void drop_action_from_right(int row,
+                                QModelIndex const &target,
+                                QStringList const &text);
 
-    void drop_action(int row,
-                     QModelIndex const &target,
-                     QString const &text,
-                     int drop_type);
+    void handle_custom_context(QPoint const &point);
 
 private:
     void drop_action_impl(int row,
                           QModelIndex const &target,
-                          QString const &text,
+                          QStringList const &text,
                           QStringListModel &model);
 
     QStringListModel left_model_;
