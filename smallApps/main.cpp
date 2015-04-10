@@ -17,7 +17,8 @@ int main(int argc, char const *argv[])
 {
     try{
         //generate_changes_log(argc, argv);
-        reference_deduction_23_5_2();
+        //reference_deduction_23_5_2();
+        template_alias_23_6();
 
         //auto value = boost::make_tuple(3, 3.44, false);
 

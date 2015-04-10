@@ -32,5 +32,5 @@ HEADERS += \
     svnLogStructure.hpp \
     appStatistic.hpp \
     generateNewSVNLog.hpp \
-    cpp_programming_lg_4.h
+    cpp_programming_lg_4.hpp
 

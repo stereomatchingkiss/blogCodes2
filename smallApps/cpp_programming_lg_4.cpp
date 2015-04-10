@@ -1,7 +1,8 @@
-#include "cpp_programming_lg_4.h"
+#include "cpp_programming_lg_4.hpp"
 
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 namespace{
 
@@ -34,6 +35,21 @@ private:
     bool owned;
 };
 
+template<int>
+struct int_exact_traits { // idea: int_exact_traits<N>::type is a type with exactly N bits
+    using type = int;
+};
+
+template<>
+struct int_exact_traits<8> {
+    using type = char;
+};
+
+template<>
+struct int_exact_traits<16> {
+    using type = short;
+};
+
 }
 
 
@@ -43,4 +59,16 @@ void reference_deduction_23_5_2()
     Xref<std::string> r1 {7,"Here"}; // r1 owns a copy of str ing{"Here"}
     Xref<std::string> r2 {9,x}; // r2 just refers to x
     Xref<std::string> r3 {3,new std::string{"There"}}; // r3 owns the string{"There"}
+}
+
+
+void template_alias_23_6()
+{
+    //template<int N>
+    //using int_exact = typename int_exact_traits<N>::type; // define alias for convenient notation
+
+    //int_exact<8> a = 7; // int_exact<8> is an int with 8 bits
+
+    std::cout<<std::is_same<int_exact_traits<8>::type, char>::value<<std::endl;
+    std::cout<<std::is_same<int_exact_traits<23>::type, int>::value<<std::endl;
 }
