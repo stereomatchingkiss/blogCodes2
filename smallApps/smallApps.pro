@@ -23,12 +23,14 @@ SOURCES += main.cpp \
     parseSVNLog.cpp \
     svnLogStructure.cpp \
     appStatistic.cpp \
-    generateNewSVNLog.cpp
+    generateNewSVNLog.cpp \
+    cpp_programming_lg_4.cpp
 
 HEADERS += \
     processtestResult.hpp \
     parseSVNLog.hpp \
     svnLogStructure.hpp \
     appStatistic.hpp \
-    generateNewSVNLog.hpp
+    generateNewSVNLog.hpp \
+    cpp_programming_lg_4.h
 
