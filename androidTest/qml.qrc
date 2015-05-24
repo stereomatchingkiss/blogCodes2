@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>qml/androidTest/main.qml</file>
-    </qresource>
-</RCC>
