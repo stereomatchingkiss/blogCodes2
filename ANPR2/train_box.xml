@@ -1,0 +1,237 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml-stylesheet type='text/xsl' href='image_metadata_stylesheet.xsl'?>
+<dataset>
+<name>imglab dataset</name>
+<comment>Created by imglab tool.</comment>
+<images>
+  <image file='train\P1010001.jpg'>
+    <box top='337' left='236' width='124' height='29'/>
+  </image>
+  <image file='train\P1010002.jpg'>
+    <box top='266' left='228' width='148' height='39'/>
+  </image>
+  <image file='train\P1010003.jpg'>
+    <box top='281' left='189' width='217' height='36'/>
+  </image>
+  <image file='train\P1010013.jpg'>
+    <box top='258' left='245' width='137' height='87'/>
+  </image>
+  <image file='train\P1010014.jpg'>
+    <box top='218' left='288' width='134' height='91'/>
+  </image>
+  <image file='train\P1010018.jpg'>
+    <box top='336' left='162' width='148' height='33'/>
+  </image>
+  <image file='train\P1010030.jpg'>
+    <box top='293' left='173' width='174' height='39'/>
+  </image>
+  <image file='train\P1010037.jpg'>
+    <box top='276' left='245' width='194' height='37'/>
+  </image>
+  <image file='train\P1010042.jpg'>
+    <box top='235' left='227' width='234' height='42'/>
+  </image>
+  <image file='train\P1010044.jpg'>
+    <box top='280' left='241' width='194' height='34'/>
+  </image>
+  <image file='train\P5280001.jpg'>
+    <box top='374' left='276' width='99' height='20'/>
+  </image>
+  <image file='train\P5280007.jpg'>
+    <box top='292' left='57' width='111' height='25'/>
+  </image>
+  <image file='train\P5280010.jpg'>
+    <box top='408' left='221' width='106' height='21'/>
+  </image>
+  <image file='train\P5280012.jpg'>
+    <box top='386' left='279' width='108' height='19'/>
+  </image>
+  <image file='train\P5280017.jpg'>
+    <box top='406' left='290' width='105' height='21'/>
+  </image>
+  <image file='train\P5280021.jpg'>
+    <box top='374' left='269' width='119' height='26'/>
+  </image>
+  <image file='train\P5280022.jpg'>
+    <box top='327' left='264' width='124' height='29'/>
+  </image>
+  <image file='train\P5280037.jpg'>
+    <box top='311' left='246' width='181' height='31'/>
+  </image>
+  <image file='train\P5280038.jpg'>
+    <box top='305' left='226' width='195' height='36'/>
+  </image>
+  <image file='train\P5280046.jpg'>
+    <box top='292' left='228' width='200' height='45'/>
+  </image>
+  <image file='train\P5280077.jpg'>
+    <box top='272' left='262' width='123' height='80'/>
+  </image>
+  <image file='train\P5280080.jpg'>
+    <box top='313' left='244' width='186' height='32'/>
+  </image>
+  <image file='train\P5280084.jpg'>
+    <box top='259' left='237' width='201' height='38'/>
+  </image>
+  <image file='train\P5280091.jpg'>
+    <box top='257' left='228' width='220' height='43'/>
+  </image>
+  <image file='train\P5280093.jpg'>
+    <box top='286' left='236' width='205' height='39'/>
+  </image>
+  <image file='train\P5280099.jpg'>
+    <box top='269' left='230' width='193' height='37'/>
+  </image>
+  <image file='train\P5280102.jpg'>
+    <box top='289' left='225' width='201' height='34'/>
+  </image>
+  <image file='train\P5280111.jpg'>
+    <box top='269' left='235' width='209' height='39'/>
+  </image>
+  <image file='train\P5280115.jpg'>
+    <box top='275' left='234' width='196' height='36'/>
+  </image>
+  <image file='train\P5280125.jpg'>
+    <box top='241' left='259' width='127' height='83'/>
+  </image>
+  <image file='train\P6040019.jpg'>
+    <box top='282' left='233' width='113' height='73'/>
+  </image>
+  <image file='train\P6040020.jpg'>
+    <box top='288' left='228' width='174' height='35'/>
+  </image>
+  <image file='train\P6070038.jpg'>
+    <box top='276' left='223' width='206' height='36'/>
+  </image>
+  <image file='train\P6070047.jpg'>
+    <box top='256' left='230' width='230' height='41'/>
+  </image>
+  <image file='train\P6070048.jpg'>
+    <box top='283' left='250' width='209' height='56'/>
+  </image>
+  <image file='train\P6070049.jpg'>
+    <box top='284' left='260' width='219' height='45'/>
+  </image>
+  <image file='train\P6070076.jpg'>
+    <box top='372' left='274' width='104' height='24'/>
+  </image>
+  <image file='train\P6070094.jpg'>
+    <box top='262' left='210' width='239' height='49'/>
+  </image>
+  <image file='train\P6070099.jpg'>
+    <box top='272' left='219' width='227' height='41'/>
+  </image>
+  <image file='train\P9170012.jpg'>
+    <box top='595' left='394' width='255' height='41'/>
+  </image>
+  <image file='train\P9170014.jpg'>
+    <box top='394' left='359' width='312' height='62'/>
+  </image>
+  <image file='train\P9170018.jpg'>
+    <box top='592' left='391' width='267' height='48'/>
+  </image>
+  <image file='train\P9170026.jpg'>
+    <box top='386' left='401' width='248' height='46'/>
+  </image>
+  <image file='train\P9170032.jpg'>
+    <box top='656' left='613' width='340' height='62'/>
+  </image>
+  <image file='train\P9170033.jpg'>
+    <box top='901' left='620' width='419' height='77'/>
+  </image>
+  <image file='train\P9170042.jpg'>
+    <box top='300' left='139' width='145' height='31'/>
+  </image>
+  <image file='train\P9170046.jpg'>
+    <box top='309' left='439' width='288' height='86'/>
+  </image>
+  <image file='train\P9170048.jpg'>
+    <box top='405' left='389' width='232' height='53'/>
+  </image>
+  <image file='train\P9170050.jpg'>
+    <box top='372' left='170' width='139' height='31'/>
+  </image>
+  <image file='train\P9180011.jpg'>
+    <box top='341' left='255' width='110' height='23'/>
+  </image>
+  <image file='train\P9180012.jpg'>
+    <box top='334' left='159' width='97' height='27'/>
+  </image>
+  <image file='train\P9180018.jpg'>
+    <box top='339' left='239' width='188' height='35'/>
+  </image>
+  <image file='train\P9180019.jpg'>
+    <box top='293' left='225' width='142' height='74'/>
+  </image>
+  <image file='train\P9180020.jpg'>
+    <box top='275' left='242' width='178' height='33'/>
+  </image>
+  <image file='train\P9180021.jpg'>
+    <box top='297' left='245' width='154' height='30'/>
+  </image>
+  <image file='train\P9180024.jpg'>
+    <box top='353' left='263' width='115' height='24'/>
+  </image>
+  <image file='train\P9180039.jpg'>
+    <box top='397' left='191' width='81' height='25'/>
+  </image>
+  <image file='train\P9190056.jpg'>
+    <box top='262' left='180' width='126' height='40'/>
+  </image>
+  <image file='train\P9190057.jpg'>
+    <box top='238' left='164' width='142' height='40'/>
+  </image>
+  <image file='train\P9190059.jpg'>
+    <box top='243' left='269' width='127' height='28'/>
+  </image>
+  <image file='train\P9190063.jpg'>
+    <box top='280' left='240' width='173' height='31'/>
+  </image>
+  <image file='train\P9190064.jpg'>
+    <box top='241' left='238' width='145' height='33'/>
+  </image>
+  <image file='train\P9190065.jpg'>
+    <box top='201' left='270' width='1' height='1'/>
+    <box top='202' left='270' width='141' height='37'/>
+  </image>
+  <image file='train\P9190066.jpg'>
+    <box top='293' left='215' width='149' height='42'/>
+  </image>
+  <image file='train\P9190068.jpg'>
+    <box top='256' left='244' width='170' height='40'/>
+  </image>
+  <image file='train\Pa140004.jpg'>
+    <box top='244' left='298' width='157' height='61'/>
+  </image>
+  <image file='train\Pa140005.jpg'>
+    <box top='226' left='187' width='150' height='64'/>
+  </image>
+  <image file='train\Pa140006.jpg'>
+    <box top='332' left='193' width='166' height='84'/>
+  </image>
+  <image file='train\Pa140011.jpg'>
+    <box top='269' left='231' width='193' height='35'/>
+  </image>
+  <image file='train\Pa140027.jpg'>
+    <box top='207' left='290' width='152' height='99'/>
+  </image>
+  <image file='train\Pa140028.jpg'>
+    <box top='205' left='308' width='187' height='67'/>
+  </image>
+  <image file='train\Pa140033.jpg'>
+    <box top='232' left='217' width='153' height='96'/>
+  </image>
+  <image file='train\Pa140040.jpg'>
+    <box top='312' left='309' width='142' height='74'/>
+  </image>
+  <image file='train\Pa140041.jpg'>
+    <box top='178' left='323' width='154' height='85'/>
+  </image>
+  <image file='train\Pa140045.jpg'>
+    <box top='197' left='294' width='146' height='99'/>
+  </image>
+  <image file='train\Pa140046.jpg'>
+    <box top='213' left='191' width='156' height='64'/>
+  </image>
+</images>
+</dataset>
