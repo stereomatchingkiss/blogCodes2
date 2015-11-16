@@ -5,6 +5,7 @@
 
 /**
  * Localize possible locations of the license plate
+ * based on tophat morphology and other basic skills
  */
 class morphology_localizer
 {
