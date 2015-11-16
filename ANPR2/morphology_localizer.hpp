@@ -1,15 +1,15 @@
-#ifndef LICENSE_PLATE_DETECTOR_HPP
-#define LICENSE_PLATE_DETECTOR_HPP
+#ifndef MORPHOLOGY_LOCALIZER_HPP
+#define MORPHOLOGY_LOCALIZER_HPP
 
 #include <opencv2/core.hpp>
 
 /**
  * Localize possible locations of the license plate
  */
-class license_plate_localizer
+class morphology_localizer
 {
 public:
-    license_plate_localizer();
+    morphology_localizer();
 
     /**
      * Find possible region of the license plates

@@ -1,4 +1,4 @@
-#include "license_plate_localizer.hpp"
+#include "morphology_localizer.hpp"
 
 #include <ocv_libs/core/attribute.hpp>
 #include <ocv_libs/core/resize.hpp>
@@ -8,12 +8,12 @@
 
 #include <iostream>
 
-license_plate_localizer::license_plate_localizer()
+morphology_localizer::morphology_localizer()
 {
 
 }
 
-void license_plate_localizer::
+void morphology_localizer::
 localize_plate(const cv::Mat &input,
                std::vector<cv::Rect> &regions)
 {
@@ -22,18 +22,18 @@ localize_plate(const cv::Mat &input,
     find_plate_contours();
 }
 
-void license_plate_localizer::set_show_debug_message(bool value)
+void morphology_localizer::set_show_debug_message(bool value)
 {
     debug_ = value;
 }
 
-void license_plate_localizer::filter_background()
+void morphology_localizer::filter_background()
 {
     morphology_filter();
     //sobel_filter();
 }
 
-void license_plate_localizer::find_plate_contours()
+void morphology_localizer::find_plate_contours()
 {
     cv::findContours(binary_input_, contours_,
                      CV_RETR_EXTERNAL,
@@ -61,7 +61,7 @@ void license_plate_localizer::find_plate_contours()
     }
 }
 
-void license_plate_localizer::morphology_filter()
+void morphology_localizer::morphology_filter()
 {    
     //use tophat operations to filter the white background
     //of the license plate
@@ -93,7 +93,7 @@ void license_plate_localizer::morphology_filter()
     }
 }
 
-void license_plate_localizer::preprocess(const cv::Mat &input)
+void morphology_localizer::preprocess(const cv::Mat &input)
 {    
     CV_Assert(input.type() == CV_8UC3);
 
@@ -109,7 +109,7 @@ void license_plate_localizer::preprocess(const cv::Mat &input)
 /**
  * For experiment(compare the results with morphology_filter)
  */
-void license_plate_localizer::sobel_filter()
+void morphology_localizer::sobel_filter()
 {
     cv::Sobel(intensity_, binary_input_, CV_8U, 0, 1, 3);
     cv::Mat threshold_input;

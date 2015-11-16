@@ -8,8 +8,8 @@ set(OCV_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 INCLUDE_DIRECTORIES(${OCV_PATH})
 
 add_executable(${PROJECT_NAME}
-license_plate_localizer.hpp
-license_plate_localizer.cpp
+morphology_localizer.hpp
+morphology_localizer.cpp
 main.cpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.hpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.cpp
