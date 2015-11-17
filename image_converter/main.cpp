@@ -1,3 +1,4 @@
+#include <ocv_libs/core/resize.hpp>
 #include <ocv_libs/file/utility.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -46,9 +47,13 @@ int main(int argc, char **argv)
                                   from_color_space, to_color_space);
 
             auto const output_folder = map["output_folder"].as<std::string>() + "/";
+            cv::Size const size((int)map["output_width"].as<size_t>(),
+                    (int)map["output_height"].as<size_t>());
+            cv::Mat resize_img;
             for(auto const &pair : output_images){
                 std::cout<<"save image : "<<(output_folder + pair.second)<<std::endl;
-                cv::imwrite(output_folder + pair.second, pair.first);
+                ocv::resize_aspect_ratio(pair.first, resize_img, size);
+                cv::imwrite(output_folder + pair.second, resize_img);
             }
         }
     }catch(std::exception const &ex){
@@ -123,6 +128,13 @@ boost::program_options::variables_map parse_command_line(int argc, char **argv)
     using namespace boost::program_options;
 
     options_description desc{"options"};
+
+    std::string const size_comments =
+            "If you only specify width or height, "
+            "the app will keep the aspect ratio; If you specify "
+            "both of them, it would ignore aspect ratio;If you "
+            "ignore both of them, it would keep the original size";
+
     desc.add_options()
             ("help,h", "Help menu")
             ("input_folder,i", value<std::string>()->required(),
@@ -133,7 +145,11 @@ boost::program_options::variables_map parse_command_line(int argc, char **argv)
              "The color space of input images, support [rgb]")
             ("to_color_space,t",value<std::string>()->default_value("gray"),
              "The color space of output images, support [gray, intensity]."
-             "[intensity] is the v channel of hsv");
+             "[intensity] is the v channel of hsv")
+            ("output_width,W", value<size_t>()->default_value(0),
+             ("Width of the output images;" + size_comments).c_str())
+            ("output_height,H", value<size_t>()->default_value(0),
+             ("Height of the output images;" + size_comments).c_str());
 
     variables_map vm;
     store(parse_command_line(argc, argv, desc), vm);
