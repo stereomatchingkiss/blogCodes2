@@ -8,6 +8,8 @@ set(OCV_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 INCLUDE_DIRECTORIES(${OCV_PATH})
 
 add_executable(${PROJECT_NAME}
+fhog_trainer.hpp
+fhog_trainer.cpp
 morphology_localizer.hpp
 morphology_localizer.cpp
 main.cpp
@@ -23,7 +25,7 @@ ${OCV_PATH}/ocv_libs/file/utility.cpp
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv.cmake)
-#include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/dlib.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/dlib.cmake)
 
 target_link_libraries(${PROJECT_NAME}
 ${BOOST_ROOT}/lib64-msvc-14.0/libboost_filesystem-vc140-mt-1_59.lib)
