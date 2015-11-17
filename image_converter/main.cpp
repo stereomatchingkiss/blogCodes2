@@ -183,7 +183,7 @@ void rgb_to_intensity(std::vector<std::string> const &image_names,
     cv::Mat hsv;
     auto const folder = input_folder + "/";
     for(size_t i = 0; i != image_names.size(); ++i){
-        cv::Mat img = cv::imread(image_names[i]);
+        cv::Mat img = cv::imread(folder + image_names[i]);
         if(!img.empty()){
             cv::cvtColor(img, hsv, CV_BGR2HSV);
             cv::split(hsv, splitted);
