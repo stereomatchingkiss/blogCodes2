@@ -8,6 +8,43 @@
 
 #include <iostream>
 
+namespace{
+
+constexpr double epsillon = 0.035;
+
+class is_non_valid_contours
+{
+public:
+    bool operator()(std::vector<cv::Point> const &contour)
+    {
+        auto const attribute =
+                analyzer_.analyze(contour, epsillon);
+        if(attribute.contour_area_ < 1659.9){
+            return true;
+        }
+
+        if(attribute.aspect_ratio_ < 2.829 || attribute.aspect_ratio_ > 5.391){
+            return true;
+        }
+
+        if(attribute.poly_size_ < 3 || attribute.poly_size_ > 6){
+            return true;
+        }
+
+        if(attribute.solidity_ < 0.409 || attribute.solidity_ > 0.821){
+            return true;
+        }
+
+        return false;
+    }
+
+private:
+    ocv::contour_analyzer analyzer_;
+
+};
+
+}
+
 morphology_localizer::morphology_localizer()
 {
 
@@ -38,51 +75,52 @@ void morphology_localizer::find_plate_contours()
     cv::findContours(binary_input_, contours_,
                      CV_RETR_EXTERNAL,
                      CV_CHAIN_APPROX_SIMPLE);
-    ocv::print_contour_attribute_name(std::cout);
-    auto it = std::remove_if(std::begin(contours_), std::end(contours_),
-                             [](auto const &contour)
-    {
-        return cv::boundingRect(contour).area() < 2000;
-    });
+
+    //erase non number plate contour
+    auto it = std::remove_if(std::begin(contours_),
+                             std::end(contours_),
+                             is_non_valid_contours());
     contours_.erase(it, std::end(contours_));
 
-    cv::Mat input_copy;
-    for(auto const &contour : contours_){
-        int const Thickness = 2;
-        resize_input_.copyTo(input_copy);
-        cv::rectangle(input_copy, cv::boundingRect(contour),
-        {255,0,0}, Thickness);
-        if(debug_){
-            ocv::print_contour_attribute(contour, 0.02, std::cout);
+    if(debug_){
+        ocv::print_contour_attribute_name(std::cout);
+        cv::Mat input_copy;
+        cv::imshow("resize input", resize_input_);
+        for(auto const &contour : contours_){
+            int const Thickness = 2;
+            resize_input_.copyTo(input_copy);
+            cv::rectangle(input_copy, cv::boundingRect(contour),
+            {255,0,0}, Thickness);
+            ocv::print_contour_attribute(contour, epsillon, std::cout);            
             cv::imshow("contour", input_copy);
             cv::imshow("region", resize_input_(cv::boundingRect(contour)));
             cv::waitKey();
         }
+        cv::waitKey();
     }
 }
 
 void morphology_localizer::morphology_filter()
 {    
-    //use tophat operations to filter the white background
+    //use tophat operations to extract the white background
     //of the license plate
     auto const tophat_kernel =
             cv::getStructuringElement(cv::MORPH_RECT, {30,10});
     cv::morphologyEx(intensity_, intensity_, CV_MOP_TOPHAT,
                      tophat_kernel);
 
-    //use sobel filter to get the horizontal edges
+    //use sobel filter to get horizontal edges
     cv::Sobel(intensity_, intensity_, CV_8U, 1, 0, 3);
 
     //filter out some unwanted noise
     cv::GaussianBlur(intensity_, intensity_, {5, 5}, 0);
 
-    //fill up the gaps of license plate
+    //fill the gaps of license plate
     auto const close_kernel =
             cv::getStructuringElement(cv::MORPH_RECT, {15,5});
     cv::morphologyEx(intensity_, intensity_, CV_MOP_CLOSE,
                      close_kernel);
 
-    //generate threshold by
     cv::threshold(intensity_, binary_input_, 0, 255,
                   CV_THRESH_BINARY | CV_THRESH_OTSU);
 
