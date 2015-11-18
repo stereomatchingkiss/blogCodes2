@@ -63,13 +63,21 @@ fhog_number_plate_trainer::fhog_number_plate_trainer(int argc, char **argv)
                 // Run the detector and get the number plate detections
                 std::vector<rectangle> dets = detector(images_test[i]);
                 std::cout<<i<<" detect "<<dets.size()<<" number plate"<<std::endl;
+                for(auto &rect : dets){
+                    //increase the size of possible plate region, this could
+                    //help us locate full plate informations
+                    rectangle const tg(std::max(rect.left() - rect.left() * 0.05, 0.0),
+                                       std::max(rect.top() - rect.top() * 0.02, 0.0),
+                                       rect.right() + rect.right() * 0.15,
+                                       rect.bottom());
+                    rect = tg;
+                }
                 win.clear_overlay();
                 win.set_image(images_test[i]);
                 win.add_overlay(dets, rgb_pixel(255,0,0));
                 std::cout << "Hit enter to process the next image..." << std::endl;
                 std::cin.get();
             }
-
             serialize("number_plate_detector.svm") << detector;
         }
 
