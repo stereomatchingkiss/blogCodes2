@@ -66,8 +66,8 @@ fhog_number_plate_trainer::fhog_number_plate_trainer(int argc, char **argv)
                 for(auto &rect : dets){
                     //increase the size of possible plate region, this could
                     //help us locate full plate informations
-                    rectangle const tg(std::max(rect.left() - rect.left() * 0.05, 0.0),
-                                       std::max(rect.top() - rect.top() * 0.02, 0.0),
+                    rectangle const tg(rect.left() - rect.left() * 0.05,
+                                       rect.top() - rect.top() * 0.02,
                                        rect.right() + rect.right() * 0.15,
                                        rect.bottom());
                     rect = tg;
