@@ -31,6 +31,10 @@ void rgb_to_intensity(std::vector<std::string> const &image_names,
                       std::string const &input_folder,
                       image_pair &outputs);
 
+void rgb_to_rgb(std::vector<std::string> const &image_names,
+                std::string const &input_folder,
+                image_pair &outputs);
+
 int main(int argc, char **argv)
 {
     try{
@@ -69,13 +73,15 @@ image_pair convert_color(std::vector<std::string> const &image_names,
     enum class transform_method
     {
         rgb2gray,
-        rgb2int
+        rgb2int,
+        rgb2rgb
     };
 
     std::map<std::pair<std::string, std::string>, transform_method> const color_space_map
     {
         {{"rgb", "gray"}, transform_method::rgb2gray},
         {{"rgb", "intensity"}, transform_method::rgb2int},
+        {{"rgb", "rgb"}, transform_method::rgb2rgb},
     };
 
     image_pair outputs;
@@ -88,6 +94,11 @@ image_pair convert_color(std::vector<std::string> const &image_names,
     case transform_method::rgb2int:{
         std::cout<<"rgb to intensity"<<std::endl;
         rgb_to_intensity(image_names, input_folder, outputs);
+        break;
+    }
+    case transform_method::rgb2rgb:{
+        std::cout<<"rgb to rgb"<<std::endl;
+        rgb_to_rgb(image_names, input_folder, outputs);
         break;
     }
     default:{
@@ -138,13 +149,13 @@ boost::program_options::variables_map parse_command_line(int argc, char **argv)
     desc.add_options()
             ("help,h", "Help menu")
             ("input_folder,i", value<std::string>()->required(),
-             "The folder of images, support images with extensions [jpg, bmp, png]")
+             "The folder of images, support images with extensions [bmp, jpg, png]")
             ("output_folder,o", value<std::string>()->required(),
              "Output folder of images")
             ("from_color_space,f", value<std::string>()->default_value("rgb"),
              "The color space of input images, support [rgb]")
             ("to_color_space,t",value<std::string>()->default_value("gray"),
-             "The color space of output images, support [gray, intensity]."
+             "The color space of output images, support [gray, intensity, rgb]."
              "[intensity] is the v channel of hsv")
             ("output_width,W", value<size_t>()->default_value(0),
              ("Width of the output images;" + size_comments).c_str())
@@ -206,6 +217,21 @@ void rgb_to_intensity(std::vector<std::string> const &image_names,
             outputs.emplace_back(splitted[2].clone(), image_names[i]);
         }else{
             std::cerr<<(folder + image_names[i])<<" cannot be load "<<std::endl;
+        }
+    }
+}
+
+void rgb_to_rgb(std::vector<std::string> const &image_names,
+                std::string const &input_folder,
+                image_pair &outputs)
+{
+    auto const folder = input_folder + "/";
+    for(size_t i = 0; i != image_names.size(); ++i){
+        cv::Mat img = cv::imread(folder + image_names[i]);
+        if(!img.empty()){
+            outputs.emplace_back(img, image_names[i]);
+        }else{
+            std::cerr<<(folder + image_names[i])<<" cannot open"<<std::endl;
         }
     }
 }
