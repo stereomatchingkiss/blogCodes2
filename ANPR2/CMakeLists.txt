@@ -4,6 +4,9 @@ project(ANPR_OCV CXX)
 
 set(CMAKE_BUILD_TYPE Release)
 set(OCV_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-mavx")
+
+add_definitions(-DDLIB_JPEG_SUPPORT)
 
 INCLUDE_DIRECTORIES(${OCV_PATH})
 
