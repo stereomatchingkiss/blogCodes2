@@ -4,248 +4,221 @@
 <name>imglab dataset</name>
 <comment>Created by imglab tool.</comment>
 <images>
+  <image file='test\P6040034.jpg'>
+    <box top='353' left='220' width='139' height='73'/>
+  </image>
   <image file='test\P1010015.jpg'>
-    <box top='384' left='226' width='212' height='37'/>
+    <box top='384' left='203' width='248' height='41'/>
   </image>
   <image file='test\P1010016.jpg'>
-    <box top='358' left='234' width='193' height='34'/>
+    <box top='351' left='210' width='223' height='52'/>
   </image>
   <image file='test\P1010017.jpg'>
-    <box top='251' left='278' width='175' height='42'/>
+    <box top='247' left='248' width='215' height='49'/>
   </image>
   <image file='test\P1010019.jpg'>
-    <box top='398' left='294' width='158' height='35'/>
+    <box top='394' left='273' width='181' height='49'/>
   </image>
   <image file='test\P1010023.jpg'>
-    <box top='324' left='116' width='155' height='39'/>
+    <box top='316' left='94' width='189' height='53'/>
   </image>
   <image file='test\P1010024.jpg'>
-    <box top='275' left='200' width='222' height='45'/>
+    <box top='273' left='171' width='260' height='57'/>
   </image>
   <image file='test\P1010025.jpg'>
-    <box top='362' left='239' width='171' height='39'/>
+    <box top='358' left='220' width='199' height='48'/>
   </image>
   <image file='test\P1010026.jpg'>
-    <box top='297' left='168' width='225' height='47'/>
+    <box top='290' left='146' width='256' height='57'/>
   </image>
   <image file='test\P5280000.jpg'>
-    <box top='369' left='265' width='113' height='24'/>
+    <box top='369' left='254' width='124' height='28'/>
   </image>
   <image file='test\P5280002.jpg'>
-    <box top='338' left='260' width='110' height='22'/>
+    <box top='336' left='257' width='115' height='25'/>
   </image>
   <image file='test\P5280003.jpg'>
-    <box top='371' left='279' width='102' height='19'/>
+    <box top='367' left='270' width='112' height='27'/>
   </image>
   <image file='test\P5280004.jpg'>
-    <box top='334' left='280' width='99' height='22'/>
+    <box top='335' left='267' width='113' height='21'/>
   </image>
   <image file='test\P5280005.jpg'>
-    <box top='371' left='127' width='92' height='27'/>
+    <box top='369' left='114' width='119' height='33'/>
   </image>
   <image file='test\P5280006.jpg'>
-    <box top='394' left='270' width='101' height='20'/>
+    <box top='391' left='259' width='119' height='28'/>
   </image>
   <image file='test\P5280008.jpg'>
-    <box top='344' left='59' width='104' height='24'/>
-  </image>
-  <image file='test\P5280009.jpg'>
-    <box top='361' left='96' width='60' height='45'/>
-  </image>
-  <image file='test\P5280011.jpg'>
-    <box top='365' left='85' width='56' height='39'/>
+    <box top='340' left='47' width='118' height='34'/>
   </image>
   <image file='test\P5280013.jpg'>
-    <box top='382' left='88' width='105' height='24'/>
+    <box top='379' left='77' width='119' height='29'/>
   </image>
   <image file='test\P5280014.jpg'>
-    <box top='373' left='58' width='99' height='23'/>
+    <box top='370' left='44' width='114' height='29'/>
   </image>
   <image file='test\P5280015.jpg'>
-    <box top='353' left='273' width='100' height='22'/>
+    <box top='352' left='263' width='115' height='25'/>
   </image>
   <image file='test\P5280016.jpg'>
-    <box top='312' left='274' width='108' height='24'/>
+    <box top='308' left='258' width='125' height='31'/>
   </image>
   <image file='test\P5280018.jpg'>
-    <box top='335' left='273' width='117' height='29'/>
+    <box top='334' left='263' width='130' height='32'/>
   </image>
   <image file='test\P5280040.jpg'>
-    <box top='285' left='235' width='203' height='34'/>
+    <box top='278' left='208' width='234' height='44'/>
   </image>
   <image file='test\P5280041.jpg'>
-    <box top='350' left='238' width='169' height='35'/>
+    <box top='346' left='218' width='216' height='47'/>
   </image>
   <image file='test\P5280042.jpg'>
-    <box top='269' left='238' width='185' height='41'/>
+    <box top='266' left='216' width='211' height='48'/>
   </image>
   <image file='test\P5280043.jpg'>
-    <box top='290' left='238' width='191' height='33'/>
+    <box top='285' left='214' width='218' height='46'/>
   </image>
   <image file='test\P5280048.jpg'>
-    <box top='288' left='236' width='186' height='31'/>
+    <box top='283' left='209' width='220' height='45'/>
   </image>
   <image file='test\P5280049.jpg'>
-    <box top='281' left='215' width='207' height='38'/>
+    <box top='278' left='191' width='236' height='54'/>
   </image>
   <image file='test\P5280050.jpg'>
-    <box top='313' left='261' width='182' height='35'/>
+    <box top='309' left='238' width='207' height='45'/>
   </image>
   <image file='test\P5280051.jpg'>
-    <box top='385' left='232' width='198' height='38'/>
+    <box top='381' left='210' width='224' height='43'/>
   </image>
   <image file='test\P6040014.jpg'>
-    <box top='374' left='221' width='163' height='30'/>
+    <box top='374' left='201' width='187' height='39'/>
   </image>
   <image file='test\P6040015.jpg'>
-    <box top='281' left='211' width='175' height='35'/>
+    <box top='278' left='189' width='201' height='43'/>
   </image>
   <image file='test\P6040016.jpg'>
-    <box top='291' left='201' width='192' height='37'/>
+    <box top='281' left='182' width='214' height='52'/>
   </image>
   <image file='test\P6040017.jpg'>
-    <box top='274' left='209' width='180' height='37'/>
+    <box top='271' left='190' width='202' height='44'/>
   </image>
   <image file='test\P6040021.jpg'>
-    <box top='309' left='231' width='190' height='33'/>
-  </image>
-  <image file='test\P6040022.jpg'>
-    <box top='305' left='250' width='114' height='70'/>
+    <box top='306' left='203' width='227' height='46'/>
   </image>
   <image file='test\P6040023.jpg'>
-    <box top='310' left='225' width='191' height='39'/>
+    <box top='310' left='202' width='216' height='39'/>
   </image>
   <image file='test\P6040024.jpg'>
-    <box top='303' left='198' width='184' height='40'/>
+    <box top='301' left='176' width='228' height='44'/>
   </image>
   <image file='test\P6040025.jpg'>
-    <box top='263' left='248' width='170' height='35'/>
+    <box top='263' left='230' width='193' height='40'/>
   </image>
   <image file='test\P6040026.jpg'>
-    <box top='304' left='238' width='193' height='37'/>
+    <box top='302' left='217' width='215' height='43'/>
   </image>
   <image file='test\P6040027.jpg'>
-    <box top='338' left='204' width='197' height='40'/>
+    <box top='334' left='183' width='223' height='49'/>
   </image>
   <image file='test\P6040030.jpg'>
-    <box top='328' left='191' width='180' height='31'/>
+    <box top='326' left='171' width='203' height='41'/>
   </image>
   <image file='test\P6040031.jpg'>
-    <box top='399' left='225' width='186' height='32'/>
+    <box top='397' left='206' width='204' height='38'/>
   </image>
   <image file='test\P6040032.jpg'>
-    <box top='308' left='232' width='191' height='32'/>
+    <box top='304' left='210' width='219' height='39'/>
   </image>
   <image file='test\P6040033.jpg'>
-    <box top='324' left='251' width='172' height='35'/>
-  </image>
-  <image file='test\P6040034.jpg'>
-    <box top='355' left='236' width='107' height='73'/>
+    <box top='324' left='232' width='195' height='41'/>
   </image>
   <image file='test\P6040037.jpg'>
-    <box top='382' left='239' width='181' height='38'/>
+    <box top='381' left='223' width='201' height='42'/>
   </image>
   <image file='test\P6040038.jpg'>
-    <box top='265' left='223' width='208' height='40'/>
+    <box top='264' left='202' width='233' height='50'/>
   </image>
   <image file='test\P6040039.jpg'>
-    <box top='267' left='231' width='195' height='34'/>
+    <box top='259' left='209' width='219' height='50'/>
   </image>
   <image file='test\P6040042.jpg'>
-    <box top='407' left='245' width='175' height='35'/>
+    <box top='404' left='223' width='202' height='42'/>
   </image>
   <image file='test\P6070012.jpg'>
-    <box top='316' left='222' width='200' height='34'/>
+    <box top='311' left='212' width='223' height='43'/>
   </image>
   <image file='test\P6070013.jpg'>
-    <box top='263' left='201' width='233' height='44'/>
+    <box top='259' left='196' width='241' height='59'/>
   </image>
   <image file='test\P6070014.jpg'>
-    <box top='296' left='227' width='197' height='38'/>
+    <box top='294' left='208' width='218' height='44'/>
   </image>
   <image file='test\P6070019.jpg'>
-    <box top='332' left='239' width='217' height='35'/>
+    <box top='328' left='213' width='245' height='39'/>
   </image>
   <image file='test\P6070020.jpg'>
-    <box top='290' left='227' width='198' height='34'/>
+    <box top='285' left='202' width='237' height='45'/>
   </image>
   <image file='test\P6070021.jpg'>
-    <box top='271' left='231' width='204' height='42'/>
+    <box top='265' left='204' width='240' height='54'/>
   </image>
   <image file='test\P9170028.jpg'>
-    <box top='396' left='379' width='256' height='48'/>
+    <box top='244' left='218' width='183' height='35'/>
   </image>
   <image file='test\P9170039.jpg'>
-    <box top='298' left='243' width='177' height='32'/>
+    <box top='294' left='221' width='202' height='41'/>
   </image>
   <image file='test\P9170041.jpg'>
-    <box top='318' left='223' width='164' height='36'/>
+    <box top='317' left='204' width='204' height='41'/>
   </image>
   <image file='test\P9180013.jpg'>
-    <box top='277' left='245' width='162' height='32'/>
+    <box top='271' left='226' width='182' height='42'/>
   </image>
   <image file='test\P9180014.jpg'>
-    <box top='319' left='175' width='127' height='27'/>
+    <box top='318' left='162' width='143' height='30'/>
   </image>
   <image file='test\P9180015.jpg'>
-    <box top='266' left='238' width='173' height='32'/>
+    <box top='263' left='221' width='193' height='40'/>
   </image>
   <image file='test\P9180016.jpg'>
-    <box top='277' left='253' width='152' height='45'/>
-    <box top='302' left='373' width='1' height='1'/>
-    <box top='301' left='372' width='1' height='1'/>
+    <box top='276' left='232' width='193' height='46'/>
   </image>
   <image file='test\P9180025.jpg'>
-    <box top='285' left='243' width='168' height='34'/>
+    <box top='283' left='223' width='195' height='36'/>
   </image>
   <image file='test\P9180026.jpg'>
-    <box top='350' left='253' width='146' height='26'/>
+    <box top='346' left='238' width='161' height='33'/>
   </image>
   <image file='test\P9180027.jpg'>
-    <box top='301' left='226' width='170' height='43'/>
-  </image>
-  <image file='test\P9180028.jpg'>
-    <box top='367' left='231' width='138' height='41'/>
-  </image>
-  <image file='test\P9180051.jpg'>
-    <box top='355' left='223' width='119' height='42'/>
-  </image>
-  <image file='test\P9180052.jpg'>
-    <box top='255' left='208' width='148' height='59'/>
+    <box top='294' left='223' width='179' height='56'/>
   </image>
   <image file='test\P9180053.jpg'>
-    <box top='280' left='222' width='166' height='37'/>
-  </image>
-  <image file='test\P9180054.jpg'>
-    <box top='255' left='195' width='180' height='51'/>
+    <box top='275' left='205' width='200' height='55'/>
   </image>
   <image file='test\P9190058.jpg'>
-    <box top='257' left='246' width='109' height='26'/>
+    <box top='253' left='232' width='129' height='36'/>
   </image>
   <image file='test\P9190060.jpg'>
-    <box top='234' left='238' width='173' height='34'/>
+    <box top='229' left='215' width='205' height='51'/>
   </image>
   <image file='test\P9190067.jpg'>
-    <box top='300' left='223' width='205' height='41'/>
+    <box top='300' left='217' width='215' height='49'/>
   </image>
   <image file='test\Pa140016.jpg'>
-    <box top='256' left='233' width='150' height='37'/>
+    <box top='255' left='214' width='195' height='54'/>
   </image>
   <image file='test\Pa140017.jpg'>
-    <box top='218' left='256' width='176' height='50'/>
-    <box top='229' left='418' width='1' height='1'/>
+    <box top='217' left='232' width='207' height='58'/>
   </image>
   <image file='test\Pa140018.jpg'>
-    <box top='265' left='250' width='174' height='31'/>
+    <box top='259' left='228' width='201' height='41'/>
   </image>
   <image file='test\Pa140023.jpg'>
-    <box top='256' left='216' width='183' height='42'/>
-  </image>
-  <image file='test\Pa140024.jpg'>
-    <box top='203' left='310' width='149' height='77'/>
+    <box top='255' left='195' width='212' height='48'/>
   </image>
   <image file='test\Pa140025.jpg'>
-    <box top='356' left='255' width='171' height='30'/>
+    <box top='350' left='232' width='203' height='40'/>
   </image>
 </images>
 </dataset>
