@@ -167,7 +167,7 @@ boost::program_options::variables_map parse_command_line(int argc, char **argv)
 
     if(vm.count("help")){
         std::cout<<desc<<std::endl;
-        return {};
+        return vm;
     }
 
     if(!boost::filesystem::exists(vm["input_folder"].as<std::string>())){
