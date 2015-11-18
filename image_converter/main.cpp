@@ -88,7 +88,7 @@ image_pair convert_color(std::vector<std::string> const &image_names,
     switch(color_space_map.at({from_color_space, to_color_space})){
     case transform_method::rgb2gray:{
         std::cout<<"rgb to gray"<<std::endl;
-        rgb_to_gray(image_names, input_folder, CV_RGB2GRAY, outputs);
+        rgb_to_gray(image_names, input_folder, CV_BGR2GRAY, outputs);
         break;
     }
     case transform_method::rgb2int:{
