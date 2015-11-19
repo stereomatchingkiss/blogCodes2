@@ -22,6 +22,41 @@ void fhog_number_plate_trainer::preprocess(std::string const &train_xml,
     //add_image_left_right_flips(images_train, face_boxes_train);
 }
 
+void fhog_number_plate_trainer::
+show_train_result(dlib::object_detector<image_scanner_type> &detector)
+{
+    using namespace dlib;
+
+    std::cout << "training results(precision,recall,AP): "
+              << test_object_detection_function(detector, images_train, face_boxes_train);
+
+    //upsample_image_dataset<pyramid_down<3>>(images_test, face_boxes_test);
+    std::cout << "testing results(precision,recall,AP):  "
+              << test_object_detection_function(detector, images_test, face_boxes_test);
+
+    image_window win;
+    for(size_t i = 0; i < images_test.size(); ++i)
+    {
+        // Run the detector and get the number plate detections
+        std::vector<rectangle> dets = detector(images_test[i]);
+        std::cout<<i<<" detect "<<dets.size()<<" number plate"<<std::endl;
+        for(auto &rect : dets){
+            //increase the size of possible plate region, this could
+            //help us locate full plate informations
+            rectangle const tg(rect.left() - rect.left() * 0.05,
+                               rect.top() - rect.top() * 0.02,
+                               rect.right() + rect.right() * 0.15,
+                               rect.bottom());
+            rect = tg;
+        }        
+        win.clear_overlay();        
+        win.set_image(images_test[i]);
+        win.add_overlay(dets, rgb_pixel(255,0,0));
+        std::cout << "Hit enter to process the next image..." << std::endl;
+        std::cin.get();
+    }
+}
+
 fhog_number_plate_trainer::fhog_number_plate_trainer(int argc, char **argv)
 {
     try{
@@ -35,49 +70,8 @@ fhog_number_plate_trainer::fhog_number_plate_trainer(int argc, char **argv)
             auto const test_xml = map["test_xml"].as<std::string>();;
             preprocess(train_xml, test_xml);
 
-            using image_scanner_type = scan_fhog_pyramid<pyramid_down<10>>;
-
-            image_scanner_type scanner;
-            scanner.set_detection_window_size(120, 40);
-            //scanner.set_nuclear_norm_regularization_strength(1.0);
-            structural_object_detection_trainer<image_scanner_type> trainer(scanner);
-            trainer.set_num_threads(std::thread::hardware_concurrency());
-            trainer.set_c(12);
-            trainer.set_match_eps(0.4);
-            //trainer.be_verbose();
-            trainer.set_epsilon(0.005);
-
-            object_detector<image_scanner_type> detector =
-                    trainer.train(images_train, face_boxes_train);
-
-            std::cout << "training results(precision,recall,AP): "
-                      << test_object_detection_function(detector, images_train, face_boxes_train);
-
-            //upsample_image_dataset<pyramid_down<2> >(images_test, face_boxes_test);
-            std::cout << "testing results(precision,recall,AP):  "
-                      << test_object_detection_function(detector, images_test, face_boxes_test);
-
-            image_window win;
-            for(size_t i = 0; i < images_test.size(); ++i)
-            {
-                // Run the detector and get the number plate detections
-                std::vector<rectangle> dets = detector(images_test[i]);
-                std::cout<<i<<" detect "<<dets.size()<<" number plate"<<std::endl;
-                for(auto &rect : dets){
-                    //increase the size of possible plate region, this could
-                    //help us locate full plate informations
-                    rectangle const tg(rect.left() - rect.left() * 0.05,
-                                       rect.top() - rect.top() * 0.02,
-                                       rect.right() + rect.right() * 0.15,
-                                       rect.bottom());
-                    rect = tg;
-                }
-                win.clear_overlay();
-                win.set_image(images_test[i]);
-                win.add_overlay(dets, rgb_pixel(255,0,0));
-                std::cout << "Hit enter to process the next image..." << std::endl;
-                std::cin.get();
-            }
+            object_detector<image_scanner_type> detector = train();
+            show_train_result(detector);
             serialize("number_plate_detector.svm") << detector;
         }
 
@@ -104,10 +98,28 @@ fhog_number_plate_trainer::parse_command_line(int argc, char **argv)
 
     if(vm.count("help")){
         std::cout<<desc<<std::endl;
-        return {};
+        return vm;
     }
 
     notify(vm);
 
     return vm;
+}
+
+dlib::object_detector<fhog_number_plate_trainer::image_scanner_type>
+fhog_number_plate_trainer::train() const
+{
+    using namespace dlib;
+
+    image_scanner_type scanner;
+    scanner.set_detection_window_size(120, 40);
+    //scanner.set_nuclear_norm_regularization_strength(1.0);
+    structural_object_detection_trainer<image_scanner_type> trainer(scanner);
+    trainer.set_num_threads(std::thread::hardware_concurrency());
+    trainer.set_c(12);
+    trainer.set_match_eps(0.4);
+    //trainer.be_verbose();
+    trainer.set_epsilon(0.005);
+
+    return trainer.train(images_train, face_boxes_train);
 }
