@@ -19,11 +19,11 @@ public:
     {
         auto const attribute =
                 analyzer_.analyze(contour, epsillon);
-        if(attribute.contour_area_ < 1659.9){
+        if(attribute.contour_area_ < 500){
             return true;
         }
 
-        if(attribute.aspect_ratio_ < 2.829 || attribute.aspect_ratio_ > 5.391){
+        /*if(attribute.aspect_ratio_ < 2.829 || attribute.aspect_ratio_ > 5.391){
             return true;
         }
 
@@ -33,7 +33,7 @@ public:
 
         if(attribute.solidity_ < 0.409 || attribute.solidity_ > 0.821){
             return true;
-        }
+        }*/
 
         return false;
     }
@@ -87,7 +87,7 @@ void morphology_localizer::find_plate_contours()
         cv::Mat input_copy;
         cv::imshow("resize input", resize_input_);
         for(auto const &contour : contours_){
-            int const Thickness = 2;
+            constexpr int Thickness = 2;
             resize_input_.copyTo(input_copy);
             cv::rectangle(input_copy, cv::boundingRect(contour),
             {255,0,0}, Thickness);
@@ -105,7 +105,7 @@ void morphology_localizer::morphology_filter()
     //use tophat operations to extract the white background
     //of the license plate
     auto const tophat_kernel =
-            cv::getStructuringElement(cv::MORPH_RECT, {30,10});
+            cv::getStructuringElement(cv::MORPH_RECT, {15,5});
     cv::morphologyEx(intensity_, intensity_, CV_MOP_TOPHAT,
                      tophat_kernel);
 
@@ -135,7 +135,7 @@ void morphology_localizer::preprocess(const cv::Mat &input)
 {    
     CV_Assert(input.type() == CV_8UC3);
 
-    ocv::resize_aspect_ratio(input, resize_input_, {640, 0});
+    ocv::resize_aspect_ratio(input, resize_input_, {400, 0});
     cv::cvtColor(resize_input_, hsv_, CV_BGR2HSV);
     cv::split(hsv_, split_hsv_);
 
