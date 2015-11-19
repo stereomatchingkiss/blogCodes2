@@ -113,7 +113,7 @@ fhog_number_plate_trainer::train() const
 
     image_scanner_type scanner;
     scanner.set_detection_window_size(120, 40);
-    //scanner.set_nuclear_norm_regularization_strength(1.0);
+    scanner.set_nuclear_norm_regularization_strength(0.08);
     structural_object_detection_trainer<image_scanner_type> trainer(scanner);
     trainer.set_num_threads(std::thread::hardware_concurrency());
     trainer.set_c(12);
