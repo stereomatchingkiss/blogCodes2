@@ -20,22 +20,28 @@ public:
     void localize_plate(cv::Mat const &input,
                         std::vector<cv::Rect> &regions);
 
-    void set_show_debug_message(bool value);
-
+    void set_show_debug_message(bool value);        
 private:
-    void filter_background();
-    void find_plate_contours();
-    void morphology_filter();
+    void binarize_image();
+    void create_light_input();
+    void find_plate_contours();    
     void preprocess(cv::Mat const &input);
-    void sobel_filter();
+    void remove_noise();
+    void reveal_dark_area();
 
-    cv::Mat binary_input_;
+    cv::Mat binary_input_;    
+    cv::Mat blur_input_;
+    std::vector<std::vector<cv::Point>>  contours_;
     bool debug_ = false;
+    cv::Mat gradient_input_;
+    cv::Mat gray_input_;
     cv::Mat hsv_;
     cv::Mat intensity_;
-    std::vector<std::vector<cv::Point>>  contours_;
+    cv::Mat light_input_;
+    cv::Mat morphology_input_;
     cv::Mat resize_input_;
     std::vector<cv::Mat> split_hsv_;
+    cv::Mat tophat_kernel_;
 };
 
 #endif
