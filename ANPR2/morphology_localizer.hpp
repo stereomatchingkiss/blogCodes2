@@ -12,6 +12,11 @@ class morphology_localizer
 public:
     morphology_localizer();
 
+    morphology_localizer(morphology_localizer const&) = delete;
+    morphology_localizer& operator=(morphology_localizer const&) = delete;
+    morphology_localizer(morphology_localizer&&) = delete;
+    morphology_localizer& operator=(morphology_localizer&&) = delete;
+
     /**
      * Find possible region of the license plates
      * @param input input image
