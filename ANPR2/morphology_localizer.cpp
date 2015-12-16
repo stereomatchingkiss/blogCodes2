@@ -28,7 +28,8 @@ public:
             return true;
         }
 
-        if(attribute.aspect_ratio_ < 2.5){
+        if(attribute.aspect_ratio_ < 2.5 ||
+                attribute.aspect_ratio_ > 7.54){
             return true;
         }
 
@@ -56,7 +57,7 @@ localize_plate(const cv::Mat &input,
 
     regions.resize(contours_.size());
     for(size_t i = 0; i != contours_.size(); ++i){
-        regions[i] = cv::boundingRect(contour[i]);
+        regions[i] = cv::boundingRect(contours_[i]);
     }
 }
 
