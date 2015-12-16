@@ -24,11 +24,11 @@ void test_number_plate_localizer(int argc, char **argv)
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
 
+    Localizer lpl;
+    lpl.set_show_debug_message(true);
     if(map.count("image_folder")){
         auto const target = map["image_folder"].as<std::string>();
         auto images = ocv::file::get_directory_files(target);
-        Localizer lpl;
-        lpl.set_show_debug_message(true);
         for(auto const &im_name : images){
             std::cout<<(target + "/" + im_name)<<std::endl;
             cv::Mat input = cv::imread(target + "/" + im_name);
@@ -38,8 +38,6 @@ void test_number_plate_localizer(int argc, char **argv)
         }
     }else if(map.count("image")){
         auto const target = map["image"].as<std::string>();
-        Localizer lpl;
-        lpl.set_show_debug_message(true);
         std::cout<<target<<std::endl;
         cv::Mat input = cv::imread(target);
         if(!input.empty()){
