@@ -17,6 +17,8 @@ public:
     morphology_localizer(morphology_localizer&&) = delete;
     morphology_localizer& operator=(morphology_localizer&&) = delete;
 
+    cv::Mat& get_gray_input();
+
     /**
      * Find possible region of the license plates
      * @param input input image

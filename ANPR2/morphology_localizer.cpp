@@ -48,6 +48,11 @@ morphology_localizer::morphology_localizer() :
 {    
 }
 
+cv::Mat& morphology_localizer::get_gray_input()
+{
+    return gray_input_;
+}
+
 void morphology_localizer::
 localize_plate(const cv::Mat &input,
                std::vector<cv::Rect> &regions)
