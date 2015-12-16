@@ -48,8 +48,7 @@ private:
     cv::Mat intensity_;
     cv::Mat light_input_;
     cv::Mat morphology_input_;
-    cv::Mat resize_input_;
-    std::vector<cv::Mat> split_hsv_;
+    cv::Mat resize_input_;    
     cv::Mat tophat_kernel_;
     cv::Size tophat_size_ = {30,10};
 };
