@@ -19,21 +19,18 @@ public:
     {
         auto const attribute =
                 analyzer_.analyze(contour, epsillon);
-        if(attribute.contour_area_ < 500){
+        if(attribute.contour_area_ < 1200){
             return true;
         }
 
-        /*if(attribute.aspect_ratio_ < 2.829 || attribute.aspect_ratio_ > 5.391){
+        if(attribute.bounding_rect_.width < 60 ||
+                attribute.bounding_rect_.height < 20){
             return true;
         }
 
-        if(attribute.poly_size_ < 3 || attribute.poly_size_ > 6){
+        if(attribute.aspect_ratio_ < 2.5){
             return true;
         }
-
-        if(attribute.solidity_ < 0.409 || attribute.solidity_ > 0.821){
-            return true;
-        }*/
 
         return false;
     }
@@ -46,7 +43,7 @@ private:
 
 morphology_localizer::morphology_localizer() :
     //make the ratio of the tophat_kernel_ close to license plate
-    tophat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, {20,5}))
+    tophat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, {30,10}))
 {    
 }
 
@@ -54,8 +51,13 @@ void morphology_localizer::
 localize_plate(const cv::Mat &input,
                std::vector<cv::Rect> &regions)
 {
-    preprocess(input);    
-    //find_plate_contours();
+    preprocess(input);
+    find_plate_contours();
+
+    regions.resize(contours_.size());
+    for(size_t i = 0; i != contours_.size(); ++i){
+        regions[i] = cv::boundingRect(contour[i]);
+    }
 }
 
 void morphology_localizer::set_show_debug_message(bool value)
@@ -84,7 +86,7 @@ void morphology_localizer::find_plate_contours()
             resize_input_.copyTo(input_copy);
             cv::rectangle(input_copy, cv::boundingRect(contour),
             {255,0,0}, Thickness);
-            ocv::print_contour_attribute(contour, epsillon, std::cout);            
+            ocv::print_contour_attribute(contour, epsillon, std::cout);
             cv::imshow("contour", input_copy);
             cv::imshow("region", resize_input_(cv::boundingRect(contour)));
             cv::waitKey();
@@ -99,6 +101,7 @@ void morphology_localizer::create_light_input()
             cv::getStructuringElement(cv::MORPH_RECT, {3,3});
     cv::morphologyEx(gray_input_, light_input_, cv::MORPH_CLOSE,
                      rect_kernel);
+    //gray_input_.copyTo(light_input_);
     cv::threshold(light_input_, light_input_, 50, 255, cv::THRESH_BINARY);
     //cv::imshow("light input", light_input_);
 }
@@ -137,13 +140,14 @@ void morphology_localizer::remove_noise()
             cv::getStructuringElement(cv::MORPH_RECT, {3,3});
     cv::erode(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
     cv::dilate(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
-    cv::imshow("5 : remove noise", binary_input_.clone());
+    cv::imshow("5 : remove noise", binary_input_);
 
-    //the result of last step almost same as step 5
-    //create_light_input();
-    //cv::bitwise_and(binary_input_, light_input_, binary_input_);
-    //cv::dilate(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
-    //cv::erode(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
+    //the result of last step look almost the same as step 5 in many cases,
+    //but it some of the cases, it could introduce big difference
+    create_light_input();
+    cv::bitwise_and(binary_input_, light_input_, binary_input_);
+    cv::dilate(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
+    cv::erode(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
     //cv::imshow("6 : remove more noise", binary_input_.clone());
 }
 
@@ -154,9 +158,8 @@ void morphology_localizer::preprocess(const cv::Mat &input)
     ocv::resize_aspect_ratio(input, resize_input_, {640, 0});
     cv::cvtColor(resize_input_, gray_input_, CV_BGR2GRAY);
 
-    cv::imshow("resize origin", resize_input_);
+    //cv::imshow("resize origin", resize_input_);
     reveal_dark_area();
     binarize_image();
     remove_noise();
-    cv::waitKey();
 }
