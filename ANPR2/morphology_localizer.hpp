@@ -27,7 +27,8 @@ public:
     void localize_plate(cv::Mat const &input,
                         std::vector<cv::Rect> &regions);
 
-    void set_show_debug_message(bool value);        
+    void set_show_debug_message(bool value);
+    void set_tophat_size(cv::Size const &value);
 private:
     void binarize_image();
     void create_light_input();
@@ -49,6 +50,7 @@ private:
     cv::Mat resize_input_;
     std::vector<cv::Mat> split_hsv_;
     cv::Mat tophat_kernel_;
+    cv::Size tophat_size_ = {30,10};
 };
 
 #endif

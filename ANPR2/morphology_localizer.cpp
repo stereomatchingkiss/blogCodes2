@@ -44,7 +44,7 @@ private:
 
 morphology_localizer::morphology_localizer() :
     //make the ratio of the tophat_kernel_ close to license plate
-    tophat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, {30,10}))
+    tophat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, tophat_size_))
 {    
 }
 
@@ -69,6 +69,11 @@ localize_plate(const cv::Mat &input,
 void morphology_localizer::set_show_debug_message(bool value)
 {
     debug_ = value;
+}
+
+void morphology_localizer::set_tophat_size(const cv::Size &value)
+{
+    tophat_size_ = value;
 }
 
 void morphology_localizer::find_plate_contours()
