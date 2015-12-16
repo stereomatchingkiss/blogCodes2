@@ -33,8 +33,7 @@ void test_number_plate_localizer(int argc, char **argv)
             std::cout<<(target + "/" + im_name)<<std::endl;
             cv::Mat input = cv::imread(target + "/" + im_name);
             if(!input.empty()){
-                std::vector<cv::Rect> plate_regions;
-                lpl.localize_plate(input, plate_regions);
+                lpl.localize_plate(input);
             }
         }
     }else if(map.count("image")){
@@ -44,8 +43,7 @@ void test_number_plate_localizer(int argc, char **argv)
         std::cout<<target<<std::endl;
         cv::Mat input = cv::imread(target);
         if(!input.empty()){
-            std::vector<cv::Rect> plate_regions;
-            lpl.localize_plate(input, plate_regions);
+            lpl.localize_plate(input);
         }
     }else{
         std::cerr<<"must input folder path or image name"<<std::endl;

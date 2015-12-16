@@ -48,22 +48,27 @@ morphology_localizer::morphology_localizer() :
 {    
 }
 
+std::vector<std::vector<cv::Point> > const&
+morphology_localizer::get_contours() const
+{
+    return contours_;
+}
+
 cv::Mat& morphology_localizer::get_gray_input()
 {
     return gray_input_;
 }
 
+cv::Mat const& morphology_localizer::get_gray_input() const
+{
+    return gray_input_;
+}
+
 void morphology_localizer::
-localize_plate(const cv::Mat &input,
-               std::vector<cv::Rect> &regions)
+localize_plate(const cv::Mat &input)
 {
     preprocess(input);
     find_plate_contours();
-
-    regions.resize(contours_.size());
-    for(size_t i = 0; i != contours_.size(); ++i){
-        regions[i] = cv::boundingRect(contours_[i]);
-    }
 }
 
 void morphology_localizer::set_show_debug_message(bool value)

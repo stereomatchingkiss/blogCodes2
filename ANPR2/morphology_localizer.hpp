@@ -17,15 +17,16 @@ public:
     morphology_localizer(morphology_localizer&&) = delete;
     morphology_localizer& operator=(morphology_localizer&&) = delete;
 
+    std::vector<std::vector<cv::Point>> const& get_contours() const;
     cv::Mat& get_gray_input();
+    cv::Mat const& get_gray_input() const;
 
     /**
      * Find possible region of the license plates
      * @param input input image
      * @param regions regions of license plates
      */
-    void localize_plate(cv::Mat const &input,
-                        std::vector<cv::Rect> &regions);
+    void localize_plate(cv::Mat const &input);
 
     void set_show_debug_message(bool value);
     void set_tophat_size(cv::Size const &value);
