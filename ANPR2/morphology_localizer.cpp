@@ -117,9 +117,8 @@ void morphology_localizer::create_light_input()
             cv::getStructuringElement(cv::MORPH_RECT, {3,3});
     cv::morphologyEx(gray_input_, light_input_, cv::MORPH_CLOSE,
                      rect_kernel);
-    //gray_input_.copyTo(light_input_);
     cv::threshold(light_input_, light_input_, 50, 255, cv::THRESH_BINARY);
-    //cv::imshow("light input", light_input_);
+    //show_img_for_debug("light input", light_input_);
 }
 
 void morphology_localizer::reveal_dark_area()
@@ -128,26 +127,34 @@ void morphology_localizer::reveal_dark_area()
     //in another words, make the text on license plate more obvious
     cv::morphologyEx(gray_input_, morphology_input_, cv::MORPH_BLACKHAT,
                      tophat_kernel_);
-    //cv::imshow("0 : black hat", morphology_input_.clone());
+    show_img_for_debug("0 : black hat", morphology_input_);
+}
+
+void morphology_localizer::show_img_for_debug(const std::string &name,
+                                              const cv::Mat &input) const
+{
+    if(debug_){
+        cv::imshow(name, input);
+    }
 }
 
 void morphology_localizer::binarize_image()
 {
     //make the text of the license plate more obvious
     cv::Sobel(morphology_input_, gradient_input_, CV_8U, 1, 0, 3);
-    //cv::imshow("1 : gradient", gradient_input_.clone());
+    //show_img_for_debug("1 : gradient", gradient_input_);
 
     //remove noise
     cv::GaussianBlur(gradient_input_, blur_input_, {7,7}, 0);
-    //cv::imshow("2 : blur", blur_input_.clone());
+    //show_img_for_debug("2 : blur", blur_input_);
 
     //fill the gap between text
     cv::morphologyEx(blur_input_, morphology_input_, cv::MORPH_CLOSE,
                      tophat_kernel_);
-    //cv::imshow("3 : close", morphology_input_.clone());
+    //show_img_for_debug("3 : close", morphology_input_);
     cv::threshold(morphology_input_, binary_input_, 0, 255,
                   CV_THRESH_BINARY | CV_THRESH_OTSU);
-    //cv::imshow("4 : binary", binary_input_.clone());
+    //show_img_for_debug("4 : binary", binary_input_);
 }
 
 void morphology_localizer::remove_noise()
@@ -156,7 +163,7 @@ void morphology_localizer::remove_noise()
             cv::getStructuringElement(cv::MORPH_RECT, {3,3});
     cv::erode(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
     cv::dilate(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
-    cv::imshow("5 : remove noise", binary_input_);
+    //show_img_for_debug("5 : remove noise", binary_input_);
 
     //the result of last step look almost the same as step 5 in many cases,
     //but it some of the cases, it could introduce big difference
@@ -164,7 +171,7 @@ void morphology_localizer::remove_noise()
     cv::bitwise_and(binary_input_, light_input_, binary_input_);
     cv::dilate(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
     cv::erode(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
-    //cv::imshow("6 : remove more noise", binary_input_.clone());
+    //show_img_for_debug("6 : remove more noise", binary_input_);
 }
 
 void morphology_localizer::preprocess(const cv::Mat &input)
@@ -174,7 +181,7 @@ void morphology_localizer::preprocess(const cv::Mat &input)
     ocv::resize_aspect_ratio(input, resize_input_, {640, 0});
     cv::cvtColor(resize_input_, gray_input_, CV_BGR2GRAY);
 
-    //cv::imshow("resize origin", resize_input_);
+    //show_img_for_debug("resize origin", resize_input_);
     reveal_dark_area();
     binarize_image();
     remove_noise();

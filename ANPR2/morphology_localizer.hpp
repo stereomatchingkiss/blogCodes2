@@ -37,6 +37,8 @@ private:
     void preprocess(cv::Mat const &input);
     void remove_noise();
     void reveal_dark_area();
+    void show_img_for_debug(std::string const &name,
+                            cv::Mat const &input) const;
 
     cv::Mat binary_input_;    
     cv::Mat blur_input_;
