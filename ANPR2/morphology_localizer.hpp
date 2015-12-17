@@ -46,8 +46,6 @@ private:
     bool debug_ = false;
     cv::Mat gradient_input_;
     cv::Mat gray_input_;
-    cv::Mat hsv_;
-    cv::Mat intensity_;
     cv::Mat light_input_;
     cv::Mat morphology_input_;
     cv::Mat resize_input_;    
