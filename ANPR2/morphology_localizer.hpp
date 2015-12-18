@@ -43,8 +43,8 @@ private:
                             cv::Mat const &input) const;
 
     cv::Mat binary_input_;
-    cv::Mat blackhat_kernel_;
     cv::Size blackhat_kernal_size_ = {30,10};
+    cv::Mat blackhat_kernel_;
     cv::Mat blur_input_;    
     std::vector<std::vector<cv::Point>>  contours_;
     bool debug_ = false;
