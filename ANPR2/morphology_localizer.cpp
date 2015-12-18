@@ -44,7 +44,7 @@ private:
 
 morphology_localizer::morphology_localizer() :
     //make the ratio of the tophat_kernel_ close to license plate
-    tophat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, tophat_size_))
+    blackhat_kernel_(cv::getStructuringElement(cv::MORPH_RECT, blackhat_kernal_size_))
 {    
 }
 
@@ -76,9 +76,9 @@ void morphology_localizer::set_show_debug_message(bool value)
     debug_ = value;
 }
 
-void morphology_localizer::set_tophat_size(const cv::Size &value)
+void morphology_localizer::set_blackhat_size(const cv::Size &value)
 {
-    tophat_size_ = value;
+    blackhat_kernal_size_ = value;
 }
 
 void morphology_localizer::find_plate_contours()
@@ -126,7 +126,7 @@ void morphology_localizer::reveal_dark_area()
     //use blackhat operations to reveal black area from white background
     //in another words, make the text on license plate more obvious
     cv::morphologyEx(gray_input_, morphology_input_, cv::MORPH_BLACKHAT,
-                     tophat_kernel_);
+                     blackhat_kernel_);
     show_img_for_debug("0 : black hat", morphology_input_);
 }
 
@@ -150,7 +150,7 @@ void morphology_localizer::binarize_image()
 
     //fill the gap between text
     cv::morphologyEx(blur_input_, morphology_input_, cv::MORPH_CLOSE,
-                     tophat_kernel_);
+                     blackhat_kernel_);
     //show_img_for_debug("3 : close", morphology_input_);
     cv::threshold(morphology_input_, binary_input_, 0, 255,
                   CV_THRESH_BINARY | CV_THRESH_OTSU);
