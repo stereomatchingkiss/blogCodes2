@@ -15,6 +15,9 @@ constexpr double epsillon = 0.035;
 class is_non_valid_contours
 {
 public:
+    explicit is_non_valid_contours(cv::Size const &value) :
+        min_plate_size_(value){}
+
     bool operator()(std::vector<cv::Point> const &contour)
     {
         auto const attribute =
@@ -23,8 +26,8 @@ public:
             return true;
         }
 
-        if(attribute.bounding_rect_.width < 60 ||
-                attribute.bounding_rect_.height < 20){
+        if(attribute.bounding_rect_.width < min_plate_size_.width ||
+                attribute.bounding_rect_.height < min_plate_size_.height){
             return true;
         }
 
@@ -38,6 +41,7 @@ public:
 
 private:
     ocv::contour_analyzer analyzer_;
+    cv::Size const min_plate_size_;
 };
 
 }
@@ -81,6 +85,11 @@ void morphology_localizer::set_blackhat_size(const cv::Size &value)
     blackhat_kernal_size_ = value;
 }
 
+void morphology_localizer::set_min_plate_size(cv::Size const &value)
+{
+    min_plate_size_ = value;
+}
+
 void morphology_localizer::find_plate_contours()
 {
     cv::findContours(binary_input_, contours_,
@@ -90,7 +99,7 @@ void morphology_localizer::find_plate_contours()
     //erase non number plate contour
     auto it = std::remove_if(std::begin(contours_),
                              std::end(contours_),
-                             is_non_valid_contours());
+                             is_non_valid_contours(min_plate_size_));
     contours_.erase(it, std::end(contours_));
 
     if(debug_){

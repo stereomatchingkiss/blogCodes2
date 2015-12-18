@@ -28,8 +28,10 @@ public:
      */
     void localize_plate(cv::Mat const &input);
 
-    void set_show_debug_message(bool value);
     void set_blackhat_size(cv::Size const &value);
+    void set_min_plate_size(cv::Size const &value);
+    void set_show_debug_message(bool value);
+
 private:
     void binarize_image();
     void create_light_input();
@@ -42,15 +44,16 @@ private:
 
     cv::Mat binary_input_;
     cv::Mat blackhat_kernel_;
-    cv::Mat blur_input_;
+    cv::Size blackhat_kernal_size_ = {30,10};
+    cv::Mat blur_input_;    
     std::vector<std::vector<cv::Point>>  contours_;
     bool debug_ = false;
     cv::Mat gradient_input_;
     cv::Mat gray_input_;
     cv::Mat light_input_;
+    cv::Size min_plate_size_ = {60,20};
     cv::Mat morphology_input_;
-    cv::Mat resize_input_;        
-    cv::Size blackhat_kernal_size_ = {30,10};
+    cv::Mat resize_input_;
 };
 
 #endif
