@@ -3,6 +3,7 @@
 #include "segment_character.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
+#include <ocv_libs/core/perspective_transform.hpp>
 #include <ocv_libs/file/utility.hpp>
 
 #include <opencv2/core.hpp>
@@ -20,10 +21,14 @@ void test_algo(vmap const &map, UnaryFunctor functor);
 void test_number_plate_localizer(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
 
+void test_four_points_transform();
+
 int main(int argc, char **argv)
 {               
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
-    test_number_plate_localizer(argc, argv);
+    //test_number_plate_localizer(argc, argv);
+    test_segment_character(argc, argv);
+    //test_four_points_transform();
 }
 
 template<typename BinaryFunctor>
@@ -68,11 +73,73 @@ void test_segment_character(int argc, char **argv)
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
     morphology_localizer lpl;
-    lpl.set_show_debug_message(true);
+    lpl.set_show_debug_message(false);
     segment_character sc;
+    sc.set_show_debug_message(true);
     test_algo(map, [&](cv::Mat const &input)
     {
         lpl.localize_plate(input);
-        sc.detect_characters(input, lpl.get_contours());
+        for(auto const &contour : lpl.get_contours()){
+            sc.detect_characters(lpl.get_resize_input(),
+                                 contour);
+        }
     });
+}
+
+void test_four_points_transform()
+{
+    std::map<std::string, std::vector<cv::Point2f>> mapper
+    {
+        {
+            "get-perspective-transform-example/images/example_01.png",
+            {
+                {73, 239}, {356, 117},
+                {475, 265}, {187, 443}
+            }
+        },
+        {
+            "get-perspective-transform-example/images/example_02.png",
+            {
+                {101, 185}, {393, 151},
+                {479, 323}, {187, 441}
+            }
+        },
+        {
+            "get-perspective-transform-example/images/example_03.png",
+            {
+                {63, 242}, {291, 110},
+                {361, 252}, {78, 386}
+            }
+        }
+    };
+    std::string const img_name = "get-perspective-transform-example/"
+                                 "images/example_03.png";
+    auto input = cv::imread(img_name);
+    if(!input.empty()){
+        cv::Point2f points[4];
+        std::copy(std::begin(mapper[img_name]), std::end(mapper[img_name]),
+                  std::begin(points));
+        std::cout<<"before sort"<<std::endl;
+        for(auto const pt : points){
+            std::cout<<pt<<std::endl;
+        }
+        ocv::sort_corners(points, std::begin(points));
+        //auto const center = ocv::corners_center(points);
+        //std::cout<<"center : "<<center<<std::endl;
+        //cv::circle(input, center, 3, {255,0,0}, 2);
+        for(size_t i = 0; i != 4; ++i){
+            std::cout<<i<<" : "<<points[i]<<std::endl;
+            double const scale = 1.0;
+            int const thickness = 2;
+            auto text_point = points[i];
+            text_point.y -= 10;
+            cv::putText(input, std::to_string(i), text_point,
+                        cv::FONT_HERSHEY_COMPLEX, scale, {255,0,0}, thickness);
+            cv::circle(input, points[i], 3, {0,255,0}, 2);
+        }
+        auto warp_input = ocv::four_points_transform(input, points);
+        cv::imshow("input", input);
+        cv::imshow("warp", warp_input);
+        cv::waitKey();
+    }
 }
