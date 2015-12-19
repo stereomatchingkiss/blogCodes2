@@ -17,9 +17,10 @@ segment_character::segment_character(size_t min_char_width,
 
 bool segment_character::
 detect_characters(const cv::Mat &input,
-                  const segment_character::Countours &contours)
+                  const segment_character::Countour &contours)
 {
     generate_bird_eyes_view(input, contours);
+    binarize_plate();
 
     return false;
 }
@@ -44,43 +45,48 @@ void segment_character::set_show_debug_message(bool value)
     debug_ = value;
 }
 
+void segment_character::binarize_plate()
+{
+    cv::cvtColor(plate_, hsv_, CV_BGR2HSV);
+    cv::split(hsv_, hsv_split_);
+    intensity_ = hsv_split_[2];
+}
+
 void segment_character::
 generate_bird_eyes_view(const cv::Mat &input,
-                        const segment_character::Countours &contours)
-{
-    plate_.clear();
-    for(auto const &contour : contours){
-        cv::RotatedRect const plate_region = cv::minAreaRect(contour);
-        cv::Point2f pr_points[4];
-        plate_region.points(pr_points);
-        auto bird_eyes_plate = ocv::four_points_transform(input, pr_points);
-        plate_.emplace_back(bird_eyes_plate);
-        if(debug_){
-            auto input_cpy = input.clone();
-            ocv::sort_corners(pr_points, std::begin(pr_points));
-            auto const center = ocv::corners_center(pr_points);
-            std::cout<<"center : "<<center<<std::endl;
-            cv::circle(input_cpy, center, 3, {0, 0, 255}, 2);
-            for(size_t i = 0; i != 4; ++i){
-                //std::cout<<pt<<", x="<<pt.x<<", y="<<pt.y<<std::endl;
-                std::cout<<i<<" : "<<pr_points[i]<<std::endl;
-                auto text_point = pr_points[i];
-                text_point.y -= 10;
-                double const scale = 1.0;
-                int const thickness = 2;
-                cv::putText(input_cpy, std::to_string(i), text_point,
-                            cv::FONT_HERSHEY_COMPLEX, scale, {255,0,0}, thickness);
-                int const radius = 3;
-                cv::circle(input_cpy, pr_points[i], radius,
-                {0, 255, 0}, thickness);
-            }
-            std::cout<<"origin size : "<<input(cv::boundingRect(contour)).size()<<std::endl;
-            std::cout<<"biry eyes size : "<<bird_eyes_plate.size()<<std::endl;
+                        const segment_character::Countour &contour)
+{    
+    cv::RotatedRect const plate_region = cv::minAreaRect(contour);
+    cv::Point2f pr_points[4];
+    plate_region.points(pr_points);
+    ocv::four_points_transform(input, plate_, pr_points);
 
-            cv::imshow("origin plate", input(cv::boundingRect(contour)));
-            cv::imshow("rotated point", input_cpy);
-            cv::imshow("bird eyes plate", plate_.back());
-            cv::waitKey();
+    if(debug_){
+        auto input_cpy = input.clone();
+        ocv::sort_corners(pr_points, std::begin(pr_points));
+        auto const center = ocv::corners_center(pr_points);
+        std::cout<<"center : "<<center<<std::endl;
+        cv::circle(input_cpy, center, 3, {0, 0, 255}, 2);
+        for(size_t i = 0; i != 4; ++i){
+            //std::cout<<pt<<", x="<<pt.x<<", y="<<pt.y<<std::endl;
+            std::cout<<i<<" : "<<pr_points[i]<<std::endl;
+            auto text_point = pr_points[i];
+            text_point.y -= 10;
+            double const scale = 1.0;
+            int const thickness = 2;
+            cv::putText(input_cpy, std::to_string(i), text_point,
+                        cv::FONT_HERSHEY_COMPLEX, scale, {255,0,0}, thickness);
+            int const radius = 3;
+            cv::circle(input_cpy, pr_points[i], radius,
+            {0, 255, 0}, thickness);
         }
+        std::cout<<"origin size : "<<input(cv::boundingRect(contour)).size()<<std::endl;
+        std::cout<<"biry eyes size : "<<plate_.size()<<std::endl;
+
+        cv::imshow("origin plate", input(cv::boundingRect(contour)));
+        cv::imshow("rotated point", input_cpy);
+        cv::imshow("bird eyes plate", plate_);
+        cv::waitKey();
     }
+
 }
