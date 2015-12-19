@@ -1,5 +1,5 @@
-#ifndef MORPHOLOGY_LOCALIZER_HPP
-#define MORPHOLOGY_LOCALIZER_HPP
+#ifndef SEGMENT_CHARACTER_HPP
+#define SEGMENT_CHARACTER_HPP
 
 #include <opencv2/core.hpp>
 
@@ -9,6 +9,8 @@ class segment_character
 {
 public:
     using Countours = std::vector<std::vector<cv::Point>>;
+
+    segment_character() = default;
 
     /**
      * @param min_char_width minimum width of the characters
@@ -28,6 +30,9 @@ public:
     bool detect_characters(cv::Mat const &input,
                            Countours const &contours);
 
+    void set_min_char_width(size_t value);
+    void set_min_char_num(size_t value);
+    void set_max_char_num(size_t value);
     void set_show_debug_message(bool value);
 
 private:
