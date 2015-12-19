@@ -50,6 +50,18 @@ void segment_character::binarize_plate()
     cv::cvtColor(plate_, hsv_, CV_BGR2HSV);
     cv::split(hsv_, hsv_split_);
     intensity_ = hsv_split_[2];
+
+    constexpr int blockSize = 27;
+    constexpr double offset = 5;
+    cv::adaptiveThreshold(intensity_, threshold_, 255,
+                          cv::ADAPTIVE_THRESH_MEAN_C,
+                          cv::THRESH_BINARY_INV,
+                          blockSize, offset);
+    if(debug_){
+        cv::imshow("intensity", intensity_);
+        cv::imshow("binarize", threshold_);
+        cv::waitKey();
+    }
 }
 
 void segment_character::
