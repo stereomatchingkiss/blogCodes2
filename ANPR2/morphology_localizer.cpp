@@ -58,12 +58,12 @@ morphology_localizer::get_contours() const
     return contours_;
 }
 
-cv::Mat& morphology_localizer::get_gray_input()
+cv::Mat& morphology_localizer::get_resize_input()
 {
-    return gray_input_;
+    return resize_input_;
 }
 
-cv::Mat const& morphology_localizer::get_gray_input() const
+cv::Mat const& morphology_localizer::get_resize_input() const
 {
     return gray_input_;
 }

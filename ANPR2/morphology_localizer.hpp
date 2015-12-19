@@ -18,8 +18,8 @@ public:
     morphology_localizer& operator=(morphology_localizer&&) = delete;
 
     std::vector<std::vector<cv::Point>> const& get_contours() const;
-    cv::Mat& get_gray_input();
-    cv::Mat const& get_gray_input() const;
+    cv::Mat& get_resize_input();
+    cv::Mat const& get_resize_input() const;
 
     /**
      * Find possible region of the license plates
