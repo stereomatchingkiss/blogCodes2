@@ -85,9 +85,6 @@ generate_bird_eyes_view(const cv::Mat &input,
     if(debug_){
         auto input_cpy = input.clone();
         ocv::sort_corners(pr_points, std::begin(pr_points));
-        auto const center = ocv::corners_center(pr_points);
-        std::cout<<"center : "<<center<<std::endl;
-        cv::circle(input_cpy, center, 3, {0, 0, 255}, 2);
         for(size_t i = 0; i != 4; ++i){
             //std::cout<<pt<<", x="<<pt.x<<", y="<<pt.y<<std::endl;
             std::cout<<i<<" : "<<pr_points[i]<<std::endl;
@@ -107,6 +104,8 @@ generate_bird_eyes_view(const cv::Mat &input,
         cv::imshow("origin plate", input(cv::boundingRect(contour)));
         cv::imshow("rotated point", input_cpy);
         cv::imshow("bird eyes plate", plate_);
+        cv::imwrite("plate_points.jpg", input_cpy);
+        cv::imwrite("bird_eyes_plate.jpg", plate_);
         cv::waitKey();
     }
 
