@@ -18,7 +18,7 @@ segment_character::segment_character(size_t min_char_width,
 
 bool segment_character::
 detect_characters(const cv::Mat &input,
-                  const segment_character::Contour &contours)
+                  const segment_character::contour_type &contours)
 {
     generate_bird_eyes_view(input, contours);
     binarize_plate();
@@ -76,7 +76,7 @@ void segment_character::binarize_plate()
 
 void segment_character::
 bird_eyes_view_debug_message(cv::Mat const &input,
-                             Contour const &contour,
+                             contour_type const &contour,
                              cv::Point2f const (&points)[4])
 {
     if(debug_){
@@ -112,7 +112,7 @@ bird_eyes_view_debug_message(cv::Mat const &input,
 
 void segment_character::
 generate_bird_eyes_view(const cv::Mat &input,
-                        const segment_character::Contour &contour)
+                        const segment_character::contour_type &contour)
 {    
     cv::RotatedRect const plate_region = cv::minAreaRect(contour);
     cv::Point2f pr_points[4];
