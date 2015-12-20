@@ -9,6 +9,7 @@ class segment_character
 {
 public:
     using contour_type = std::vector<cv::Point>;
+    using contours_type = std::vector<contour_type>;
 
     segment_character() = default;
 
@@ -41,9 +42,13 @@ private:
                                       contour_type const &contour,
                                       cv::Point2f const (&points)[4]);
     void generate_bird_eyes_view(cv::Mat const &input, contour_type const &contour);
-    //void split_character();
+    void generate_components();
+    bool is_character_candidate(contour_type const &contour) const;
+    void split_character();
 
-    bool debug_ = false;    
+    contours_type chars_contour_;
+    std::vector<cv::Mat> chars_mask_;
+    bool debug_ = false;
     cv::Mat plate_;
     std::vector<cv::Mat> hsv_split_;
     cv::Mat hsv_;
