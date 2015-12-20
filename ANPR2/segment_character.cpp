@@ -21,6 +21,7 @@ detect_characters(const cv::Mat &input,
 {
     generate_bird_eyes_view(input, contours);
     binarize_plate();
+    //split_character();
 
     return false;
 }
@@ -58,8 +59,16 @@ void segment_character::binarize_plate()
                           cv::THRESH_BINARY_INV,
                           blockSize, offset);
     if(debug_){
+        cv::Mat gray;
+        cv::cvtColor(plate_, gray, CV_BGR2GRAY);
+        cv::Mat gray_thresh;
+        cv::adaptiveThreshold(intensity_, gray_thresh, 255,
+                              cv::ADAPTIVE_THRESH_MEAN_C,
+                              cv::THRESH_BINARY_INV,
+                              blockSize, offset);
         cv::imshow("intensity", intensity_);
-        cv::imshow("binarize", threshold_);
+        cv::imshow("binarize hsv", threshold_);
+        cv::imshow("binarize gray", gray_thresh);
         cv::waitKey();
     }
 }
@@ -102,3 +111,11 @@ generate_bird_eyes_view(const cv::Mat &input,
     }
 
 }
+
+/*void segment_character::split_character()
+{
+    cv::Mat centroids, labels, stats;
+    int const nlabels =
+            cv::connectedComponentsWithStats(threshold_, labels,
+                                             stats, centroids);
+}*/

@@ -38,6 +38,7 @@ public:
 private:
     void binarize_plate();
     void generate_bird_eyes_view(cv::Mat const &input, Countour const &contour);
+    //void split_character();
 
     bool debug_ = false;
     cv::Mat plate_;
