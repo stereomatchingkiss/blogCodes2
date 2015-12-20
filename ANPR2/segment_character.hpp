@@ -8,7 +8,7 @@
 class segment_character
 {
 public:
-    using Countour = std::vector<cv::Point>;
+    using Contour = std::vector<cv::Point>;
 
     segment_character() = default;
 
@@ -27,8 +27,8 @@ public:
      * @param contours contours of candidate plates
      * @return true if able to detect characters and vice versa
      */
-    bool detect_characters(cv::Mat const &input,
-                           Countour const &contours);
+    bool detect_characters(cv::Mat const &input,                           
+                           Contour const &contours);
 
     void set_min_char_width(size_t value);
     void set_min_char_num(size_t value);
@@ -37,7 +37,10 @@ public:
 
 private:
     void binarize_plate();
-    void generate_bird_eyes_view(cv::Mat const &input, Countour const &contour);
+    void bird_eyes_view_debug_message(cv::Mat const &input,
+                                      Contour const &contour,
+                                      cv::Point2f const (&points)[4]);
+    void generate_bird_eyes_view(cv::Mat const &input, Contour const &contour);
     //void split_character();
 
     bool debug_ = false;

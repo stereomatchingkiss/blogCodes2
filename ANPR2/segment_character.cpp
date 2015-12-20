@@ -1,6 +1,7 @@
 #include "segment_character.hpp"
 
 #include <ocv_libs/core/perspective_transform.hpp>
+#include <ocv_libs/core/resize.hpp>
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
@@ -17,7 +18,7 @@ segment_character::segment_character(size_t min_char_width,
 
 bool segment_character::
 detect_characters(const cv::Mat &input,
-                  const segment_character::Countour &contours)
+                  const segment_character::Contour &contours)
 {
     generate_bird_eyes_view(input, contours);
     binarize_plate();
@@ -74,28 +75,25 @@ void segment_character::binarize_plate()
 }
 
 void segment_character::
-generate_bird_eyes_view(const cv::Mat &input,
-                        const segment_character::Countour &contour)
-{    
-    cv::RotatedRect const plate_region = cv::minAreaRect(contour);
-    cv::Point2f pr_points[4];
-    plate_region.points(pr_points);
-    ocv::four_points_transform(input, plate_, pr_points);
-
+bird_eyes_view_debug_message(cv::Mat const &input,
+                             Contour const &contour,
+                             cv::Point2f const (&points)[4])
+{
     if(debug_){
         auto input_cpy = input.clone();
-        ocv::sort_corners(pr_points, std::begin(pr_points));
+        cv::Point2f sort_points[4];
+        ocv::sort_corners(points, std::begin(sort_points));
         for(size_t i = 0; i != 4; ++i){
             //std::cout<<pt<<", x="<<pt.x<<", y="<<pt.y<<std::endl;
-            std::cout<<i<<" : "<<pr_points[i]<<std::endl;
-            auto text_point = pr_points[i];
+            std::cout<<i<<" : "<<sort_points[i]<<std::endl;
+            auto text_point = sort_points[i];
             text_point.y -= 10;
             double const scale = 1.0;
             int const thickness = 2;
             cv::putText(input_cpy, std::to_string(i), text_point,
                         cv::FONT_HERSHEY_COMPLEX, scale, {255,0,0}, thickness);
             int const radius = 3;
-            cv::circle(input_cpy, pr_points[i], radius,
+            cv::circle(input_cpy, sort_points[i], radius,
             {0, 255, 0}, thickness);
         }
         std::cout<<"origin size : "<<input(cv::boundingRect(contour)).size()<<std::endl;
@@ -104,11 +102,24 @@ generate_bird_eyes_view(const cv::Mat &input,
         cv::imshow("origin plate", input(cv::boundingRect(contour)));
         cv::imshow("rotated point", input_cpy);
         cv::imshow("bird eyes plate", plate_);
+        ocv::resize_aspect_ratio(input_cpy, input_cpy, {320, 0});
         cv::imwrite("plate_points.jpg", input_cpy);
+        cv::imwrite("origin_plate.jpg", input(cv::boundingRect(contour)));
         cv::imwrite("bird_eyes_plate.jpg", plate_);
         cv::waitKey();
     }
+}
 
+void segment_character::
+generate_bird_eyes_view(const cv::Mat &input,
+                        const segment_character::Contour &contour)
+{    
+    cv::RotatedRect const plate_region = cv::minAreaRect(contour);
+    cv::Point2f pr_points[4];
+    plate_region.points(pr_points);
+    ocv::four_points_transform(input, plate_, pr_points);
+
+    bird_eyes_view_debug_message(input, contour, pr_points);
 }
 
 /*void segment_character::split_character()
