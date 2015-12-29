@@ -131,7 +131,7 @@ void segment_character::generate_components()
     int const nlabels =
             cv::connectedComponents(threshold_, labels);
 
-    chars_mask_.resize(nlabels);
+    chars_mask_.resize(nlabels - 1);
     for(auto &mask : chars_mask_){
         mask.create(threshold_.size(), CV_8U);
         mask = 0;
@@ -140,7 +140,9 @@ void segment_character::generate_components()
     for(int r = 0; r != labels.rows; ++r){
         auto labels_ptr = labels.ptr<int>(r);
         for(int c = 0; c != labels.cols; ++c){
-            chars_mask_[labels_ptr[c]].at<uchar>(r,c) = 255;
+            if(labels_ptr[c] != 0){
+                chars_mask_[labels_ptr[c]-1].at<uchar>(r,c) = 255;
+            }
         }
     }
 }
@@ -177,7 +179,9 @@ void segment_character::show_chars_contour()
             cv::Point2f points[4];
             cv::minAreaRect(chars_contour_[i]).points(points);
             cv::Mat temp_char = ocv::four_points_transform(plate_, points);
+            ocv::resize_aspect_ratio(temp_char, temp_char, {40, 0});
             cv::imshow("temp_char", temp_char);
+            cv::imwrite("char_" + std::to_string(i) + ".jpg", temp_char);
             cv::waitKey();
             cv::destroyWindow("temp_char");
             cv::drawContours(temp, chars_contour_, i, {0,255,0}, 2);
