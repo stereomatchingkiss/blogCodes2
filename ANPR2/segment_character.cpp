@@ -20,9 +20,10 @@ segment_character::segment_character(size_t min_char_width,
 
 bool segment_character::
 detect_characters(const cv::Mat &input,
-                  const segment_character::contour_type &contours)
+                  const segment_character::contour_type &contour)
 {
-    generate_bird_eyes_view(input, contours);
+    generate_bird_eyes_view(input, contour);
+    //plate_ = input(cv::boundingRect(contour));
     binarize_plate();
     split_character();
 
@@ -53,7 +54,7 @@ void segment_character::binarize_plate()
 {
     cv::cvtColor(plate_, hsv_, CV_BGR2HSV);
     cv::split(hsv_, hsv_split_);
-    intensity_ = hsv_split_[2];
+    //intensity_ = hsv_split_[2];
     cv::GaussianBlur(hsv_split_[2], intensity_, {7,7}, 0);
 
     constexpr int blockSize = 27;
@@ -116,10 +117,9 @@ bird_eyes_view_debug_message(cv::Mat const &input,
 void segment_character::
 generate_bird_eyes_view(const cv::Mat &input,
                         const segment_character::contour_type &contour)
-{    
-    cv::RotatedRect const plate_region = cv::minAreaRect(contour);
+{        
     cv::Point2f pr_points[4];
-    plate_region.points(pr_points);
+    cv::minAreaRect(contour).points(pr_points);
     ocv::four_points_transform(input, plate_, pr_points);
 
     //bird_eyes_view_debug_message(input, contour, pr_points);
@@ -131,7 +131,7 @@ void segment_character::generate_components()
     int const nlabels =
             cv::connectedComponents(threshold_, labels);
 
-    chars_mask_.resize(nlabels - 1);
+    chars_mask_.resize(nlabels);
     for(auto &mask : chars_mask_){
         mask.create(threshold_.size(), CV_8U);
         mask = 0;
@@ -140,9 +140,7 @@ void segment_character::generate_components()
     for(int r = 0; r != labels.rows; ++r){
         auto labels_ptr = labels.ptr<int>(r);
         for(int c = 0; c != labels.cols; ++c){
-            if(labels_ptr[c] != 0){
-                chars_mask_[labels_ptr[c] - 1].at<uchar>(r,c) = 255;
-            }
+            chars_mask_[labels_ptr[c]].at<uchar>(r,c) = 255;
         }
     }
 }
@@ -171,32 +169,61 @@ bool segment_character::is_character_candidate(contour_type const &contour) cons
     return true;
 }
 
-void segment_character::split_character()
+void segment_character::show_chars_contour()
 {
-    generate_components();
-
-    chars_contour_.clear();
     if(debug_){
-        ocv::print_contour_attribute_name(std::cerr);
+        cv::Mat temp = plate_.clone();
+        for(int i = 0; i != chars_contour_.size(); ++i){
+            cv::Point2f points[4];
+            cv::minAreaRect(chars_contour_[i]).points(points);
+            cv::Mat temp_char = ocv::four_points_transform(plate_, points);
+            cv::imshow("temp_char", temp_char);
+            cv::waitKey();
+            cv::destroyWindow("temp_char");
+            cv::drawContours(temp, chars_contour_, i, {0,255,0}, 2);
+        }
+        cv::imshow("chars contours", temp);
+        cv::waitKey();
     }
+}
+
+void segment_character::show_chars_component(int j, size_t i,
+                                             contours_type contours)
+{
+    if(debug_){
+        ocv::print_contour_attribute(contours[j], 0.02, std::cout);
+        cv::Mat dst(plate_.size(), CV_8U);
+        dst = 0;
+        cv::drawContours(dst, contours, j, {255}, -1);
+        auto const num = std::to_string(i) + "_" + std::to_string(j);
+        if(is_character_candidate(contours[j])){
+            std::cout<<("mask_" + num)<<" is "<<std::endl;
+        }
+        cv::imshow("mask_" + num, dst);
+        cv::waitKey();
+        cv::destroyWindow("mask_" + num);
+    }
+}
+
+void segment_character::split_character()
+{    
+    if(debug_){
+        ocv::print_contour_attribute_name(std::cout);
+    }
+
+    generate_components();
+    chars_contour_.clear();
     for(size_t i = 0; i != chars_mask_.size(); ++i){
         contours_type contours;
         cv::findContours(chars_mask_[i], contours,
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
-        for(int i = 0; i != contours.size(); ++i){
-            if(debug_){
-                ocv::print_contour_attribute(contours[i], 0.02, std::cerr);
-                cv::Mat dst(plate_.size(), CV_8U);
-                dst = 0;
-                cv::drawContours(dst, contours, i, {255}, -1);
-                cv::imshow("mask_" + std::to_string(i), dst);
-                cv::waitKey();
-                cv::destroyWindow("mask_" + std::to_string(i));
-            }
-            if(is_character_candidate(contours[i])){
-                chars_contour_.emplace_back(std::move(contours[i]));
+        for(int j = 0; j != contours.size(); ++j){
+            //show_chars_component(j, i, contours);
+            if(is_character_candidate(contours[j])){
+                chars_contour_.emplace_back(std::move(contours[j]));
             }
         }
     }
+    show_chars_contour();
 }

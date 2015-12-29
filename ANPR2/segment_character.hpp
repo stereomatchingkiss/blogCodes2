@@ -43,7 +43,11 @@ private:
                                       cv::Point2f const (&points)[4]);
     void generate_bird_eyes_view(cv::Mat const &input, contour_type const &contour);
     void generate_components();
+
     bool is_character_candidate(contour_type const &contour) const;
+
+    void show_chars_component(int j, size_t i, contours_type contours);
+    void show_chars_contour();
     void split_character();
 
     contours_type chars_contour_;
