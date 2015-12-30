@@ -72,7 +72,7 @@ private:
     cv::Mat intensity_; //v channel of hsv
     cv::Mat threshold_;
 
-    size_t min_char_width_ = 40;
+    size_t min_char_width_ = 10;
     size_t min_char_num_ = 6;
     size_t max_char_num_ = 8;
 };
