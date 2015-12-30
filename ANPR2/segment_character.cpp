@@ -9,11 +9,9 @@
 #include <opencv2/highgui.hpp>
 
 segment_character::segment_character(size_t min_char_width,
-                                     size_t min_char_num,
-                                     size_t max_char_num) :
+                                     size_t min_char_num) :
     min_char_width_{min_char_width},
-    min_char_num_{min_char_num},
-    max_char_num_{max_char_num}
+    min_char_num_{min_char_num}
 {
 
 }
@@ -49,11 +47,6 @@ void segment_character::set_min_char_width(size_t value)
 void segment_character::set_min_char_num(size_t value)
 {
     min_char_num_ = value;
-}
-
-void segment_character::set_max_char_num(size_t value)
-{
-    max_char_num_ = value;
 }
 
 void segment_character::set_show_debug_message(bool value)
