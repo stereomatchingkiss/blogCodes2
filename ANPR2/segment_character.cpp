@@ -25,7 +25,7 @@ detect_characters(const cv::Mat &input,
     binarize_plate();
     split_character();
 
-    return false;
+    return chars_contour_.size() >= min_char_num_ ? true : false;
 }
 
 const cv::Mat &segment_character::get_bird_eyes_plate() const
