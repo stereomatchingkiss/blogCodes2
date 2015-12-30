@@ -30,6 +30,17 @@ detect_characters(const cv::Mat &input,
     return false;
 }
 
+const cv::Mat &segment_character::get_bird_eyes_plate() const
+{
+    return bird_eyes_plate_;
+}
+
+const segment_character::contours_type &segment_character::
+get_chars_contours() const
+{
+    return chars_contour_;
+}
+
 void segment_character::set_min_char_width(size_t value)
 {
     min_char_width_ = value;
@@ -52,7 +63,7 @@ void segment_character::set_show_debug_message(bool value)
 
 void segment_character::binarize_plate()
 {
-    cv::cvtColor(plate_, hsv_, CV_BGR2HSV);
+    cv::cvtColor(bird_eyes_plate_, hsv_, CV_BGR2HSV);
     cv::split(hsv_, hsv_split_);
     //intensity_ = hsv_split_[2];
     cv::GaussianBlur(hsv_split_[2], intensity_, {7,7}, 0);
@@ -65,7 +76,7 @@ void segment_character::binarize_plate()
                           blockSize, offset);
     if(debug_){
         cv::Mat gray;
-        cv::cvtColor(plate_, gray, CV_BGR2GRAY);
+        cv::cvtColor(bird_eyes_plate_, gray, CV_BGR2GRAY);
         cv::Mat gray_thresh;
         cv::adaptiveThreshold(intensity_, gray_thresh, 255,
                               cv::ADAPTIVE_THRESH_MEAN_C,
@@ -101,15 +112,15 @@ bird_eyes_view_debug_message(cv::Mat const &input,
             {0, 255, 0}, thickness);
         }
         std::cout<<"origin size : "<<input(cv::boundingRect(contour)).size()<<std::endl;
-        std::cout<<"biry eyes size : "<<plate_.size()<<std::endl;
+        std::cout<<"biry eyes size : "<<bird_eyes_plate_.size()<<std::endl;
 
         cv::imshow("origin plate", input(cv::boundingRect(contour)));
         cv::imshow("rotated point", input_cpy);
-        cv::imshow("bird eyes plate", plate_);
+        cv::imshow("bird eyes plate", bird_eyes_plate_);
         ocv::resize_aspect_ratio(input_cpy, input_cpy, {320, 0});
         cv::imwrite("plate_points.jpg", input_cpy);
         cv::imwrite("origin_plate.jpg", input(cv::boundingRect(contour)));
-        cv::imwrite("bird_eyes_plate.jpg", plate_);
+        cv::imwrite("bird_eyes_plate.jpg", bird_eyes_plate_);
         cv::waitKey();
     }
 }
@@ -120,7 +131,7 @@ generate_bird_eyes_view(const cv::Mat &input,
 {        
     cv::Point2f pr_points[4];
     cv::minAreaRect(contour).points(pr_points);
-    ocv::four_points_transform(input, plate_, pr_points);
+    ocv::four_points_transform(input, bird_eyes_plate_, pr_points);
 
     //bird_eyes_view_debug_message(input, contour, pr_points);
 }
@@ -174,19 +185,24 @@ bool segment_character::is_character_candidate(contour_type const &contour) cons
 void segment_character::show_chars_contour()
 {
     if(debug_){
-        cv::Mat temp = plate_.clone();
+        cv::Mat temp = bird_eyes_plate_.clone();
         for(int i = 0; i != chars_contour_.size(); ++i){
             cv::Point2f points[4];
             cv::minAreaRect(chars_contour_[i]).points(points);
-            cv::Mat temp_char = ocv::four_points_transform(plate_, points);
+            cv::Mat temp_char_trans = ocv::four_points_transform(bird_eyes_plate_, points);
+            ocv::resize_aspect_ratio(temp_char_trans, temp_char_trans, {40, 0});
+            cv::imshow("temp_char_transform", temp_char_trans);
+            cv::Mat temp_char = temp(cv::boundingRect(chars_contour_[i]));
             ocv::resize_aspect_ratio(temp_char, temp_char, {40, 0});
             cv::imshow("temp_char", temp_char);
-            cv::imwrite("char_" + std::to_string(i) + ".jpg", temp_char);
+            cv::imwrite("char_" + std::to_string(i) + ".jpg", temp_char_trans);
             cv::waitKey();
             cv::destroyWindow("temp_char");
+            cv::destroyWindow("temp_char_transform");
             cv::drawContours(temp, chars_contour_, i, {0,255,0}, 2);
         }
         cv::imshow("chars contours", temp);
+        cv::imwrite("chars_contours.jpg", temp);
         cv::waitKey();
     }
 }
@@ -196,7 +212,7 @@ void segment_character::show_chars_component(int j, size_t i,
 {
     if(debug_){
         ocv::print_contour_attribute(contours[j], 0.02, std::cout);
-        cv::Mat dst(plate_.size(), CV_8U);
+        cv::Mat dst(bird_eyes_plate_.size(), CV_8U);
         dst = 0;
         cv::drawContours(dst, contours, j, {255}, -1);
         auto const num = std::to_string(i) + "_" + std::to_string(j);

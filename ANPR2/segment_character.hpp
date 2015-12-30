@@ -31,6 +31,19 @@ public:
     bool detect_characters(cv::Mat const &input,                           
                            contour_type const &contours);
 
+    /**
+     * Get the bird eyes view of the license plate
+     * @return bird eyes view of the license plate
+     */
+    cv::Mat const& get_bird_eyes_plate() const;
+    /**
+     * Get the contours of characters
+     * @return contours of characters
+     * @warning the contours is associated to the
+     * bird eyes plate
+     */
+    contours_type const& get_chars_contours() const;
+
     void set_min_char_width(size_t value);
     void set_min_char_num(size_t value);
     void set_max_char_num(size_t value);
@@ -50,10 +63,10 @@ private:
     void show_chars_contour();
     void split_character();
 
+    cv::Mat bird_eyes_plate_;
     contours_type chars_contour_;
     std::vector<cv::Mat> chars_mask_;
-    bool debug_ = false;
-    cv::Mat plate_;
+    bool debug_ = false;    
     std::vector<cv::Mat> hsv_split_;
     cv::Mat hsv_;
     cv::Mat intensity_; //v channel of hsv
