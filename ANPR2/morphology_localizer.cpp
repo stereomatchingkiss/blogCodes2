@@ -65,7 +65,7 @@ cv::Mat& morphology_localizer::get_resize_input()
 
 cv::Mat const& morphology_localizer::get_resize_input() const
 {
-    return gray_input_;
+    return resize_input_;
 }
 
 void morphology_localizer::
@@ -163,24 +163,29 @@ void morphology_localizer::binarize_image()
     //show_img_for_debug("3 : close", morphology_input_);
     cv::threshold(morphology_input_, binary_input_, 0, 255,
                   CV_THRESH_BINARY | CV_THRESH_OTSU);
-    //show_img_for_debug("4 : binary", binary_input_);
+    show_img_for_debug("4 : binary", binary_input_);
 }
 
 void morphology_localizer::remove_noise()
 {
     auto const rect_kernel =
             cv::getStructuringElement(cv::MORPH_RECT, {3,3});
-    cv::erode(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
-    cv::dilate(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
-    //show_img_for_debug("5 : remove noise", binary_input_);
+    constexpr int iteration = 3;
+    cv::erode(binary_input_, morphology_input_,
+              rect_kernel, {-1,-1}, iteration);
+    cv::dilate(morphology_input_, binary_input_,
+               rect_kernel, {-1,-1}, iteration);
+    show_img_for_debug("5 : remove noise", binary_input_);
 
     //the result of last step look almost the same as step 5 in many cases,
     //but it some of the cases, it could introduce big difference
     create_light_input();
     cv::bitwise_and(binary_input_, light_input_, binary_input_);
-    cv::dilate(binary_input_, morphology_input_, rect_kernel, {-1,-1}, 2);
-    cv::erode(morphology_input_, binary_input_, rect_kernel, {-1,-1}, 2);
-    //show_img_for_debug("6 : remove more noise", binary_input_);
+    cv::dilate(binary_input_, morphology_input_,
+               rect_kernel, {-1,-1}, iteration);
+    cv::erode(morphology_input_, binary_input_,
+              rect_kernel, {-1,-1}, iteration);
+    show_img_for_debug("6 : remove more noise", binary_input_);
 }
 
 void morphology_localizer::preprocess(const cv::Mat &input)
