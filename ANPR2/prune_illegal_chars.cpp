@@ -25,10 +25,9 @@ prune(cv::Mat const &plate,
         {
             return lhs.first< rhs.first;
         });
-        for(size_t i = 0; i != diff_.size(); ++i){
+        for(size_t i = 0; i != max_char_num; ++i){
             contours[i] = std::move(diff_[i].second);
         }
-        contours.resize(max_char_num);
 
         show_prune_results(plate, contours);
     }
