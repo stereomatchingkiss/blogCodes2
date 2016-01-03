@@ -30,13 +30,13 @@ prune(cv::Mat const &plate,
         for(size_t i = 0; i != max_char_num; ++i){
             contours[i] = std::move(diff_[i].second);
         }
-
-        show_prune_results(plate, contours);
     }else{
         if(debug_){
             std::cout<<"nothing to prune"<<std::endl;
         }
     }
+
+    show_prune_results(plate, contours);
 }
 
 void prune_illegal_chars::set_show_debug_message(bool value)
@@ -52,8 +52,10 @@ void prune_illegal_chars::show_prune_results(cv::Mat const &plate,
         for(int i = 0; i != contours.size(); ++i){
             cv::drawContours(zero, contours, i, {255}, -1);
         }
+        cv::imshow("plate", plate);
         cv::imshow("prune_results", zero);
         cv::waitKey();
         cv::destroyWindow("prune_results");
+        cv::destroyWindow("plate");
     }
 }

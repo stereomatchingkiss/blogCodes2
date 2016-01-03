@@ -1,5 +1,6 @@
 #include "fhog_trainer.hpp"
 #include "morphology_localizer.hpp"
+#include "prune_illegal_chars.hpp"
 #include "segment_character.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
@@ -19,15 +20,17 @@ template<typename UnaryFunctor>
 void test_algo(vmap const &map, UnaryFunctor functor);
 
 void test_number_plate_localizer(int argc, char **argv);
+void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
 
 void test_four_points_transform();
 
 int main(int argc, char **argv)
-{               
+{                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
     //test_number_plate_localizer(argc, argv);
-    test_segment_character(argc, argv);
+    test_prune_illegal_chars(argc, argv);
+    //test_segment_character(argc, argv);
     //test_four_points_transform();
 }
 
@@ -65,6 +68,29 @@ void test_number_plate_localizer(int argc, char **argv)
     test_algo(map, [&](cv::Mat const &input)
     {
         lpl.localize_plate(input);
+    });
+}
+
+void test_prune_illegal_chars(int argc, char **argv)
+{
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+    morphology_localizer lpl;
+    segment_character sc;
+    prune_illegal_chars plc;
+    plc.set_show_debug_message(true);
+    test_algo(map, [&](cv::Mat const &input)
+    {
+        lpl.localize_plate(input);
+        for(auto const &contour : lpl.get_contours()){
+            if(sc.detect_characters(lpl.get_resize_input(),
+                                    contour)){
+                plc.prune(sc.get_bird_eyes_plate(), 8,
+                          sc.get_chars_contours());
+            }else{
+                std::cout<<"not a license plate"<<std::endl;
+            }
+        }
     });
 }
 
