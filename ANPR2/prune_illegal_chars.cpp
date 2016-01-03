@@ -3,6 +3,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <iostream>
+
 void prune_illegal_chars::
 prune(cv::Mat const &plate,
       size_t max_char_num,
@@ -30,6 +32,10 @@ prune(cv::Mat const &plate,
         }
 
         show_prune_results(plate, contours);
+    }else{
+        if(debug_){
+            std::cout<<"nothing to prune"<<std::endl;
+        }
     }
 }
 
