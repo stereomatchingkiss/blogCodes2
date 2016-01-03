@@ -42,6 +42,8 @@ public:
      */
     contours_type const& get_chars_contours() const;
 
+    contours_type& get_chars_contours();
+
     void set_min_char_width(size_t value);
     void set_min_char_num(size_t value);    
     void set_show_debug_message(bool value);

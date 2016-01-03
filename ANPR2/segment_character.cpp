@@ -39,6 +39,11 @@ get_chars_contours() const
     return chars_contour_;
 }
 
+segment_character::contours_type &segment_character::get_chars_contours()
+{
+    return chars_contour_;
+}
+
 void segment_character::set_min_char_width(size_t value)
 {
     min_char_width_ = value;
