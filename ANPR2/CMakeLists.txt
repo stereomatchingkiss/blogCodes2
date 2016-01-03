@@ -16,6 +16,8 @@ fhog_trainer.cpp
 morphology_localizer.hpp
 morphology_localizer.cpp
 main.cpp
+prune_illegal_chars.hpp
+prune_illegal_chars.cpp
 segment_character.hpp
 segment_character.cpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.hpp
