@@ -159,10 +159,10 @@ bool segment_character::is_character_candidate(contour_type const &contour) cons
     }
 
     auto const bounding_rect = cv::boundingRect(contour);
-    std::cout<<"char width "<<bounding_rect.width<<std::endl;
-    if(bounding_rect.width < min_char_width_){
-        return false;
-    }
+    //std::cout<<"char width "<<bounding_rect.width<<std::endl;
+    //if(bounding_rect.width < min_char_width_){
+    //    return false;
+    //}
 
     double const ratio = bounding_rect.width /
             static_cast<double>(bounding_rect.height);
@@ -237,7 +237,7 @@ void segment_character::split_character()
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
         for(int j = 0; j != contours.size(); ++j){
-            show_chars_component(j, i, contours);
+            //show_chars_component(j, i, contours);
             if(is_character_candidate(contours[j])){
                 chars_contour_.emplace_back(std::move(contours[j]));
             }
