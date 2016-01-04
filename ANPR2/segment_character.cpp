@@ -24,6 +24,7 @@ detect_characters(const cv::Mat &input,
     //plate_ = input(cv::boundingRect(contour));
     binarize_plate();
     split_character();
+    cv::destroyAllWindows();
 
     return chars_contour_.size() >= min_char_num_ ? true : false;
 }
@@ -242,7 +243,7 @@ void segment_character::split_character()
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
         for(int j = 0; j != contours.size(); ++j){
-            //show_chars_component(j, i, contours);
+            show_chars_component(j, i, contours);
             if(is_character_candidate(contours[j])){
                 chars_contour_.emplace_back(std::move(contours[j]));
             }
