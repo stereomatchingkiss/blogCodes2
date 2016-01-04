@@ -45,6 +45,11 @@ segment_character::contours_type &segment_character::get_chars_contours()
     return chars_contour_;
 }
 
+void segment_character::set_img_name(const std::string &value)
+{
+    img_name_ = value;
+}
+
 void segment_character::set_min_char_width(size_t value)
 {
     min_char_width_ = value;
@@ -81,10 +86,10 @@ void segment_character::binarize_plate()
                               cv::ADAPTIVE_THRESH_MEAN_C,
                               cv::THRESH_BINARY_INV,
                               blockSize, offset);
-        cv::imshow("intensity", intensity_);
-        cv::imshow("binarize hsv", threshold_);
-        cv::imshow("binarize gray", gray_thresh);
-        cv::waitKey();
+        //cv::imshow("intensity", intensity_);
+        //cv::imshow("binarize hsv", threshold_);
+        //cv::imshow("binarize gray", gray_thresh);
+        //cv::waitKey();
     }
 }
 
@@ -195,19 +200,21 @@ void segment_character::show_chars_contour()
             cv::minAreaRect(chars_contour_[i]).points(points);
             cv::Mat temp_char_trans = ocv::four_points_transform(bird_eyes_plate_, points);
             ocv::resize_aspect_ratio(temp_char_trans, temp_char_trans, {40, 0});
-            cv::imshow("temp_char_transform", temp_char_trans);
+            //cv::imshow("temp_char_transform", temp_char_trans);
             cv::Mat temp_char = temp(cv::boundingRect(chars_contour_[i]));
             ocv::resize_aspect_ratio(temp_char, temp_char, {40, 0});
-            cv::imshow("temp_char", temp_char);
+            //cv::imshow("temp_char", temp_char);
             cv::imwrite("char_" + std::to_string(i) + ".jpg", temp_char_trans);
-            cv::waitKey();
-            cv::destroyWindow("temp_char");
-            cv::destroyWindow("temp_char_transform");
+            //cv::waitKey();
+            //cv::destroyWindow("temp_char");
+            //cv::destroyWindow("temp_char_transform");
             cv::drawContours(temp, chars_contour_, i, {0,255,0}, 2);
         }
-        cv::imshow("chars contours", temp);
-        cv::imwrite("chars_contours.jpg", temp);
-        cv::waitKey();
+        //cv::imshow("chars contours", temp);
+        if(chars_contour_.size() >= min_char_num_){
+            cv::imwrite(img_name_+"_segment_contours.jpg", temp);
+        }
+        //cv::waitKey();
     }
 }
 
@@ -243,7 +250,7 @@ void segment_character::split_character()
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
         for(int j = 0; j != contours.size(); ++j){
-            show_chars_component(j, i, contours);
+            //show_chars_component(j, i, contours);
             if(is_character_candidate(contours[j])){
                 chars_contour_.emplace_back(std::move(contours[j]));
             }

@@ -44,6 +44,7 @@ public:
 
     contours_type& get_chars_contours();
 
+    void set_img_name(std::string const &value);
     void set_min_char_width(size_t value);
     void set_min_char_num(size_t value);    
     void set_show_debug_message(bool value);
@@ -68,6 +69,7 @@ private:
     bool debug_ = false;    
     std::vector<cv::Mat> hsv_split_;
     cv::Mat hsv_;
+    std::string img_name_;
     cv::Mat intensity_; //v channel of hsv
     cv::Mat threshold_;
 
