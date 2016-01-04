@@ -73,6 +73,9 @@ localize_plate(const cv::Mat &input)
 {
     preprocess(input);
     find_plate_contours();
+    if(debug_){
+        cv::destroyAllWindows();
+    }
 }
 
 void morphology_localizer::set_show_debug_message(bool value)
@@ -151,16 +154,16 @@ void morphology_localizer::binarize_image()
 {
     //make the text of the license plate more obvious
     cv::Sobel(morphology_input_, gradient_input_, CV_8U, 1, 0, 3);
-    //show_img_for_debug("1 : gradient", gradient_input_);
+    show_img_for_debug("1 : gradient", gradient_input_);
 
     //remove noise
     cv::GaussianBlur(gradient_input_, blur_input_, {7,7}, 0);
-    //show_img_for_debug("2 : blur", blur_input_);
+    show_img_for_debug("2 : blur", blur_input_);
 
     //fill the gap between text
     cv::morphologyEx(blur_input_, morphology_input_, cv::MORPH_CLOSE,
                      blackhat_kernel_);
-    //show_img_for_debug("3 : close", morphology_input_);
+    show_img_for_debug("3 : close", morphology_input_);
     cv::threshold(morphology_input_, binary_input_, 0, 255,
                   CV_THRESH_BINARY | CV_THRESH_OTSU);
     show_img_for_debug("4 : binary", binary_input_);
