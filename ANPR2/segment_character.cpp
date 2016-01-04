@@ -71,9 +71,15 @@ void segment_character::binarize_plate()
     cv::split(hsv_, hsv_split_);
     //intensity_ = hsv_split_[2];
     cv::GaussianBlur(hsv_split_[2], intensity_, {7,7}, 0);
+    //auto const rect_kernel =
+    //        cv::getStructuringElement(cv::MORPH_RECT, {3,3});
+    //cv::morphologyEx(intensity_, intensity_, cv::MORPH_OPEN,
+    //                 rect_kernel, {-1,-1}, 2);
+    //cv::morphologyEx(intensity_, intensity_, cv::MORPH_DILATE,
+    //                 rect_kernel, {-1,-1}, 2);
 
-    constexpr int blockSize = 27;
-    constexpr double offset = 5;
+    constexpr int blockSize = 11;
+    constexpr double offset = 9;
     cv::adaptiveThreshold(intensity_, threshold_, 255,
                           cv::ADAPTIVE_THRESH_MEAN_C,
                           cv::THRESH_BINARY_INV,
@@ -165,7 +171,7 @@ void segment_character::generate_components()
 bool segment_character::is_character_candidate(contour_type const &contour) const
 {
     double const contour_area = cv::contourArea(contour);
-    if(contour_area < 20){
+    if(contour_area < 40){
         return false;
     }
 
@@ -184,7 +190,7 @@ bool segment_character::is_character_candidate(contour_type const &contour) cons
     double const extend = contour_area /
             static_cast<double>(bounding_rect.area());
 
-    if(extend < 0.27){
+    if(extend < 0.2){
         return false;
     }
 
@@ -221,15 +227,17 @@ void segment_character::show_chars_contour()
 void segment_character::show_chars_component(int j, size_t i,
                                              contours_type contours)
 {
-    if(debug_){
-        ocv::print_contour_attribute(contours[j], 0.02, std::cout);
+    if(debug_){        
         cv::Mat dst(bird_eyes_plate_.size(), CV_8U);
         dst = 0;
         cv::drawContours(dst, contours, j, {255}, -1);
         auto const num = std::to_string(i) + "_" + std::to_string(j);
         if(is_character_candidate(contours[j])){
-            std::cout<<("mask_" + num)<<" is "<<std::endl;
+            std::cout<<("mask_" + num)<<" is char"<<std::endl;
+        }else{
+            std::cout<<("mask_" + num)<<" is not a char"<<std::endl;
         }
+        ocv::print_contour_attribute(contours[j], 0.02, std::cout);
         cv::imshow("mask_" + num, dst);
         cv::waitKey();
         cv::destroyWindow("mask_" + num);
@@ -250,7 +258,7 @@ void segment_character::split_character()
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
         for(int j = 0; j != contours.size(); ++j){
-            //show_chars_component(j, i, contours);
+            show_chars_component(j, i, contours);
             if(is_character_candidate(contours[j])){
                 chars_contour_.emplace_back(std::move(contours[j]));
             }
