@@ -48,7 +48,7 @@ grab_chars(cv::Mat const &plate,
                     boost::filesystem::create_directory(folder);
                 }
                 std::ostringstream ostream;
-                ostream<<folder<<"_"<<std::setfill('0')
+                ostream<<folder<<"/"<<ckey<<"_"<<std::setfill('0')
                       <<std::setw(4)<<char_count_[ckey]++;
                 cv::imwrite(ostream.str() + ".png",
                             plate(rect));
