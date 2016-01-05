@@ -13,6 +13,8 @@ INCLUDE_DIRECTORIES(${OCV_PATH})
 add_executable(${PROJECT_NAME}
 fhog_trainer.hpp
 fhog_trainer.cpp
+grab_character.hpp
+grab_character.cpp
 morphology_localizer.hpp
 morphology_localizer.cpp
 main.cpp
