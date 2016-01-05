@@ -1,4 +1,5 @@
 #include "fhog_trainer.hpp"
+#include "grab_character.hpp"
 #include "morphology_localizer.hpp"
 #include "prune_illegal_chars.hpp"
 #include "segment_character.hpp"
@@ -21,6 +22,7 @@ using vmap = boost::program_options::variables_map;
 template<typename UnaryFunctor>
 void test_algo(vmap const &map, UnaryFunctor functor);
 
+void test_grab_char(int argc, char **argv);
 void test_number_plate_localizer(int argc, char **argv);
 void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
@@ -30,9 +32,11 @@ void test_four_points_transform();
 int main(int argc, char **argv)
 {                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
+
+    test_grab_char(argc, argv);
     //test_number_plate_localizer(argc, argv);
     //test_prune_illegal_chars(argc, argv);
-    test_segment_character(argc, argv);
+    //test_segment_character(argc, argv);
     //test_four_points_transform();
 }
 
@@ -52,7 +56,7 @@ void test_algo(vmap const &map, BinaryFunctor functor)
         }
     }else if(map.count("image")){
         auto const target = map["image"].as<std::string>();
-        std::cout<<target<<std::endl;        
+        std::cout<<target<<std::endl;
         cv::Mat input = cv::imread(target);
         if(!input.empty()){
             boost::filesystem::path path(target);
@@ -61,6 +65,31 @@ void test_algo(vmap const &map, BinaryFunctor functor)
     }else{
         std::cerr<<"must specify image_folder or image"<<std::endl;
     }
+}
+
+void test_grab_char(int argc, char **argv)
+{
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+    morphology_localizer lpl;
+    segment_character sc;
+    //sc.set_show_debug_message(true);
+    grab_character grab_char;
+    test_algo(map, [&](cv::Mat const &input,
+              std::string const &name)
+    {
+        lpl.localize_plate(input);
+        auto const &contours = lpl.get_contours();
+        for(size_t i = 0; i != contours.size(); ++i){
+            sc.set_img_name(name + "_" + std::to_string(i));
+            sc.detect_characters(lpl.get_resize_input(),
+                                 contours[i]);
+            if(sc.get_chars_contours().size() >= 5){
+                grab_char.grab_chars(sc.get_bird_eyes_plate(),
+                                     sc.get_chars_contours());
+            }
+        }
+    });
 }
 
 void test_number_plate_localizer(int argc, char **argv)
@@ -105,11 +134,11 @@ void test_segment_character(int argc, char **argv)
     morphology_localizer lpl;
     lpl.set_show_debug_message(false);
     segment_character sc;
-    sc.set_show_debug_message(true);    
+    sc.set_show_debug_message(true);
     test_algo(map, [&](cv::Mat const &input,
               std::string const &name)
     {
-        lpl.localize_plate(input);        
+        lpl.localize_plate(input);
         auto const &contours = lpl.get_contours();
         for(size_t i = 0; i != contours.size(); ++i){
             sc.set_img_name(name + "_" + std::to_string(i));
