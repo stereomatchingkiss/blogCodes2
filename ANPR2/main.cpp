@@ -3,6 +3,7 @@
 #include "morphology_localizer.hpp"
 #include "prune_illegal_chars.hpp"
 #include "segment_character.hpp"
+#include "train_chars.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
 #include <ocv_libs/core/perspective_transform.hpp>
@@ -26,6 +27,7 @@ void test_grab_char(int argc, char **argv);
 void test_number_plate_localizer(int argc, char **argv);
 void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
+void test_train_chars(int argc, char **argv);
 
 void test_four_points_transform();
 
@@ -33,11 +35,12 @@ int main(int argc, char **argv)
 {                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-    test_grab_char(argc, argv);
+    //test_grab_char(argc, argv);
     //test_number_plate_localizer(argc, argv);
     //test_prune_illegal_chars(argc, argv);
     //test_segment_character(argc, argv);
     //test_four_points_transform();
+    test_train_chars(argc, argv);
 }
 
 template<typename BinaryFunctor>
@@ -146,6 +149,20 @@ void test_segment_character(int argc, char **argv)
                                  contours[i]);
         }
     });
+}
+
+void test_train_chars(int argc, char **argv)
+{
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+    if(map.count("image_folder") && map.count("output_folder")){
+        train_chars tc(map["image_folder"].as<std::string>(),
+                       map["output_folder"].as<std::string>());
+        tc.train();
+    }else{
+        std::cout<<"must speficy --image_folder and "
+                   "--output_folder"<<std::endl;
+    }
 }
 
 void test_four_points_transform()
