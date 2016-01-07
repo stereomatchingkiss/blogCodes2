@@ -33,10 +33,17 @@ grab_chars(cv::Mat const &plate,
         boost::filesystem::create_directory(chars_folder_);
     }
 
+    cv::Mat contour_img;
     for(int i = 0; i != contours.size(); ++i){
         try{
             auto const rect = cv::boundingRect(contours[i]);
-            cv::imshow("char candidate", plate(rect));            
+            cv::imshow("char candidate", plate(rect));
+
+            plate.copyTo(contour_img);
+            cv::drawContours(contour_img, contours, i,
+            {0,255,0}, 2);
+            cv::imshow("contour", contour_img);
+
             int const key = cv::waitKey();
             if(key == '-'){
                 continue;
@@ -61,11 +68,12 @@ grab_chars(cv::Mat const &plate,
                       <<std::setw(4)<<char_count_[map_key]++;
                 cv::imwrite(ostream.str() + ".png",
                             plate(rect));
+                cv::destroyAllWindows();
             }
         }catch(std::exception const &ex){
             std::cout<<ex.what()<<std::endl;
         }
-    }//*/
+    }
 }
 
 void grab_character::set_chars_folder(const std::string &value)
