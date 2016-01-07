@@ -35,12 +35,12 @@ int main(int argc, char **argv)
 {                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-    //test_grab_char(argc, argv);
+    test_grab_char(argc, argv);
     //test_number_plate_localizer(argc, argv);
     //test_prune_illegal_chars(argc, argv);
     //test_segment_character(argc, argv);
     //test_four_points_transform();
-    test_train_chars(argc, argv);
+    //test_train_chars(argc, argv);
 }
 
 template<typename BinaryFunctor>
@@ -88,6 +88,7 @@ void test_grab_char(int argc, char **argv)
             sc.detect_characters(lpl.get_resize_input(),
                                  contours[i]);
             if(sc.get_chars_contours().size() >= 5){
+                grab_char.set_chars_name(name);
                 grab_char.grab_chars(sc.get_bird_eyes_plate(),
                                      sc.get_chars_contours());
             }

@@ -13,6 +13,10 @@ grab_character::grab_character() :
     chars_folder_(boost::filesystem::current_path().string() +
                   "/chars_folder")
 {
+    if(!boost::filesystem::exists(chars_folder_)){
+        boost::filesystem::create_directory(chars_folder_);
+    }
+
     for(char i = '0'; i <= '9'; ++i){
         char_count_.insert({std::string(1,i), 0});
     }
@@ -31,20 +35,18 @@ void grab_character::save_char(cv::Mat const &plate,
 {
     std::string const map_key(1, char(key));
     std::string folder;
-    std::string file_symbol;
     if(map_key != "*"){
         folder = chars_folder_ + "/" + map_key;
-        file_symbol = map_key;
     }else{
         folder = chars_folder_ + "/negative";
-        file_symbol = "negative";
     }
     if(!boost::filesystem::exists(folder)){
         boost::filesystem::create_directory(folder);
     }
     std::ostringstream ostream;
-    ostream<<folder<<"/"<<file_symbol<<"_"<<std::setfill('0')
-          <<std::setw(4)<<char_count_[map_key]++;
+    ostream<<folder<<"/"<<chars_name_<<"_"
+          <<std::setfill('0')
+         <<std::setw(4)<<char_count_[map_key]++;
     cv::imwrite(ostream.str() + ".png",
                 plate(rect));
 }
@@ -52,11 +54,7 @@ void grab_character::save_char(cv::Mat const &plate,
 void grab_character::
 grab_chars(cv::Mat const &plate,
            contours_type const &contours)
-{
-    if(!boost::filesystem::exists(chars_folder_)){
-        boost::filesystem::create_directory(chars_folder_);
-    }
-
+{    
     cv::Mat contour_img;
     for(int i = 0; i != contours.size(); ++i){
         try{
@@ -86,4 +84,9 @@ grab_chars(cv::Mat const &plate,
 void grab_character::set_chars_folder(const std::string &value)
 {
     chars_folder_ = value;
+}
+
+void grab_character::set_chars_name(const std::string &value)
+{
+    chars_name_ = value;
 }
