@@ -4,20 +4,11 @@
 #include <ocv_libs/core/block_binary_pixel_sum.hpp>
 
 #include <opencv2/core.hpp>
+#include <opencv2/ml.hpp>
 
 #include <map>
 #include <string>
 #include <vector>
-
-namespace cv{
-
-namespace ml{
-
-class StatModel;
-
-}
-
-}
 
 class train_chars
 {
