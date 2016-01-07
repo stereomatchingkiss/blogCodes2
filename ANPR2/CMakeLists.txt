@@ -22,10 +22,14 @@ prune_illegal_chars.hpp
 prune_illegal_chars.cpp
 segment_character.hpp
 segment_character.cpp
+train_chars.hpp
+train_chars.cpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.hpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.cpp
 ${OCV_PATH}/ocv_libs/core/attribute.hpp
 ${OCV_PATH}/ocv_libs/core/attribute.cpp
+${OCV_PATH}/ocv_libs/core/block_binary_pixel_sum.hpp
+${OCV_PATH}/ocv_libs/core/block_binary_pixel_sum.cpp
 ${OCV_PATH}/ocv_libs/core/resize.hpp
 ${OCV_PATH}/ocv_libs/core/resize.cpp
 ${OCV_PATH}/ocv_libs/file/utility.hpp
