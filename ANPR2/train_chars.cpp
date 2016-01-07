@@ -4,7 +4,6 @@
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <opencv2/ml.hpp>
 
 #include <iostream>
 
@@ -14,6 +13,12 @@ train_chars::train_chars(std::string chars_folder,
     chars_folder_(std::move(chars_folder)),
     result_folder_(std::move(result_folder))
 {
+    using namespace boost::filesystem;
+
+    if(!boost::filesystem::exists(path(result_folder_))){
+        create_directory(path(result_folder_));
+    }
+
     size_t index = 0;
     for(char i = '0'; i <= '9'; ++i){
         labels_to_int_.insert({std::string(1,i), index++});
