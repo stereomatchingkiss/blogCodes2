@@ -20,6 +20,9 @@ public:
     void set_show_debug_message(bool value);
 
 private:
+    void prune_fix_num_plate(size_t max_char_num,
+                             contours_type &contours);
+
     void show_prune_results(cv::Mat const &plate,
                             contours_type const &contours) const;
 

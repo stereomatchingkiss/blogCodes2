@@ -7,8 +7,26 @@
 
 void prune_illegal_chars::
 prune(cv::Mat const &plate,
-      size_t max_char_num,
+      size_t,
       contours_type &contours)
+{        
+    auto func = [](auto const &v){ return cv::boundingRect(v).width < 6; };
+    auto rit = std::remove_if(std::begin(contours), std::end(contours),
+                              func);
+    contours.erase(rit, std::end(contours));
+
+    //prune_fix_num_plate(max_char_num, contours);
+    show_prune_results(plate, contours);
+}
+
+void prune_illegal_chars::set_show_debug_message(bool value)
+{
+    debug_ = value;
+}
+
+void prune_illegal_chars::
+prune_fix_num_plate(size_t max_char_num,
+                    contours_type &contours)
 {
     if(contours.size() > max_char_num){
         dims_.resize(0);
@@ -35,19 +53,23 @@ prune(cv::Mat const &plate,
             std::cout<<"nothing to prune"<<std::endl;
         }
     }
-
-    show_prune_results(plate, contours);
-}
-
-void prune_illegal_chars::set_show_debug_message(bool value)
-{
-    debug_ = value;
 }
 
 void prune_illegal_chars::show_prune_results(cv::Mat const &plate,
                                              contours_type const &contours) const
 {
     if(debug_){
+        for(int i = 0; i != contours.size(); ++i){
+            auto const rect =cv::boundingRect(contours[i]);
+            std::cout<<rect<<std::endl;
+            cv::Mat plate_copy = plate.clone();
+            cv::drawContours(plate_copy, contours, i, {0,255,0},2);
+            cv::imshow("plate", plate_copy);
+            cv::imshow("chars", plate(rect));
+            cv::waitKey();
+            cv::destroyAllWindows();
+        }
+
         cv::Mat zero = cv::Mat::zeros(plate.size(),CV_8U);
         for(int i = 0; i != contours.size(); ++i){
             cv::drawContours(zero, contours, i, {255}, -1);
