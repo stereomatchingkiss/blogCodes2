@@ -9,9 +9,11 @@
 #include <opencv2/highgui.hpp>
 
 segment_character::segment_character(size_t min_char_width,
-                                     size_t min_char_num) :
+                                     size_t min_char_num,
+                                     size_t max_char_num) :
     min_char_width_{min_char_width},
-    min_char_num_{min_char_num}
+    min_char_num_{min_char_num},
+    max_char_num_{max_char_num}
 {
 
 }
@@ -217,7 +219,8 @@ void segment_character::show_chars_contour()
             cv::drawContours(temp, chars_contour_, i, {0,255,0}, 2);
         }
         //cv::imshow("chars contours", temp);
-        if(chars_contour_.size() >= min_char_num_){
+        if(chars_contour_.size() >= min_char_num_ &&
+                chars_contour_.size() < max_char_num_){
             cv::imwrite(img_name_+"_segment_contours.jpg", temp);
         }
         //cv::waitKey();
@@ -227,7 +230,7 @@ void segment_character::show_chars_contour()
 void segment_character::show_chars_component(int j, size_t i,
                                              contours_type contours)
 {
-    if(debug_){        
+    if(debug_){
         cv::Mat dst(bird_eyes_plate_.size(), CV_8U);
         dst = 0;
         cv::drawContours(dst, contours, j, {255}, -1);
