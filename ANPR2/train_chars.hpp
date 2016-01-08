@@ -20,6 +20,8 @@ public:
 
 private:
     void extract_features();
+    void train_svm();
+    void generate_train_number();
 
     cv::Ptr<cv::ml::StatModel> ml_;
 
@@ -30,7 +32,9 @@ private:
     cv::Mat features_;
     std::vector<int> labels_;
     std::map<std::string, int> labels_to_int_;
-    void train_svm();
+
+    size_t train_size_ = 0;
+    size_t validate_size_ = 0;
 };
 
 #endif
