@@ -29,18 +29,15 @@ void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
 void test_train_chars(int argc, char **argv);
 
-void test_four_points_transform();
-
 int main(int argc, char **argv)
 {                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-    test_grab_char(argc, argv);
+    //test_grab_char(argc, argv);
     //test_number_plate_localizer(argc, argv);
     //test_prune_illegal_chars(argc, argv);
     //test_segment_character(argc, argv);
-    //test_four_points_transform();
-    //test_train_chars(argc, argv);
+    test_train_chars(argc, argv);
 }
 
 template<typename BinaryFunctor>
@@ -163,63 +160,5 @@ void test_train_chars(int argc, char **argv)
     }else{
         std::cout<<"must speficy --image_folder and "
                    "--output_folder"<<std::endl;
-    }
-}
-
-void test_four_points_transform()
-{
-    std::map<std::string, std::vector<cv::Point2f>> mapper
-    {
-        {
-            "get-perspective-transform-example/images/example_01.png",
-            {
-                {73, 239}, {356, 117},
-                {475, 265}, {187, 443}
-            }
-        },
-        {
-            "get-perspective-transform-example/images/example_02.png",
-            {
-                {101, 185}, {393, 151},
-                {479, 323}, {187, 441}
-            }
-        },
-        {
-            "get-perspective-transform-example/images/example_03.png",
-            {
-                {63, 242}, {291, 110},
-                {361, 252}, {78, 386}
-            }
-        }
-    };
-    std::string const img_name = "get-perspective-transform-example/"
-                                 "images/example_03.png";
-    auto input = cv::imread(img_name);
-    if(!input.empty()){
-        cv::Point2f points[4];
-        std::copy(std::begin(mapper[img_name]), std::end(mapper[img_name]),
-                  std::begin(points));
-        std::cout<<"before sort"<<std::endl;
-        for(auto const pt : points){
-            std::cout<<pt<<std::endl;
-        }
-        ocv::sort_corners(points, std::begin(points));
-        //auto const center = ocv::corners_center(points);
-        //std::cout<<"center : "<<center<<std::endl;
-        //cv::circle(input, center, 3, {255,0,0}, 2);
-        for(size_t i = 0; i != 4; ++i){
-            std::cout<<i<<" : "<<points[i]<<std::endl;
-            double const scale = 1.0;
-            int const thickness = 2;
-            auto text_point = points[i];
-            text_point.y -= 10;
-            cv::putText(input, std::to_string(i), text_point,
-                        cv::FONT_HERSHEY_COMPLEX, scale, {255,0,0}, thickness);
-            cv::circle(input, points[i], 3, {0,255,0}, 2);
-        }
-        auto warp_input = ocv::four_points_transform(input, points);
-        cv::imshow("input", input);
-        cv::imshow("warp", warp_input);
-        cv::waitKey();
     }
 }
