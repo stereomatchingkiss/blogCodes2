@@ -70,7 +70,7 @@ void train_chars::describe_features()
     extract_features();
 
     using namespace ocv::ml;
-    auto results = split_train_test_inplace(features_,labels_,0.1);
+    auto results = split_train_test_inplace(features_,labels_,0.1,false);
     features_.clear();
     features_train_.resize(0);
     features_validate_.resize(0);
