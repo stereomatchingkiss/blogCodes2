@@ -6,6 +6,8 @@
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
 
+#include <boost/bimap.hpp>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -19,9 +21,13 @@ public:
     cv::Ptr<cv::ml::StatModel> train();
 
 private:
+    using bm_type = boost::bimap<std::string, int>;
+
     void describe_features();
-    void train_svm();
+    void extract_features();
     void generate_train_number();
+    void split_train_test();
+    void train_svm();
 
     cv::Ptr<cv::ml::StatModel> ml_;
 
@@ -35,11 +41,10 @@ private:
     std::vector<int> labels_;
     std::vector<int> labels_train_;
     std::vector<int> labels_validate_;
-    std::map<std::string, int> labels_to_int_;
+    boost::bimap<std::string, int> bm_labels_int_;
 
     size_t train_size_ = 0;
     size_t validate_size_ = 0;
-    void extract_features();
 };
 
 #endif
