@@ -19,7 +19,7 @@ public:
     cv::Ptr<cv::ml::StatModel> train();
 
 private:
-    void extract_features();
+    void describe_features();
     void train_svm();
     void generate_train_number();
 
@@ -29,12 +29,17 @@ private:
     std::string chars_folder_;
     std::string result_folder_;
 
-    cv::Mat features_;
+    std::vector<std::vector<float>> features_;
+    cv::Mat features_train_;
+    cv::Mat features_validate_;
     std::vector<int> labels_;
+    std::vector<int> labels_train_;
+    std::vector<int> labels_validate_;
     std::map<std::string, int> labels_to_int_;
 
     size_t train_size_ = 0;
     size_t validate_size_ = 0;
+    void extract_features();
 };
 
 #endif
