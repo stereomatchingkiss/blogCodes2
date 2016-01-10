@@ -12,6 +12,25 @@
 #include <iostream>
 #include <random>
 
+namespace{
+
+template<typename Map>
+void generate_map(Map &map)
+{
+    map.insert({std::to_string(2), 0});
+    map.insert({std::to_string(7), 1});
+    /*
+      int index = 0;
+      for(char i = '0'; i <= '9'; ++i){
+        map.insert({std::string(1,i), index++});
+    }
+    /*for(char i = 'a'; i <= 'z'; ++i){
+        map.insert({std::string(1,i), index++});
+    }//*/
+}
+
+}
+
 train_chars::train_chars(std::string chars_folder,
                          std::string result_folder) :
     bbps_({30, 15}, {{5,5}, {5,10}, {10,5}, {10,10}}),
@@ -20,18 +39,11 @@ train_chars::train_chars(std::string chars_folder,
 {
     using namespace boost::filesystem;
 
-    if(!boost::filesystem::exists(path(result_folder_))){
+    if(!exists(path(result_folder_))){
         create_directory(path(result_folder_));
     }
 
-    int index = 0;
-    for(char i = '0'; i <= '9'; ++i){
-        bm_labels_int_.insert({std::string(1,i), index++});
-    }
-    /*for(char i = 'a'; i <= 'z'; ++i){
-        bm_labels_int_.insert({std::string(1,i), index++});
-    }*/
-
+    generate_map(bm_labels_int_);
     generate_train_number();
 }
 
@@ -48,7 +60,7 @@ void train_chars::extract_features()
     std::mt19937 g(rd());
     for(size_t i = 0; i != folders.size(); ++i){
         auto const folder = chars_folder_ + "/" + folders[i];
-        std::cout<<folder<<std::endl;
+        //std::cout<<folder<<std::endl;
 
         auto it = bm_labels_int_.left.find(folders[i]);
         if(it != bm_labels_int_.left.end()){
@@ -68,18 +80,20 @@ void train_chars::extract_features()
                         cv::destroyAllWindows();
                     }*/
                     /*std::vector<float> feature;
-                    ocv::for_each_channels<uchar>(img, [&](auto val)
+                    auto bi_img = binarize_image(img);
+                    cv::resize(bi_img, bi_img, {30,15});
+                    ocv::for_each_channels<uchar>(bi_img,
+                                                  [&](auto val)
                     {
                         feature.emplace_back(val);
-                    });*/
+                    });
+                    cv::normalize(feature, feature);//*/
                     auto feature = bbps_.describe(binarize_image(img));
                     //std::cout<<"feautre size == "<<feature.size()<<std::endl;
                     features_.emplace_back(std::move(feature));
                     labels_.emplace_back(label);
                 }
             }
-        }else{
-            std::cout<<"cannot find the value of key "<<folders[i]<<std::endl;
         }
     }
 }
@@ -138,7 +152,7 @@ void train_chars::train_classifier()
                                         ROW_SAMPLE,
                                         labels_train_);
 
-    ml->train(train_data);*/
+    ml->train(train_data);//*/
 
     auto ml = cv::ml::SVM::create();
     ml->setType(SVM::C_SVC);
@@ -153,7 +167,7 @@ void train_chars::train_classifier()
     std::cout<<"c : "<<ml->getC()<<"\n";
     std::cout<<"coef0 : "<<ml->getCoef0()<<"\n";
     std::cout<<"degree : "<<ml->getDegree()<<"\n";
-    std::cout<<"gamma : "<<ml->getGamma()<<"\n";
+    std::cout<<"gamma : "<<ml->getGamma()<<"\n";//*/
 
     //ml->write(cv::FileStorage("chars_classifier.xml",
     //                          cv::FileStorage::WRITE));
@@ -184,7 +198,7 @@ void train_chars::generate_train_number()
     if(min == std::numeric_limits<size_t>::max()){
         min = 0;
     }
-    train_size_ = static_cast<size_t>(min * 0.8);
+    train_size_ = static_cast<size_t>(min);
     validate_size_ = min - train_size_;
     std::cout<<"min images size is "<<min<<std::endl;
 }
@@ -193,12 +207,7 @@ void train_chars::show_training_results(const features_type &features,
                                         const label_type &labels)
 {
     std::map<std::string, int> statistic;
-    for(char i = '0'; i <= '9'; ++i){
-        statistic.insert({std::string(1,i), 0});
-    }
-    /*for(char i = 'a'; i <= 'z'; ++i){
-        statistic.insert({std::string(1,i), 0});
-    }*/
+    generate_map(statistic);
 
     for(size_t i = 0; i != labels.size(); ++i){
         auto label = ml_->predict(features[i]);
