@@ -24,6 +24,8 @@ segment_character.hpp
 segment_character.cpp
 train_chars.hpp
 train_chars.cpp
+utility.hpp
+utility.cpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.hpp
 ${OCV_PATH}/ocv_libs/cmd/command_prompt_utility.cpp
 ${OCV_PATH}/ocv_libs/core/attribute.hpp
