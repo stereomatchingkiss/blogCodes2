@@ -20,3 +20,11 @@ void binarize_image(cv::Mat const &input, cv::Mat &output)
                           cv::THRESH_BINARY_INV,
                           blockSize, offset);
 }
+
+cv::Mat binarize_image(const cv::Mat &input)
+{
+    cv::Mat output;
+    binarize_image(input, output);
+
+    return output;
+}

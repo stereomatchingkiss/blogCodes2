@@ -6,4 +6,6 @@
 void binarize_image(cv::Mat const &input,
                     cv::Mat &output);
 
+cv::Mat binarize_image(cv::Mat const &input);
+
 #endif
