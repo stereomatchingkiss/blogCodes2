@@ -1,4 +1,5 @@
 #include "segment_character.hpp"
+#include "utility.hpp"
 
 #include <ocv_libs/core/attribute.hpp>
 #include <ocv_libs/core/for_each.hpp>
@@ -29,6 +30,11 @@ detect_characters(const cv::Mat &input,
     cv::destroyAllWindows();
 
     return chars_contour_.size() >= min_char_num_ ? true : false;
+}
+
+const cv::Mat &segment_character::get_binary_plate() const
+{
+    return binary_plate_;
 }
 
 const cv::Mat &segment_character::get_bird_eyes_plate() const
@@ -68,37 +74,8 @@ void segment_character::set_show_debug_message(bool value)
 }
 
 void segment_character::binarize_plate()
-{
-    cv::cvtColor(bird_eyes_plate_, hsv_, CV_BGR2HSV);
-    cv::split(hsv_, hsv_split_);
-    //intensity_ = hsv_split_[2];
-    cv::GaussianBlur(hsv_split_[2], intensity_, {7,7}, 0);
-    //auto const rect_kernel =
-    //        cv::getStructuringElement(cv::MORPH_RECT, {3,3});
-    //cv::morphologyEx(intensity_, intensity_, cv::MORPH_OPEN,
-    //                 rect_kernel, {-1,-1}, 2);
-    //cv::morphologyEx(intensity_, intensity_, cv::MORPH_DILATE,
-    //                 rect_kernel, {-1,-1}, 2);
-
-    constexpr int blockSize = 11;
-    constexpr double offset = 9;
-    cv::adaptiveThreshold(intensity_, threshold_, 255,
-                          cv::ADAPTIVE_THRESH_MEAN_C,
-                          cv::THRESH_BINARY_INV,
-                          blockSize, offset);
-    if(debug_){
-        cv::Mat gray;
-        cv::cvtColor(bird_eyes_plate_, gray, CV_BGR2GRAY);
-        cv::Mat gray_thresh;
-        cv::adaptiveThreshold(intensity_, gray_thresh, 255,
-                              cv::ADAPTIVE_THRESH_MEAN_C,
-                              cv::THRESH_BINARY_INV,
-                              blockSize, offset);
-        //cv::imshow("intensity", intensity_);
-        //cv::imshow("binarize hsv", threshold_);
-        //cv::imshow("binarize gray", gray_thresh);
-        //cv::waitKey();
-    }
+{    
+    binarize_image(bird_eyes_plate_, binary_plate_);
 }
 
 void segment_character::
@@ -152,11 +129,11 @@ void segment_character::generate_components()
 {
     cv::Mat labels;
     int const nlabels =
-            cv::connectedComponents(threshold_, labels);
+            cv::connectedComponents(binary_plate_, labels);
 
     chars_mask_.resize(nlabels - 1);
     for(auto &mask : chars_mask_){
-        mask.create(threshold_.size(), CV_8U);
+        mask.create(binary_plate_.size(), CV_8U);
         mask = 0;
     }
 
