@@ -150,15 +150,16 @@ void test_segment_character(int argc, char **argv)
 }
 
 void test_train_chars(int argc, char **argv)
-{
+{    
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
     if(map.count("image_folder") && map.count("output_folder")){
         train_chars tc(map["image_folder"].as<std::string>(),
                        map["output_folder"].as<std::string>());
         tc.train();
+        tc.test_train_result();
     }else{
         std::cout<<"must speficy --image_folder and "
                    "--output_folder"<<std::endl;
-    }
+    }//*/
 }
