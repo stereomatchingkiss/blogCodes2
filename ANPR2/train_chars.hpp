@@ -22,13 +22,14 @@ public:
     cv::Ptr<cv::ml::StatModel> train();
 
 private:
-    using label_type = std::vector<int>;
     using bm_type = boost::bimap<std::string, int>;
+    using features_type = std::vector<std::vector<float>>;
+    using label_type = std::vector<int>;
 
     void describe_features();
     void extract_features();
     void generate_train_number();
-    void show_training_results(cv::Mat const &features,
+    void show_training_results(features_type const &features,
                                label_type const &labels);
     void split_train_test();
     void train_classifier();
@@ -39,7 +40,7 @@ private:
     std::string chars_folder_;
     std::string result_folder_;
 
-    std::vector<std::vector<float>> features_;
+    features_type features_;
     cv::Mat features_train_;
     cv::Mat features_validate_;
     label_type labels_;

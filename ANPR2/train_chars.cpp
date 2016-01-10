@@ -20,8 +20,6 @@ train_chars::train_chars(std::string chars_folder,
 {
     using namespace boost::filesystem;
 
-    generate_train_number();
-
     if(!boost::filesystem::exists(path(result_folder_))){
         create_directory(path(result_folder_));
     }
@@ -30,9 +28,11 @@ train_chars::train_chars(std::string chars_folder,
     for(char i = '0'; i <= '9'; ++i){
         bm_labels_int_.insert({std::string(1,i), index++});
     }
-    for(char i = 'a'; i <= 'z'; ++i){
+    /*for(char i = 'a'; i <= 'z'; ++i){
         bm_labels_int_.insert({std::string(1,i), index++});
-    }
+    }*/
+
+    generate_train_number();
 }
 
 void train_chars::extract_features()
@@ -40,6 +40,10 @@ void train_chars::extract_features()
     auto const folders =
             ocv::file::get_directory_folders(chars_folder_);
 
+    features_train_.resize(0);
+    features_validate_.resize(0);
+    features_.clear();
+    labels_.clear();
     std::random_device rd;
     std::mt19937 g(rd());
     for(size_t i = 0; i != folders.size(); ++i){
@@ -81,9 +85,7 @@ void train_chars::extract_features()
 }
 
 void train_chars::split_train_test()
-{            
-    features_train_.resize(0);
-    features_validate_.resize(0);
+{                
     for(size_t i = 0; i != train_size_; ++i){
         features_train_.push_back(cv::Mat(features_[i], true));
         labels_train_.emplace_back(labels_[i]);
@@ -93,17 +95,20 @@ void train_chars::split_train_test()
         features_validate_.push_back(cv::Mat(features_[i], true));
         labels_validate_.emplace_back(labels_[i]);
     }
-
-    features_.clear();
-    labels_.clear();
 }
 
 void train_chars::test_train_result()
 {    
     std::cout<<"---------train precision---------------"<<std::endl;
-    show_training_results(features_train_, labels_train_);
+    features_type ft;
+    std::move(std::begin(features_), std::begin(features_) + train_size_,
+              std::back_inserter(ft));
+    show_training_results(ft, labels_train_);
 
     //std::cout<<"---------validate precision---------------"<<std::endl;
+    //ft.clear();
+    //std::move(std::begin(features_) + train_size_, std::end(features),
+    //          std::back_inserter(ft));
     //show_training_results(features_validate_, labels_validate_);
 }
 
@@ -139,7 +144,7 @@ void train_chars::train_classifier()
     ml->setType(SVM::C_SVC);
     ml->setKernel(SVM::LINEAR);
     ml->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER,
-                                          10000, 1e-6));
+                                         10000, 1e-6));
 
     auto train_data = TrainData::create(features_train_.reshape(1, int(labels_train_.size())),
                                         ROW_SAMPLE,
@@ -166,38 +171,37 @@ void train_chars::generate_train_number()
     auto folders = ocv::file::get_directory_folders(chars_folder_);
     size_t min = std::numeric_limits<size_t>::max();
     for(size_t i = 0; i != folders.size(); ++i){
-        auto const folder = chars_folder_ + "/" + folders[i];
-        auto const img_size = ocv::file::get_directory_files(folder).size();
-        std::cout<<folder<<" has "<<img_size<<" images"<<std::endl;
-        if(img_size < min){
-            min = img_size;
+        auto it = bm_labels_int_.left.find(folders[i]);
+        if(it != bm_labels_int_.left.end()){
+            auto const folder = chars_folder_ + "/" + folders[i];
+            auto const img_size = ocv::file::get_directory_files(folder).size();
+            std::cout<<folder<<" has "<<img_size<<" images"<<std::endl;
+            if(img_size < min){
+                min = img_size;
+            }
         }
+    }
+    if(min == std::numeric_limits<size_t>::max()){
+        min = 0;
     }
     train_size_ = static_cast<size_t>(min * 0.8);
     validate_size_ = min - train_size_;
     std::cout<<"min images size is "<<min<<std::endl;
 }
 
-void train_chars::show_training_results(const cv::Mat &features,
+void train_chars::show_training_results(const features_type &features,
                                         const label_type &labels)
 {
     std::map<std::string, int> statistic;
     for(char i = '0'; i <= '9'; ++i){
         statistic.insert({std::string(1,i), 0});
     }
-    for(char i = 'a'; i <= 'z'; ++i){
+    /*for(char i = 'a'; i <= 'z'; ++i){
         statistic.insert({std::string(1,i), 0});
-    }
-
-    auto temp_features = features.reshape(1, int(labels.size()));
-    //std::cout<<"rows : "<<temp_features.rows
-    //        <<", cols : "<<temp_features.cols<<std::endl;
-    //std::cout<<(temp_features.type() == CV_32F)<<std::endl;
+    }*/
 
     for(size_t i = 0; i != labels.size(); ++i){
-        int const feature_num = static_cast<int>(temp_features.cols);
-        cv::Rect const rect(0, 0, feature_num, 1);
-        auto label = ml_->predict(temp_features(rect));
+        auto label = ml_->predict(features[i]);
         if(label == labels[i]){
             auto it = bm_labels_int_.right.find(label);
             if(it != bm_labels_int_.right.end()){
