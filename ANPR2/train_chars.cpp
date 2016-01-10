@@ -17,8 +17,8 @@ namespace{
 template<typename Map>
 void generate_map(Map &map)
 {
-    map.insert({std::to_string(2), 0});
-    map.insert({std::to_string(7), 1});
+    map.insert({std::to_string(1), 0});
+    map.insert({std::to_string(2), 1});
     /*
       int index = 0;
       for(char i = '0'; i <= '9'; ++i){
@@ -80,8 +80,9 @@ void train_chars::extract_features()
                         cv::destroyAllWindows();
                     }*/
                     /*std::vector<float> feature;
-                    auto bi_img = binarize_image(img);
-                    cv::resize(bi_img, bi_img, {30,15});
+                    cv::Mat bi_img;
+                    cv::resize(img, bi_img, {30,15});
+                    cv::cvtColor(bi_img, bi_img, CV_BGR2GRAY);
                     ocv::for_each_channels<uchar>(bi_img,
                                                   [&](auto val)
                     {
@@ -89,7 +90,6 @@ void train_chars::extract_features()
                     });
                     cv::normalize(feature, feature);//*/
                     auto feature = bbps_.describe(binarize_image(img));
-                    //std::cout<<"feautre size == "<<feature.size()<<std::endl;
                     features_.emplace_back(std::move(feature));
                     labels_.emplace_back(label);
                 }
@@ -158,11 +158,12 @@ void train_chars::train_classifier()
     ml->setType(SVM::C_SVC);
     ml->setKernel(SVM::LINEAR);
     ml->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER,
-                                         10000, 1e-6));
+                                         (int)1e7, 1e-6));
 
     auto train_data = TrainData::create(features_train_.reshape(1, int(labels_train_.size())),
                                         ROW_SAMPLE,
                                         labels_train_);
+
     ml->trainAuto(train_data);
     std::cout<<"c : "<<ml->getC()<<"\n";
     std::cout<<"coef0 : "<<ml->getCoef0()<<"\n";
@@ -213,7 +214,7 @@ void train_chars::show_training_results(const features_type &features,
         auto label = ml_->predict(features[i]);
         if(label == labels[i]){
             auto it = bm_labels_int_.right.find(label);
-            if(it != bm_labels_int_.right.end()){
+            if(it != std::end(bm_labels_int_.right)){
                 statistic[it->second]++;
             }
         }
