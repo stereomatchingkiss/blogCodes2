@@ -42,7 +42,6 @@ private:
 
     features_type features_;
     cv::Mat features_train_;
-    cv::Mat features_validate_;
     label_type labels_;
     label_type labels_train_;
     label_type labels_validate_;
