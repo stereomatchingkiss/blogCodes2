@@ -11,7 +11,10 @@ public:
     using contour_type = std::vector<cv::Point>;
     using contours_type = std::vector<contour_type>;
 
-    prune_illegal_chars() = default;
+    explicit prune_illegal_chars(size_t max_char_num = 8);
+
+    void prune(cv::Mat const &plate,
+               contours_type &contours);
 
     void prune(cv::Mat const &plate,
                size_t max_char_num,
@@ -27,6 +30,8 @@ private:
                             contours_type const &contours) const;
 
     bool debug_ = false;
+
+    size_t max_char_num_ = 8;
 
     std::vector<std::pair<int,contour_type>> diff_;
     cv::Mat_<int> dims_;

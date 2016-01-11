@@ -5,6 +5,15 @@
 
 #include <iostream>
 
+prune_illegal_chars::prune_illegal_chars(size_t max_char_num) :
+    max_char_num_(max_char_num){}
+
+void prune_illegal_chars::
+prune(const cv::Mat &plate, contours_type &contours)
+{
+    prune(plate, max_char_num_, contours);
+}
+
 void prune_illegal_chars::
 prune(cv::Mat const &plate,
       size_t,
