@@ -44,8 +44,9 @@ public:
      * bird eyes plate
      */
     contours_type const& get_chars_contours() const;
-
     contours_type& get_chars_contours();
+
+    size_t get_min_char_num() const;
 
     void set_img_name(std::string const &value);
     void set_min_char_width(size_t value);

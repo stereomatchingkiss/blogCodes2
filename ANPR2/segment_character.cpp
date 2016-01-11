@@ -53,6 +53,11 @@ segment_character::contours_type &segment_character::get_chars_contours()
     return chars_contour_;
 }
 
+size_t segment_character::get_min_char_num() const
+{
+    return min_char_num_;
+}
+
 void segment_character::set_img_name(const std::string &value)
 {
     img_name_ = value;
