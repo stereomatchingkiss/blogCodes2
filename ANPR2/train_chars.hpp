@@ -41,14 +41,13 @@ private:
     std::string result_folder_;
 
     features_type features_;
-    cv::Mat features_train_;
+    cv::Mat features_train_;    
     label_type labels_;
-    label_type labels_train_;
-    label_type labels_validate_;
-    boost::bimap<std::string, int> bm_labels_int_;
+    label_type labels_train_;    
+    boost::bimap<std::string, int> bm_labels_int_;        
 
-    size_t train_size_ = 0;
-    size_t validate_size_ = 0;
+    size_t min_symbol_size_ = 0;
+    size_t train_size_ = 0;    
 };
 
 #endif
