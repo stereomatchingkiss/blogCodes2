@@ -20,14 +20,14 @@ public:
      */
     segment_character(size_t min_char_width,
                       size_t min_char_num,
-                      size_t max_char_num);    
+                      size_t max_char_num);
     /**
      * detect the characters of license plate
      * @param input input image
      * @param contours contours of candidate plates
      * @return true if able to detect characters and vice versa
      */
-    bool detect_characters(cv::Mat const &input,                           
+    bool detect_characters(cv::Mat const &input,
                            contour_type const &contours);
 
     cv::Mat const& get_binary_plate() const;
@@ -49,7 +49,7 @@ public:
 
     void set_img_name(std::string const &value);
     void set_min_char_width(size_t value);
-    void set_min_char_num(size_t value);    
+    void set_min_char_num(size_t value);
     void set_show_debug_message(bool value);
 
 private:
@@ -69,12 +69,9 @@ private:
     cv::Mat binary_plate_;
     cv::Mat bird_eyes_plate_;
     contours_type chars_contour_;
-    std::vector<cv::Mat> chars_mask_;
-    bool debug_ = false;    
-    //std::vector<cv::Mat> hsv_split_;
-    //cv::Mat hsv_;
+    std::vector<cv::Mat> chars_components_;
+    bool debug_ = false;
     std::string img_name_;
-    //cv::Mat intensity_; //v channel of hsv
 
     size_t min_char_width_ = 10;
     size_t min_char_num_ = 6;

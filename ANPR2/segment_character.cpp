@@ -131,8 +131,8 @@ void segment_character::generate_components()
     int const nlabels =
             cv::connectedComponents(binary_plate_, labels);
 
-    chars_mask_.resize(nlabels - 1);
-    for(auto &mask : chars_mask_){
+    chars_components_.resize(nlabels - 1);
+    for(auto &mask : chars_components_){
         mask.create(binary_plate_.size(), CV_8U);
         mask = 0;
     }
@@ -141,7 +141,7 @@ void segment_character::generate_components()
         auto labels_ptr = labels.ptr<int>(r);
         for(int c = 0; c != labels.cols; ++c){
             if(labels_ptr[c] != 0){
-                chars_mask_[labels_ptr[c]-1].at<uchar>(r,c) = 255;
+                chars_components_[labels_ptr[c]-1].at<uchar>(r,c) = 255;
             }
         }
     }
@@ -232,9 +232,9 @@ void segment_character::split_character()
 
     generate_components();
     chars_contour_.clear();
-    for(size_t i = 0; i != chars_mask_.size(); ++i){
+    for(size_t i = 0; i != chars_components_.size(); ++i){
         contours_type contours;
-        cv::findContours(chars_mask_[i], contours,
+        cv::findContours(chars_components_[i], contours,
                          cv::RETR_EXTERNAL,
                          cv::CHAIN_APPROX_SIMPLE);
         for(int j = 0; j != contours.size(); ++j){
