@@ -11,25 +11,6 @@
 #include <iostream>
 #include <random>
 
-namespace{
-
-template<typename Map>
-void generate_map(Map &map)
-{
-    //map.insert({std::to_string(1), 0});
-    //map.insert({std::to_string(2), 1});
-
-    int index = 0;
-    for(char i = '0'; i <= '9'; ++i){
-        map.insert({std::string(1,i), index++});
-    }
-    for(char i = 'a'; i <= 'z'; ++i){
-        map.insert({std::string(1,i), index++});
-    }//*/
-}
-
-}
-
 train_chars::train_chars(std::string chars_folder,
                          std::string result_folder) :    
     chars_folder_(std::move(chars_folder)),
