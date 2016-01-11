@@ -31,8 +31,7 @@ void generate_map(Map &map)
 }
 
 train_chars::train_chars(std::string chars_folder,
-                         std::string result_folder) :
-    bbps_({30, 15}, {{5,5}, {5,10}, {10,5}, {10,10}}),
+                         std::string result_folder) :    
     chars_folder_(std::move(chars_folder)),
     result_folder_(std::move(result_folder))
 {
