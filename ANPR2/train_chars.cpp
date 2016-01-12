@@ -83,7 +83,7 @@ void train_chars::train_classifier()
     using namespace cv::ml;
 
     auto ml = cv::ml::RTrees::create();
-    ml->setMaxDepth(30);
+    ml->setMaxDepth(20);
     ml->setMinSampleCount(static_cast<int>(labels_train_.size() * 0.01));
     ml->setRegressionAccuracy(0);
     ml->setUseSurrogates(false);
@@ -112,11 +112,14 @@ void train_chars::train_classifier()
                                         ROW_SAMPLE,
                                         labels_train_);
 
-    ml->trainAuto(train_data);
-    std::cout<<"c : "<<ml->getC()<<"\n";
-    std::cout<<"coef0 : "<<ml->getCoef0()<<"\n";
-    std::cout<<"degree : "<<ml->getDegree()<<"\n";
-    std::cout<<"gamma : "<<ml->getGamma()<<"\n";//*/
+    ml->trainAuto(train_data);    
+    std::cout<<"c : "<<ml->getC()<<std::endl;
+    std::cout<<"class weights : "<<ml->getClassWeights()<<std::endl;
+    std::cout<<"coef0 : "<<ml->getCoef0()<<std::endl;
+    std::cout<<"degree : "<<ml->getDegree()<<std::endl;
+    std::cout<<"gamma : "<<ml->getGamma()<<std::endl;
+    std::cout<<"nu : "<<ml->getNu()<<std::endl;
+    std::cout<<"p : "<<ml->getP()<<std::endl;//*/
 
     ml->write(cv::FileStorage(result_folder_ + "/chars_classifier.xml",
                               cv::FileStorage::WRITE));
