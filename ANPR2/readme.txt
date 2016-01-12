@@ -9,3 +9,10 @@ Assumptions of this project
 3 : The shape of the license plates is close to rectangle
 4 : This algorithm is design for the standard license plate of Croatia, do not
 work for non-standard license plate
+
+Limitations
+
+1 : Cannot localize every license plate
+2 : Localized license plate may not crop perfectly
+3 : The accuracy of OCR are limited, I guess it is because the characters are lack of training sample
+only 18 characters for each category
