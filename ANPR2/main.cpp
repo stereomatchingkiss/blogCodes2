@@ -105,14 +105,15 @@ void test_anpr_recognizer(int argc, char **argv)
     test_algo(map, [&](cv::Mat const &input, std::string const&)
     {
        auto results = cr.recognize(input);
-       for(auto const &value : results){
-           std::cout<<value.first<<std::endl;
+       for(size_t i = 0; i != results.size(); ++i){
+           std::cout<<results[i].first<<std::endl;
            auto img = input.clone();
-           auto const rect = value.second;
+           auto const rect = results[i].second;
            cv::rectangle(img, rect, {0,255,0}, 2);
-           cv::putText(img, value.first, {rect.x - rect.x/5, rect.y - 30},
+           cv::putText(img, results[i].first, {rect.x - rect.x/5, rect.y - 30},
                        cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
            cv::imshow("plate", img);
+           cv::imshow("binary_plate", cr.get_binary_plate()[i]);
            cv::waitKey();
            cv::destroyAllWindows();
        }
