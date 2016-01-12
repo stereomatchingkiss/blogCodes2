@@ -18,6 +18,9 @@ public:
     void sort_contour(contours_type &contours) const;
 
 private:
+    std::string to_char(std::string const &str) const;
+    std::string to_num(std::string const &str) const;
+
     std::regex pattern_;
 };
 
