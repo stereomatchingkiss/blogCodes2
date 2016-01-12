@@ -30,7 +30,7 @@ public:
      * @param bbps The feature extractor of the character recognizer
      */
     explicit bbps_char_recognizer(cv::Ptr<cv::ml::StatModel> rec,
-                                  ocv::block_binary_pixel_sum<> const &bbps);
+                                  ocv::block_binary_pixel_sum<> const &bbps = ocv::block_binary_pixel_sum<>());
 
     /**
      * Recognize the input character
