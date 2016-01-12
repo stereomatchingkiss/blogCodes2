@@ -1,3 +1,4 @@
+#include "croatia_general_plate_recognizer.hpp"
 #include "fhog_trainer.hpp"
 #include "grab_character.hpp"
 #include "morphology_localizer.hpp"
@@ -23,6 +24,7 @@ using vmap = boost::program_options::variables_map;
 template<typename UnaryFunctor>
 void test_algo(vmap const &map, UnaryFunctor functor);
 
+void test_croatia_general_recognizer();
 void test_grab_char(int argc, char **argv);
 void test_number_plate_localizer(int argc, char **argv);
 void test_prune_illegal_chars(int argc, char **argv);
@@ -33,11 +35,12 @@ int main(int argc, char **argv)
 {                   
     //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
+    test_croatia_general_recognizer();
     //test_grab_char(argc, argv);
     //test_number_plate_localizer(argc, argv);
     //test_prune_illegal_chars(argc, argv);
     //test_segment_character(argc, argv);
-    test_train_chars(argc, argv);
+    //test_train_chars(argc, argv);
 }
 
 template<typename BinaryFunctor>
@@ -65,6 +68,17 @@ void test_algo(vmap const &map, BinaryFunctor functor)
     }else{
         std::cerr<<"must specify image_folder or image"<<std::endl;
     }
+}
+
+void test_croatia_general_recognizer()
+{
+    croatia_general_plate_recognizer cgpr;
+    std::cout<<cgpr.fit("ZG7029M")<<std::endl;
+    std::cout<<cgpr.fit("AB702M")<<std::endl;
+    std::cout<<cgpr.fit("AB702ML")<<std::endl;
+    std::cout<<cgpr.fit("HRZG7029M")<<std::endl;
+    std::cout<<cgpr.fit("ZGM7029M")<<std::endl;
+    std::cout<<cgpr.fit("ZGM7029ML")<<std::endl;
 }
 
 void test_grab_char(int argc, char **argv)
@@ -144,7 +158,7 @@ void test_segment_character(int argc, char **argv)
         for(size_t i = 0; i != contours.size(); ++i){
             sc.set_img_name(name + "_" + std::to_string(i));
             sc.detect_characters(lpl.get_resize_input(),
-                                 contours[i]);
+                                 contours[i]);            
         }
     });
 }
