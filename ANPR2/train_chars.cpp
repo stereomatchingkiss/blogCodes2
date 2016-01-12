@@ -121,6 +121,13 @@ void train_chars::train_classifier()
     ml->write(cv::FileStorage(result_folder_ + "/chars_classifier.xml",
                               cv::FileStorage::WRITE));
 
+    {
+        //work around for opencv3.0
+        cv::FileStorage append(result_folder_ + "/chars_classifier.xml",
+                               cv::FileStorage::APPEND);
+        append<<"format"<<3;
+    }
+
     ml_ = ml;
 }
 
