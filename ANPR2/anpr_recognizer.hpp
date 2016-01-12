@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -24,10 +25,17 @@ public:
                     CharRecognizer const &char_recognizer,
                     PatternRecognizer const &pattern_recognizer);
 
+    std::vector<cv::Mat> const& get_binary_plate() const
+    {
+        return binary_plates_;
+    }
+
     result_type const& recognize(cv::Mat const &input);
 
 
 private:
+    std::vector<cv::Mat> binary_plates_;
+
     PlateLocalizer plate_localizer_;
     SegmentChar segment_char_;
     PruneChar prune_char_;
@@ -67,6 +75,7 @@ std::vector<std::pair<std::string, cv::Rect>> const& anpr_recognizer<PlateLocali
 PruneChar, CharRecognizer, PatternRecognizer>::
 recognize(cv::Mat const &input)
 {
+    binary_plates_.clear();
     plate_chars_.clear();
     plate_localizer_.localize_plate(input);
     for(auto const &contour : plate_localizer_.get_contours()){
@@ -80,15 +89,21 @@ recognize(cv::Mat const &input)
                 pattern_recognizer_.sort_contour(prune_contours);
                 std::string plate_chars;
                 auto const &binary_plate = segment_char_.get_binary_plate();
+                binary_plates_.emplace_back(binary_plate);
                 for(size_t i = 0; i != prune_contours.size(); ++i){
                     auto const &rect = cv::boundingRect(prune_contours[i]);
                     plate_chars +=
                             char_recognizer_.recognize(bird_eyes_plate(rect),
                                                        binary_plate(rect));
-                }
+                }                
                 auto strs = pattern_recognizer_.fit(plate_chars);
                 if(!strs.empty()){
+                    std::cout<<__func__<<" : can detect plate"<<std::endl;
                     plate_chars_.emplace_back(std::move(strs),
+                                              cv::boundingRect(contour));
+                }else{
+                    std::cout<<__func__<<" : cannot detect plate"<<std::endl;
+                    plate_chars_.emplace_back(std::move(plate_chars),
                                               cv::boundingRect(contour));
                 }
             }
