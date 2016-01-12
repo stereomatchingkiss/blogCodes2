@@ -9,7 +9,7 @@
 #include "train_chars.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
-#include <ocv_libs/core/perspective_transform.hpp>
+#include <ocv_libs/core/resize.hpp>
 #include <ocv_libs/file/utility.hpp>
 
 #include <opencv2/core.hpp>
@@ -102,7 +102,7 @@ void test_anpr_recognizer(int argc, char **argv)
                prune_illegal_chars(), bcr,
                croatia_general_pattern_recognizer());
 
-    test_algo(map, [&](cv::Mat const &input, std::string const&)
+    test_algo(map, [&](cv::Mat const &input, std::string const &img_name)
     {
        auto results = cr.recognize(input);
        for(size_t i = 0; i != results.size(); ++i){
@@ -114,6 +114,8 @@ void test_anpr_recognizer(int argc, char **argv)
                        cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
            cv::imshow("plate", img);
            cv::imshow("binary_plate", cr.get_binary_plate()[i]);
+           ocv::resize_aspect_ratio(img, img, {320,0});
+           cv::imwrite("recognize_result/" + img_name + ".jpg", img);
            cv::waitKey();
            cv::destroyAllWindows();
        }
