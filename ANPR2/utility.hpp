@@ -3,6 +3,8 @@
 
 #include <opencv2/core.hpp>
 
+#include <string>
+
 void binarize_image(cv::Mat const &input,
                     cv::Mat &output);
 
