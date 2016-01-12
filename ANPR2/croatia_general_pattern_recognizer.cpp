@@ -1,12 +1,12 @@
-#include "croatia_general_plate_recognizer.hpp"
+#include "croatia_general_pattern_recognizer.hpp"
 
 #include <opencv2/imgproc.hpp>
 
 #include <algorithm>
 #include <iostream>
 
-croatia_general_plate_recognizer::
-croatia_general_plate_recognizer()
+croatia_general_pattern_recognizer::
+croatia_general_pattern_recognizer()
 {
     std::string fuzzy_char("[");
     for(char i = 'a'; i <= 'z'; ++i){
@@ -24,7 +24,7 @@ croatia_general_plate_recognizer()
                           "{3,4}" + fuzzy_char + "{1,2}");
 }
 
-std::string croatia_general_plate_recognizer::fit(const std::string &pattern) const
+std::string croatia_general_pattern_recognizer::fit(const std::string &pattern) const
 {
     for(auto it = std::sregex_iterator(std::begin(pattern),
                                        std::end(pattern), pattern_);
@@ -63,7 +63,7 @@ std::string croatia_general_plate_recognizer::fit(const std::string &pattern) co
     return {};
 }
 
-void croatia_general_plate_recognizer::
+void croatia_general_pattern_recognizer::
 sort_contour(contours_type &contours) const
 {
     std::sort(std::begin(contours), std::end(contours),
@@ -73,7 +73,7 @@ sort_contour(contours_type &contours) const
     });
 }
 
-std::string croatia_general_plate_recognizer::
+std::string croatia_general_pattern_recognizer::
 to_char(const std::string &str) const
 {
     std::string result = str;
@@ -88,7 +88,7 @@ to_char(const std::string &str) const
     return result;
 }
 
-std::string croatia_general_plate_recognizer::
+std::string croatia_general_pattern_recognizer::
 to_num(const std::string &str) const
 {
     std::string result = str;
