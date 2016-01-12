@@ -10,12 +10,7 @@
 class morphology_localizer
 {
 public:
-    morphology_localizer();
-
-    morphology_localizer(morphology_localizer const&) = delete;
-    morphology_localizer& operator=(morphology_localizer const&) = delete;
-    morphology_localizer(morphology_localizer&&) = delete;
-    morphology_localizer& operator=(morphology_localizer&&) = delete;
+    morphology_localizer();    
 
     std::vector<std::vector<cv::Point>> const& get_contours() const;
     cv::Mat& get_resize_input();
