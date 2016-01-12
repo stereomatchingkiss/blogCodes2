@@ -1,3 +1,4 @@
+#include "bbps_char_recognizer.hpp"
 #include "croatia_general_plate_recognizer.hpp"
 #include "fhog_trainer.hpp"
 #include "grab_character.hpp"
@@ -13,6 +14,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/ml.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -24,6 +26,7 @@ using vmap = boost::program_options::variables_map;
 template<typename UnaryFunctor>
 void test_algo(vmap const &map, UnaryFunctor functor);
 
+void test_bbps_char_recognizer(int argc, char **argv);
 void test_croatia_general_recognizer();
 void test_grab_char(int argc, char **argv);
 void test_number_plate_localizer(int argc, char **argv);
@@ -33,14 +36,19 @@ void test_train_chars(int argc, char **argv);
 
 int main(int argc, char **argv)
 {                   
-    //fhog_number_plate_trainer fhog_trainer(argc, argv);
+    try{
+        //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-    test_croatia_general_recognizer();
-    //test_grab_char(argc, argv);
-    //test_number_plate_localizer(argc, argv);
-    //test_prune_illegal_chars(argc, argv);
-    //test_segment_character(argc, argv);
-    //test_train_chars(argc, argv);
+        test_bbps_char_recognizer(argc, argv);
+        //test_croatia_general_recognizer();
+        //test_grab_char(argc, argv);
+        //test_number_plate_localizer(argc, argv);
+        //test_prune_illegal_chars(argc, argv);
+        //test_segment_character(argc, argv);
+        //test_train_chars(argc, argv);
+    }catch(std::exception const &ex){
+        std::cout<<ex.what()<<std::endl;
+    }
 }
 
 template<typename BinaryFunctor>
@@ -68,6 +76,47 @@ void test_algo(vmap const &map, BinaryFunctor functor)
     }else{
         std::cerr<<"must specify image_folder or image"<<std::endl;
     }
+}
+
+void test_bbps_char_recognizer(int argc, char **argv)
+{
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+    morphology_localizer lpl;
+    segment_character sc;
+    prune_illegal_chars plc;
+    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
+    ml->read(cv::FileStorage("train_result/chars_classifier.xml",
+                             cv::FileStorage::READ).root());
+    bbps_char_recognizer bcr(ml);
+    test_algo(map, [&](cv::Mat const &input, std::string const&)
+    {
+        lpl.localize_plate(input);
+        for(auto const &contour : lpl.get_contours()){
+            if(sc.detect_characters(lpl.get_resize_input(),
+                                    contour)){
+                auto &char_contours = sc.get_chars_contours();
+                auto const &bird_eyes_plate = sc.get_bird_eyes_plate();
+                plc.prune(bird_eyes_plate, char_contours);
+                auto const &binary_plate = sc.get_binary_plate();
+                if(char_contours.size() >= sc.get_min_char_num()){
+                    for(size_t i = 0; i != char_contours.size(); ++i){
+                        auto const rect = cv::boundingRect(char_contours[i]);
+                        std::cout<<bcr.recognize(bird_eyes_plate(rect),
+                                                 binary_plate(rect))<<std::endl;
+                        auto mat = bird_eyes_plate.clone();
+                        cv::drawContours(mat, char_contours, i, {0,255,0}, 2);
+                        cv::imshow("plate", mat);
+                        cv::imshow("char",binary_plate(rect));
+                        cv::waitKey();
+                        cv::destroyAllWindows();
+                    }
+                }
+            }else{
+                std::cout<<"not a license plate"<<std::endl;
+            }
+        }
+    });//*/
 }
 
 void test_croatia_general_recognizer()
@@ -158,7 +207,7 @@ void test_segment_character(int argc, char **argv)
         for(size_t i = 0; i != contours.size(); ++i){
             sc.set_img_name(name + "_" + std::to_string(i));
             sc.detect_characters(lpl.get_resize_input(),
-                                 contours[i]);            
+                                 contours[i]);
         }
     });
 }
@@ -169,7 +218,7 @@ void test_train_chars(int argc, char **argv)
             ocv::cmd::default_command_line_parser(argc, argv).first;
     if(map.count("image_folder") && map.count("output_folder")){
         train_chars tc(map["image_folder"].as<std::string>(),
-                       map["output_folder"].as<std::string>());
+                map["output_folder"].as<std::string>());
         tc.train();
         tc.test_train_result();
     }else{
