@@ -107,8 +107,16 @@ void test_anpr_recognizer(int argc, char **argv)
        auto results = cr.recognize(input);
        for(auto const &value : results){
            std::cout<<value.first<<std::endl;
+           auto img = input.clone();
+           auto const rect = value.second;
+           cv::rectangle(img, rect, {0,255,0}, 2);
+           cv::putText(img, value.first, {rect.x - rect.x/5, rect.y - 30},
+                       cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
+           cv::imshow("plate", img);
+           cv::waitKey();
+           cv::destroyAllWindows();
        }
-    });//*/
+    });
 }
 
 void test_bbps_char_recognizer(int argc, char **argv)
