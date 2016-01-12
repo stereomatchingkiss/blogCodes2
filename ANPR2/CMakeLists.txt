@@ -13,6 +13,8 @@ INCLUDE_DIRECTORIES(${OCV_PATH})
 add_executable(${PROJECT_NAME}
 bbps_char_recognizer.hpp
 bbps_char_recognizer.cpp
+croatia_general_plate_recognizer.hpp
+croatia_general_plate_recognizer.cpp
 fhog_trainer.hpp
 fhog_trainer.cpp
 grab_character.hpp
