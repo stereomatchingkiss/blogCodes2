@@ -16,13 +16,15 @@ template<typename PlateLocalizer,
 class anpr_recognizer
 {
 public:
+    using result_type = std::vector<std::pair<std::string, cv::Rect>>;
+
     anpr_recognizer(PlateLocalizer const &plate_localizer,
                     SegmentChar const &segment_char,
                     PruneChar const &prune_char,
                     CharRecognizer const &char_recognizer,
                     PatternRecognizer const &pattern_recognizer);
 
-    std::vector<std::string> const& recognize(cv::Mat const &input);
+    result_type const& recognize(cv::Mat const &input);
 
 
 private:
@@ -32,7 +34,7 @@ private:
     CharRecognizer char_recognizer_;
     PatternRecognizer pattern_recognizer_;
 
-    std::vector<std::string> plate_chars_;
+    result_type plate_chars_;
 };
 
 template<typename PlateLocalizer,
@@ -61,7 +63,7 @@ template<typename PlateLocalizer,
          typename PruneChar,
          typename CharRecognizer,
          typename PatternRecognizer>
-std::vector<std::string> const& anpr_recognizer<PlateLocalizer, SegmentChar,
+std::vector<std::pair<std::string, cv::Rect>> const& anpr_recognizer<PlateLocalizer, SegmentChar,
 PruneChar, CharRecognizer, PatternRecognizer>::
 recognize(cv::Mat const &input)
 {
@@ -86,11 +88,12 @@ recognize(cv::Mat const &input)
                 }
                 auto strs = pattern_recognizer_.fit(plate_chars);
                 if(!strs.empty()){
-                    plate_chars_.emplace_back(std::move(strs));
-                }//*/
+                    plate_chars_.emplace_back(std::move(strs),
+                                              cv::boundingRect(contour));
+                }
             }
         }
-    }//*/
+    }
 
     return plate_chars_;
 }
