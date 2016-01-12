@@ -42,6 +42,7 @@ std::string croatia_general_plate_recognizer::fit(const std::string &pattern) co
         }
         case 7:
         {
+            // /w{2}/d{3,4}/w{1,2}
             result += to_char(str.substr(0,2));
             result += to_num(str.substr(2,3));
             result += str.substr(5,1);
@@ -50,6 +51,7 @@ std::string croatia_general_plate_recognizer::fit(const std::string &pattern) co
         }
         case 8:
         {
+            // /w{2}/d{4}/w{2}
             result += to_char(str.substr(0,2));
             result += to_num(str.substr(2,4));
             result += to_char(str.substr(6,2));
