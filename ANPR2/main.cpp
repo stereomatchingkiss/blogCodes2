@@ -39,8 +39,8 @@ int main(int argc, char **argv)
     try{
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-        test_bbps_char_recognizer(argc, argv);
-        //test_croatia_general_recognizer();
+        //test_bbps_char_recognizer(argc, argv);
+        test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
@@ -85,7 +85,7 @@ void test_bbps_char_recognizer(int argc, char **argv)
     morphology_localizer lpl;
     segment_character sc;
     prune_illegal_chars plc;
-    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
+    cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
     ml->read(cv::FileStorage("train_result/chars_classifier.xml",
                              cv::FileStorage::READ).root());
     bbps_char_recognizer bcr(ml);
@@ -122,12 +122,13 @@ void test_bbps_char_recognizer(int argc, char **argv)
 void test_croatia_general_recognizer()
 {
     croatia_general_plate_recognizer cgpr;
-    std::cout<<cgpr.fit("ZG7029M")<<std::endl;
-    std::cout<<cgpr.fit("AB702M")<<std::endl;
-    std::cout<<cgpr.fit("AB702ML")<<std::endl;
-    std::cout<<cgpr.fit("HRZG7029M")<<std::endl;
-    std::cout<<cgpr.fit("ZGM7029M")<<std::endl;
-    std::cout<<cgpr.fit("ZGM7029ML")<<std::endl;
+    std::cout<<"ZG7029M, "<<cgpr.fit("ZG7029M")<<std::endl;
+    std::cout<<"AB702M, "<<cgpr.fit("AB702M")<<std::endl;
+    std::cout<<"A8702M, "<<cgpr.fit("A8702M")<<std::endl;
+    std::cout<<"AB702ML, "<<cgpr.fit("AB702ML")<<std::endl;
+    std::cout<<"HRZG7029M, "<<cgpr.fit("HRZG7029M")<<std::endl;
+    std::cout<<"ZGM7029M, "<<cgpr.fit("ZGM7029M")<<std::endl;
+    std::cout<<"ZGM7029ML, "<<cgpr.fit("ZGM7029ML")<<std::endl;
 }
 
 void test_grab_char(int argc, char **argv)
@@ -147,7 +148,7 @@ void test_grab_char(int argc, char **argv)
             sc.set_img_name(name + "_" + std::to_string(i));
             sc.detect_characters(lpl.get_resize_input(),
                                  contours[i]);
-            if(sc.get_chars_contours().size() >= 5){
+            if(sc.get_chars_contours().size() >= 6){
                 grab_char.set_chars_name(name);
                 grab_char.grab_chars(sc.get_bird_eyes_plate(),
                                      sc.get_chars_contours());
