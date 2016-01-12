@@ -1,5 +1,6 @@
+#include "anpr_recognizer.hpp"
 #include "bbps_char_recognizer.hpp"
-#include "croatia_general_plate_recognizer.hpp"
+#include "croatia_general_pattern_recognizer.hpp"
 #include "fhog_trainer.hpp"
 #include "grab_character.hpp"
 #include "morphology_localizer.hpp"
@@ -26,6 +27,7 @@ using vmap = boost::program_options::variables_map;
 template<typename UnaryFunctor>
 void test_algo(vmap const &map, UnaryFunctor functor);
 
+void test_anpr_recognizer(int argc, char **argv);
 void test_bbps_char_recognizer(int argc, char **argv);
 void test_croatia_general_recognizer();
 void test_grab_char(int argc, char **argv);
@@ -39,8 +41,9 @@ int main(int argc, char **argv)
     try{
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
+        test_anpr_recognizer(argc, argv);
         //test_bbps_char_recognizer(argc, argv);
-        test_croatia_general_recognizer();
+        //test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
@@ -78,6 +81,36 @@ void test_algo(vmap const &map, BinaryFunctor functor)
     }
 }
 
+void test_anpr_recognizer(int argc, char **argv)
+{
+    using croatia_general_plate_recognizer = anpr_recognizer<
+    morphology_localizer,
+    segment_character,
+    prune_illegal_chars,
+    bbps_char_recognizer,
+    croatia_general_pattern_recognizer>;
+
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
+    ml->read(cv::FileStorage("train_result/chars_classifier.xml",
+                             cv::FileStorage::READ).root());
+    bbps_char_recognizer bcr(ml);
+
+    croatia_general_plate_recognizer
+            cr(morphology_localizer(), segment_character(),
+               prune_illegal_chars(), bcr,
+               croatia_general_pattern_recognizer());
+
+    test_algo(map, [&](cv::Mat const &input, std::string const&)
+    {
+       auto results = cr.recognize(input);
+       for(auto const &value : results){
+           std::cout<<value.first<<std::endl;
+       }
+    });//*/
+}
+
 void test_bbps_char_recognizer(int argc, char **argv)
 {
     auto const map =
@@ -85,7 +118,7 @@ void test_bbps_char_recognizer(int argc, char **argv)
     morphology_localizer lpl;
     segment_character sc;
     prune_illegal_chars plc;
-    cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
+    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
     ml->read(cv::FileStorage("train_result/chars_classifier.xml",
                              cv::FileStorage::READ).root());
     bbps_char_recognizer bcr(ml);
@@ -121,7 +154,7 @@ void test_bbps_char_recognizer(int argc, char **argv)
 
 void test_croatia_general_recognizer()
 {
-    croatia_general_plate_recognizer cgpr;
+    croatia_general_pattern_recognizer cgpr;
     std::cout<<"ZG7029M, "<<cgpr.fit("ZG7029M")<<std::endl;
     std::cout<<"AB702M, "<<cgpr.fit("AB702M")<<std::endl;
     std::cout<<"A8702M, "<<cgpr.fit("A8702M")<<std::endl;
