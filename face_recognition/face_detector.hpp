@@ -13,8 +13,7 @@ public:
     std::vector<cv::Rect> const& detect(cv::Mat const &input);
 
 private:
-    dlib::frontal_face_detector ffd_;
-    cv::Mat gray_;
+    dlib::frontal_face_detector ffd_;    
     std::vector<cv::Rect> regions_;
 };
 

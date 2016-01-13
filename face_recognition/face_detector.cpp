@@ -14,15 +14,14 @@ std::vector<cv::Rect> const& face_detector::
 detect(const cv::Mat &input)
 {
     regions_.clear();
+    std::vector<dlib::rectangle> dets;
     if(input.type() == CV_8UC3){
-        cv::cvtColor(input, gray_, CV_BGR2GRAY);
+        dlib::cv_image<dlib::bgr_pixel> img(input);
+        dets = ffd_(img);
     }else{
-        gray_ = input;
+        dlib::cv_image<unsigned char> img(input);
+        dets = ffd_(img);
     }
-
-    dlib::cv_image<unsigned char> img(gray_);
-    std::vector<dlib::rectangle> const dets =
-            ffd_(img);
 
     for(size_t i = 0; i != dets.size(); ++i){
         regions_.emplace_back(dets[i].left(),
