@@ -34,7 +34,10 @@ int face_capture::capture()
             }
             auto const &regions = fd.detect(frame_);
             frame_.copyTo(draw_);
-            if(!regions.empty()){
+            cv::Rect const rect_mat(0,0,frame_.cols, frame_.rows);
+            bool const valid_region = !regions.empty() &&
+                    ((rect_mat & regions[0]) == regions[0]);
+            if(valid_region){
                 std::cout<<regions[0]<<std::endl;
                 cv::rectangle(draw_, regions[0], {0,255,0}, 2);
             }
@@ -43,7 +46,7 @@ int face_capture::capture()
             if(key == 'q'){
                 break;
             }else if(key == 'c'){
-                if(!regions.empty()){
+                if(valid_region){
                     boost::uuids::uuid const uuid =
                             boost::uuids::random_generator()();
                     cv::imwrite(output_folder_ + "/" +
