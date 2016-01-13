@@ -7,6 +7,7 @@
 #include "prune_illegal_chars.hpp"
 #include "segment_character.hpp"
 #include "train_chars.hpp"
+#include "utility.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
 #include <ocv_libs/core/resize.hpp>
@@ -34,6 +35,7 @@ void test_grab_char(int argc, char **argv);
 void test_number_plate_localizer(int argc, char **argv);
 void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
+void test_train_accuracy(int argc, char **argv);
 void test_train_chars(int argc, char **argv);
 
 int main(int argc, char **argv)
@@ -41,13 +43,14 @@ int main(int argc, char **argv)
     try{
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-        test_anpr_recognizer(argc, argv);
+        //test_anpr_recognizer(argc, argv);
         //test_bbps_char_recognizer(argc, argv);
         //test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
         //test_segment_character(argc, argv);
+        test_train_accuracy(argc, argv);
         //test_train_chars(argc, argv);
     }catch(std::exception const &ex){
         std::cout<<ex.what()<<std::endl;
@@ -92,7 +95,7 @@ void test_anpr_recognizer(int argc, char **argv)
 
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
-    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
+    cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
     ml->read(cv::FileStorage("train_result/chars_classifier.xml",
                              cv::FileStorage::READ).root());
     bbps_char_recognizer bcr(ml);
@@ -104,21 +107,21 @@ void test_anpr_recognizer(int argc, char **argv)
 
     test_algo(map, [&](cv::Mat const &input, std::string const &img_name)
     {
-       auto results = cr.recognize(input);
-       for(size_t i = 0; i != results.size(); ++i){
-           std::cout<<results[i].first<<std::endl;
-           auto img = input.clone();
-           auto const rect = results[i].second;
-           cv::rectangle(img, rect, {0,255,0}, 2);
-           cv::putText(img, results[i].first, {rect.x - rect.x/5, rect.y - 30},
-                       cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
-           cv::imshow("plate", img);
-           cv::imshow("binary_plate", cr.get_binary_plate()[i]);
-           ocv::resize_aspect_ratio(img, img, {320,0});
-           cv::imwrite("recognize_result/" + img_name + ".jpg", img);
-           cv::waitKey();
-           cv::destroyAllWindows();
-       }
+        auto results = cr.recognize(input);
+        for(size_t i = 0; i != results.size(); ++i){
+            std::cout<<results[i].first<<std::endl;
+            auto img = input.clone();
+            auto const rect = results[i].second;
+            cv::rectangle(img, rect, {0,255,0}, 2);
+            cv::putText(img, results[i].first, {rect.x - rect.x/5, rect.y - 30},
+                        cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
+            cv::imshow("plate", img);
+            cv::imshow("binary_plate", cr.get_binary_plate()[i]);
+            ocv::resize_aspect_ratio(img, img, {320,0});
+            cv::imwrite("recognize_result/" + img_name + ".jpg", img);
+            cv::waitKey();
+            cv::destroyAllWindows();
+        }
     });
 }
 
@@ -255,6 +258,54 @@ void test_segment_character(int argc, char **argv)
                                  contours[i]);
         }
     });
+}
+
+void test_train_accuracy(int argc, char **argv)
+{
+    auto const map =
+            ocv::cmd::default_command_line_parser(argc, argv).first;
+
+    if(map.count("image_folder")){
+        using namespace ocv::file;
+        auto const img_folder = map["image_folder"].as<std::string>();
+        auto const folders = get_directory_folders(img_folder);
+
+        boost::bimap<std::string, int> bm;
+        std::map<std::string, int> bingo;
+        ocv::block_binary_pixel_sum<> bbps;
+        generate_map(bm);
+        generate_map(bingo);
+        for(auto &pair : bingo){
+            pair.second = 0;
+        }
+        cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
+        ml->read(cv::FileStorage("train_result/chars_classifier.xml",
+                                 cv::FileStorage::READ).root());
+        for(size_t i = 0; i != folders.size(); ++i){
+            auto const folder = img_folder + "/" + folders[i];
+            auto const files = get_directory_files(folder);
+            for(size_t j = 0; j != files.size(); ++j){
+                auto img = cv::imread(folder+"/"+files[j]);
+                if(!img.empty()){
+                    auto const feature = bbps.describe(binarize_image(img));
+                    int const label =
+                            static_cast<int>(ml->predict(feature));
+                    auto it = bm.right.find(label);
+                    if(it != std::end(bm.right) &&
+                            it->second == folders[i]){
+                        ++bingo[it->second];
+                    }
+                }
+            }
+            if(bingo.find(folders[i]) != std::end(bingo) &&
+                    !files.empty()){
+                std::cout<<folders[i]<<" : "
+                        <<bingo[folders[i]]/(double)files.size()<<std::endl;
+            }
+        }
+    }else{
+        std::cout<<"must specify image folder"<<std::endl;
+    }
 }
 
 void test_train_chars(int argc, char **argv)
