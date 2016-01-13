@@ -66,7 +66,9 @@ void face_recognition::buid_train_data()
             auto img = cv::imread(folder + "/" + files[j],
                                   cv::IMREAD_GRAYSCALE);
             if(!img.empty()){
-                cv::resize(img, img, face_size_);
+                if(face_size_.height > 0 && face_size_.width > 0){
+                    cv::resize(img, img, face_size_);
+                }
                 images_.emplace_back(img);
                 labels_.emplace_back(static_cast<int>(i));
             }
@@ -88,7 +90,11 @@ size_t face_recognition::minimum_train_data()
 
 std::string face_recognition::recognize(const cv::Mat &input)
 {    
-    cv::resize(input, face_, face_size_);
+    if(face_size_.height > 0 && face_size_.width > 0){
+        cv::resize(input, face_, face_size_);
+    }else{
+        input.copyTo(face_);
+    }
     if(input.type() == CV_8UC3){
         cv::cvtColor(face_, face_, CV_BGR2GRAY);
     }
