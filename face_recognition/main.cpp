@@ -140,7 +140,7 @@ vmap parse_command_line(int argc, char **argv)
 int images_record(vmap const &command)
 {
     if(!command.count("record_folder")){
-        std::cout<<"must specify record_video"<<std::endl;
+        std::cout<<"must specify record_folder"<<std::endl;
         return -1;
     }
 
