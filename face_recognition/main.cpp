@@ -20,9 +20,11 @@ int capture_face(vmap const &command);
 int images_record(vmap const &command);
 int recognize_face(vmap const &command);
 int recognize_from_camera(std::string const &train_folder,
+                          std::string const &algo,
                           size_t train_size);
 int recognize_from_folder(std::string const &train_folder,
                           std::string const &input_folder,
+                          std::string const &algo,
                           size_t train_size);
 
 void draw_detect_face(cv::Mat &inout,
@@ -101,6 +103,8 @@ vmap parse_command_line(int argc, char **argv)
                 ("output_folder,o", value<std::string>(), "Specify the output folder")
                 ("train_size,r", value<size_t>()->default_value(0), "Specify the training size of "
                                                                     "each face category")
+                ("recognize_algo,a", value<std::string>()->default_value("LBPH"),
+                 "Specify face recognization algo")
                 ("train_folder,t", value<std::string>(), "Specify the train folder");
 
         variables_map vm;
@@ -177,20 +181,25 @@ int recognize_face(vmap const &command)
         auto const train_folder = command["train_folder"].as<std::string>();
         auto const train_size = command["train_size"].as<size_t>();
 
-        return recognize_from_camera(train_folder, train_size);
+        return recognize_from_camera(train_folder,
+                                     command["recognize_algo"].as<std::string>(),
+                train_size);
     }else{
         auto const train_folder = command["train_folder"].as<std::string>();
         auto const input_folder = command["input_folder"].as<std::string>();
         auto const train_size = command["train_size"].as<size_t>();
 
         return recognize_from_folder(train_folder,
-                                     input_folder, train_size);
+                                     input_folder,
+                                     command["recognize_algo"].as<std::string>(),
+                                     train_size);
     }
 
     return 0;
 }
 
 int recognize_from_camera(std::string const &train_folder,
+                          std::string const &algo,
                           size_t train_size)
 {
     cv::VideoCapture cap(0);
@@ -199,7 +208,7 @@ int recognize_from_camera(std::string const &train_folder,
         return -1;
     }
 
-    face_recognition fr(train_folder, train_size);
+    face_recognition fr(train_folder, train_size, algo);
     face_detector fd;
     cv::Mat frame;
     while(true){
@@ -222,10 +231,11 @@ int recognize_from_camera(std::string const &train_folder,
 
 int recognize_from_folder(std::string const &train_folder,
                           std::string const &input_folder,
+                          std::string const &algo,
                           size_t train_size)
 {
     auto const files = ocv::file::get_directory_files(input_folder);
-    face_recognition fr(train_folder, train_size);
+    face_recognition fr(train_folder, train_size, algo);
     face_detector fd;
     for(size_t i = 0; i != files.size(); ++i){
         auto img = cv::imread(input_folder + "/" + files[i]);
