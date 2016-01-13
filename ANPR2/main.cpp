@@ -50,8 +50,8 @@ int main(int argc, char **argv)
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
         //test_segment_character(argc, argv);
-        test_train_accuracy(argc, argv);
         //test_train_chars(argc, argv);
+        test_train_accuracy(argc, argv);
     }catch(std::exception const &ex){
         std::cout<<ex.what()<<std::endl;
     }
@@ -278,9 +278,10 @@ void test_train_accuracy(int argc, char **argv)
         for(auto &pair : bingo){
             pair.second = 0;
         }
-        cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
+        cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
         ml->read(cv::FileStorage("train_result/chars_classifier.xml",
                                  cv::FileStorage::READ).root());
+        double total_accuracy = 0;
         for(size_t i = 0; i != folders.size(); ++i){
             auto const folder = img_folder + "/" + folders[i];
             auto const files = get_directory_files(folder);
@@ -299,10 +300,13 @@ void test_train_accuracy(int argc, char **argv)
             }
             if(bingo.find(folders[i]) != std::end(bingo) &&
                     !files.empty()){
-                std::cout<<folders[i]<<" : "
+                static size_t index = 0;
+                total_accuracy += bingo[folders[i]]/(double)files.size();
+                std::cout<<folders[i]<<" : "<<++index<<", "
                         <<bingo[folders[i]]/(double)files.size()<<std::endl;
             }
         }
+        std::cout<<"total accuracy = "<<total_accuracy/32.0<<std::endl;
     }else{
         std::cout<<"must specify image folder"<<std::endl;
     }
