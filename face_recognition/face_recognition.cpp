@@ -68,12 +68,7 @@ void face_recognition::buid_train_data()
             if(!img.empty()){
                 cv::resize(img, img, face_size_);
                 images_.emplace_back(img);
-                auto it = bimap_.left.find(folders[i]);
-                if(it != std::end(bimap_.left)){
-                    labels_.emplace_back(it->second);
-                }else{
-                    throw std::runtime_error("Cannot find folder label");
-                }
+                labels_.emplace_back(static_cast<int>(i));
             }
         }
     }
@@ -101,7 +96,7 @@ std::string face_recognition::recognize(const cv::Mat &input)
     confident_ = 0;
     model_->predict(face_,predict_label,confident_);
     auto it = bimap_.right.find(predict_label);
-    if(it != std::end(bimap_.right) && confident_ >= 40){
+    if(it != std::end(bimap_.right)){
         std::cout<<"success confident : "<<confident_<<std::endl;
         return it->second;
     }
