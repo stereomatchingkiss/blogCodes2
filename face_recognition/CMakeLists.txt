@@ -19,6 +19,8 @@ face_detector.cpp
 face_recognition.hpp
 face_recognition.cpp
 main.cpp
+${OCV_PATH}/ocv_libs/core/resize.hpp
+${OCV_PATH}/ocv_libs/core/resize.cpp
 ${OCV_PATH}/ocv_libs/file/utility.hpp
 ${OCV_PATH}/ocv_libs/file/utility.cpp
 )
