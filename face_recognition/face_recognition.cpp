@@ -11,6 +11,27 @@
 #include <iostream>
 #include <random>
 
+face_recognition::face_recognition(std::string input_folder,
+                                   size_t min_train_data,
+                                   cv::Size const &face_size)
+    : face_size_(face_size),
+      input_folder_(std::move(input_folder)),
+      min_train_data_(min_train_data),
+      model_(cv::face::createLBPHFaceRecognizer())
+{
+    if(!boost::filesystem::exists(input_folder_)){
+        throw std::runtime_error("Cannot open input folder");
+    }
+
+    buid_train_data();
+    if(!images_.empty() && !labels_.empty()){
+        model_->train(images_, labels_);
+    }else{
+        std::cout<<"Minimum training image should "
+                   "not less than 1"<<std::endl;
+    }
+}
+
 void face_recognition::buid_train_data()
 {
     size_t const min_size = minimum_train_data();
@@ -32,7 +53,7 @@ void face_recognition::buid_train_data()
             auto img = cv::imread(folder + "/" + files[j],
                                   cv::IMREAD_GRAYSCALE);
             if(!img.empty()){
-                //cv::resize(img, img, {300, 200});
+                cv::resize(img, img, face_size_);
                 images_.emplace_back(img);
                 auto it = bimap_.left.find(folders[i]);
                 if(it != std::end(bimap_.left)){
@@ -57,31 +78,12 @@ size_t face_recognition::minimum_train_data()
     return min_train_data_;
 }
 
-face_recognition::face_recognition(std::string input_folder,
-                                   size_t min_train_data)
-    : input_folder_(std::move(input_folder)),
-      min_train_data_(min_train_data),
-      model_(cv::face::createLBPHFaceRecognizer())
-{
-    if(!boost::filesystem::exists(input_folder_)){
-        throw std::runtime_error("Cannot open input folder");
-    }
-
-    buid_train_data();
-    if(!images_.empty() && !labels_.empty()){
-        model_->train(images_, labels_);
-    }else{
-        std::cout<<"Minimum training image should "
-                   "not less than 1"<<std::endl;
-    }
-}
-
 std::string face_recognition::recognize(const cv::Mat &input)
-{
+{    
+    cv::resize(input, face_, face_size_);
     if(input.type() == CV_8UC3){
-        cv::cvtColor(input, face_, CV_BGR2GRAY);
+        cv::cvtColor(face_, face_, CV_BGR2GRAY);
     }
-    //cv::resize(face_, face_, {300,200});
     int predict_label = -1;
     double confident = 0;
     model_->predict(face_,predict_label,confident);

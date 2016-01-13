@@ -12,7 +12,8 @@ class face_recognition
 {
 public:
     explicit face_recognition(std::string input_folder,
-                              size_t min_train_data);
+                              size_t min_train_data,
+                              cv::Size const &face_size ={125,125});
 
     std::string recognize(cv::Mat const &input);
 
@@ -22,6 +23,7 @@ private:
 
     boost::bimap<std::string, int> bimap_;
     cv::Mat face_;
+    cv::Size face_size_;
     std::vector<cv::Mat> images_;
     std::string input_folder_;
     std::vector<int> labels_;
