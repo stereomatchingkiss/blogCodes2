@@ -14,6 +14,7 @@
 void face_recognition::buid_train_data()
 {
     size_t const min_size = minimum_train_data();
+    std::cout<<"minimum size = "<<min_size<<std::endl;
     auto const folders =
             ocv::file::get_directory_folders(input_folder_);
     std::random_device rd;
@@ -30,8 +31,11 @@ void face_recognition::buid_train_data()
         for(size_t j = 0; j != files.size(); ++j){
             auto img = cv::imread(folder + "/" + files[j]);
             if(!img.empty()){
+                //cv::imshow(folder, img);
+                //cv::waitKey();
+                //cv::destroyAllWindows();
                 cv::cvtColor(img, img, CV_BGR2GRAY);
-                cv::resize(img, img, {300, 200});
+                //cv::resize(img, img, {300, 200});
                 images_.emplace_back(img);
                 auto it = bimap_.left.find(folders[i]);
                 if(it != std::end(bimap_.left)){
@@ -46,20 +50,12 @@ void face_recognition::buid_train_data()
 }
 
 size_t face_recognition::minimum_train_data()
-{
-    auto const folders =
-            ocv::file::get_directory_folders(input_folder_);
-    size_t min_data = std::numeric_limits<size_t>::max();
-    for(auto const &folder : folders){
-        auto const dir = input_folder_ + "/" + folder;
-        size_t const size =
-                ocv::file::get_directory_files(dir).size();
-        if(min_data > size){
-            min_data = size;
-        }
+{    
+    if(min_train_data_ != 0){
+        size_t const min_data = ocv::file::get_minimum_file_size(input_folder_);
+        std::cout<<"min data : "<<min_data<<std::endl;
+        min_train_data_ = std::min(min_data, min_train_data_);
     }
-
-    min_train_data_ = std::min(min_data, min_train_data_);
 
     return min_train_data_;
 }
@@ -76,17 +72,23 @@ face_recognition::face_recognition(std::string input_folder,
 
     buid_train_data();
     model_->train(images_, labels_);
-    model_->setThreshold(300);
 }
 
 std::string face_recognition::recognize(const cv::Mat &input)
 {
-    cv::resize(input, face_, {300,200});
-    int const label = model_->predict(face_);
-    auto it = bimap_.right.find(label);
-    if(it != std::end(bimap_.right)){
+    if(input.type() == CV_8UC3){
+        cv::cvtColor(input, face_, CV_BGR2GRAY);
+    }
+    //cv::resize(face_, face_, {300,200});
+    int predict_label = -1;
+    double confident = 0;
+    model_->predict(face_,predict_label,confident);
+    auto it = bimap_.right.find(predict_label);
+    if(it != std::end(bimap_.right) && confident >= 40){
+        std::cout<<"success confident : "<<confident<<std::endl;
         return it->second;
     }
+    std::cout<<"fail confident : "<<confident<<std::endl;
 
     return {};
 }
