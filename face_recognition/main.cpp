@@ -70,8 +70,10 @@ void draw_detect_face(cv::Mat &inout,
         cv::Point const point = {std::max(0, rect.x - rect.x/5),
                                  std::max(0, rect.y - 30)};
         if(!name.empty()){
+            auto const text = name + "," +
+                    std::to_string(fr.get_confident());
             cv::rectangle(inout, rect, {0,255,0}, 2);
-            cv::putText(inout, name, point,
+            cv::putText(inout, text, point,
                         cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
         }else{
             cv::putText(inout, "unknown", point,
