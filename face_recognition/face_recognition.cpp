@@ -29,12 +29,9 @@ void face_recognition::buid_train_data()
             files.resize(min_size);
         }
         for(size_t j = 0; j != files.size(); ++j){
-            auto img = cv::imread(folder + "/" + files[j]);
+            auto img = cv::imread(folder + "/" + files[j],
+                                  cv::IMREAD_GRAYSCALE);
             if(!img.empty()){
-                //cv::imshow(folder, img);
-                //cv::waitKey();
-                //cv::destroyAllWindows();
-                cv::cvtColor(img, img, CV_BGR2GRAY);
                 //cv::resize(img, img, {300, 200});
                 images_.emplace_back(img);
                 auto it = bimap_.left.find(folders[i]);
@@ -71,7 +68,12 @@ face_recognition::face_recognition(std::string input_folder,
     }
 
     buid_train_data();
-    model_->train(images_, labels_);
+    if(!images_.empty() && !labels_.empty()){
+        model_->train(images_, labels_);
+    }else{
+        std::cout<<"Minimum training image should "
+                   "not less than 1"<<std::endl;
+    }
 }
 
 std::string face_recognition::recognize(const cv::Mat &input)
