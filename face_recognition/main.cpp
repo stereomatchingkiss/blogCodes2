@@ -21,11 +21,13 @@ int images_record(vmap const &command);
 int recognize_face(vmap const &command);
 int recognize_from_camera(std::string const &train_folder,
                           std::string const &algo,
-                          size_t train_size);
+                          size_t train_size,
+                          cv::Size const &face_size);
 int recognize_from_folder(std::string const &train_folder,
                           std::string const &input_folder,
                           std::string const &algo,
-                          size_t train_size);
+                          size_t train_size,
+                          cv::Size const &face_size);
 
 void draw_detect_face(cv::Mat &inout,
                       face_recognition &fr,
@@ -68,9 +70,18 @@ void draw_detect_face(cv::Mat &inout,
                       std::vector<cv::Rect> const &regions)
 {
     for(auto const &rect : regions){
-        auto const name = fr.recognize(inout(rect));
+        std::cout<<"recognize face"<<std::endl;
+        cv::Mat img;
+        cv::Rect const rect_mat(0, 0, inout.cols, inout.rows);
+        if((rect & rect_mat) == rect){
+            img = inout(rect);
+        }else{
+            img = inout;
+        }
+        auto const name = fr.recognize(img);
         cv::Point const point = {std::max(0, rect.x - rect.x/5),
                                  std::max(0, rect.y - 30)};
+        std::cout<<"draw rect"<<std::endl;
         if(!name.empty()){
             auto const text = name + "," +
                     std::to_string(fr.get_confident());
@@ -177,22 +188,22 @@ int recognize_face(vmap const &command)
         return -1;
     }
 
+    cv::Size const face_size(300, 200);
+    auto const algo = command["recognize_algo"].as<std::string>();
     if(!command.count("input_folder")){
         auto const train_folder = command["train_folder"].as<std::string>();
         auto const train_size = command["train_size"].as<size_t>();
 
-        return recognize_from_camera(train_folder,
-                                     command["recognize_algo"].as<std::string>(),
-                train_size);
+        return recognize_from_camera(train_folder,algo,
+                                     train_size,face_size);
     }else{
         auto const train_folder = command["train_folder"].as<std::string>();
         auto const input_folder = command["input_folder"].as<std::string>();
         auto const train_size = command["train_size"].as<size_t>();
 
-        return recognize_from_folder(train_folder,
-                                     input_folder,
-                                     command["recognize_algo"].as<std::string>(),
-                                     train_size);
+        return recognize_from_folder(train_folder,input_folder,
+                                     algo,train_size,
+                                     face_size);
     }
 
     return 0;
@@ -200,7 +211,8 @@ int recognize_face(vmap const &command)
 
 int recognize_from_camera(std::string const &train_folder,
                           std::string const &algo,
-                          size_t train_size)
+                          size_t train_size,
+                          cv::Size const &face_size)
 {
     cv::VideoCapture cap(0);
     if(!cap.isOpened()){
@@ -208,7 +220,8 @@ int recognize_from_camera(std::string const &train_folder,
         return -1;
     }
 
-    face_recognition fr(train_folder, train_size, algo);
+    face_recognition fr(train_folder, train_size,
+                        algo, face_size);
     face_detector fd;
     cv::Mat frame;
     while(true){
@@ -232,16 +245,20 @@ int recognize_from_camera(std::string const &train_folder,
 int recognize_from_folder(std::string const &train_folder,
                           std::string const &input_folder,
                           std::string const &algo,
-                          size_t train_size)
+                          size_t train_size,
+                          cv::Size const &face_size)
 {
     auto const files = ocv::file::get_directory_files(input_folder);
-    face_recognition fr(train_folder, train_size, algo);
+    face_recognition fr(train_folder, train_size, algo, face_size);
     face_detector fd;
     for(size_t i = 0; i != files.size(); ++i){
         auto img = cv::imread(input_folder + "/" + files[i]);
         if(!img.empty()){
             ocv::resize_aspect_ratio(img, img, {640,0});
+            std::cout<<"img size : "<<img.size()<<std::endl;
+            std::cout<<"detect face"<<std::endl;
             auto const &regions = fd.detect(img);
+            std::cout<<"draw detect face"<<std::endl;
             draw_detect_face(img, fr, regions);
             cv::imshow("recognize mode", img);
             int const key = cv::waitKey();
