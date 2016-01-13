@@ -15,13 +15,15 @@ public:
                               size_t min_train_data,
                               cv::Size const &face_size ={125,125});
 
-    std::string recognize(cv::Mat const &input);
+    double get_confident() const;
+    std::string recognize(cv::Mat const &input);    
 
 private:
     void buid_train_data();
     size_t minimum_train_data();
 
     boost::bimap<std::string, int> bimap_;
+    double confident_ = 0;
     cv::Mat face_;
     cv::Size face_size_;
     std::vector<cv::Mat> images_;

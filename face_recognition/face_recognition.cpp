@@ -32,6 +32,11 @@ face_recognition::face_recognition(std::string input_folder,
     }
 }
 
+double face_recognition::get_confident() const
+{
+    return confident_;
+}
+
 void face_recognition::buid_train_data()
 {
     size_t const min_size = minimum_train_data();
@@ -85,14 +90,14 @@ std::string face_recognition::recognize(const cv::Mat &input)
         cv::cvtColor(face_, face_, CV_BGR2GRAY);
     }
     int predict_label = -1;
-    double confident = 0;
-    model_->predict(face_,predict_label,confident);
+    confident_ = 0;
+    model_->predict(face_,predict_label,confident_);
     auto it = bimap_.right.find(predict_label);
-    if(it != std::end(bimap_.right) && confident >= 40){
-        std::cout<<"success confident : "<<confident<<std::endl;
+    if(it != std::end(bimap_.right) && confident_ >= 40){
+        std::cout<<"success confident : "<<confident_<<std::endl;
         return it->second;
     }
-    std::cout<<"fail confident : "<<confident<<std::endl;
+    std::cout<<"fail confident : "<<confident_<<std::endl;
 
     return {};
 }
