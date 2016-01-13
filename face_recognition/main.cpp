@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 {
     try{
         auto const command = parse_command_line(argc, argv);
-        if(command.count("capture")){
-            int const mode = command["capture"].as<int>();
+        if(command.count("mode")){
+            int const mode = command["mode"].as<int>();
             if(mode == 0){
                 return capture_face(command);
             }else if(mode == 1){
@@ -105,9 +105,9 @@ vmap parse_command_line(int argc, char **argv)
         options_description desc{"Options"};
         desc.add_options()
                 ("help,h", "Help screen")
-                ("capture,c", value<int>()->default_value(1), "0 will enter capture mode; "
+                ("mode,m", value<int>()->default_value(1), "0 will enter capture mode; "
                                                               "1 will enter recogniton mode;"
-                                                              "2 will enter video record mode"
+                                                              "2 will enter video record mode;"
                                                               "default value is 1")
                 ("input_folder,i", value<std::string>(), "Specify the input folder")
                 ("record_folder,v", value<std::string>(), "Specify the folder of record files")
