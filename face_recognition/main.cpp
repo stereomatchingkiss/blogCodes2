@@ -98,23 +98,22 @@ int recognize_face(vmap const &command)
     face_recognition fr(input_folder, random_size);
     face_detector fd;
     cv::Mat frame;
-    cv::Mat gray;
     while(true){
         cap.read(frame);
         if(!frame.empty()){
-            cv::cvtColor(frame, gray, CV_BGR2GRAY);
-            auto const &regions = fd.detect(gray);
+            auto const &regions = fd.detect(frame);
             for(size_t i = 0; i != regions.size(); ++i){
-                //std::cout<<regions[i]<<std::endl;
-                auto const name = fr.recognize(gray(regions[i]));
+                auto const name = fr.recognize(frame(regions[i]));
+                cv::Point const point = {std::max(0, regions[i].x - regions[i].x/5),
+                                         std::max(0, regions[i].y - 30)};
                 if(!name.empty()){
-                   cv::rectangle(frame, regions[i], {0,255,0}, 2);
-                   cv::putText(frame, name, {regions[i].x - regions[i].x/5, regions[i].y - 30},
-                               cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
+                    cv::rectangle(frame, regions[i], {0,255,0}, 2);
+                    cv::putText(frame, name, point,
+                                cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
                 }else{
-                    cv::putText(frame, "unknown", {regions[i].x - regions[i].x/5, regions[i].y - 30},
+                    cv::putText(frame, "unknown", point,
                                 cv::FONT_HERSHEY_COMPLEX, 1.0, {0,0,255}, 2);
-                   cv::rectangle(frame, regions[i], {0,0,255}, 2);
+                    cv::rectangle(frame, regions[i], {0,0,255}, 2);
                 }
             }
             cv::imshow("recognize mode", frame);
