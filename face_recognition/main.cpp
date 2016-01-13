@@ -6,6 +6,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iostream>
@@ -13,6 +14,7 @@
 using vmap = boost::program_options::variables_map;
 
 int capture_face(vmap const &command);
+int images_record(vmap const &command);
 int recognize_face(vmap const &command);
 
 vmap parse_command_line(int argc, char **argv);
@@ -22,10 +24,13 @@ int main(int argc, char **argv)
     try{
         auto const command = parse_command_line(argc, argv);
         if(command.count("capture")){
-            if(command["capture"].as<int>() == 0){
+            int const mode = command["capture"].as<int>();
+            if(mode == 0){
                 return capture_face(command);
-            }else{
+            }else if(mode == 1){
                 return recognize_face(command);
+            }else{
+                return images_record(command);
             }
         }
     }catch(std::exception const &ex){
@@ -54,9 +59,11 @@ vmap parse_command_line(int argc, char **argv)
         desc.add_options()
                 ("help,h", "Help screen")
                 ("capture,c", value<int>()->default_value(1), "0 will enter capture mode; "
-                                                              "1 will enter recogniton mode."
+                                                              "1 will enter recogniton mode;"
+                                                              "2 will enter video record mode"
                                                               "default value is 1")
                 ("input_folder,i", value<std::string>(), "Specify the input folders")
+                ("record_folder,v", value<std::string>(), "Specify the folder of record files")
                 ("output_folder,o", value<std::string>(), "Specify the output folder")
                 ("random_size,r", value<size_t>()->default_value(0), "Specify the random size of faces");
 
@@ -78,6 +85,50 @@ vmap parse_command_line(int argc, char **argv)
 
     return {};
 }
+
+int images_record(vmap const &command)
+{
+    if(!command.count("record_folder")){
+        std::cout<<"must specify record_video"<<std::endl;
+        return -1;
+    }
+
+    cv::VideoCapture cam(0);
+    if (!cam.isOpened()){
+        std::cout <<"Could not open the camera"<<std::endl;
+        return -1;
+    }
+
+    auto const rfolder = command["record_folder"].as<std::string>();
+    if(!boost::filesystem::exists(rfolder)){
+        if(!boost::filesystem::create_directory(rfolder)){
+            std::cout<<"cannot create folder"<<std::endl;
+            return -1;
+        }
+    }
+
+    cv::Mat frame;
+    size_t index = 0;
+    while(true){
+        cam.read(frame);
+        if(!frame.empty()){
+            cv::imshow("record mode", frame);
+            std::ostringstream ostream;
+            ostream <<rfolder<<"/"<<std::setw(5)<<std::setfill('0')
+                   <<std::to_string(index++)<<".jpg";
+            cv::imwrite(ostream.str(),frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }
+        }else{
+            break;
+        }
+    }
+
+    return 0;
+}
+
 
 int recognize_face(vmap const &command)
 {
