@@ -13,6 +13,7 @@ class face_recognition
 public:
     explicit face_recognition(std::string input_folder,
                               size_t min_train_data,
+                              std::string const &face_mode = "LBPH",
                               cv::Size const &face_size ={125,125});
 
     double get_confident() const;
@@ -30,7 +31,7 @@ private:
     std::string input_folder_;
     std::vector<int> labels_;
     size_t min_train_data_;
-    cv::Ptr<cv::face::LBPHFaceRecognizer> model_;
+    cv::Ptr<cv::face::FaceRecognizer> model_;
 };
 
 #endif

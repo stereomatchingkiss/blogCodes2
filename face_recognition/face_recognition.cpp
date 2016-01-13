@@ -13,12 +13,20 @@
 
 face_recognition::face_recognition(std::string input_folder,
                                    size_t min_train_data,
+                                   std::string const &face_mode,
                                    cv::Size const &face_size)
     : face_size_(face_size),
       input_folder_(std::move(input_folder)),
-      min_train_data_(min_train_data),
-      model_(cv::face::createLBPHFaceRecognizer())
+      min_train_data_(min_train_data)
 {
+    if(face_mode == "LBPH"){
+        model_ = cv::face::createLBPHFaceRecognizer();
+    }else if(face_mode == "EIGEN"){
+        model_ = cv::face::createEigenFaceRecognizer();
+    }else{
+        model_ = cv::face::createFisherFaceRecognizer();
+    }
+
     if(!boost::filesystem::exists(input_folder_)){
         throw std::runtime_error("Cannot open input folder");
     }
