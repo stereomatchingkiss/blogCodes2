@@ -17,9 +17,13 @@ void generate_map(Map &map)
     for(char i = '0'; i <= '9'; ++i){
         map.insert({std::string(1,i), index++});
     }
-    for(char i = 'a'; i <= 'z'; ++i){
+    for(char i = 'a'; i < 'q'; ++i){
         map.insert({std::string(1,i), index++});
     }
+    for(char i = 'r'; i < 'w'; ++i){
+        map.insert({std::string(1,i), index++});
+    }
+    map.insert({std::string(1,'z'), index++});
 }
 
 #endif
