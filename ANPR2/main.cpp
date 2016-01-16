@@ -50,8 +50,8 @@ int main(int argc, char **argv)
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
         //test_segment_character(argc, argv);
-        //test_train_chars(argc, argv);
-        test_train_accuracy(argc, argv);
+        test_train_chars(argc, argv);
+        //test_train_accuracy(argc, argv);
     }catch(std::exception const &ex){
         std::cout<<ex.what()<<std::endl;
     }
@@ -300,13 +300,14 @@ void test_train_accuracy(int argc, char **argv)
             }
             if(bingo.find(folders[i]) != std::end(bingo) &&
                     !files.empty()){
-                static size_t index = 0;
-                total_accuracy += bingo[folders[i]]/(double)files.size();
-                std::cout<<folders[i]<<" : "<<++index<<", "
-                        <<bingo[folders[i]]/(double)files.size()<<std::endl;
+                double const accuracy = bingo[folders[i]]/
+                        static_cast<double>(files.size());
+                total_accuracy += accuracy;
+                std::cout<<folders[i]<<", "<<accuracy<<std::endl;
             }
         }
-        std::cout<<"total accuracy = "<<total_accuracy/32.0<<std::endl;
+        std::cout<<"total accuracy = "
+                <<total_accuracy/static_cast<double>(bingo.size())<<std::endl;
     }else{
         std::cout<<"must specify image folder"<<std::endl;
     }
