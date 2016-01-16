@@ -13,11 +13,15 @@ TEMPLATE = app
 
 include(../../pri/cv.pri)
 
+INCLUDEPATH += ../..
+
 SOURCES += main.cpp\
        mainwindow.cpp \
-    object_classifier.cpp
+    object_classifier.cpp \
+    ../../ocv_libs/core/resize.cpp
 
 HEADERS  += mainwindow.hpp \
-    object_classifier.hpp
+    object_classifier.hpp \
+    ../../ocv_libs/core/resize.hpp
 
 FORMS    += mainwindow.ui
