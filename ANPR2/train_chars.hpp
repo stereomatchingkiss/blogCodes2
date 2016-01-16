@@ -9,6 +9,7 @@
 #include <boost/bimap.hpp>
 
 #include <map>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -26,8 +27,11 @@ private:
     using features_type = std::vector<std::vector<float>>;
     using label_type = std::vector<int>;
 
+    void add_noise(cv::Mat &inout, int label);
+    void add_rotation(cv::Mat &inout, int label, double rotation);
     void describe_features();
     void extract_features();
+    void extract_feature(cv::Mat const &img, int label);
     void generate_train_number();
     void show_training_results(features_type const &features,
                                label_type const &labels);
@@ -38,16 +42,17 @@ private:
 
     ocv::block_binary_pixel_sum<> bbps_;
     std::string chars_folder_;
+    std::mt19937 generator_; //generator
     std::string result_folder_;
 
     features_type features_;
-    cv::Mat features_train_;    
+    cv::Mat features_train_;
     label_type labels_;
-    label_type labels_train_;    
-    boost::bimap<std::string, int> bm_labels_int_;        
+    label_type labels_train_;
+    boost::bimap<std::string, int> bm_;
 
     size_t min_symbol_size_ = 0;
-    size_t train_size_ = 0;    
+    size_t train_size_ = 0;
 };
 
 #endif
