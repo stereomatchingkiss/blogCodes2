@@ -21,7 +21,9 @@
 #include <boost/filesystem.hpp>
 
 #include <array>
+#include <future>
 #include <iostream>
+#include <thread>
 
 using vmap = boost::program_options::variables_map;
 
@@ -270,44 +272,50 @@ void test_train_accuracy(int argc, char **argv)
         auto const img_folder = map["image_folder"].as<std::string>();
         auto const folders = get_directory_folders(img_folder);
 
-        boost::bimap<std::string, int> bm;
-        std::map<std::string, int> bingo;
-        ocv::block_binary_pixel_sum<> bbps;
-        generate_map(bm);
-        generate_map(bingo);
-        for(auto &pair : bingo){
-            pair.second = 0;
-        }
-        cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
-        ml->read(cv::FileStorage("train_result/chars_classifier.xml",
-                                 cv::FileStorage::READ).root());
-        double total_accuracy = 0;
-        for(size_t i = 0; i != folders.size(); ++i){
-            auto const folder = img_folder + "/" + folders[i];
-            auto const files = get_directory_files(folder);
-            for(size_t j = 0; j != files.size(); ++j){
-                auto img = cv::imread(folder+"/"+files[j]);
-                if(!img.empty()){
-                    auto const feature = bbps.describe(binarize_image(img));
-                    int const label =
-                            static_cast<int>(ml->predict(feature));
-                    auto it = bm.right.find(label);
-                    if(it != std::end(bm.right) &&
-                            it->second == folders[i]){
-                        ++bingo[it->second];
+        auto func = [&](std::string const &train_file, map_type mtype)
+        {
+            boost::bimap<std::string, int> bm;
+            std::map<std::string, int> bingo;
+            ocv::block_binary_pixel_sum<> bbps;
+            generate_map(bm, mtype);
+            generate_map(bingo, mtype);
+            for(auto &pair : bingo){
+                pair.second = 0;
+            }
+            cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
+            ml->read(cv::FileStorage(train_file,
+                                     cv::FileStorage::READ).root());
+            double total_accuracy = 0;
+            for(size_t i = 0; i != folders.size(); ++i){
+                auto const folder = img_folder + "/" + folders[i];
+                auto const files = get_directory_files(folder);
+                for(size_t j = 0; j != files.size(); ++j){
+                    auto img = cv::imread(folder+"/"+files[j]);
+                    if(!img.empty()){
+                        auto const feature = bbps.describe(binarize_image(img));
+                        int const label =
+                                static_cast<int>(ml->predict(feature));
+                        auto it = bm.right.find(label);
+                        if(it != std::end(bm.right) &&
+                                it->second == folders[i]){
+                            ++bingo[it->second];
+                        }
                     }
                 }
+                if(bingo.find(folders[i]) != std::end(bingo) &&
+                        !files.empty()){
+                    double const accuracy = bingo[folders[i]]/
+                            static_cast<double>(files.size());
+                    total_accuracy += accuracy;
+                    std::cout<<folders[i]<<", "<<accuracy<<std::endl;
+                }
             }
-            if(bingo.find(folders[i]) != std::end(bingo) &&
-                    !files.empty()){
-                double const accuracy = bingo[folders[i]]/
-                        static_cast<double>(files.size());
-                total_accuracy += accuracy;
-                std::cout<<folders[i]<<", "<<accuracy<<std::endl;
-            }
-        }
-        std::cout<<"total accuracy = "
-                <<total_accuracy/static_cast<double>(bingo.size())<<std::endl;
+            std::cout<<"total accuracy = "
+                    <<total_accuracy/static_cast<double>(bingo.size())<<std::endl;
+        };
+        func("train_result/num.xml", map_type::number);
+        func("train_result/alphabet.xml", map_type::alpahbet);
+
     }else{
         std::cout<<"must specify image folder"<<std::endl;
     }
@@ -317,13 +325,19 @@ void test_train_chars(int argc, char **argv)
 {    
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
-    if(map.count("image_folder") && map.count("output_folder")){
-        train_chars tc(map["image_folder"].as<std::string>(),
-                map["output_folder"].as<std::string>());
-        tc.train();
-        tc.test_train_result();
+    if(map.count("image_folder")){
+        auto func = [&](std::string result_file, map_type mtype)
+        {
+            train_chars tc(map["image_folder"].as<std::string>(),
+                    std::move(result_file), mtype);
+            tc.train();
+            tc.test_train_result();
+        };
+        auto f1 = std::async(func, "train_result/num.xml", map_type::number);
+        auto f2 = std::async(func, "train_result/alphabet.xml", map_type::alpahbet);
+        f1.wait();
+        f2.wait();
     }else{
-        std::cout<<"must speficy --image_folder and "
-                   "--output_folder"<<std::endl;
-    }//*/
+        std::cout<<"must speficy --image_folder"<<std::endl;
+    }
 }

@@ -8,7 +8,14 @@
 #include <boost/filesystem.hpp>
 
 #include <iostream>
+#include <mutex>
 #include <random>
+
+namespace{
+
+std::mutex g_mutex;
+
+}
 
 train_chars::train_chars(std::string chars_folder,
                          std::string result_folder,
@@ -171,13 +178,14 @@ void train_chars::generate_train_number()
         return;
     }
     train_size_ = static_cast<size_t>(min_symbol_size_);
-    std::cout<<"min images size is "<<min_symbol_size_<<std::endl;
-    std::cout<<"train size is "<<train_size_<<std::endl;
+    //std::cout<<"min images size is "<<min_symbol_size_<<std::endl;
+    //std::cout<<"train size is "<<train_size_<<std::endl;
 }
 
 void train_chars::show_training_results(const features_type &features,
                                         const label_type &labels)
 {
+    std::lock_guard<std::mutex> guard(g_mutex);
     std::cout<<__func__<<std::endl;
     std::map<std::string, int> statistic;
     generate_map(statistic, mtype_);
@@ -207,7 +215,10 @@ void train_chars::show_training_results(const features_type &features,
 
 cv::Ptr<cv::ml::StatModel> train_chars::train()
 {
-    describe_features();
+    {
+        std::lock_guard<std::mutex> guard(g_mutex);
+        describe_features();
+    }
     train_classifier();
 
     return ml_;
