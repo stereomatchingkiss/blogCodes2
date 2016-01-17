@@ -1,6 +1,8 @@
 #ifndef TRAIN_CHARS_HPP
 #define TRAIN_CHARS_HPP
 
+#include "utility.hpp"
+
 #include <ocv_libs/core/block_binary_pixel_sum.hpp>
 
 #include <opencv2/core.hpp>
@@ -13,11 +15,14 @@
 #include <string>
 #include <vector>
 
+enum class map_type;
+
 class train_chars
 {
 public:
     train_chars(std::string chars_folder,
-                std::string result_file);
+                std::string result_file,
+                map_type mtype = map_type::alpahbet);
 
     void test_train_result();
     cv::Ptr<cv::ml::StatModel> train();
@@ -38,9 +43,9 @@ private:
     void split_train_test();
     void train_classifier();
 
-    cv::Ptr<cv::ml::StatModel> ml_;
 
     ocv::block_binary_pixel_sum<> bbps_;
+    boost::bimap<std::string, int> bm_;
     std::string chars_folder_;
     std::mt19937 generator_; //generator
     std::string result_file_;
@@ -48,8 +53,10 @@ private:
     features_type features_;
     cv::Mat features_train_;
     label_type labels_;
-    label_type labels_train_;
-    boost::bimap<std::string, int> bm_;
+    label_type labels_train_;    
+
+    cv::Ptr<cv::ml::StatModel> ml_;
+    map_type mtype_;
 
     size_t min_symbol_size_ = 0;
     size_t train_size_ = 0;

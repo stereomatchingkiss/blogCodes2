@@ -1,5 +1,4 @@
 #include "train_chars.hpp"
-#include "utility.hpp"
 
 #include <ocv_libs/file/utility.hpp>
 
@@ -12,9 +11,11 @@
 #include <random>
 
 train_chars::train_chars(std::string chars_folder,
-                         std::string result_folder) :
+                         std::string result_folder,
+                         map_type mtype) :
     chars_folder_(std::move(chars_folder)),
     generator_(std::random_device()()),
+    mtype_{mtype},
     result_file_(std::move(result_folder))
 {
     using namespace boost::filesystem;
@@ -23,7 +24,7 @@ train_chars::train_chars(std::string chars_folder,
         create_directory(path(result_file_));
     }
 
-    generate_map(bm_);
+    generate_map(bm_, mtype_);
     generate_train_number();
 }
 
@@ -179,7 +180,7 @@ void train_chars::show_training_results(const features_type &features,
 {
     std::cout<<__func__<<std::endl;
     std::map<std::string, int> statistic;
-    generate_map(statistic);
+    generate_map(statistic, mtype_);
     for(auto &pair : statistic){
         pair.second = 0;
     }
