@@ -5,18 +5,32 @@
 
 #include <string>
 
+enum class map_type
+{
+    alpahbet,
+    number,
+    alpha_num,
+};
+
 void binarize_image(cv::Mat const &input,
                     cv::Mat &output);
 
 cv::Mat binarize_image(cv::Mat const &input);
 
 template<typename Map>
-void generate_map(Map &map)
+int generate_number_map(Map &map)
 {
     int index = 0;
     for(char i = '0'; i <= '9'; ++i){
         map.insert({std::string(1,i), index++});
     }
+
+    return index;
+}
+
+template<typename Map>
+void generate_char_map(Map &map, int index)
+{
     for(char i = 'a'; i < 'q'; ++i){
         map.insert({std::string(1,i), index++});
     }
@@ -24,6 +38,13 @@ void generate_map(Map &map)
         map.insert({std::string(1,i), index++});
     }
     map.insert({std::string(1,'z'), index++});
+}
+
+template<typename Map>
+void generate_map(Map &map)
+{
+    int const index = generate_number_map(map);
+    generate_char_map(map, index);
 }
 
 #endif
