@@ -17,7 +17,7 @@ class train_chars
 {
 public:
     train_chars(std::string chars_folder,
-                std::string result_folder);
+                std::string result_file);
 
     void test_train_result();
     cv::Ptr<cv::ml::StatModel> train();
@@ -43,7 +43,7 @@ private:
     ocv::block_binary_pixel_sum<> bbps_;
     std::string chars_folder_;
     std::mt19937 generator_; //generator
-    std::string result_folder_;
+    std::string result_file_;
 
     features_type features_;
     cv::Mat features_train_;

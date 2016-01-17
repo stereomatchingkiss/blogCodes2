@@ -15,12 +15,12 @@ train_chars::train_chars(std::string chars_folder,
                          std::string result_folder) :
     chars_folder_(std::move(chars_folder)),
     generator_(std::random_device()()),
-    result_folder_(std::move(result_folder))
+    result_file_(std::move(result_folder))
 {
     using namespace boost::filesystem;
 
-    if(!exists(path(result_folder_))){
-        create_directory(path(result_folder_));
+    if(!exists(path(result_file_))){
+        create_directory(path(result_file_));
     }
 
     generate_map(bm_);
@@ -130,12 +130,12 @@ void train_chars::train_classifier()
     std::cout<<"nu : "<<ml->getNu()<<std::endl;
     std::cout<<"p : "<<ml->getP()<<std::endl;//*/
 
-    ml->write(cv::FileStorage(result_folder_ + "/chars_classifier.xml",
+    ml->write(cv::FileStorage(result_file_,
                               cv::FileStorage::WRITE));
 
     {
         //work around for opencv3.0
-        cv::FileStorage append(result_folder_ + "/chars_classifier.xml",
+        cv::FileStorage append(result_file_,
                                cv::FileStorage::APPEND);
         append<<"format"<<3;
     }
