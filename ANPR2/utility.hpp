@@ -41,10 +41,16 @@ void generate_char_map(Map &map, int index)
 }
 
 template<typename Map>
-void generate_map(Map &map)
+void generate_map(Map &map, map_type mtype = map_type::alpha_num)
 {
-    int const index = generate_number_map(map);
-    generate_char_map(map, index);
+    if(mtype == map_type::alpha_num){
+        int const index = generate_number_map(map);
+        generate_char_map(map, index);
+    }else if(mtype == map_type::alpahbet){
+        generate_number_map(map);
+    }else{
+        generate_char_map(map, 0);
+    }
 }
 
 #endif
