@@ -24,7 +24,7 @@ prune(cv::Mat const &plate,
                               func);
     contours.erase(rit, std::end(contours));
 
-    //prune_fix_num_plate(max_char_num, contours);
+    prune_fix_num_plate(max_char_num_, contours);
     show_prune_results(plate, contours);
 }
 
