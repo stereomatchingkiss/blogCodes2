@@ -13,7 +13,8 @@ work for non-standard license plate
 
 
 Things to imrpove
-1 : Localize license with better accuracy
+1 : Localize license plate with better accuracy,
+maybe HOG+LinearSVM could give better results
 2 : Filter out illegal characters with better accuracy
 3 : Improve OCR engine accuracy, but this will need a lot of examples
 

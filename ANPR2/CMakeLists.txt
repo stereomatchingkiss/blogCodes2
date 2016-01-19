@@ -22,6 +22,8 @@ trainer/fhog_trainer.hpp
 trainer/fhog_trainer.cpp
 utility/grab_character.hpp
 utility/grab_character.cpp
+plate_localizer/fhog_localizer.hpp
+plate_localizer/fhog_localizer.cpp
 plate_localizer/morphology_localizer.hpp
 plate_localizer/morphology_localizer.cpp
 prune_chars/prune_illegal_chars.hpp
