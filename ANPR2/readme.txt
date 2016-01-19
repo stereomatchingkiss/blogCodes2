@@ -1,4 +1,4 @@
-A practice of ANPR which try to recognize the license plates from 
+An exercise of ANPR which try to recognize the license plates from 
 http://www.zemris.fer.hr/projects/LicensePlates/hrvatski/rezultati.shtml
 Which collect the license plate of Croatia
 
@@ -9,10 +9,15 @@ Assumptions of this project
 3 : The shape of the license plates is close to rectangle
 4 : This algorithm is design for the standard license plate of Croatia, do not
 work for non-standard license plate
+5 : This algorithm only detect license plate with 6 characters
 
-Limitations
 
-1 : Cannot localize every license plate
-2 : Localized license plate may not crop perfectly
-3 : The accuracy of OCR are limited, I guess it is because the characters are lack of training sample
-only 18 characters for each category
+Things to imrpove
+1 : Localize license with better accuracy
+2 : Filter out illegal characters with better accuracy
+3 : Improve OCR engine accuracy, but this will need a lot of examples
+
+Conclusion
+
+Not a perfect or near perfect Croatia ANPR system, but it already show you
+the steps of building an ANRP system.
