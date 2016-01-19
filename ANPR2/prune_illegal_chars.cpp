@@ -57,6 +57,7 @@ prune_fix_num_plate(size_t max_char_num,
         for(size_t i = 0; i != max_char_num; ++i){
             contours[i] = std::move(diff_[i].second);
         }
+        contours.resize(max_char_num);
     }else{
         if(debug_){
             std::cout<<"nothing to prune"<<std::endl;
