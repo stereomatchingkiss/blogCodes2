@@ -2,6 +2,7 @@
 #include "char_recognizer/bbps_char_recognizer.hpp"
 #include "pattern_recognizer/croatia_general_pattern_recognizer.hpp"
 #include "pattern_recognizer/identity_pattern.hpp"
+#include "plate_localizer/fhog_localizer.hpp"
 #include "plate_localizer/morphology_localizer.hpp"
 #include "prune_chars/prune_illegal_chars.hpp"
 #include "segment_char/segment_character.hpp"
@@ -35,7 +36,10 @@ void test_anpr_recognizer(int argc, char **argv);
 void test_bbps_char_recognizer(int argc, char **argv);
 void test_croatia_general_recognizer();
 void test_grab_char(int argc, char **argv);
+
+template<typename Policy = morphology_localizer>
 void test_number_plate_localizer(int argc, char **argv);
+
 void test_prune_illegal_chars(int argc, char **argv);
 void test_segment_character(int argc, char **argv);
 void test_train_accuracy(int argc, char **argv);
@@ -46,11 +50,11 @@ int main(int argc, char **argv)
     try{
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-        test_anpr_recognizer(argc, argv);
+        //test_anpr_recognizer(argc, argv);
         //test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
-        //test_number_plate_localizer(argc, argv);
-        //test_prune_illegal_chars(argc, argv);
+        //test_number_plate_localizer<fhog_localizer>(argc, argv);
+        test_prune_illegal_chars(argc, argv);
         //test_segment_character(argc, argv);
         //test_train_chars(argc, argv);
         //test_train_accuracy(argc, argv);
@@ -89,7 +93,7 @@ void test_algo(vmap const &map, BinaryFunctor functor)
 void test_anpr_recognizer(int argc, char **argv)
 {
     using croatia_general_plate_recognizer = anpr_recognizer<
-    morphology_localizer,
+    fhog_localizer,
     segment_character,
     prune_illegal_chars,
     bbps_char_recognizer,
@@ -106,7 +110,7 @@ void test_anpr_recognizer(int argc, char **argv)
     bbps_char_recognizer bcr(alpha_rec, num_rec);
 
     croatia_general_plate_recognizer
-            cr(morphology_localizer(), segment_character(),
+            cr(fhog_localizer(), segment_character(),
                prune_illegal_chars(), bcr,
                identity_pattern_recognizer());
 
@@ -170,11 +174,12 @@ void test_grab_char(int argc, char **argv)
     });
 }
 
+template<typename Policy>
 void test_number_plate_localizer(int argc, char **argv)
 {    
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
-    morphology_localizer lpl;
+    Policy lpl;
     lpl.set_show_debug_message(true);
     test_algo(map, [&](cv::Mat const &input, std::string const&)
     {
@@ -186,7 +191,7 @@ void test_prune_illegal_chars(int argc, char **argv)
 {
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
-    morphology_localizer lpl;
+    fhog_localizer lpl;
     segment_character sc;
     prune_illegal_chars plc;
     plc.set_show_debug_message(true);
