@@ -1,5 +1,5 @@
 #include "bbps_char_recognizer.hpp"
-#include "utility.hpp"
+#include "../utility/utility.hpp"
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/ml.hpp>

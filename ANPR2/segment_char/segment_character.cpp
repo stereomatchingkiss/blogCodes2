@@ -1,5 +1,5 @@
 #include "segment_character.hpp"
-#include "utility.hpp"
+#include "../utility/utility.hpp"
 
 #include <ocv_libs/core/attribute.hpp>
 #include <ocv_libs/core/for_each.hpp>

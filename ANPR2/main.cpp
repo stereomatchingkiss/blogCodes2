@@ -1,13 +1,13 @@
 #include "anpr_recognizer.hpp"
-#include "bbps_char_recognizer.hpp"
-#include "croatia_general_pattern_recognizer.hpp"
-#include "fhog_trainer.hpp"
-#include "grab_character.hpp"
-#include "morphology_localizer.hpp"
-#include "prune_illegal_chars.hpp"
-#include "segment_character.hpp"
-#include "train_chars.hpp"
-#include "utility.hpp"
+#include "char_recognizer/bbps_char_recognizer.hpp"
+#include "pattern_recognizer/croatia_general_pattern_recognizer.hpp"
+#include "plate_localizer/morphology_localizer.hpp"
+#include "prune_chars/prune_illegal_chars.hpp"
+#include "segment_char/segment_character.hpp"
+#include "trainer/fhog_trainer.hpp"
+#include "trainer/train_chars.hpp"
+#include "utility/grab_character.hpp"
+#include "utility/utility.hpp"
 
 #include <ocv_libs/cmd/command_prompt_utility.hpp>
 #include <ocv_libs/core/resize.hpp>
@@ -46,13 +46,12 @@ int main(int argc, char **argv)
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
         //test_anpr_recognizer(argc, argv);
-        //test_bbps_char_recognizer(argc, argv);
         //test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
         //test_number_plate_localizer(argc, argv);
         //test_prune_illegal_chars(argc, argv);
         //test_segment_character(argc, argv);
-        test_train_chars(argc, argv);
+        //test_train_chars(argc, argv);
         //test_train_accuracy(argc, argv);
     }catch(std::exception const &ex){
         std::cout<<ex.what()<<std::endl;
@@ -97,10 +96,13 @@ void test_anpr_recognizer(int argc, char **argv)
 
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
-    cv::Ptr<cv::ml::StatModel> ml = cv::ml::SVM::create();
-    ml->read(cv::FileStorage("train_result/chars_classifier.xml",
-                             cv::FileStorage::READ).root());
-    bbps_char_recognizer bcr(ml);
+    cv::Ptr<cv::ml::StatModel> alpha_rec = cv::ml::SVM::create();
+    cv::Ptr<cv::ml::StatModel> num_rec = cv::ml::SVM::create();
+    alpha_rec->read(cv::FileStorage("train_result/alphabet_pure.xml",
+                                  cv::FileStorage::READ).root());
+    num_rec->read(cv::FileStorage("train_result/num_pure.xml",
+                                  cv::FileStorage::READ).root());
+    bbps_char_recognizer bcr(alpha_rec, num_rec);
 
     croatia_general_plate_recognizer
             cr(morphology_localizer(), segment_character(),
@@ -125,47 +127,6 @@ void test_anpr_recognizer(int argc, char **argv)
             cv::destroyAllWindows();
         }
     });
-}
-
-void test_bbps_char_recognizer(int argc, char **argv)
-{
-    auto const map =
-            ocv::cmd::default_command_line_parser(argc, argv).first;
-    morphology_localizer lpl;
-    segment_character sc;
-    prune_illegal_chars plc;
-    cv::Ptr<cv::ml::StatModel> ml = cv::ml::RTrees::create();
-    ml->read(cv::FileStorage("train_result/chars_classifier.xml",
-                             cv::FileStorage::READ).root());
-    bbps_char_recognizer bcr(ml);
-    test_algo(map, [&](cv::Mat const &input, std::string const&)
-    {
-        lpl.localize_plate(input);
-        for(auto const &contour : lpl.get_contours()){
-            if(sc.detect_characters(lpl.get_resize_input(),
-                                    contour)){
-                auto &char_contours = sc.get_chars_contours();
-                auto const &bird_eyes_plate = sc.get_bird_eyes_plate();
-                plc.prune(bird_eyes_plate, char_contours);
-                auto const &binary_plate = sc.get_binary_plate();
-                if(char_contours.size() >= sc.get_min_char_num()){
-                    for(size_t i = 0; i != char_contours.size(); ++i){
-                        auto const rect = cv::boundingRect(char_contours[i]);
-                        std::cout<<bcr.recognize(bird_eyes_plate(rect),
-                                                 binary_plate(rect))<<std::endl;
-                        auto mat = bird_eyes_plate.clone();
-                        cv::drawContours(mat, char_contours, i, {0,255,0}, 2);
-                        cv::imshow("plate", mat);
-                        cv::imshow("char",binary_plate(rect));
-                        cv::waitKey();
-                        cv::destroyAllWindows();
-                    }
-                }
-            }else{
-                std::cout<<"not a license plate"<<std::endl;
-            }
-        }
-    });//*/
 }
 
 void test_croatia_general_recognizer()
@@ -232,7 +193,7 @@ void test_prune_illegal_chars(int argc, char **argv)
         for(auto const &contour : lpl.get_contours()){
             if(sc.detect_characters(lpl.get_resize_input(),
                                     contour)){
-                plc.prune(sc.get_bird_eyes_plate(), 8,
+                plc.prune(sc.get_bird_eyes_plate(),
                           sc.get_chars_contours());
             }else{
                 std::cout<<"not a license plate"<<std::endl;
@@ -313,8 +274,9 @@ void test_train_accuracy(int argc, char **argv)
             std::cout<<"total accuracy = "
                     <<total_accuracy/static_cast<double>(bingo.size())<<std::endl;
         };
-        func("train_result/num.xml", map_type::number);
-        func("train_result/alphabet.xml", map_type::alpahbet);
+
+        func("train_result/num_pure.xml", map_type::number);
+        func("train_result/alphabet_pure.xml", map_type::alpahbet);
 
     }else{
         std::cout<<"must specify image folder"<<std::endl;

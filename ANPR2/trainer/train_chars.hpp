@@ -1,7 +1,7 @@
 #ifndef TRAIN_CHARS_HPP
 #define TRAIN_CHARS_HPP
 
-#include "utility.hpp"
+#include "../utility/utility.hpp"
 
 #include <ocv_libs/core/block_binary_pixel_sum.hpp>
 
