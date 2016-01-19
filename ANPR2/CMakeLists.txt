@@ -17,6 +17,7 @@ char_recognizer/bbps_char_recognizer.hpp
 char_recognizer/bbps_char_recognizer.cpp
 pattern_recognizer/croatia_general_pattern_recognizer.hpp
 pattern_recognizer/croatia_general_pattern_recognizer.cpp
+pattern_recognizer/identity_pattern.hpp
 trainer/fhog_trainer.hpp
 trainer/fhog_trainer.cpp
 utility/grab_character.hpp
