@@ -1,6 +1,7 @@
 #include "anpr_recognizer.hpp"
 #include "char_recognizer/bbps_char_recognizer.hpp"
 #include "pattern_recognizer/croatia_general_pattern_recognizer.hpp"
+#include "pattern_recognizer/identity_pattern.hpp"
 #include "plate_localizer/morphology_localizer.hpp"
 #include "prune_chars/prune_illegal_chars.hpp"
 #include "segment_char/segment_character.hpp"
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
     try{
         //fhog_number_plate_trainer fhog_trainer(argc, argv);
 
-        //test_anpr_recognizer(argc, argv);
+        test_anpr_recognizer(argc, argv);
         //test_croatia_general_recognizer();
         //test_grab_char(argc, argv);
         //test_number_plate_localizer(argc, argv);
@@ -92,14 +93,14 @@ void test_anpr_recognizer(int argc, char **argv)
     segment_character,
     prune_illegal_chars,
     bbps_char_recognizer,
-    croatia_general_pattern_recognizer>;
+    identity_pattern_recognizer>;
 
     auto const map =
             ocv::cmd::default_command_line_parser(argc, argv).first;
     cv::Ptr<cv::ml::StatModel> alpha_rec = cv::ml::SVM::create();
     cv::Ptr<cv::ml::StatModel> num_rec = cv::ml::SVM::create();
     alpha_rec->read(cv::FileStorage("train_result/alphabet_pure.xml",
-                                  cv::FileStorage::READ).root());
+                                    cv::FileStorage::READ).root());
     num_rec->read(cv::FileStorage("train_result/num_pure.xml",
                                   cv::FileStorage::READ).root());
     bbps_char_recognizer bcr(alpha_rec, num_rec);
@@ -107,7 +108,7 @@ void test_anpr_recognizer(int argc, char **argv)
     croatia_general_plate_recognizer
             cr(morphology_localizer(), segment_character(),
                prune_illegal_chars(), bcr,
-               croatia_general_pattern_recognizer());
+               identity_pattern_recognizer());
 
     test_algo(map, [&](cv::Mat const &input, std::string const &img_name)
     {
@@ -117,7 +118,9 @@ void test_anpr_recognizer(int argc, char **argv)
             auto img = input.clone();
             auto const rect = results[i].second;
             cv::rectangle(img, rect, {0,255,0}, 2);
-            cv::putText(img, results[i].first, {rect.x - rect.x/5, rect.y - 30},
+            cv::Point const point = cv::Point(std::max(0,rect.x - rect.x/5),
+                                              std::max(0, rect.y - 30));
+            cv::putText(img, results[i].first, point,
                         cv::FONT_HERSHEY_COMPLEX, 1.0, {0,255,0}, 2);
             cv::imshow("plate", img);
             cv::imshow("binary_plate", cr.get_binary_plate()[i]);
