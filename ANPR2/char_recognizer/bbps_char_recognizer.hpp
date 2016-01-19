@@ -54,11 +54,13 @@ public:
 
 private:    
     std::string recognize(cv::Mat const &character,
-                          cv::Ptr<cv::ml::StatModel> const &rec);
+                          cv::Ptr<cv::ml::StatModel> const &rec,
+                          boost::bimap<std::string, int> const &map);
 
     cv::Ptr<cv::ml::StatModel> alpha_rec_;
     ocv::block_binary_pixel_sum<> bbps_;
-    boost::bimap<std::string, int> bimap_;
+    boost::bimap<std::string, int> alpha_bimap_;
+    boost::bimap<std::string, int> num_bimap_;
     cv::Ptr<cv::ml::StatModel> num_rec_;
 };
 
