@@ -35,6 +35,7 @@ public:
 
 private:
     std::vector<cv::Mat> binary_plates_;
+    std::vector<cv::Rect> regions_;
 
     PlateLocalizer plate_localizer_;
     SegmentChar segment_char_;
@@ -79,6 +80,7 @@ recognize(cv::Mat const &input)
     plate_chars_.clear();
     plate_localizer_.localize_plate(input);
     for(auto const &contour : plate_localizer_.get_contours()){
+        regions_.clear();
         if(segment_char_.detect_characters(plate_localizer_.get_resize_input(),
                                            contour)){
             auto const &bird_eyes_plate = segment_char_.get_bird_eyes_plate();
@@ -87,15 +89,16 @@ recognize(cv::Mat const &input)
             auto &prune_contours = segment_char_.get_chars_contours();
             if(prune_contours.size() >= segment_char_.get_min_char_num()){
                 pattern_recognizer_.sort_contour(prune_contours);
-                std::string plate_chars;
                 auto const &binary_plate = segment_char_.get_binary_plate();
                 binary_plates_.emplace_back(binary_plate);
                 for(size_t i = 0; i != prune_contours.size(); ++i){
                     auto const &rect = cv::boundingRect(prune_contours[i]);
-                    plate_chars +=
-                            char_recognizer_.recognize(bird_eyes_plate(rect),
-                                                       binary_plate(rect));
-                }                
+                    regions_.emplace_back(rect);
+                }
+                auto plate_chars =
+                        char_recognizer_.recognize(bird_eyes_plate,
+                                                   binary_plate,
+                                                   regions_);
                 auto strs = pattern_recognizer_.fit(plate_chars);
                 if(!strs.empty()){
                     std::cout<<__func__<<" : can detect plate"<<std::endl;
