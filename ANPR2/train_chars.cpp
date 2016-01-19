@@ -27,10 +27,6 @@ train_chars::train_chars(std::string chars_folder,
 {
     using namespace boost::filesystem;
 
-    if(!exists(path(result_file_))){
-        create_directory(path(result_file_));
-    }
-
     generate_map(bm_, mtype_);
     generate_train_number();
 }
@@ -50,6 +46,7 @@ void train_chars::extract_features()
     features_.clear();
     features_train_.resize(0);
     labels_.clear();
+    augment_ratio_ = 1;
     for(size_t i = 0; i != folders.size(); ++i){
         auto const folder = chars_folder_ + "/" + folders[i];
         auto it = bm_.left.find(folders[i]);
@@ -63,9 +60,9 @@ void train_chars::extract_features()
                 auto img = cv::imread(folder + "/" + files[j]);
                 if(!img.empty()){
                     extract_feature(img, label);
-                    add_noise(img, label);
-                    add_rotation(img, label, 10);
-                    add_rotation(img, label, -10);
+                    //add_noise(img, label);
+                    //add_rotation(img, label, 20);
+                    //add_rotation(img, label, -20);
                 }
             }
         }
@@ -97,8 +94,8 @@ void train_chars::train_classifier()
 {
     using namespace cv::ml;
 
-    std::cout<<__func__<<std::endl;
-    /*auto ml = cv::ml::RTrees::create();
+    /*std::cout<<__func__<<std::endl;
+    auto ml = cv::ml::RTrees::create();
     ml->setMaxDepth(20);
     ml->setMinSampleCount(static_cast<int>(labels_train_.size() * 0.01));
     ml->setRegressionAccuracy(0);
@@ -119,7 +116,7 @@ void train_chars::train_classifier()
 
     auto ml = cv::ml::SVM::create();
     ml->setType(SVM::C_SVC);
-    ml->setKernel(SVM::LINEAR);
+    ml->setKernel(SVM::RBF);
     //ml->setC(312.5);
     //ml->setGamma(1);
     ml->setTermCriteria(cv::TermCriteria(cv::TermCriteria::MAX_ITER,
@@ -130,6 +127,7 @@ void train_chars::train_classifier()
                                         labels_train_);
 
     ml->trainAuto(train_data);
+    //ml->train(train_data);
     std::cout<<"c : "<<ml->getC()<<std::endl;
     std::cout<<"class weights : "<<ml->getClassWeights()<<std::endl;
     std::cout<<"coef0 : "<<ml->getCoef0()<<std::endl;
@@ -184,9 +182,8 @@ void train_chars::generate_train_number()
 
 void train_chars::show_training_results(const features_type &features,
                                         const label_type &labels)
-{
-    std::lock_guard<std::mutex> guard(g_mutex);
-    std::cout<<__func__<<std::endl;
+{    
+    //std::cout<<__func__<<std::endl;
     std::map<std::string, int> statistic;
     generate_map(statistic, mtype_);
     for(auto &pair : statistic){
@@ -203,9 +200,11 @@ void train_chars::show_training_results(const features_type &features,
         }
     }
 
+    std::lock_guard<std::mutex> guard(g_mutex);
     double total_accu = 0;
     for(auto const &pair : statistic){
-        double const accu = pair.second/static_cast<double>(min_symbol_size_*4);
+        double const accu =
+                pair.second/static_cast<double>(min_symbol_size_*augment_ratio_);
         std::cout<<pair.first<<" : "<<accu<<std::endl;
         total_accu += accu;
     }
@@ -238,7 +237,7 @@ void train_chars::add_noise(cv::Mat &inout, int label)
 
 void train_chars::add_rotation(cv::Mat &inout, int label,
                                double rotation)
-{
+{    
     cv::Point2f const center(inout.cols/2.0F, inout.rows/2.0F);
     auto const rmatrix = cv::getRotationMatrix2D(center,
                                                  rotation, 1.0);

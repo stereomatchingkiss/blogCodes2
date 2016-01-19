@@ -58,8 +58,9 @@ private:
     cv::Ptr<cv::ml::StatModel> ml_;
     map_type mtype_;
 
+    size_t augment_ratio_ = 1;
     size_t min_symbol_size_ = 0;
-    size_t train_size_ = 0;
+    size_t train_size_ = 0;    
 };
 
 #endif
