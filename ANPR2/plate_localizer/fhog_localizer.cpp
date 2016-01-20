@@ -44,9 +44,9 @@ void fhog_localizer::localize_plate(const cv::Mat &input)
     for(rectangle &rect : dets){
         //increase the size of possible plate region, this could
         //help us locate full plate informations
-        rectangle const tg(rect.left() - rect.left() * 0.15,
+        rectangle const tg(rect.left() - rect.left() * 0.05,
                            rect.top() - rect.top() * 0.05,
-                           rect.right() + rect.right() * 0.15,
+                           rect.right() + rect.right() * 0.05,
                            rect.bottom() + rect.bottom() * 0.05);
         rect = tg;
         contour_type contour{{rect.left(), rect.top()},
