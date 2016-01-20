@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>download_manager_ui</class>
+ <widget class="QMainWindow" name="download_manager_ui">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTableView" name="tableViewDownload"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionAdd"/>
+   <addaction name="actionDelete"/>
+   <addaction name="actionResume"/>
+  </widget>
+  <action name="actionAdd">
+   <property name="icon">
+    <iconset resource="pics.qrc">
+     <normaloff>:/pics/add.png</normaloff>:/pics/add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+   <property name="toolTip">
+    <string>Add</string>
+   </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="icon">
+    <iconset resource="pics.qrc">
+     <normaloff>:/pics/delete.png</normaloff>:/pics/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionResume">
+   <property name="icon">
+    <iconset resource="pics.qrc">
+     <normaloff>:/pics/resume</normaloff>:/pics/resume</iconset>
+   </property>
+   <property name="text">
+    <string>Resume</string>
+   </property>
+   <property name="toolTip">
+    <string>Resume</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="pics.qrc"/>
+ </resources>
+ <connections/>
+</ui>
