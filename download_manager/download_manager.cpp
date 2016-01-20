@@ -1,5 +1,6 @@
 #include "download_manager.hpp"
 
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -75,18 +76,22 @@ void download_manager::download_finished()
     };
 
     auto *reply = qobject_cast<QNetworkReply*>(sender());
-    recycle rc(reply);
+    if(reply){
+        recycle rc(reply);
 
-    auto it = download_info_.find(reply);
-    if(it != std::end(download_info_)){
-        auto const data = reply->readAll();
-        save_data(it->second, data);
+        auto it = download_info_.find(reply);
+        if(it != std::end(download_info_)){
+            auto const data = reply->readAll();
+            save_data(it->second, data);
 
-        download_info_.erase(it);
-        --total_download_files_;
+            download_info_.erase(it);
+            --total_download_files_;
+
+            emit download_finished(reply->url());
+        }
+    }else{
+        qDebug()<<__func__<<" : do not exist";
     }
-
-    emit download_finished(reply->url());
 }
 
 void download_manager::
