@@ -18,11 +18,9 @@ bool download_model::append(const QUrl &value)
     if(ran.emplace_back("Waiting", value).second){
         return insertRows(static_cast<int>(ran.size()),
                           1);
-    }else{
-        return false;
     }
 
-    return true;
+    return false;
 }
 
 int download_model::
