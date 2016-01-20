@@ -7,6 +7,12 @@
 
 namespace dm{
 
+namespace net{
+
+class download_manager;
+
+}
+
 namespace model{
 
 class download_model : QAbstractTableModel
@@ -15,7 +21,8 @@ class download_model : QAbstractTableModel
 public:
     explicit download_model(QObject *parent = nullptr);
 
-    bool append(QUrl const &value);
+    bool append(QUrl const &value, QString const &save_at,
+                QString const &save_as);
 
     int columnCount(const QModelIndex &parent = {}) const override;
 
@@ -36,7 +43,8 @@ private:
     bool insertRows(int row, int count,
                     const QModelIndex &parent = QModelIndex()) override;
 
-    dm::model::download_index data_;
+    model::download_index data_;
+    net::download_manager *manager_;
 };
 
 }

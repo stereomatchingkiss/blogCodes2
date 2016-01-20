@@ -1,4 +1,5 @@
 #include "download_model.hpp"
+#include "download_manager.hpp"
 
 namespace dm{
 
@@ -11,15 +12,18 @@ using tag_enum = download_item::tag;
 }
 
 download_model::download_model(QObject *parent) :
-    QAbstractTableModel(parent)
-{
-
+    QAbstractTableModel(parent),
+    manager_(new net::download_manager(parent))
+{    
 }
 
-bool download_model::append(const QUrl &value)
+bool download_model::
+append(QUrl const &value, QString const &save_at,
+       QString const &save_as)
 {
     auto &ran = data_.get<random>();
     if(ran.emplace_back("Waiting", value).second){
+        manager_->append(value, save_at, save_as);
         return insertRows(static_cast<int>(ran.size()),
                           1);
     }
@@ -135,19 +139,19 @@ setData(const QModelIndex &index,
         return {};
     }
     switch(static_cast<tag_enum>(index.column())){
-    case tag_enum::name:{                
+    case tag_enum::name:{
         ran.modify(it,
                    [&](auto &e){e.name_ = value.toString();});
         emit dataChanged(index, index);
         return true;
     }
-    case tag_enum::percent:{        
+    case tag_enum::percent:{
         ran.modify(it,
                    [&](auto &e){e.percent_ = value.toFloat();});
         emit dataChanged(index, index);
         return true;
     }
-    case tag_enum::size:{        
+    case tag_enum::size:{
         ran.modify(it,
                    [&](auto &e){e.size_ = value.value<size_t>();});
         emit dataChanged(index, index);
