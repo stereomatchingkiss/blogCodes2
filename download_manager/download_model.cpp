@@ -12,6 +12,19 @@ download_model::download_model(QObject *parent) :
 
 }
 
+bool download_model::append(const QUrl &value)
+{
+    auto &ran = data_.get<dm::model::random>();
+    if(ran.emplace_back("Waiting", value).second){
+        return insertRows(static_cast<int>(ran.size()),
+                          1);
+    }else{
+        return false;
+    }
+
+    return true;
+}
+
 int download_model::
 columnCount(const QModelIndex&) const
 {
@@ -116,6 +129,9 @@ setData(const QModelIndex &index,
 
     auto &ran = data_.get<dm::model::random>();
     auto it = std::begin(ran) + index.row();
+    if(it == std::end(ran)){
+        return {};
+    }
     switch(static_cast<tag_enum>(index.column())){
     case tag_enum::name:{                
         ran.modify(it,

@@ -11,6 +11,8 @@ class download_model : QAbstractTableModel
 public:
     explicit download_model(QObject *parent = nullptr);
 
+    bool append(QUrl const &value);
+
     int columnCount(const QModelIndex &parent = {}) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
