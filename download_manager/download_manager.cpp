@@ -23,7 +23,8 @@ void download_manager::append(const QUrl &value,
                               QString const &save_at,
                               QString const &save_as)
 {
-    download_info_.insert({value,
+    auto *reply = start_download(value);
+    download_info_.insert({reply,
                            {save_at, save_as}});
 }
 
@@ -37,23 +38,23 @@ void download_manager::set_max_download_size(size_t value)
     max_download_size_ = value;
 }
 
-void download_manager::start_download(QUrl const &value)
-{
-    auto it = download_info_.find(value);
-    if(it != std::end(download_info_)){
-        if(max_download_size_ < total_download_files_){
-            QNetworkRequest request(value);
-            auto *current_download = manager_->get(request);
-            connect(current_download, SIGNAL(downloadProgress(qint64,qint64)),
-                    SIGNAL(download_progress(qint64,qint64)));
-            connect(current_download, SIGNAL(finished()),
-                    SIGNAL(download_finished()));
-            connect(current_download, SIGNAL(readyRead()),
-                    SIGNAL(download_ready_read()));
-            (it->second).reply_ = current_download;
-            ++total_download_files_;
-        }
+QNetworkReply* download_manager::start_download(QUrl const &value)
+{     
+    if(max_download_size_ < total_download_files_){
+        QNetworkRequest request(value);
+        auto *current_download = manager_->get(request);
+        connect(current_download, SIGNAL(downloadProgress(qint64,qint64)),
+                SIGNAL(download_progress(qint64,qint64)));
+        connect(current_download, SIGNAL(finished()),
+                SIGNAL(download_finished()));
+        connect(current_download, SIGNAL(readyRead()),
+                SIGNAL(download_ready_read()));
+        ++total_download_files_;
+
+        return current_download;
     }
+
+    return nullptr;
 }
 
 void download_manager::download_finished()
@@ -72,7 +73,7 @@ void download_manager::download_finished()
     auto *reply = qobject_cast<QNetworkReply*>(sender());
     recycle rc(reply);
 
-    auto it = download_info_.find(reply->url());
+    auto it = download_info_.find(reply);
     if(it != std::end(download_info_)){
         auto const data = reply->readAll();
         save_data(it->second, data);
