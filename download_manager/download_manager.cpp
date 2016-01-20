@@ -6,6 +6,10 @@
 #include <QNetworkAccessManager>
 #include <QTextStream>
 
+namespace dm{
+
+namespace net{
+
 download_manager::download_manager(QObject *obj) :
     QObject(obj),
     manager_{new QNetworkAccessManager(obj)},
@@ -103,5 +107,9 @@ file_info(QString const &save_at,
     save_at_(save_at),
     save_as_(save_as)
 {
+
+}
+
+}
 
 }

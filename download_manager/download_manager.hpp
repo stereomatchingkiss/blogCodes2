@@ -12,6 +12,10 @@
 
 class QNetworkAccessManager;
 
+namespace dm{
+
+namespace net{
+
 /**
  * Manage multiple download files
  */
@@ -60,5 +64,9 @@ private:
     size_t max_download_size_;
     size_t total_download_files_;
 };
+
+}
+
+}
 
 #endif // DOWNLOAD_MANAGER_H
