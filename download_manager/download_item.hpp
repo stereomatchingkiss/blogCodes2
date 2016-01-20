@@ -12,7 +12,7 @@
 
 namespace dm{
 
-namespace item{
+namespace model{
 
 using namespace boost::multi_index;
 

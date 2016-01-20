@@ -2,7 +2,7 @@
 
 namespace dm{
 
-namespace item{
+namespace model{
 
 download_item::download_item(const QString &status,
                              const QUrl &url) :
