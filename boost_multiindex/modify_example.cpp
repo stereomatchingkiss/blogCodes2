@@ -30,20 +30,20 @@ struct employee
 using DispatchUsersTable =
 multi_index_container
 <
-employee,
-indexed_by
-<
-ordered_unique
-<
-tag<name>, member
-<employee, std::string, &employee::name_>
->,
-ordered_unique
-<
-tag<email>, member
-<employee, std::string, &employee::email_>
->
->
+  employee,
+  indexed_by
+  <
+    ordered_unique
+    <
+      tag<name>,
+      member<employee, std::string, &employee::name_>
+    >,
+    ordered_unique
+    <
+      tag<email>,
+      member<employee, std::string, &employee::email_>
+    >
+  >//end indexed_by
 >;
 
 }
