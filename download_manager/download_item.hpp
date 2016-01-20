@@ -5,7 +5,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/member.hpp>
-#include <boost/multi_index/sequenced_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
 
 #include <QString>
 #include <QUrl>
@@ -16,7 +16,7 @@ namespace model{
 
 using namespace boost::multi_index;
 
-struct seq{};
+struct random{};
 struct url{};
 
 struct download_item
@@ -43,7 +43,7 @@ using download_index = multi_index_container
 <
     download_item,
     indexed_by<
-        sequenced<tag<seq>>,
+        random_access<tag<random>>,
         ordered_unique<
             tag<url>,
             member<download_item,QUrl,&download_item::url_>
