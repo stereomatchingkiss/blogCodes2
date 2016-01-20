@@ -5,6 +5,10 @@
 
 #include <QAbstractTableModel>
 
+namespace dm{
+
+namespace model{
+
 class download_model : QAbstractTableModel
 {
     Q_OBJECT
@@ -34,5 +38,9 @@ private:
 
     dm::model::download_index data_;
 };
+
+}
+
+}
 
 #endif // DOWNLOAD_MODEL_H

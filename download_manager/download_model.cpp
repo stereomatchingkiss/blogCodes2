@@ -1,8 +1,12 @@
 #include "download_model.hpp"
 
+namespace dm{
+
+namespace model{
+
 namespace{
 
-using tag_enum = dm::model::download_item::tag;
+using tag_enum = download_item::tag;
 
 }
 
@@ -14,7 +18,7 @@ download_model::download_model(QObject *parent) :
 
 bool download_model::append(const QUrl &value)
 {
-    auto &ran = data_.get<dm::model::random>();
+    auto &ran = data_.get<random>();
     if(ran.emplace_back("Waiting", value).second){
         return insertRows(static_cast<int>(ran.size()),
                           1);
@@ -38,7 +42,7 @@ QVariant download_model::data(const QModelIndex &index,
 
     switch(role){
     case Qt::DisplayRole:{
-        auto const &set = data_.get<dm::model::random>();
+        auto const &set = data_.get<random>();
         switch(static_cast<tag_enum>(index.column())){
         case tag_enum::name:{
             return set[index.row()].name_;
@@ -103,7 +107,7 @@ bool download_model::removeRows(int row, int count,
                                 const QModelIndex&)
 {
     beginRemoveRows({}, row, row + count - 1);
-    auto &ran = data_.get<dm::model::random>();
+    auto &ran = data_.get<random>();
     for(int i = 0; i != count; ++i){
         ran.erase(std::begin(ran) + row);
     }
@@ -125,7 +129,7 @@ setData(const QModelIndex &index,
         return false;
     }
 
-    auto &ran = data_.get<dm::model::random>();
+    auto &ran = data_.get<random>();
     auto it = std::begin(ran) + index.row();
     if(it == std::end(ran)){
         return {};
@@ -160,4 +164,8 @@ setData(const QModelIndex &index,
     }
 
     return true;
+}
+
+}
+
 }
