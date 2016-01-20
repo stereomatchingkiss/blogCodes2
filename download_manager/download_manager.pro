@@ -16,12 +16,14 @@ include(../../pri/boost.pri)
 SOURCES += main.cpp \
     download_manager_ui.cpp \
     download_manager.cpp \
-    download_item.cpp
+    download_item.cpp \
+    download_model.cpp
 
 HEADERS  += \
     download_manager_ui.hpp \
     download_manager.hpp \
-    download_item.hpp
+    download_item.hpp \
+    download_model.hpp
 
 FORMS    += \
     download_manager_ui.ui
