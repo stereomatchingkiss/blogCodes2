@@ -19,13 +19,17 @@ download_manager::download_manager(QObject *obj) :
 
 }
 
-void download_manager::append(const QUrl &value,
+bool download_manager::append(QUrl const &value,
                               QString const &save_at,
                               QString const &save_as)
 {
     auto *reply = start_download(value);
-    download_info_.insert({reply,
-                           {save_at, save_as}});
+    if(reply){
+        return download_info_.insert({reply,
+                                      {save_at, save_as}}).second;
+    }
+
+    return false;
 }
 
 size_t download_manager::get_max_download_size() const

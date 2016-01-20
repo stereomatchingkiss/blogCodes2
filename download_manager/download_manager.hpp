@@ -25,7 +25,7 @@ class download_manager : public QObject
 public:
     explicit download_manager(QObject *obj = nullptr);
 
-    void append(QUrl const &value,
+    bool append(QUrl const &value,
                 QString const &save_at,
                 QString const &save_as);
 
