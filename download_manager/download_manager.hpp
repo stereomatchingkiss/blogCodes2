@@ -39,11 +39,11 @@ public:
 
 signals:
     void download_size_changed(size_t value);
-    void download_finished(uint_least64_t uuid);
-    void download_progress(uint_least64_t uuid,
+    void download_finished(int_fast64_t uuid);
+    void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
                            qint64 bytes_total);
-    void download_ready_read(uint_least64_t uuid);
+    void download_ready_read(int_fast64_t uuid);
 
 private slots:    
     void download_finished();
@@ -61,7 +61,7 @@ private:
     QNetworkAccessManager *manager_;
     size_t max_download_size_;
     size_t total_download_files_;
-    uint_fast64_t uuid_;
+    int_fast64_t uuid_;
 };
 
 }

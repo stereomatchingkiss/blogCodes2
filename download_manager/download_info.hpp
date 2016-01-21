@@ -19,7 +19,7 @@ namespace net{
 struct download_info
 {
     download_info() = default;
-    download_info(uint_least64_t uuid,
+    download_info(int_fast64_t uuid,
                   QNetworkReply *reply,
                   QString const &save_at,
                   QString const &save_as);
@@ -27,7 +27,7 @@ struct download_info
     QNetworkReply *reply_ = nullptr;
     QString save_at_;
     QString save_as_;
-    uint_fast64_t uuid_ = 0;
+    int_fast64_t uuid_ = 0;
 };
 
 struct net_reply{};
@@ -43,7 +43,7 @@ using download_info_index = boost::multi_index::multi_index_container
         >,
         boost::multi_index::ordered_unique<
             boost::multi_index::tag<uid>,
-            boost::multi_index::member<download_info,uint_fast64_t,&download_info::uuid_>
+            boost::multi_index::member<download_info,int_fast64_t,&download_info::uuid_>
         >
     >
 >;
