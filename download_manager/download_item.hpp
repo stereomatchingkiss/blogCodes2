@@ -31,12 +31,14 @@ struct download_item
     download_item() = default;
     download_item(QString const &name,
                   QString const &status,
+                  QUrl const &url,
                   int_fast64_t uuid);
 
     QString name_;
     QString percent_ = "?";
     size_t size_ = 0;
     QString status_ = "Waiting";
+    QUrl url_;
     int_fast64_t uuid_ = 0;
 };
 
