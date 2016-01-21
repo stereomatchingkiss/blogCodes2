@@ -46,15 +46,18 @@ append(QUrl const &value,
 
 bool download_manager::start_download(int_fast64_t uuid)
 {
+    qDebug()<<__func__<<"start download id "<<uuid;
     auto &id_set = download_info_.get<uid>();
     auto id_it = id_set.find(uuid);
     if(id_it != std::end(id_set)){
+        qDebug()<<__func__<<" can find uuid";
         bool const success = id_set.modify(id_it, [&](auto &v)
         {
             QNetworkRequest request(v.url_);
             v.reply_ = manager_->get(request);
         });
         if(success){
+            qDebug()<<__func__<<" can start download";
             connect_network_reply(id_it->reply_);
             return true;
         }
@@ -127,7 +130,6 @@ void download_manager::download_finished()
         auto it = net_index.find(reply);
         if(it != std::end(net_index)){
             auto const uuid = it->uuid_;
-            net_index.erase(it);
             emit download_finished(uuid);
             emit downloading_size_decrease(--total_download_files_);
         }
