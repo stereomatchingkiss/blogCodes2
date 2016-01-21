@@ -15,12 +15,12 @@ download_model::download_model(QObject *parent) :
     QAbstractTableModel(parent),
     manager_(new net::download_manager(parent))
 {    
-    /*connect(manager_, SIGNAL(download_finished(QUrl)),
-            manager_, SLOT(download_finished(QUrl)));
-    connect(manager_, SIGNAL(download_progress(qint64,qint64)),
-            this, SLOT(download_progress(qint64,qint64)));
-    connect(manager_, SIGNAL(download_ready_read()),
-            this, SLOT(download_ready_read()));*/
+    connect(manager_, SIGNAL(download_finished(int_fast64_t)),
+            this, SLOT(download_finished(int_fast64_t)));
+    connect(manager_, SIGNAL(download_progress(int_fast64_t,qint64,qint64)),
+            this, SLOT(download_progress(int_fast64_t,qint64,qint64)));
+    connect(manager_, SIGNAL(download_ready_read(int_fast64_t)),
+            this, SLOT(download_ready_read(int_fast64_t)));
 }
 
 bool download_model::
@@ -35,7 +35,6 @@ append(QUrl const &value, QString const &save_at,
                               1);
         }
     }
-
 
     return false;
 }
@@ -198,7 +197,12 @@ void download_model::download_progress(int_fast64_t uuid,
 
 void download_model::download_ready_read(int_fast64_t uuid)
 {
-
+    auto &set = data_.get<uid>();
+    auto uid_it = set.find(uuid);
+    if(uid_it != std::end(set)){
+        setData(get_index(uid_it, tag_enum::status),
+                "Starting", Qt::DisplayRole);
+    }
 }
 
 }

@@ -48,6 +48,16 @@ private slots:
     void download_ready_read(int_fast64_t uuid);
 
 private:
+    template<typename Iter>
+    QModelIndex const get_index(Iter it,
+                                download_item::tag tag) const
+    {
+        auto r_it = data_.project<random>(it);
+        auto &ran = data_.get<random>();
+        return index(r_it - std::begin(ran),
+                     static_cast<int>(tag));
+    }
+
     bool insertRows(int row, int count,
                     const QModelIndex &parent = QModelIndex()) override;
 
