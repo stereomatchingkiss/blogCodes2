@@ -38,6 +38,8 @@ struct download_item
 
     QString name_;
     QString percent_ = "?";
+    QString save_as_;
+    QString save_at_;
     size_t size_ = 0;
     QString status_ = global::waiting;
     QUrl url_;
