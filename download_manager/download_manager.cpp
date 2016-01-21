@@ -11,6 +11,21 @@ namespace dm{
 
 namespace net{
 
+namespace{
+
+class recycle
+{
+public:
+    explicit recycle(QNetworkReply *value) :
+        value_(value) {}
+    ~recycle(){ value_->deleteLater(); }
+
+private:
+    QNetworkReply *value_;
+};
+
+}
+
 download_manager::download_manager(QObject *obj) :
     QObject(obj),
     manager_{new QNetworkAccessManager(obj)},
@@ -66,11 +81,13 @@ void download_manager::set_max_download_size(size_t value)
 void download_manager::connect_network_reply(QNetworkReply *reply)
 {
     connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
-            SLOT(download_progress(qint64,qint64)));
+            this, SLOT(download_progress(qint64,qint64)));
     connect(reply, SIGNAL(finished()),
-            SLOT(download_finished()));
+            this, SLOT(download_finished()));
     connect(reply, SIGNAL(readyRead()),
-            SLOT(download_ready_read()));
+            this, SLOT(download_ready_read()));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+            this, SLOT(error(QNetworkReply::NetworkError)));
     ++total_download_files_;
 }
 
@@ -101,18 +118,7 @@ int_fast64_t download_manager::start_download_impl(QUrl const &url,
 }
 
 void download_manager::download_finished()
-{
-    class recycle
-    {
-    public:
-        explicit recycle(QNetworkReply *value) :
-            value_(value) {}
-        ~recycle(){ value_->deleteLater(); }
-
-    private:
-        QNetworkReply *value_;
-    };
-
+{    
     auto *reply = qobject_cast<QNetworkReply*>(sender());
     if(reply){
         recycle rc(reply);
@@ -163,6 +169,18 @@ void download_manager::download_ready_read()
         }
     }else{
         qDebug()<<__func__<< " cannot cast sender to reply";
+    }
+}
+
+void download_manager::error(QNetworkReply::NetworkError code)
+{
+    auto reply = qobject_cast<QNetworkReply*>(sender());
+    if(reply){
+        recycle rc(reply);
+        reply->abort();
+        emit download_error(reply->errorString());
+    }else{
+        emit download_error(QString::number(code));
     }
 }
 

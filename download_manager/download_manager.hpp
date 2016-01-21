@@ -39,18 +39,21 @@ public:
     bool start_download(int_fast64_t uuid);
 
 signals:
-    void downloading_size_decrease(size_t value);
+    void download_error(QString error);
     void download_finished(int_fast64_t uuid);
     void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
                            qint64 bytes_total);
     void download_ready_read(int_fast64_t uuid);
+    void downloading_size_decrease(size_t value);
 
-private slots:    
+private slots:        
     void download_finished();
     void download_progress(qint64 bytes_received,
                            qint64 bytes_total);
     void download_ready_read();
+
+    void error(QNetworkReply::NetworkError code);
 
 private:
     void connect_network_reply(QNetworkReply *reply);
