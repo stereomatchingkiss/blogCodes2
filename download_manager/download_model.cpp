@@ -179,6 +179,28 @@ setData(const QModelIndex &index,
     return true;
 }
 
+void download_model::download_size_changed(size_t value)
+{
+
+}
+
+void download_model::download_finished(int_fast64_t uuid)
+{
+
+}
+
+void download_model::download_progress(int_fast64_t uuid,
+                                       qint64 bytes_received,
+                                       qint64 bytes_total)
+{
+
+}
+
+void download_model::download_ready_read(int_fast64_t uuid)
+{
+
+}
+
 }
 
 }

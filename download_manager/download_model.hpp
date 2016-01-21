@@ -40,10 +40,12 @@ public:
                  const QVariant &value, int role) override;
 
 private slots:
-    //void download_finished(QUrl url);
-    //void download_progress(qint64 bytes_received,
-    //                       qint64 bytes_total);
-    //void download_ready_read();
+    void download_size_changed(size_t value);
+    void download_finished(int_fast64_t uuid);
+    void download_progress(int_fast64_t uuid,
+                           qint64 bytes_received,
+                           qint64 bytes_total);
+    void download_ready_read(int_fast64_t uuid);
 
 private:
     bool insertRows(int row, int count,
