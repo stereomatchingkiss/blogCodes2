@@ -22,8 +22,8 @@ download_model::download_model(QObject *parent) :
             this, SLOT(download_finished(int_fast64_t)));
     connect(manager_, SIGNAL(download_progress(int_fast64_t,qint64,qint64)),
             this, SLOT(download_progress(int_fast64_t,qint64,qint64)));
-    connect(manager_, SIGNAL(download_ready_read(int_fast64_t)),
-            this, SLOT(download_ready_read(int_fast64_t)));
+    //connect(manager_, SIGNAL(download_ready_read(int_fast64_t)),
+    //        this, SLOT(download_ready_read(int_fast64_t)));
 }
 
 bool download_model::
