@@ -32,11 +32,13 @@ public:
                 QString const &save_as);
 
     size_t get_max_download_size() const;
+    size_t get_total_download_file() const;
 
     void set_max_download_size(size_t value);
     bool start_download(const QUrl &value);
 
 signals:
+    void download_size_changed(size_t value);
     void download_finished(uint_least64_t uuid);
     void download_progress(uint_least64_t uuid,
                            qint64 bytes_received,

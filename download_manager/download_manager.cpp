@@ -40,6 +40,11 @@ size_t download_manager::get_max_download_size() const
     return max_download_size_;
 }
 
+size_t download_manager::get_total_download_file() const
+{
+    return total_download_files_;
+}
+
 void download_manager::set_max_download_size(size_t value)
 {
     max_download_size_ = value;
@@ -61,7 +66,7 @@ QNetworkReply* download_manager::start_download_impl(QUrl const &value)
                 SLOT(download_finished()));
         connect(current_download, SIGNAL(readyRead()),
                 SLOT(download_ready_read()));
-        ++total_download_files_;
+        emit download_size_changed(++total_download_files_);
 
         return current_download;
     }
@@ -93,9 +98,8 @@ void download_manager::download_finished()
             save_data(*it, data);
             auto const uuid = it->uuid_;
             net_index.erase(it);
-            --total_download_files_;
-
             emit download_finished(uuid);
+            emit download_size_changed(--total_download_files_);
         }
     }else{
         qDebug()<<__func__<<" : do not exist";
