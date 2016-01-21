@@ -7,10 +7,12 @@
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/random_access_index.hpp>
 
+#include <QFile>
 #include <QNetworkReply>
 #include <QString>
 
 #include <cstdint>
+#include <memory>
 
 namespace dm{
 
@@ -24,6 +26,7 @@ struct download_info
                   QString const &save_at,
                   QString const &save_as);
 
+    std::shared_ptr<QFile> file_;
     QNetworkReply *reply_ = nullptr;
     QString save_at_;
     QString save_as_;
