@@ -15,9 +15,10 @@ class download_manager;
 
 namespace model{
 
-class download_model : QAbstractTableModel
+class download_model : public QAbstractTableModel
 {
     Q_OBJECT
+
 public:
     explicit download_model(QObject *parent = nullptr);
 
