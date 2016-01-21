@@ -30,6 +30,7 @@ struct download_info
     QNetworkReply *reply_ = nullptr;
     QString save_at_;
     QString save_as_;
+    QUrl url_;
     int_fast64_t uuid_ = 0;
 };
 
