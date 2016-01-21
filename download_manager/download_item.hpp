@@ -37,10 +37,10 @@ struct download_item
                   int_fast64_t uuid);
 
     QString name_;
-    QString percent_ = "?";
+    QString percent_ = "0%";
     QString save_as_;
     QString save_at_;
-    size_t size_ = 0;
+    QString size_ = "?";
     QString status_ = global::waiting;
     QUrl url_;
     int_fast64_t uuid_ = 0;
