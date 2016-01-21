@@ -11,6 +11,7 @@ extern QString const done;
 extern QString const downloading;
 extern QString const starting;
 extern QString const waiting;
+extern QString const unknown;
 
 }
 
