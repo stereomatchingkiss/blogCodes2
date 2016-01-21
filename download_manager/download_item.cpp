@@ -4,12 +4,13 @@ namespace dm{
 
 namespace model{
 
-download_item::download_item(const QString &status,
-                             const QUrl &url) :
+download_item::download_item(QString const &name,
+                             QString const &status,
+                             int_fast64_t uuid) :
+    name_{name},
     status_{status},
-    url_{url}
-{
-    name_ = url_.fileName();
+    uuid_{uuid}
+{    
 }
 
 }

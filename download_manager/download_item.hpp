@@ -10,12 +10,14 @@
 #include <QString>
 #include <QUrl>
 
+#include <cstdint>
+
 namespace dm{
 
 namespace model{
 
 struct random{};
-struct url{};
+struct uid{};
 
 struct download_item
 {    
@@ -27,14 +29,15 @@ struct download_item
     };
 
     download_item() = default;
-    download_item(QString const &status,
-                  QUrl const &url);
+    download_item(QString const &name,
+                  QString const &status,
+                  int_fast64_t uuid);
 
     QString name_;
     float percent_ = 0;
     size_t size_ = 0;
     QString status_ = "Waiting";
-    QUrl url_;
+    int_fast64_t uuid_ = 0;
 };
 
 using download_index = boost::multi_index::multi_index_container
@@ -43,8 +46,8 @@ using download_index = boost::multi_index::multi_index_container
     boost::multi_index::indexed_by<
         boost::multi_index::random_access<boost::multi_index::tag<random>>,
         boost::multi_index::ordered_unique<
-            boost::multi_index::tag<url>,
-            boost::multi_index::member<download_item,QUrl,&download_item::url_>
+            boost::multi_index::tag<uid>,
+            boost::multi_index::member<download_item,int_fast64_t,&download_item::uuid_>
         >
     >
 >;
