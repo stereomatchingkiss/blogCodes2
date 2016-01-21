@@ -56,11 +56,11 @@ QNetworkReply* download_manager::start_download_impl(QUrl const &value)
         QNetworkRequest request(value);
         auto *current_download = manager_->get(request);
         connect(current_download, SIGNAL(downloadProgress(qint64,qint64)),
-                SIGNAL(download_progress(qint64,qint64)));
+                SLOT(download_progress(qint64,qint64)));
         connect(current_download, SIGNAL(finished()),
-                SIGNAL(download_finished()));
+                SLOT(download_finished()));
         connect(current_download, SIGNAL(readyRead()),
-                SIGNAL(download_ready_read()));
+                SLOT(download_ready_read()));
         ++total_download_files_;
 
         return current_download;
@@ -91,14 +91,41 @@ void download_manager::download_finished()
         if(it != std::end(net_index)){
             auto const data = reply->readAll();
             save_data(*it, data);
-
+            auto const uuid = it->uuid_;
             net_index.erase(it);
             --total_download_files_;
 
-            emit download_finished(reply->url());
+            emit download_finished(uuid);
         }
     }else{
         qDebug()<<__func__<<" : do not exist";
+    }
+}
+
+void download_manager::
+download_progress(qint64 bytes_received,
+                  qint64 bytes_total)
+{
+    auto *reply = qobject_cast<QNetworkReply*>(sender());
+    if(reply){
+        auto &net_index = download_info_.get<net_reply>();
+        auto it = net_index.find(reply);
+        if(it != std::end(net_index)){
+            emit download_progress(it->uuid_, bytes_received,
+                                   bytes_total);
+        }
+    }
+}
+
+void download_manager::download_ready_read()
+{
+    auto *reply = qobject_cast<QNetworkReply*>(sender());
+    if(reply){
+        auto &net_index = download_info_.get<net_reply>();
+        auto it = net_index.find(reply);
+        if(it != std::end(net_index)){
+            emit download_ready_read(it->uuid_);
+        }
     }
 }
 

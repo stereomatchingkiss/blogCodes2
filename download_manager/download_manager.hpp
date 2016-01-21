@@ -37,13 +37,17 @@ public:
     bool start_download(const QUrl &value);
 
 signals:
-    void download_finished(QUrl url);
+    void download_finished(uint_least64_t uuid);
+    void download_progress(uint_least64_t uuid,
+                           qint64 bytes_received,
+                           qint64 bytes_total);
+    void download_ready_read(uint_least64_t uuid);
+
+private slots:    
+    void download_finished();
     void download_progress(qint64 bytes_received,
                            qint64 bytes_total);
     void download_ready_read();
-
-private slots:
-    void download_finished();
 
 private:    
     void save_data(download_info const &info,
