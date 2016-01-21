@@ -61,7 +61,7 @@ private:
     QNetworkAccessManager *manager_;
     size_t max_download_size_;
     size_t total_download_files_;
-    uint_least64_t uuid_;
+    uint_fast64_t uuid_;
 };
 
 }
