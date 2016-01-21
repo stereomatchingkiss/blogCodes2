@@ -178,9 +178,11 @@ void download_manager::error(QNetworkReply::NetworkError code)
     if(reply){
         recycle rc(reply);
         reply->abort();
-        emit download_error(reply->errorString());
-    }else{
-        emit download_error(QString::number(code));
+        auto &reply_set = download_info_.get<net_reply>();
+        auto r_it = reply_set.find(reply);
+        if(r_it != std::end(reply_set)){
+            emit download_error(r_it->uuid_, reply->errorString());
+        }
     }
 }
 
