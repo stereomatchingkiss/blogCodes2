@@ -51,41 +51,28 @@ int_fast64_t download_manager::start_download_impl(QUrl const &value,
     if(total_download_files_ < max_download_size_){
         QNetworkRequest request(value);
 
-        auto &uid_index = download_info_.get<uid>();
-
         auto *reply = manager_->get(request);
-        auto pair = uid_index.insert({uuid_, reply,
-                                      save_at, save_as});
-        if(pair.second)
-        {
-            QDir dir(save_at);
-            if(!dir.exists()){
-                if(!QDir().mkpath(save_at)){
-                    QMessageBox::warning(0, tr("Warning"),
-                                         tr("Can not create directory"));
-                    uid_index.erase(pair.first);
-                    return -1;
+        if(reply){
+            auto &uid_index = download_info_.get<uid>();
+            auto pair = uid_index.insert({uuid_, reply,
+                                          save_at, save_as});
+            if(pair.second)
+            {
+                if(create_dir(save_at, uid_index, pair)){
+                    if(create_file(save_at, save_as, uid_index, pair)){
+
+                        connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
+                                SLOT(download_progress(qint64,qint64)));
+                        connect(reply, SIGNAL(finished()),
+                                SLOT(download_finished()));
+                        connect(reply, SIGNAL(readyRead()),
+                                SLOT(download_ready_read()));
+                        ++total_download_files_;
+
+                        return uuid_++;
+                    }
                 }
             }
-            uid_index.modify(pair.first, [&](auto &v)
-            {
-                v.file_ = std::make_shared<QFile>(save_at + "/" + save_as);
-                if(!v.file_->open(QIODevice::WriteOnly)){
-                    qDebug()<<__func__<<" cannot open file";
-                    QMessageBox::warning(0, tr("Warning"),
-                                         tr("Can not save download file"));
-                    return;
-                }
-            });
-            connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
-                    SLOT(download_progress(qint64,qint64)));
-            connect(reply, SIGNAL(finished()),
-                    SLOT(download_finished()));
-            connect(reply, SIGNAL(readyRead()),
-                    SLOT(download_ready_read()));
-            ++total_download_files_;
-
-            return uuid_++;
         }
     }else{
         qDebug()<<this<<" max_download_size_ >= total_download_files_";
