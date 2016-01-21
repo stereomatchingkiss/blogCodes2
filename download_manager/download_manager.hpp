@@ -35,10 +35,9 @@ public:
     size_t get_total_download_file() const;
 
     void set_max_download_size(size_t value);
-    bool start_download(const QUrl &value);
 
 signals:
-    void download_size_changed(size_t value);
+    void downloading_size_decrease(size_t value);
     void download_finished(int_fast64_t uuid);
     void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
@@ -55,7 +54,9 @@ private:
     void save_data(download_info const &info,
                    QByteArray const &data);
 
-    QNetworkReply* start_download_impl(QUrl const &value);
+    int_fast64_t start_download_impl(QUrl const &value,
+                                     QString const &save_at,
+                                     QString const &save_as);
 
     download_info_index download_info_;
     QNetworkAccessManager *manager_;

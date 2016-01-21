@@ -26,19 +26,7 @@ append(QUrl const &value,
        QString const &save_at,
        QString const &save_as)
 {
-    auto *reply = start_download_impl(value);
-    if(reply){
-        auto &uid_index = download_info_.get<uid>();
-        if(uid_index.insert({uuid_, reply,
-                            save_at, save_as}).second)
-        {
-            return uuid_++;
-        }
-    }else{
-        qDebug()<<this<<" cannot start to download";
-    }
-
-    return -1;
+    return start_download_impl(value, save_at, save_as);
 }
 
 size_t download_manager::get_max_download_size() const
@@ -56,30 +44,54 @@ void download_manager::set_max_download_size(size_t value)
     max_download_size_ = value;
 }
 
-bool download_manager::start_download(const QUrl &value)
-{
-    return start_download_impl(value) != nullptr;
-}
-
-QNetworkReply* download_manager::start_download_impl(QUrl const &value)
+int_fast64_t download_manager::start_download_impl(QUrl const &value,
+                                                   QString const &save_at,
+                                                   QString const &save_as)
 {     
     if(total_download_files_ < max_download_size_){
         QNetworkRequest request(value);
-        auto *current_download = manager_->get(request);
-        connect(current_download, SIGNAL(downloadProgress(qint64,qint64)),
-                SLOT(download_progress(qint64,qint64)));
-        connect(current_download, SIGNAL(finished()),
-                SLOT(download_finished()));
-        connect(current_download, SIGNAL(readyRead()),
-                SLOT(download_ready_read()));
-        emit download_size_changed(++total_download_files_);
 
-        return current_download;
+        auto &uid_index = download_info_.get<uid>();
+
+        auto *reply = manager_->get(request);
+        auto pair = uid_index.insert({uuid_, reply,
+                                      save_at, save_as});
+        if(pair.second)
+        {
+            QDir dir(save_at);
+            if(!dir.exists()){
+                if(!QDir().mkpath(save_at)){
+                    QMessageBox::warning(0, tr("Warning"),
+                                         tr("Can not create directory"));
+                    uid_index.erase(pair.first);
+                    return -1;
+                }
+            }
+            uid_index.modify(pair.first, [&](auto &v)
+            {
+                v.file_ = std::make_shared<QFile>(save_at + "/" + save_as);
+                if(!v.file_->open(QIODevice::WriteOnly)){
+                    qDebug()<<__func__<<" cannot open file";
+                    QMessageBox::warning(0, tr("Warning"),
+                                         tr("Can not save download file"));
+                    return;
+                }
+            });
+            connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
+                    SLOT(download_progress(qint64,qint64)));
+            connect(reply, SIGNAL(finished()),
+                    SLOT(download_finished()));
+            connect(reply, SIGNAL(readyRead()),
+                    SLOT(download_ready_read()));
+            ++total_download_files_;
+
+            return uuid_++;
+        }
     }else{
         qDebug()<<this<<" max_download_size_ >= total_download_files_";
     }
 
-    return nullptr;
+    return -1;
 }
 
 void download_manager::download_finished()
@@ -107,7 +119,7 @@ void download_manager::download_finished()
             auto const uuid = it->uuid_;
             net_index.erase(it);
             emit download_finished(uuid);
-            emit download_size_changed(--total_download_files_);
+            emit downloading_size_decrease(--total_download_files_);
         }
     }else{
         qDebug()<<__func__<<" : do not exist";
@@ -139,6 +151,10 @@ void download_manager::download_ready_read()
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
         if(it != std::end(net_index)){
+            QByteArray data(reply->bytesAvailable(), Qt::Uninitialized);
+            reply->read(data.data(), data.size());
+            it->file_->write(data);
+
             emit download_ready_read(it->uuid_);
         }
     }else{
@@ -150,7 +166,7 @@ void download_manager::
 save_data(download_info const &info,
           QByteArray const &data)
 {
-    QDir dir(info.save_at_);
+    /*QDir dir(info.save_at_);
     if(!dir.exists()){
         if(!QDir().mkpath(info.save_at_)){
             QMessageBox::warning(0, tr("Warning"),
@@ -166,7 +182,7 @@ save_data(download_info const &info,
     }
 
     file.write(data);
-    qDebug()<<__func__<<"save buffer";
+    qDebug()<<__func__<<"save buffer";*/
 }
 
 }
