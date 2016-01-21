@@ -26,7 +26,10 @@ public:
     bool append(QUrl const &value, QString const &save_at,
                 QString const &save_as);
 
-private:    
+private slots:
+    void on_actionResume_triggered();
+
+private:
     Ui::download_manager_ui *ui;
 
     model::download_model *model_;

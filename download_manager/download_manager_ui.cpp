@@ -3,6 +3,7 @@
 
 #include "download_model.hpp"
 
+#include <QDebug>
 #include <QTableView>
 
 namespace dm{
@@ -15,6 +16,9 @@ download_manager_ui::download_manager_ui(QWidget *parent) :
 
     model_ = new model::download_model(this);
     ui->tableViewDownload->setModel(model_);
+    ui->tableViewDownload->setShowGrid(false);
+    ui->tableViewDownload->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableViewDownload->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 download_manager_ui::~download_manager_ui()
@@ -29,4 +33,14 @@ bool download_manager_ui::append(const QUrl &value,
     return model_->append(value, save_at, save_as);
 }
 
+}
+
+void dm::download_manager_ui::on_actionResume_triggered()
+{
+    auto *select_model = ui->tableViewDownload->selectionModel();
+    qDebug()<<__func__<<" select model size "<<select_model->selectedRows().size();
+    for(auto const &select_index : select_model->selectedRows()){
+        qDebug()<<__func__<<" start download";
+        model_->start_download(select_index.row());
+    }
 }
