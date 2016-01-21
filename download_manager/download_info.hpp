@@ -40,7 +40,10 @@ using download_info_index = boost::multi_index::multi_index_container
 <
     download_info,
     boost::multi_index::indexed_by<
-        boost::multi_index::ordered_unique<
+        //The reply_ should be unique from logical view,
+        //I declare it as nonunique to make multiple
+        //download task easier to manage
+        boost::multi_index::ordered_non_unique<
             boost::multi_index::tag<net_reply>,
             boost::multi_index::member<download_info,QNetworkReply*,&download_info::reply_>
         >,
