@@ -44,13 +44,14 @@ public:
 
     void set_max_download_size(size_t value);
 
-private slots:
-    void download_size_changed(size_t value);
+private slots:    
+    void download_error(int_fast64_t uuid, QString error);
     void download_finished(int_fast64_t uuid);
     void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
                            qint64 bytes_total);
     void download_ready_read(int_fast64_t uuid);
+    void download_size_changed(size_t value);
 
 private:
     template<typename Iter>

@@ -24,6 +24,8 @@ download_model::download_model(QObject *parent) :
             this, SLOT(download_progress(int_fast64_t,qint64,qint64)));
     connect(manager_, SIGNAL(downloading_size_decrease(size_t)),
             this, SLOT(download_size_changed(size_t)));
+    connect(manager_, SIGNAL(download_error(int_fast64_t, QString)),
+            this, SLOT(download_error(int_fast64_t, QString)));
     //connect(manager_, SIGNAL(download_ready_read(int_fast64_t)),
     //        this, SLOT(download_ready_read(int_fast64_t)));
 }
@@ -199,6 +201,16 @@ void download_model::set_max_download_size(size_t value)
     manager_->set_max_download_size(value);
 }
 
+void download_model::download_error(int_fast64_t uuid,
+                                    QString error)
+{
+    int const row = get_row(uuid);
+    setData(index(row, static_cast<int>(tag_enum::status)),
+            global::error + error, Qt::DisplayRole);
+    setData(index(row, static_cast<int>(tag_enum::percent)),
+            tr("0%"), Qt::DisplayRole);
+}
+
 void download_model::download_size_changed(size_t value)
 {
     if(value < max_download_size_){
@@ -214,12 +226,15 @@ void download_model::download_size_changed(size_t value)
 }
 
 void download_model::download_finished(int_fast64_t uuid)
-{
+{    
     int const row = get_row(uuid);
-    setData(index(row, static_cast<int>(tag_enum::status)),
-            global::done, Qt::DisplayRole);
-    setData(index(row, static_cast<int>(tag_enum::percent)),
-            tr("100%"), Qt::DisplayRole);
+    auto const &ran = data_.get<random>();
+    if(!ran[row].status_.contains(global::error)){
+        setData(index(row, static_cast<int>(tag_enum::status)),
+                global::done, Qt::DisplayRole);
+        setData(index(row, static_cast<int>(tag_enum::percent)),
+                tr("100%"), Qt::DisplayRole);
+    }
 }
 
 void download_model::download_progress(int_fast64_t uuid,
