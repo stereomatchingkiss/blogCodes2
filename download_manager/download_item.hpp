@@ -1,6 +1,8 @@
 #ifndef DOWNLOAD_ITEM_H
 #define DOWNLOAD_ITEM_H
 
+#include "global_variable.hpp"
+
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/identity.hpp>
@@ -37,7 +39,7 @@ struct download_item
     QString name_;
     QString percent_ = "?";
     size_t size_ = 0;
-    QString status_ = "Waiting";
+    QString status_ = global::waiting;
     QUrl url_;
     int_fast64_t uuid_ = 0;
 };
