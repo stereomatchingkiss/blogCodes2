@@ -4,7 +4,7 @@ namespace dm{
 
 namespace net{
 
-download_info::download_info(uint_least64_t uuid,
+download_info::download_info(int_fast64_t uuid,
                              QNetworkReply *reply,
                              QString const &save_at,
                              QString const &save_as) :
