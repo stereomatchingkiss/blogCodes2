@@ -50,12 +50,33 @@ private slots:
 private:
     template<typename Iter>
     QModelIndex const get_index(Iter it,
-                                download_item::tag tag) const
+                                download_item::tag col) const
+    {
+        return index(get_row(it),
+                     static_cast<int>(col));
+    }
+
+    QModelIndex const get_index(int_fast64_t uuid,
+                                download_item::tag col) const;
+
+    template<typename Iter>
+    int get_row(Iter it) const
     {
         auto r_it = data_.project<random>(it);
         auto &ran = data_.get<random>();
-        return index(r_it - std::begin(ran),
-                     static_cast<int>(tag));
+        return r_it - std::begin(ran);
+    }
+
+    int get_row(int_fast64_t uuid) const
+    {
+        auto const &id_set = data_.get<uid>();
+        auto id_it = id_set.find(uuid);
+        if(id_it != std::end(id_set)){
+            return data_.project<random>(id_it) -
+                    std::begin(data_.get<random>());
+        }
+
+        return -1;
     }
 
     bool insertRows(int row, int count,

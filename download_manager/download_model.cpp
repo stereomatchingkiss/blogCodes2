@@ -1,5 +1,6 @@
 #include "download_model.hpp"
 #include "download_manager.hpp"
+#include "global_variable.hpp"
 
 namespace dm{
 
@@ -155,7 +156,7 @@ setData(const QModelIndex &index,
     }
     case tag_enum::percent:{
         ran.modify(it,
-                   [&](auto &e){e.percent_ = value.toFloat();});
+                   [&](auto &e){e.percent_ = value.toString();});
         emit dataChanged(index, index);
         return true;
     }
@@ -185,24 +186,40 @@ void download_model::download_size_changed(size_t value)
 
 void download_model::download_finished(int_fast64_t uuid)
 {
-
+    setData(get_index(uuid, tag_enum::status),
+            global::done, Qt::DisplayRole);
 }
 
 void download_model::download_progress(int_fast64_t uuid,
                                        qint64 bytes_received,
                                        qint64 bytes_total)
 {
-
+    int const row = get_row(uuid);
+    setData(index(row, static_cast<int>(tag_enum::status)),
+            global::downloading, Qt::DisplayRole);
+    if(bytes_total != 0){
+        auto const percent =
+                QString::number(bytes_received) + "/" +
+                QString::number(bytes_total);
+        setData(index(row, static_cast<int>(tag_enum::percent)),
+                percent, Qt::DisplayRole);
+    }else{
+        setData(index(row, static_cast<int>(tag_enum::percent)),
+                global::unknown, Qt::DisplayRole);
+    }
 }
 
 void download_model::download_ready_read(int_fast64_t uuid)
 {
-    auto &set = data_.get<uid>();
-    auto uid_it = set.find(uuid);
-    if(uid_it != std::end(set)){
-        setData(get_index(uid_it, tag_enum::status),
-                "Starting", Qt::DisplayRole);
-    }
+    setData(get_index(uuid, tag_enum::status),
+            global::starting, Qt::DisplayRole);
+}
+
+const QModelIndex download_model::
+get_index(int_fast64_t uuid, tag_enum col) const
+{
+    int const row = get_row(uuid);
+    return index(row, static_cast<int>(col));
 }
 
 }
