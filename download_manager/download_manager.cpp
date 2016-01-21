@@ -29,6 +29,25 @@ append(QUrl const &value,
     return start_download_impl(value, save_at, save_as);
 }
 
+bool download_manager::start_download(int_fast64_t uuid)
+{
+    auto &id_set = download_info_.get<uid>();
+    auto id_it = id_set.find(uuid);
+    if(id_it != std::end(id_set)){
+        bool const success = id_set.modify(id_it, [&](auto &v)
+        {
+            QNetworkRequest request(v.url_);
+            v.reply_ = manager_->get(request);
+        });
+        if(success){
+            connect_network_reply(id_it->reply_);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 size_t download_manager::get_max_download_size() const
 {
     return max_download_size_;
@@ -44,41 +63,42 @@ void download_manager::set_max_download_size(size_t value)
     max_download_size_ = value;
 }
 
-int_fast64_t download_manager::start_download_impl(QUrl const &value,
+void download_manager::connect_network_reply(QNetworkReply *reply)
+{
+    connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
+            SLOT(download_progress(qint64,qint64)));
+    connect(reply, SIGNAL(finished()),
+            SLOT(download_finished()));
+    connect(reply, SIGNAL(readyRead()),
+            SLOT(download_ready_read()));
+    ++total_download_files_;
+}
+
+int_fast64_t download_manager::start_download_impl(QUrl const &url,
                                                    QString const &save_at,
                                                    QString const &save_as)
-{     
+{         
+    QNetworkRequest request(url);
+    QNetworkReply *reply = nullptr;
     if(total_download_files_ < max_download_size_){
-        QNetworkRequest request(value);
-
-        auto *reply = manager_->get(request);
-        if(reply){
-            auto &uid_index = download_info_.get<uid>();
-            auto pair = uid_index.insert({uuid_, reply,
-                                          save_at, save_as});
-            if(pair.second)
-            {
-                if(create_dir(save_at, uid_index, pair)){
-                    if(create_file(save_at, save_as, uid_index, pair)){
-
-                        connect(reply, SIGNAL(downloadProgress(qint64,qint64)),
-                                SLOT(download_progress(qint64,qint64)));
-                        connect(reply, SIGNAL(finished()),
-                                SLOT(download_finished()));
-                        connect(reply, SIGNAL(readyRead()),
-                                SLOT(download_ready_read()));
-                        ++total_download_files_;
-
-                        return uuid_++;
-                    }
+        reply = manager_->get(request);
+    }
+    auto &uid_index = download_info_.get<uid>();
+    download_info info{uuid_, reply,
+                       save_at, save_as};
+    info.url_ = url;
+    auto pair = uid_index.insert(info);
+    if(reply){
+        if(pair.second){
+            if(create_dir(save_at, uid_index, pair)){
+                if(create_file(save_at, save_as, uid_index, pair)){
+                    connect_network_reply(reply);
                 }
             }
         }
-    }else{
-        qDebug()<<this<<" max_download_size_ >= total_download_files_";
     }
 
-    return -1;
+    return uuid_++;
 }
 
 void download_manager::download_finished()

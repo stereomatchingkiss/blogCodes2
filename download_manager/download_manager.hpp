@@ -36,6 +36,7 @@ public:
     size_t get_total_download_file() const;
 
     void set_max_download_size(size_t value);
+    bool start_download(int_fast64_t uuid);
 
 signals:
     void downloading_size_decrease(size_t value);
@@ -51,7 +52,9 @@ private slots:
                            qint64 bytes_total);
     void download_ready_read();
 
-private:        
+private:
+    void connect_network_reply(QNetworkReply *reply);
+
     template<typename Index, typename Pair>
     bool create_dir(QString const &save_at, Index &index,
                     Pair const &pair)
