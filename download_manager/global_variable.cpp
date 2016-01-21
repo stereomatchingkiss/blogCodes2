@@ -6,6 +6,7 @@ namespace global{
 
 QString const done = "Done";
 QString const downloading = "Downloading";
+QString const error = "Error : ";
 QString const starting = "Starting";
 QString const waiting = "Waiting";
 QString const unknown = "?";
