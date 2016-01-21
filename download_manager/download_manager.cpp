@@ -25,7 +25,7 @@ bool download_manager::append(QUrl const &value,
                               QString const &save_at,
                               QString const &save_as)
 {
-    auto *reply = start_download(value);
+    auto *reply = start_download_impl(value);
     if(reply){
         auto &uid_index = download_info_.get<uid>();
         return uid_index.insert({uuid_++, reply,
@@ -45,7 +45,12 @@ void download_manager::set_max_download_size(size_t value)
     max_download_size_ = value;
 }
 
-QNetworkReply* download_manager::start_download(QUrl const &value)
+bool download_manager::start_download(const QUrl &value)
+{
+    return start_download_impl(value) != nullptr;
+}
+
+QNetworkReply* download_manager::start_download_impl(QUrl const &value)
 {     
     if(max_download_size_ < total_download_files_){
         QNetworkRequest request(value);

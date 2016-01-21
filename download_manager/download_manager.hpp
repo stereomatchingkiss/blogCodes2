@@ -34,8 +34,7 @@ public:
     size_t get_max_download_size() const;
 
     void set_max_download_size(size_t value);
-
-    QNetworkReply* start_download(QUrl const &value);
+    bool start_download(const QUrl &value);
 
 signals:
     void download_finished(QUrl url);
@@ -48,7 +47,9 @@ private slots:
 
 private:    
     void save_data(download_info const &info,
-                   QByteArray const &data);    
+                   QByteArray const &data);
+
+    QNetworkReply* start_download_impl(QUrl const &value);
 
     download_info_index download_info_;
     QNetworkAccessManager *manager_;
