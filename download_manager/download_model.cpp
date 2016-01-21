@@ -176,7 +176,7 @@ setData(const QModelIndex &index,
     }
     case tag_enum::size:{
         ran.modify(it,
-                   [&](auto &e){e.size_ = value.value<size_t>();});
+                   [&](auto &e){e.size_ = value.toString();});
         emit dataChanged(index, index);
         return true;
     }
@@ -229,14 +229,19 @@ void download_model::download_progress(int_fast64_t uuid,
     int const row = get_row(uuid);
     setData(index(row, static_cast<int>(tag_enum::status)),
             global::downloading, Qt::DisplayRole);
-    if(bytes_total != 0){
-        auto const percent =
+    if(bytes_total != 0 || bytes_total != -1){
+        auto const size =
                 QString::number(bytes_received) + "/" +
                 QString::number(bytes_total);
+        setData(index(row, static_cast<int>(tag_enum::size)),
+                size, Qt::DisplayRole);
+        float const percent = bytes_received/static_cast<float>(bytes_total);
         setData(index(row, static_cast<int>(tag_enum::percent)),
-                percent, Qt::DisplayRole);
+                QString::number(percent*100) + "%", Qt::DisplayRole);
     }else{
         setData(index(row, static_cast<int>(tag_enum::percent)),
+                global::unknown, Qt::DisplayRole);
+        setData(index(row, static_cast<int>(tag_enum::size)),
                 global::unknown, Qt::DisplayRole);
     }
 }
