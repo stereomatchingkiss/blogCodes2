@@ -28,6 +28,8 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const override;
 
+    size_t get_max_download_size() const;
+
     QVariant headerData(int section,
                         Qt::Orientation orientation,
                         int role) const override;
@@ -38,6 +40,8 @@ public:
 
     bool setData(const QModelIndex &index,
                  const QVariant &value, int role) override;
+
+    void set_max_download_size(size_t value);
 
 private slots:
     void download_size_changed(size_t value);
@@ -84,6 +88,7 @@ private:
 
     model::download_index data_;
     net::download_manager *manager_;
+    size_t max_download_size_;
 };
 
 }

@@ -14,8 +14,10 @@ using tag_enum = download_item::tag;
 
 download_model::download_model(QObject *parent) :
     QAbstractTableModel(parent),
-    manager_(new net::download_manager(parent))
+    manager_(new net::download_manager(parent)),
+    max_download_size_{4}
 {    
+    manager_->set_max_download_size(max_download_size_);
     connect(manager_, SIGNAL(download_finished(int_fast64_t)),
             this, SLOT(download_finished(int_fast64_t)));
     connect(manager_, SIGNAL(download_progress(int_fast64_t,qint64,qint64)),
@@ -31,7 +33,9 @@ append(QUrl const &value, QString const &save_at,
     auto const uuid = manager_->append(value, save_at, save_as);
     if(uuid != -1){
         auto &ran = data_.get<random>();
-        if(ran.emplace_back(value.fileName(), "Waiting", uuid).second){
+        if(ran.emplace_back(value.fileName(),
+                            "Waiting", value,
+                            uuid).second){
             return insertRows(static_cast<int>(ran.size()),
                               1);
         }
@@ -76,6 +80,11 @@ QVariant download_model::data(const QModelIndex &index,
     }
 
     return {};
+}
+
+size_t download_model::get_max_download_size() const
+{
+    return max_download_size_;
 }
 
 QVariant download_model::
@@ -179,15 +188,29 @@ setData(const QModelIndex &index,
     return true;
 }
 
+void download_model::set_max_download_size(size_t value)
+{
+    max_download_size_ = value;
+    manager_->set_max_download_size(value);
+}
+
 void download_model::download_size_changed(size_t value)
 {
-
+    if(value < max_download_size_){
+       auto const &ran = data_.get<random>();
+       auto func = [](auto const &v){return v.status_ == global::waiting;};
+       auto r_it = std::find_if(std::begin(ran), std::end(ran), func);
+       manager_->start_download(r_it->url_);
+    }
 }
 
 void download_model::download_finished(int_fast64_t uuid)
 {
-    setData(get_index(uuid, tag_enum::status),
+    int const row = get_row(uuid);
+    setData(index(row, static_cast<int>(tag_enum::status)),
             global::done, Qt::DisplayRole);
+    setData(index(row, static_cast<int>(tag_enum::percent)),
+            "", Qt::DisplayRole);
 }
 
 void download_model::download_progress(int_fast64_t uuid,
