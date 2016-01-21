@@ -18,14 +18,16 @@ SOURCES += main.cpp \
     download_manager.cpp \
     download_item.cpp \
     download_model.cpp \
-    download_info.cpp
+    download_info.cpp \
+    global_variable.cpp
 
 HEADERS  += \
     download_manager_ui.hpp \
     download_manager.hpp \
     download_item.hpp \
     download_model.hpp \
-    download_info.hpp
+    download_info.hpp \
+    global_variable.hpp
 
 FORMS    += \
     download_manager_ui.ui
