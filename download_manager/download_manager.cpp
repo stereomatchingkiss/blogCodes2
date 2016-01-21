@@ -84,14 +84,13 @@ int_fast64_t download_manager::start_download_impl(QUrl const &url,
         reply = manager_->get(request);
     }
     auto &uid_index = download_info_.get<uid>();
-    download_info info{uuid_, reply,
-                       save_at, save_as};
+    download_info info{uuid_, reply, save_at, save_as};
     info.url_ = url;
     auto pair = uid_index.insert(info);
-    if(reply){
-        if(pair.second){
-            if(create_dir(save_at, uid_index, pair)){
-                if(create_file(save_at, save_as, uid_index, pair)){
+    if(pair.second){
+        if(create_dir(save_at, uid_index, pair)){
+            if(create_file(save_at, save_as, uid_index, pair)){
+                if(reply){
                     connect_network_reply(reply);
                 }
             }
