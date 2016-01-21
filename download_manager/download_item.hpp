@@ -34,7 +34,7 @@ struct download_item
                   int_fast64_t uuid);
 
     QString name_;
-    float percent_ = 0;
+    QString percent_ = "?";
     size_t size_ = 0;
     QString status_ = "Waiting";
     int_fast64_t uuid_ = 0;
