@@ -7,6 +7,8 @@ namespace Ui {
 class download_manager_ui;
 }
 
+namespace dm{
+
 class download_manager_ui : public QMainWindow
 {
     Q_OBJECT
@@ -18,5 +20,7 @@ public:
 private:
     Ui::download_manager_ui *ui;
 };
+
+}
 
 #endif // DOWNLOAD_MANAGER_UI_HPP
