@@ -21,18 +21,22 @@ download_manager::download_manager(QObject *obj) :
 
 }
 
-bool download_manager::append(QUrl const &value,
-                              QString const &save_at,
-                              QString const &save_as)
+int_fast64_t download_manager::
+append(QUrl const &value,
+       QString const &save_at,
+       QString const &save_as)
 {
     auto *reply = start_download_impl(value);
     if(reply){
         auto &uid_index = download_info_.get<uid>();
-        return uid_index.insert({uuid_++, reply,
-                                 save_at, save_as}).second;
+        if(uid_index.insert({uuid_, reply,
+                             save_at, save_as}).second)
+        {
+           return uuid_++;
+        }
     }
 
-    return false;
+    return -1;
 }
 
 size_t download_manager::get_max_download_size() const

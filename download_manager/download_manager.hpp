@@ -27,9 +27,9 @@ class download_manager : public QObject
 public:
     explicit download_manager(QObject *obj = nullptr);
 
-    bool append(QUrl const &value,
-                QString const &save_at,
-                QString const &save_as);
+    int_fast64_t append(QUrl const &value,
+                        QString const &save_at,
+                        QString const &save_as);
 
     size_t get_max_download_size() const;
     size_t get_total_download_file() const;
