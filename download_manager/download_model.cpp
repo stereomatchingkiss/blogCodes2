@@ -206,10 +206,9 @@ void download_model::download_size_changed(size_t value)
         auto const &ran = data_.get<random>();
         auto func = [](auto const &v){return v.status_ == global::waiting;};
         auto r_it = std::find_if(std::begin(ran), std::end(ran), func);
-        //manager_->append(r_it->url_, r_it->save_at_,
-        //                 r_it->save_as_);
         if(r_it != std::end(ran)){
-            append(r_it->url_, r_it->save_at_, r_it->save_as_);
+            qDebug()<<__func__<<" : start download";
+            manager_->start_download(r_it->uuid_);
         }
     }
 }
