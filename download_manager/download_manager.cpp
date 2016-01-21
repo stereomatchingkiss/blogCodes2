@@ -4,6 +4,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QMessageBox>
 #include <QNetworkAccessManager>
 #include <QTextStream>
 
@@ -30,10 +31,12 @@ append(QUrl const &value,
     if(reply){
         auto &uid_index = download_info_.get<uid>();
         if(uid_index.insert({uuid_, reply,
-                             save_at, save_as}).second)
+                            save_at, save_as}).second)
         {
-           return uuid_++;
+            return uuid_++;
         }
+    }else{
+        qDebug()<<this<<" cannot start to download";
     }
 
     return -1;
@@ -61,7 +64,7 @@ bool download_manager::start_download(const QUrl &value)
 
 QNetworkReply* download_manager::start_download_impl(QUrl const &value)
 {     
-    if(max_download_size_ < total_download_files_){
+    if(total_download_files_ < max_download_size_){
         QNetworkRequest request(value);
         auto *current_download = manager_->get(request);
         connect(current_download, SIGNAL(downloadProgress(qint64,qint64)),
@@ -73,6 +76,8 @@ QNetworkReply* download_manager::start_download_impl(QUrl const &value)
         emit download_size_changed(++total_download_files_);
 
         return current_download;
+    }else{
+        qDebug()<<this<<" max_download_size_ >= total_download_files_";
     }
 
     return nullptr;
@@ -118,6 +123,8 @@ download_progress(qint64 bytes_received,
     if(reply){
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
+        qDebug()<<__func__<< " receive "<<bytes_received;
+        qDebug()<<__func__<< " total "<<bytes_total;
         if(it != std::end(net_index)){
             emit download_progress(it->uuid_, bytes_received,
                                    bytes_total);
@@ -129,11 +136,14 @@ void download_manager::download_ready_read()
 {
     auto *reply = qobject_cast<QNetworkReply*>(sender());
     if(reply){
+        qDebug()<<__func__<<" ready read";
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
         if(it != std::end(net_index)){
             emit download_ready_read(it->uuid_);
         }
+    }else{
+        qDebug()<<__func__<< " cannot cast sender to reply";
     }
 }
 
@@ -142,16 +152,21 @@ save_data(download_info const &info,
           QByteArray const &data)
 {
     QDir dir(info.save_at_);
-    if(!dir.exists() && QFileInfo(info.save_at_).isDir()){
-        dir.mkpath(info.save_at_);
+    if(!dir.exists()){
+        if(!dir.mkpath(info.save_at_)){
+            QMessageBox::warning(0, tr("Warning"),
+                                 tr("Can not create directory"));
+        }
     }
     QFile file(info.save_at_ + "/" + info.save_as_);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        qDebug()<<__func__<<" cannot open file";
         return;
     }
 
     QTextStream out(&file);
     out<<data;
+    qDebug()<<__func__<<"save buffer";
 }
 
 }
