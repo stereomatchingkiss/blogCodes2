@@ -22,6 +22,8 @@ download_model::download_model(QObject *parent) :
             this, SLOT(download_finished(int_fast64_t)));
     connect(manager_, SIGNAL(download_progress(int_fast64_t,qint64,qint64)),
             this, SLOT(download_progress(int_fast64_t,qint64,qint64)));
+    connect(manager_, SIGNAL(downloading_size_decrease(size_t)),
+            this, SLOT(download_size_changed(size_t)));
     //connect(manager_, SIGNAL(download_ready_read(int_fast64_t)),
     //        this, SLOT(download_ready_read(int_fast64_t)));
 }
@@ -32,10 +34,13 @@ append(QUrl const &value, QString const &save_at,
 {
     auto const uuid = manager_->append(value, save_at, save_as);
     if(uuid != -1){
+        download_item item(value.fileName(),
+                           global::waiting, value,
+                           uuid);
+        item.save_as_ = save_as;
+        item.save_at_ = save_at;
         auto &ran = data_.get<random>();
-        if(ran.emplace_back(value.fileName(),
-                            "Waiting", value,
-                            uuid).second){
+        if(ran.emplace_back(item).second){
             return insertRows(static_cast<int>(ran.size()),
                               1);
         }
@@ -197,10 +202,15 @@ void download_model::set_max_download_size(size_t value)
 void download_model::download_size_changed(size_t value)
 {
     if(value < max_download_size_){
-       auto const &ran = data_.get<random>();
-       auto func = [](auto const &v){return v.status_ == global::waiting;};
-       auto r_it = std::find_if(std::begin(ran), std::end(ran), func);
-       manager_->start_download(r_it->url_);
+        qDebug()<<__func__<<" : value < max download size";
+        auto const &ran = data_.get<random>();
+        auto func = [](auto const &v){return v.status_ == global::waiting;};
+        auto r_it = std::find_if(std::begin(ran), std::end(ran), func);
+        //manager_->append(r_it->url_, r_it->save_at_,
+        //                 r_it->save_as_);
+        if(r_it != std::end(ran)){
+            append(r_it->url_, r_it->save_at_, r_it->save_as_);
+        }
     }
 }
 
@@ -210,7 +220,7 @@ void download_model::download_finished(int_fast64_t uuid)
     setData(index(row, static_cast<int>(tag_enum::status)),
             global::done, Qt::DisplayRole);
     setData(index(row, static_cast<int>(tag_enum::percent)),
-            "", Qt::DisplayRole);
+            tr("100%"), Qt::DisplayRole);
 }
 
 void download_model::download_progress(int_fast64_t uuid,
