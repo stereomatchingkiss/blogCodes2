@@ -14,8 +14,6 @@ namespace dm{
 
 namespace model{
 
-using namespace boost::multi_index;
-
 struct random{};
 struct url{};
 
@@ -39,14 +37,14 @@ struct download_item
     QUrl url_;
 };
 
-using download_index = multi_index_container
+using download_index = boost::multi_index::multi_index_container
 <
     download_item,
-    indexed_by<
-        random_access<tag<random>>,
-        ordered_unique<
-            tag<url>,
-            member<download_item,QUrl,&download_item::url_>
+    boost::multi_index::indexed_by<
+        boost::multi_index::random_access<boost::multi_index::tag<random>>,
+        boost::multi_index::ordered_unique<
+            boost::multi_index::tag<url>,
+            boost::multi_index::member<download_item,QUrl,&download_item::url_>
         >
     >
 >;
