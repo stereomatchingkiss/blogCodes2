@@ -6,7 +6,6 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QNetworkAccessManager>
-#include <QTextStream>
 
 namespace dm{
 
@@ -153,19 +152,20 @@ save_data(download_info const &info,
 {
     QDir dir(info.save_at_);
     if(!dir.exists()){
-        if(!dir.mkpath(info.save_at_)){
+        if(!QDir().mkpath(info.save_at_)){
             QMessageBox::warning(0, tr("Warning"),
                                  tr("Can not create directory"));
         }
     }
     QFile file(info.save_at_ + "/" + info.save_as_);
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+    if(!file.open(QIODevice::WriteOnly)){
         qDebug()<<__func__<<" cannot open file";
+        QMessageBox::warning(0, tr("Warning"),
+                             tr("Can not save download file"));
         return;
     }
 
-    QTextStream out(&file);
-    out<<data;
+    file.write(data);
     qDebug()<<__func__<<"save buffer";
 }
 
