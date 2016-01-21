@@ -114,8 +114,6 @@ void download_manager::download_finished()
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
         if(it != std::end(net_index)){
-            auto const data = reply->readAll();
-            save_data(*it, data);
             auto const uuid = it->uuid_;
             net_index.erase(it);
             emit download_finished(uuid);
@@ -160,29 +158,6 @@ void download_manager::download_ready_read()
     }else{
         qDebug()<<__func__<< " cannot cast sender to reply";
     }
-}
-
-void download_manager::
-save_data(download_info const &info,
-          QByteArray const &data)
-{
-    /*QDir dir(info.save_at_);
-    if(!dir.exists()){
-        if(!QDir().mkpath(info.save_at_)){
-            QMessageBox::warning(0, tr("Warning"),
-                                 tr("Can not create directory"));
-        }
-    }
-    QFile file(info.save_at_ + "/" + info.save_as_);
-    if(!file.open(QIODevice::WriteOnly)){
-        qDebug()<<__func__<<" cannot open file";
-        QMessageBox::warning(0, tr("Warning"),
-                             tr("Can not save download file"));
-        return;
-    }
-
-    file.write(data);
-    qDebug()<<__func__<<"save buffer";*/
 }
 
 }

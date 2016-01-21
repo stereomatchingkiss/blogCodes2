@@ -50,10 +50,7 @@ private slots:
                            qint64 bytes_total);
     void download_ready_read();
 
-private:    
-    void save_data(download_info const &info,
-                   QByteArray const &data);
-
+private:        
     int_fast64_t start_download_impl(QUrl const &value,
                                      QString const &save_at,
                                      QString const &save_as);
