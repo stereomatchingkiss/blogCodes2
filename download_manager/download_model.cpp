@@ -15,18 +15,27 @@ download_model::download_model(QObject *parent) :
     QAbstractTableModel(parent),
     manager_(new net::download_manager(parent))
 {    
+    /*connect(manager_, SIGNAL(download_finished(QUrl)),
+            manager_, SLOT(download_finished(QUrl)));
+    connect(manager_, SIGNAL(download_progress(qint64,qint64)),
+            this, SLOT(download_progress(qint64,qint64)));
+    connect(manager_, SIGNAL(download_ready_read()),
+            this, SLOT(download_ready_read()));*/
 }
 
 bool download_model::
 append(QUrl const &value, QString const &save_at,
        QString const &save_as)
 {
-    auto &ran = data_.get<random>();
-    if(ran.emplace_back("Waiting", value).second){
-        manager_->append(value, save_at, save_as);
-        return insertRows(static_cast<int>(ran.size()),
-                          1);
+    auto const uuid = manager_->append(value, save_at, save_as);
+    if(uuid != -1){
+        auto &ran = data_.get<random>();
+        if(ran.emplace_back(value.fileName(), "Waiting", uuid).second){
+            return insertRows(static_cast<int>(ran.size()),
+                              1);
+        }
     }
+
 
     return false;
 }

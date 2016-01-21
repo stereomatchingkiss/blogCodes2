@@ -39,6 +39,12 @@ public:
     bool setData(const QModelIndex &index,
                  const QVariant &value, int role) override;
 
+private slots:
+    //void download_finished(QUrl url);
+    //void download_progress(qint64 bytes_received,
+    //                       qint64 bytes_total);
+    //void download_ready_read();
+
 private:
     bool insertRows(int row, int count,
                     const QModelIndex &parent = QModelIndex()) override;
