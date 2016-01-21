@@ -1,6 +1,8 @@
 #ifndef DOWNLOAD_MANAGER_H
 #define DOWNLOAD_MANAGER_H
 
+#include "download_info.hpp"
+
 #include <QObject>
 #include <QNetworkReply>
 #include <QStringList>
@@ -33,7 +35,6 @@ public:
 
     void set_max_download_size(size_t value);
 
-public slots:
     QNetworkReply* start_download(QUrl const &value);
 
 signals:
@@ -45,24 +46,15 @@ signals:
 private slots:
     void download_finished();
 
-private:
-    struct file_info
-    {
-       file_info() = default;
-       file_info(QString const &save_at,
-                 QString const &save_as);
+private:    
+    void save_data(download_info const &info,
+                   QByteArray const &data);    
 
-       QString save_at_;
-       QString save_as_;       
-    };
-
-    void save_data(file_info const &info,
-                   QByteArray const &data);
-
-    std::map<QNetworkReply*, file_info> download_info_;
+    download_info_index download_info_;
     QNetworkAccessManager *manager_;
     size_t max_download_size_;
     size_t total_download_files_;
+    uint_least64_t uuid_;
 };
 
 }

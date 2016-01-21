@@ -15,7 +15,8 @@ download_manager::download_manager(QObject *obj) :
     QObject(obj),
     manager_{new QNetworkAccessManager(obj)},
     max_download_size_{4},
-    total_download_files_{0}
+    total_download_files_{0},
+    uuid_{0}
 {
 
 }
@@ -26,8 +27,9 @@ bool download_manager::append(QUrl const &value,
 {
     auto *reply = start_download(value);
     if(reply){
-        return download_info_.insert({reply,
-                                      {save_at, save_as}}).second;
+        auto &uid_index = download_info_.get<uid>();
+        return uid_index.insert({uuid_++, reply,
+                                 save_at, save_as}).second;
     }
 
     return false;
@@ -79,12 +81,13 @@ void download_manager::download_finished()
     if(reply){
         recycle rc(reply);
 
-        auto it = download_info_.find(reply);
-        if(it != std::end(download_info_)){
+        auto &net_index = download_info_.get<net_reply>();
+        auto it = net_index.find(reply);
+        if(it != std::end(net_index)){
             auto const data = reply->readAll();
-            save_data(it->second, data);
+            save_data(*it, data);
 
-            download_info_.erase(it);
+            net_index.erase(it);
             --total_download_files_;
 
             emit download_finished(reply->url());
@@ -95,7 +98,7 @@ void download_manager::download_finished()
 }
 
 void download_manager::
-save_data(download_manager::file_info const &info,
+save_data(download_info const &info,
           QByteArray const &data)
 {
     QDir dir(info.save_at_);
@@ -109,15 +112,6 @@ save_data(download_manager::file_info const &info,
 
     QTextStream out(&file);
     out<<data;
-}
-
-download_manager::file_info::
-file_info(QString const &save_at,
-          QString const &save_as) :
-    save_at_(save_at),
-    save_as_(save_as)
-{
-
 }
 
 }
