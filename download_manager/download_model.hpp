@@ -41,12 +41,12 @@ public:
 
     bool setData(const QModelIndex &index,
                  const QVariant &value, int role) override;
-
     void set_max_download_size(size_t value);
+    void start_download(int row);
 
 private slots:    
     void download_error(int_fast64_t uuid, QString error);
-    void download_finished(int_fast64_t uuid);
+    void download_finished(int_fast64_t uuid, QString error);
     void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
                            qint64 bytes_total);
