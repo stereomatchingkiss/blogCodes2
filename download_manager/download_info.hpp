@@ -26,6 +26,9 @@ struct download_info
                   QString const &save_at,
                   QString const &save_as);
 
+    QString error_;
+    //QFile is noncopyable, this is why
+    //shared ptr is needed
     std::shared_ptr<QFile> file_;
     QNetworkReply *reply_ = nullptr;
     QString save_at_;
