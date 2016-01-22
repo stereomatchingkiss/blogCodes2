@@ -154,7 +154,7 @@ bool download_model::
 setData(const QModelIndex &index,
         const QVariant &value, int role)
 {
-    if(!index.isValid() || role == Qt::EditRole){
+    if(!index.isValid() && role == Qt::DisplayRole){
         return false;
     }
 
