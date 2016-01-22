@@ -53,6 +53,7 @@ bool download_manager::start_download(int_fast64_t uuid)
         qDebug()<<__func__<<" can find uuid";
         bool const success = id_set.modify(id_it, [&](auto &v)
         {
+            v.error_.clear();
             QNetworkRequest request(v.url_);
             v.reply_ = manager_->get(request);
         });
@@ -128,9 +129,8 @@ void download_manager::download_finished()
 
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
-        if(it != std::end(net_index)){
-            auto const uuid = it->uuid_;
-            emit download_finished(uuid);
+        if(it != std::end(net_index)){            
+            emit download_finished(it->uuid_, it->error_);
             emit downloading_size_decrease(--total_download_files_);
         }
     }else{
@@ -174,16 +174,18 @@ void download_manager::download_ready_read()
     }
 }
 
-void download_manager::error(QNetworkReply::NetworkError code)
+void download_manager::error(QNetworkReply::NetworkError)
 {
-    auto reply = qobject_cast<QNetworkReply*>(sender());
+    auto *reply = qobject_cast<QNetworkReply*>(sender());
     if(reply){
-        recycle rc(reply);
-        reply->abort();
+        qDebug()<<__func__<<" : "<<reply->errorString();                
         auto &reply_set = download_info_.get<net_reply>();
         auto r_it = reply_set.find(reply);
         if(r_it != std::end(reply_set)){
-            emit download_error(r_it->uuid_, reply->errorString());
+            reply_set.modify(r_it, [&](auto &v)
+            {
+                v.error_ = reply->errorString();
+            });
         }
     }
 }

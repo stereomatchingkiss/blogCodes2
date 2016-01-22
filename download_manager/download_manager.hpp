@@ -40,7 +40,7 @@ public:
 
 signals:
     void download_error(int_fast64_t uuid, QString error);
-    void download_finished(int_fast64_t uuid);
+    void download_finished(int_fast64_t uuid, QString error);
     void download_progress(int_fast64_t uuid,
                            qint64 bytes_received,
                            qint64 bytes_total);
