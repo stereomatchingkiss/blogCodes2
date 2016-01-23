@@ -49,7 +49,7 @@ bool download_manager::start_download(int_fast64_t uuid)
     qDebug()<<__func__<<"start download id "<<uuid;
     auto &id_set = download_info_.get<uid>();
     auto id_it = id_set.find(uuid);
-    if(id_it != std::end(id_set)){
+    if(id_it != std::end(id_set) && id_it->reply_){
         qDebug()<<__func__<<" can find uuid";
         bool const success = id_set.modify(id_it, [&](auto &v)
         {
@@ -132,7 +132,11 @@ void download_manager::download_finished()
         if(it != std::end(net_index)){            
             emit download_finished(it->uuid_, it->error_);
             emit downloading_size_decrease(--total_download_files_);
-        }
+            net_index.modify(it, [](auto &v)
+            {
+                v.reply_ = nullptr;
+            });
+        }        
     }else{
         qDebug()<<__func__<<" : do not exist";
     }
