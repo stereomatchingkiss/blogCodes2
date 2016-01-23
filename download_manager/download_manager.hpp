@@ -48,7 +48,14 @@ public:
      */
     int_fast64_t append(QUrl const &url,
                         QString const &save_at,
-                        QString const &save_as);        
+                        QString const &save_as);
+
+    /**
+     * Erase the download item
+     * @param uuid the unique id of the item want to delete
+     * @return true if the request can be erased and vice versa
+     */
+    bool erase(int_fast64_t uuid);
 
     /**
      * Get the maximum download size of download manager,

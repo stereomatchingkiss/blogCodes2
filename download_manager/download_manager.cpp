@@ -80,6 +80,18 @@ append(QUrl const &url,
     return start_download_impl(url, save_at, save_as);
 }
 
+bool download_manager::erase(int_fast64_t uuid)
+{
+    auto &id_set = download_info_.get<uid>();
+    auto id_it = id_set.find(uuid);
+    if(id_it != std::end(id_set)){
+        id_set.erase(id_it);
+        return true;
+    }
+
+    return false;
+}
+
 bool download_manager::start_download(int_fast64_t uuid)
 {
     qDebug()<<__func__<<"start download id "<<uuid;
@@ -173,7 +185,11 @@ void download_manager::download_finished()
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
         if(it != std::end(net_index)){
-            emit download_finished(it->uuid_, it->error_);
+            if(reply->isFinished()){
+               emit download_finished(it->uuid_, tr("Abort"));
+            }else{
+               emit download_finished(it->uuid_, it->error_);
+            }
             emit downloading_size_decrease(--total_download_files_);
             net_index.modify(it, [](auto &v)
             {
