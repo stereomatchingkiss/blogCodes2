@@ -255,7 +255,7 @@ void download_model::download_progress(int_fast64_t uuid,
     int const row = get_row(uuid);
     setData(index(row, static_cast<int>(tag_enum::status)),
             global::downloading, Qt::DisplayRole);
-    if(bytes_total != 0 || bytes_total != -1){
+    if(bytes_total > 0){
         auto const size =
                 QString::number(bytes_received) + "/" +
                 QString::number(bytes_total);
