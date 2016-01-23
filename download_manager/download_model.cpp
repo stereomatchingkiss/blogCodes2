@@ -242,6 +242,18 @@ void download_model::download_size_changed(size_t value)
     }
 }
 
+int download_model::get_row(int_fast64_t uuid) const
+{
+    auto const &id_set = data_.get<uid>();
+    auto id_it = id_set.find(uuid);
+    if(id_it != std::end(id_set)){
+        return data_.project<random>(id_it) -
+                std::begin(data_.get<random>());
+    }
+
+    return -1;
+}
+
 void download_model::download_finished(int_fast64_t uuid, QString error)
 {    
     int const row = get_row(uuid);

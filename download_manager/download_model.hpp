@@ -73,17 +73,7 @@ private:
         return r_it - std::begin(ran);
     }
 
-    int get_row(int_fast64_t uuid) const
-    {
-        auto const &id_set = data_.get<uid>();
-        auto id_it = id_set.find(uuid);
-        if(id_it != std::end(id_set)){
-            return data_.project<random>(id_it) -
-                    std::begin(data_.get<random>());
-        }
-
-        return -1;
-    }
+    int get_row(int_fast64_t uuid) const;
 
     bool insertRows(int row, int count,
                     const QModelIndex &parent = QModelIndex()) override;
