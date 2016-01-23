@@ -49,7 +49,7 @@ bool download_manager::start_download(int_fast64_t uuid)
     qDebug()<<__func__<<"start download id "<<uuid;
     auto &id_set = download_info_.get<uid>();
     auto id_it = id_set.find(uuid);
-    if(id_it != std::end(id_set) && id_it->reply_){
+    if(id_it != std::end(id_set) && !id_it->reply_){
         qDebug()<<__func__<<" can find uuid";
         auto copy_it = *id_it;
         copy_it.error_.clear();
