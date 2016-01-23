@@ -29,14 +29,14 @@ public:
 
     QVariant data(const QModelIndex &index, int role) const override;
 
+    bool erase(int row);
+
     size_t get_max_download_size() const;
 
     QVariant headerData(int section,
                         Qt::Orientation orientation,
                         int role) const override;
 
-    bool removeRows(int row, int count,
-                    const QModelIndex &parent = QModelIndex()) override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
     bool setData(const QModelIndex &index,
@@ -86,6 +86,9 @@ private:
     }
 
     bool insertRows(int row, int count,
+                    const QModelIndex &parent = QModelIndex()) override;
+
+    bool removeRows(int row, int count,
                     const QModelIndex &parent = QModelIndex()) override;
 
     model::download_index data_;

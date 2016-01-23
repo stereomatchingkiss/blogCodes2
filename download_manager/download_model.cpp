@@ -89,6 +89,17 @@ QVariant download_model::data(const QModelIndex &index,
     return {};
 }
 
+bool download_model::erase(int row)
+{
+    auto &ran = data_.get<random>();
+    if(manager_->erase(ran[row].uuid_)){
+        removeRows(row, 1);
+        return true;
+    }
+
+    return false;
+}
+
 size_t download_model::get_max_download_size() const
 {
     return max_download_size_;
