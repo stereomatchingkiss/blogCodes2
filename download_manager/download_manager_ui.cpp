@@ -13,6 +13,8 @@ download_manager_ui::download_manager_ui(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::download_manager_ui)
 {
+    Q_INIT_RESOURCE(pics);
+
     ui->setupUi(this);
 
     model_ = new model::download_model(this);
@@ -20,6 +22,7 @@ download_manager_ui::download_manager_ui(QWidget *parent) :
     ui->tableViewDownload->setShowGrid(false);
     ui->tableViewDownload->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableViewDownload->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
 }
 
 download_manager_ui::~download_manager_ui()
@@ -60,4 +63,9 @@ on_tableViewDownload_clicked(const QModelIndex &index)
     bool const can_resume = status == global::waiting ||
             status == global::error;
     ui->actionResume->setEnabled(can_resume);
+}
+
+void dm::download_manager_ui::on_actionDelete_triggered()
+{
+
 }
