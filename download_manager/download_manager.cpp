@@ -58,8 +58,14 @@ bool download_manager::start_download(int_fast64_t uuid)
         bool const success = id_set.replace(id_it, copy_it);
         if(success){
             qDebug()<<__func__<<" can start download";
-            connect_network_reply(id_it->reply_);
-            return true;
+            auto pair = std::make_pair(id_it, true);
+            if(create_dir(copy_it.save_at_, id_set, pair)){
+                if(create_file(copy_it.save_at_, copy_it.save_as_,
+                               id_set, pair)){
+                    connect_network_reply(id_it->reply_);
+                    return true;
+                }
+            }
         }
     }
 
@@ -108,13 +114,15 @@ int_fast64_t download_manager::start_download_impl(QUrl const &url,
     info.url_ = url;
     auto pair = uid_index.insert(info);
     if(pair.second){
-        if(create_dir(save_at, uid_index, pair)){
-            if(create_file(save_at, save_as, uid_index, pair)){
-                if(reply){
+        if(reply){
+            if(create_dir(save_at, uid_index, pair)){
+                if(create_file(save_at, save_as, uid_index, pair)){
                     connect_network_reply(reply);
                 }
             }
         }
+    }else{
+        return -1;
     }
 
     return uuid_++;
@@ -128,14 +136,14 @@ void download_manager::download_finished()
 
         auto &net_index = download_info_.get<net_reply>();
         auto it = net_index.find(reply);
-        if(it != std::end(net_index)){            
+        if(it != std::end(net_index)){
             emit download_finished(it->uuid_, it->error_);
             emit downloading_size_decrease(--total_download_files_);
             net_index.modify(it, [](auto &v)
             {
                 v.reply_ = nullptr;
             });
-        }        
+        }
     }else{
         qDebug()<<__func__<<" : do not exist";
     }
@@ -181,7 +189,7 @@ void download_manager::error(QNetworkReply::NetworkError)
 {
     auto *reply = qobject_cast<QNetworkReply*>(sender());
     if(reply){
-        qDebug()<<__func__<<" : "<<reply->errorString();                
+        qDebug()<<__func__<<" : "<<reply->errorString();
         auto &reply_set = download_info_.get<net_reply>();
         auto r_it = reply_set.find(reply);
         if(r_it != std::end(reply_set)){
