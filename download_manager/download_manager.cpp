@@ -51,12 +51,11 @@ bool download_manager::start_download(int_fast64_t uuid)
     auto id_it = id_set.find(uuid);
     if(id_it != std::end(id_set) && id_it->reply_){
         qDebug()<<__func__<<" can find uuid";
-        bool const success = id_set.modify(id_it, [&](auto &v)
-        {
-            v.error_.clear();
-            QNetworkRequest request(v.url_);
-            v.reply_ = manager_->get(request);
-        });
+        auto copy_it = *id_it;
+        copy_it.error_.clear();
+        QNetworkRequest request(copy_it.url_);
+        copy_it.reply_ = manager_->get(request);
+        bool const success = id_set.replace(id_it, copy_it);
         if(success){
             qDebug()<<__func__<<" can start download";
             connect_network_reply(id_it->reply_);
