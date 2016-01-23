@@ -37,11 +37,11 @@ download_manager::download_manager(QObject *obj) :
 }
 
 int_fast64_t download_manager::
-append(QUrl const &value,
+append(QUrl const &url,
        QString const &save_at,
        QString const &save_as)
 {
-    return start_download_impl(value, save_at, save_as);
+    return start_download_impl(url, save_at, save_as);
 }
 
 bool download_manager::start_download(int_fast64_t uuid)
