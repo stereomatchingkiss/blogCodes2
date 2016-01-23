@@ -29,6 +29,8 @@ public:
 private slots:
     void on_actionResume_triggered();
 
+    void on_tableViewDownload_clicked(const QModelIndex &index);
+
 private:
     Ui::download_manager_ui *ui;
 

@@ -2,6 +2,7 @@
 #include "ui_download_manager_ui.h"
 
 #include "download_model.hpp"
+#include "global_variable.hpp"
 
 #include <QDebug>
 #include <QTableView>
@@ -43,4 +44,21 @@ void dm::download_manager_ui::on_actionResume_triggered()
         qDebug()<<__func__<<" start download";
         model_->start_download(select_index.row());
     }
+}
+
+void dm::download_manager_ui::
+on_tableViewDownload_clicked(const QModelIndex &index)
+{
+    using tag = model::download_item::tag ;
+
+    qDebug()<<__func__<<" : "<<index;
+
+    auto const status =
+            model_->data(model_->index(index.row(),
+                                       static_cast<int>(tag::status)),
+                         Qt::DisplayRole).toString();
+    bool const can_resume = status == global::waiting ||
+            status == global::unknown ||
+            status == global::error;
+    ui->actionResume->setEnabled(can_resume);
 }
