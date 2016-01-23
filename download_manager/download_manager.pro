@@ -9,12 +9,12 @@ QT       += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = download_manager
-TEMPLATE = app
+TEMPLATE = lib
+CONFIG+=staticlib
 
 include(../../pri/boost.pri)
 
-SOURCES += main.cpp \
-    download_manager_ui.cpp \
+SOURCES += download_manager_ui.cpp \
     download_manager.cpp \
     download_item.cpp \
     download_model.cpp \
