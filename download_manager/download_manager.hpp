@@ -129,43 +129,7 @@ private slots:
     void error(QNetworkReply::NetworkError code);
 
 private:
-    void connect_network_reply(QNetworkReply *reply);
-
-    template<typename Index, typename Pair>
-    bool create_dir(QString const &save_at, Index &index,
-                    Pair const &pair)
-    {
-        QDir dir(save_at);
-        if(!dir.exists()){
-            if(!QDir().mkpath(save_at)){
-                QMessageBox::warning(0, tr("Warning"),
-                                     tr("Can not create directory"));
-                index.erase(pair.first);
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    template<typename Index, typename Pair>
-    bool create_file(QString const &save_at, QString const &save_as,
-                     Index &index, Pair const &pair)
-    {
-        bool success = true;
-        index.modify(pair.first, [&](auto &v)
-        {
-            v.file_ = std::make_shared<QFile>(save_at + "/" + save_as);
-            if(!v.file_->open(QIODevice::WriteOnly)){
-                qDebug()<<__func__<<" cannot open file";
-                QMessageBox::warning(0, tr("Warning"),
-                                     tr("Can not save download file"));
-                success = false;
-            }
-        });
-
-        return success;
-    }
+    void connect_network_reply(QNetworkReply *reply);    
 
     int_fast64_t start_download_impl(QUrl const &value,
                                      QString const &save_at,
