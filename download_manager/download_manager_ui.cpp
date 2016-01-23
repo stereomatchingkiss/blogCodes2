@@ -58,7 +58,6 @@ on_tableViewDownload_clicked(const QModelIndex &index)
                                        static_cast<int>(tag::status)),
                          Qt::DisplayRole).toString();
     bool const can_resume = status == global::waiting ||
-            status == global::unknown ||
             status == global::error;
     ui->actionResume->setEnabled(can_resume);
 }
