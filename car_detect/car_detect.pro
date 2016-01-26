@@ -11,7 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = car_detect
 TEMPLATE = app
 
-include(../../pri/cv.pri)
+include(../../pri/cv_cuda.pri)
+include(../../pri/tbb.pri)
+include(../../pri/tiny_cnn.pri)
 
 INCLUDEPATH += ../..
 
