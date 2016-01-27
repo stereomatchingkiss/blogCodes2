@@ -1,4 +1,5 @@
 #include "mnist_benchmark.hpp"
+#include "train_test.hpp"
 
 #include <boost/progress.hpp>
 
@@ -24,7 +25,7 @@ mnist_benchmark::mnist_benchmark()
        << convolutional_layer<activate>(16, 16, 5, 6, 16, padding::same)
        << max_pooling_layer<activate>(16, 16, 16, 2)
        << convolutional_layer<activate>(8, 8, 5, 16, 8)
-       << fully_connected_layer<activate>(128, 10);
+       << fully_connected_layer<activate>(128, 10);    
 
     std::cout << "load models..." << std::endl;
 
@@ -39,37 +40,12 @@ mnist_benchmark::mnist_benchmark()
 
     std::cout << "start learning" << std::endl;
 
-    boost::progress_display disp(static_cast<int>(train_images.size()));
-    boost::timer t;
-    int minibatch_size = 10;
-    int num_epochs = 30;
+    int const minibatch_size = 10;
+    int const num_epochs = 30;
 
     nn.optimizer().alpha *= std::sqrt(minibatch_size);
 
-    // create callback
-    auto on_enumerate_epoch = [&](){
-        std::cout << t.elapsed() << "s elapsed." << std::endl;
-        tiny_cnn::result res = nn.test(test_images, test_labels);
-        std::cout << res.num_success << "/" << res.num_total << std::endl;
-
-        disp.restart(static_cast<int>(train_images.size()));
-        t.restart();
-    };
-
-    auto on_enumerate_minibatch = [&](){
-        disp += minibatch_size;
-    };
-
-    // training
-    nn.train(train_images, train_labels, minibatch_size, num_epochs,
-             on_enumerate_minibatch, on_enumerate_epoch);
-
-    std::cout << "end training." << std::endl;
-
-    // test and show results
-    nn.test(test_images, test_labels).print_detail(std::cout);
-
-    // save networks
-    std::ofstream ofs("LeNet-weights");
-    ofs << nn;
+    train_test tt("LeNet-weights", minibatch_size, num_epochs);
+    tt.train_and_test(nn, train_images, train_labels,
+                      test_images, test_labels);
 }
