@@ -7,15 +7,21 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 class train_test
 {
 public:
-    train_test() = default;
-    train_test(int minibatch_size, int num_epochs) :
+    explicit train_test(std::string output_file) :
+        output_file_(std::move(output_file))
+    {}
+
+    train_test(std::string output_file,
+               int minibatch_size, int num_epochs) :
         minibatch_size_{minibatch_size},
-        num_epochs_{num_epochs}
+        num_epochs_{num_epochs},
+        output_file_(std::move(output_file))
     {}
 
     int get_minibatch_size() const
@@ -28,6 +34,11 @@ public:
         return num_epochs_;
     }
 
+    std::string const &get_output_file() const
+    {
+        return output_file_;
+    }
+
     void set_minibatch_size(int value)
     {
         minibatch_size_ = value;
@@ -36,6 +47,11 @@ public:
     void set_num_epoch(int value)
     {
         num_epochs_ = value;
+    }
+
+    void set_output_file(std::string const &output_file)
+    {
+        output_file_ = output_file;
     }
 
     template<typename Net, typename Img, typename Label>
@@ -47,6 +63,7 @@ public:
 private:
     int minibatch_size_ = 1;
     int num_epochs_ = 30;
+    std::string output_file_;
 };
 
 template<typename Net, typename Img, typename Label>
@@ -82,7 +99,7 @@ void train_test::train_and_test(Net &net, std::vector<Img> const &train_img,
     net.test(test_img, test_label).print_detail(std::cout);
 
     // save networks
-    std::ofstream ofs("car_weights");
+    std::ofstream ofs(output_file_);
     ofs << nn;
 }
 
