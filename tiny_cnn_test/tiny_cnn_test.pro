@@ -20,6 +20,8 @@ DEFINES += CNN_USE_AVX
 #DEFINES += CNN_USE_SSE
 msvc:QMAKE_CXXFLAGS_RELEASE += /openmp /arch:AVX
 
+INCLUDEPATH += ../..
+
 include(../../pri/boost.pri)
 include(../../pri/cv.pri)
 #include(../../pri/rapidjson.pri)
@@ -28,11 +30,13 @@ include(../../pri/tiny_cnn.pri)
 
 SOURCES += main.cpp\
     car_benchmark.cpp \
-    mnist_benchmark.cpp
+    mnist_benchmark.cpp \
+    ../../ocv_libs/file/utility.cpp
 
 HEADERS  += \
     mnist_benchmark.hpp \
     car_benchmark.hpp \
-    utility.hpp
+    utility.hpp \
+    train_test.hpp
 
 FORMS    +=
