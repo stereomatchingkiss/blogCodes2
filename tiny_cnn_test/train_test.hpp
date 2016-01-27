@@ -78,7 +78,7 @@ void train_test::train_and_test(Net &net, std::vector<Img> const &train_img,
     // create callback
     auto on_enumerate_epoch = [&](){
         std::cout << t.elapsed() << "s elapsed." << std::endl;
-        tiny_cnn::result res = nn.test(test_img, test_label);
+        tiny_cnn::result res = net.test(test_img, test_label);
         std::cout << res.num_success << "/" << res.num_total << std::endl;
 
         disp.restart(static_cast<int>(train_img.size()));
@@ -100,7 +100,7 @@ void train_test::train_and_test(Net &net, std::vector<Img> const &train_img,
 
     // save networks
     std::ofstream ofs(output_file_);
-    ofs << nn;
+    ofs << net;
 }
 
 #endif // TRAIN_TEST_HPP
