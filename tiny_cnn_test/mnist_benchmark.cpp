@@ -1,5 +1,6 @@
 #include "mnist_benchmark.hpp"
-#include "train_test.hpp"
+
+#include <ocv_libs/tiny_cnn/trainer.hpp>
 
 #include <boost/progress.hpp>
 
@@ -45,7 +46,7 @@ mnist_benchmark::mnist_benchmark()
 
     nn.optimizer().alpha *= std::sqrt(minibatch_size);
 
-    train_test tt("LeNet-weights", minibatch_size, num_epochs);
+    ocv::tiny_cnn::trainer tt("LeNet-weights", minibatch_size, num_epochs);
     tt.train_and_test(nn, train_images, train_labels,
                       test_images, test_labels);
 }
