@@ -15,7 +15,7 @@ Img cvmat_to_img(cv::Mat const& input,
                  float_t scale_max = 1)
 {
     CV_Assert(input.type() == CV_8U || input.type() == CV_8UC3);
-    CV_Assert(scale_min >= scale_max);
+    CV_Assert(scale_min < scale_max);
 
     Img img;
     ocv::for_each<uchar>(input, [&](uchar c)
