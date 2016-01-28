@@ -18,7 +18,7 @@ Img cvmat_to_img(cv::Mat const& input,
     CV_Assert(scale_min < scale_max);
 
     Img img;
-    ocv::for_each<uchar>(input, [&](uchar c)
+    ocv::for_each_channels<uchar>(input, [&](uchar c)
     {
        img.emplace_back(scale_min + (scale_max - scale_min) * c / 255.0);
     });
