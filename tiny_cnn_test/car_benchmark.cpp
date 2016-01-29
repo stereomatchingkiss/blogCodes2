@@ -1,7 +1,8 @@
 #include "car_benchmark.hpp"
-#include "utility.hpp"
 
 #include <ocv_libs/file/utility.hpp>
+#include <ocv_libs/ml/utility/shuffle_data.hpp>
+#include <ocv_libs/tiny_cnn/image_converter.hpp>
 #include <ocv_libs/tiny_cnn/trainer.hpp>
 
 #include <boost/progress.hpp>
@@ -31,12 +32,20 @@ void create_lenet(Net &nn)
        << convolutional_layer<activate>(5, 5, 5, 16, 120)
        << fully_connected_layer<softmax>(120, 2);//*/
 
-    nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
        << max_pooling_layer<activate>(32, 32, 6, 2)
        << convolutional_layer<activate>(16, 16, 3, 6, 16, padding::same)
        << max_pooling_layer<activate>(16, 16, 16, 2)
        << convolutional_layer<activate>(8, 8, 5, 16, 24)
-       << fully_connected_layer<softmax>(384, 10);//*/
+       << fully_connected_layer<activate>(384, 384)
+       << fully_connected_layer<softmax>(384, 2);//*/
+
+    nn << convolutional_layer<activate>(32, 32, 3, 3, 6, padding::same)
+       << max_pooling_layer<activate>(32, 32, 6, 2)
+       << convolutional_layer<activate>(16, 16, 3, 6, 16, padding::same)
+       << max_pooling_layer<activate>(16, 16, 16, 2)
+       << convolutional_layer<activate>(8, 8, 5, 16, 24)
+       << fully_connected_layer<softmax>(384, 2);//*/
 
     /*nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
        << max_pooling_layer<activate>(32, 32, 6, 2)
@@ -52,7 +61,7 @@ template<typename Net>
 void create_minivgg(Net &nn)
 {
     using activate = relu;
-    nn << convolutional_layer<activate>(32, 32, 3, 3, 32, padding::same)
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
        << convolutional_layer<activate>(32, 32, 3, 32, 32, padding::same)
        << max_pooling_layer<activate>(32, 32, 32, 2)
        << dropout_layer(16*16*32, 0.25)
@@ -60,7 +69,7 @@ void create_minivgg(Net &nn)
        << convolutional_layer<activate>(16, 16, 3, 64, 64, padding::same)
        << max_pooling_layer<activate>(16, 16, 64, 2)
        << dropout_layer(8*8*64, 0.25)
-       << fully_connected_layer<softmax>(8*8*64, 10);
+       << fully_connected_layer<softmax>(8*8*64, 2);
 }
 
 
@@ -85,18 +94,10 @@ car_benchmark::car_benchmark()
     parse_cifar10("cifar-10-batches-bin/data_batch_5.bin", &train_images_, &train_labels_, 0, 1, 0, 0);
     parse_cifar10("cifar-10-batches-bin/test_batch.bin", &test_images_, &test_labels_, 0, 1, 0, 0);//*/
 
-    std::vector<std::pair<vec_t, label_t>> img_and_labels;
-    for(size_t i = 0; i != train_images_.size(); ++i){
-        img_and_labels.emplace_back(std::move(train_images_[i]),
-                                    train_labels_[i]);
-    }
-    std::random_device rd;
-    std::default_random_engine g(rd());
-    std::shuffle(std::begin(img_and_labels), std::end(img_and_labels), g);
-    for(size_t i = 0; i != train_images_.size(); ++i){
-        train_images_[i] = std::move(img_and_labels[i].first);
-        train_labels_[i] = img_and_labels[i].second;
-    }
+    ocv::ml::shuffles(train_images_.begin(),
+                     train_images_.end(),
+                     train_labels_.begin());
+    ocv::ml::shuffles(train_images_, train_labels_);
 
     try{
         train_test();
@@ -108,14 +109,17 @@ car_benchmark::car_benchmark()
 void car_benchmark::add_data(label_t label, cv::Mat const &img,
                              Labels &labels, Imgs &imgs)
 {
+    using namespace ocv::tiny_cnn;
     if(!img.empty()){
+        float const min = -1;
+        float const max = 1;
         cv::Mat resize_img;
         cv::resize(img, resize_img, {32,32});
-        imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, -1, 1));
+        imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
         labels.emplace_back(label);
 
         //cv::flip(resize_img, resize_img, 0); //flip horizontal
-        //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, 0, 1));
+        //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, -1, 1));
         //labels.emplace_back(label);
     }
 }
@@ -179,7 +183,7 @@ void car_benchmark::train_test()
     int const num_epochs = 10;
 
     nn.optimizer().alpha *= std::sqrt(minibatch_size);
-
+    //nn.optimizer().alpha *= 0.1;
     ocv::tiny_cnn::trainer tt("car_weights", minibatch_size, num_epochs);
     tt.train_and_test(nn, train_images_, train_labels_,
                       test_images_, test_labels_);
