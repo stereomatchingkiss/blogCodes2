@@ -35,7 +35,6 @@ SOURCES += main.cpp\
 
 HEADERS  += \
     mnist_benchmark.hpp \
-    car_benchmark.hpp \
-    utility.hpp
+    car_benchmark.hpp
 
 FORMS    +=
