@@ -40,7 +40,15 @@ void create_lenet(Net &nn)
        << fully_connected_layer<activate>(384, 384)
        << fully_connected_layer<softmax>(384, 2);//*/
 
-    nn << convolutional_layer<activate>(32, 32, 3, 3, 6, padding::same)
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
+       << max_pooling_layer<activate>(32, 32, 6, 2)
+       << convolutional_layer<activate>(16, 16, 3, 6, 16, padding::same)
+       << max_pooling_layer<activate>(16, 16, 16, 2)
+       << convolutional_layer<activate>(8, 8, 5, 16, 24)
+       << fully_connected_layer<softmax>(384, 2);//*/
+
+    //workable solution
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
        << max_pooling_layer<activate>(32, 32, 6, 2)
        << convolutional_layer<activate>(16, 16, 3, 6, 16, padding::same)
        << max_pooling_layer<activate>(16, 16, 16, 2)
@@ -78,13 +86,13 @@ void create_minivgg(Net &nn)
 car_benchmark::car_benchmark()
 {            
     load_car_data("train_cars", load_car_region("cars_train_annos.txt"),
-                  train_images_, train_labels_);
+                  true, train_images_, train_labels_);
     load_car_data("test_cars", load_car_region("cars_test_annos.txt"),
-                  test_images_, test_labels_);
+                  false, test_images_, test_labels_);
 
-    load_data("non_cars", 1,
+    load_data("non_cars", 1, true,
               train_images_, train_labels_);
-    load_data("test_non_cars", 1,
+    load_data("test_non_cars", 1, false,
               test_images_, test_labels_);//*/
 
     /*parse_cifar10("cifar-10-batches-bin/data_batch_1.bin", &train_images_, &train_labels_, 0, 1, 0, 0);
@@ -95,8 +103,8 @@ car_benchmark::car_benchmark()
     parse_cifar10("cifar-10-batches-bin/test_batch.bin", &test_images_, &test_labels_, 0, 1, 0, 0);//*/
 
     ocv::ml::shuffles(train_images_.begin(),
-                     train_images_.end(),
-                     train_labels_.begin());
+                      train_images_.end(),
+                      train_labels_.begin());
     ocv::ml::shuffles(train_images_, train_labels_);
 
     try{
@@ -107,7 +115,8 @@ car_benchmark::car_benchmark()
 }
 
 void car_benchmark::add_data(label_t label, cv::Mat const &img,
-                             Labels &labels, Imgs &imgs)
+                             bool augment, Labels &labels,
+                             Imgs &imgs)
 {
     using namespace ocv::tiny_cnn;
     if(!img.empty()){
@@ -118,15 +127,18 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
         imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
         labels.emplace_back(label);
 
-        //cv::flip(resize_img, resize_img, 0); //flip horizontal
-        //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, -1, 1));
-        //labels.emplace_back(label);
+        if(augment){
+            cv::flip(resize_img, resize_img, 0); //flip horizontal
+            imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, -1, 1));
+            labels.emplace_back(label);
+        }
     }
 }
 
 void car_benchmark::load_car_data(const std::string &folder,
                                   std::map<std::string, cv::Rect> const &car_region,
-                                  Imgs &imgs, Labels &labels)
+                                  bool augment, Imgs &imgs,
+                                  Labels &labels)
 {
     auto const names = ocv::file::get_directory_files(folder);
     int const expand_pix = 16;
@@ -142,7 +154,7 @@ void car_benchmark::load_car_data(const std::string &folder,
         rect.height = std::min(rect.height + 2*expand_pix,
                                img.rows - rect.y - 1);
 
-        add_data(0, img(rect), labels, imgs);
+        add_data(0, img(rect), augment, labels, imgs);
     }
 }
 
@@ -163,13 +175,14 @@ load_car_region(const std::string &file) const
 
 void car_benchmark::load_data(std::string const &folder,
                               label_t label,
+                              bool augment,
                               Imgs &imgs, Labels &labels)
 {
     auto const names = ocv::file::get_directory_files(folder);
     for(auto const &name : names){
         cv::Mat img = cv::imread(folder + "/" + name,
                                  imread_modes);
-        add_data(label, img, labels, imgs);
+        add_data(label, img, augment, labels, imgs);
     }
 }
 

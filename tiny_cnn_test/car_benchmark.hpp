@@ -17,14 +17,15 @@ private:
     using Labels = std::vector<tiny_cnn::label_t>;
 
     void add_data(tiny_cnn::label_t label, cv::Mat const &img,
-                  Labels &labels, Imgs &imgs);
+                  bool augment, Labels &labels, Imgs &imgs);
     void load_car_data(std::string const &folder,
                        std::map<std::string, cv::Rect> const &car_region,
-                       Imgs &imgs, Labels &labels);
+                       bool augment, Imgs &imgs, Labels &labels);
     std::map<std::string, cv::Rect>
     load_car_region(std::string const &file) const;
     void load_data(std::string const &folder,
                    tiny_cnn::label_t label,
+                   bool augment,
                    Imgs &imgs, Labels &labels);
     void train_test();
 
