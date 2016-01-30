@@ -27,8 +27,8 @@ void create_lenet(Net &nn)
 {
     using activate = relu;
 
-
-    //workable solution, 1913/2000, 10 epoch
+    //lenet 0
+    //1913/2000, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
     /*nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
        << max_pooling_layer<activate>(32, 32, 12, 2)
        //<< dropout_layer(16*16*12, 0.25)
@@ -38,8 +38,11 @@ void create_lenet(Net &nn)
        << convolutional_layer<activate>(8, 8, 5, 18, 24)
        << fully_connected_layer<softmax>(384, 2);//*/
 
-    //workable solution, 1927/2000, 15 epoch
-    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
+    //lenet 1
+    //1927/2000, 15 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
+    //1000/2000, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adam>, 18000 cars, 18000 non cars
+    //1934/2000, 10 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
        //<< dropout_layer(32*32*16, 0.25)
        << max_pooling_layer<activate>(32, 32, 10, 2)
        << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
@@ -48,21 +51,38 @@ void create_lenet(Net &nn)
        << convolutional_layer<activate>(8, 8, 5, 16, 24)
        //<< dropout_layer(4*4*30, 0.5)
        << fully_connected_layer<softmax>(4*4*24, 2);//*/
-    
-    //workable solution
-    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 6, padding::same)
-       << max_pooling_layer<activate>(32, 32, 6, 2)
-       << convolutional_layer<activate>(16, 16, 3, 6, 16, padding::same)
+
+    //lenet 2
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
+       //<< dropout_layer(32*32*16, 0.25)
+       << max_pooling_layer<activate>(32, 32, 10, 2)
+       << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
+       //<< dropout_layer(16*16*20, 0.25)
        << max_pooling_layer<activate>(16, 16, 16, 2)
        << convolutional_layer<activate>(8, 8, 5, 16, 24)
-       << fully_connected_layer<softmax>(384, 2);//*/
+       << max_pooling_layer<activate>(4, 4, 24, 3, 2)
+       << fully_connected_layer<softmax>(3*3*24, 2);//*/
+
+    //lenet 3
+    //10 epoch, 15 batch, 1 alpha, relu, network<mse, adagrad>
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
+       << max_pooling_layer<activate>(32, 32, 10, 2)
+       << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
+       //<< dropout_layer(16*16*20, 0.25)
+       << max_pooling_layer<activate>(16, 16, 16, 2)
+       << convolutional_layer<activate>(8, 8, 5, 16, 24, padding::same)
+       << max_pooling_layer<activate>(8, 8, 24, 2)
+       << fully_connected_layer<identity>(4*4*24, 4*4*24)
+       << fully_connected_layer<softmax>(4*4*24, 2);//*/
 }
 
 template<typename Net>
 void create_minivgg(Net &nn)
 {
     using activate = relu;
-    nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
+    //net<mse,adam>
+    //1550/2000, 10 epoch, 15 batch, 1 alpha, relu
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
        << convolutional_layer<activate>(32, 32, 3, 32, 32, padding::same)
        << max_pooling_layer<activate>(32, 32, 32, 2)
        << dropout_layer(16*16*32, 0.25)
@@ -70,7 +90,7 @@ void create_minivgg(Net &nn)
        << convolutional_layer<activate>(16, 16, 3, 64, 64, padding::same)
        << max_pooling_layer<activate>(16, 16, 64, 2)
        << dropout_layer(8*8*64, 0.25)
-       << fully_connected_layer<softmax>(8*8*64, 2);
+       << fully_connected_layer<softmax>(8*8*64, 2);**/
 }
 
 
@@ -119,8 +139,13 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
         labels.emplace_back(label);
 
         if(augment){
-            cv::flip(resize_img, resize_img, 0); //flip horizontal
-            imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, -1, 1));
+            cv::Mat origin = resize_img.clone();
+            cv::flip(origin, resize_img, 0); //flip horizontal
+            imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
+            labels.emplace_back(label);
+
+            cv::flip(origin, resize_img, 1); //flip vertical
+            imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
             labels.emplace_back(label);
         }
     }
@@ -139,6 +164,7 @@ void car_benchmark::load_car_data(const std::string &folder,
         auto const rect =
                 ocv::expand_region(img.size(), car_region.at(name),
                                    expand_pix);
+
         add_data(0, img(rect), augment, labels, imgs);
     }
 }
@@ -178,10 +204,10 @@ void car_benchmark::train_test()
     create_lenet(nn);
 
     int const minibatch_size = 20;
-    int const num_epochs = 15;
+    int const num_epochs = 10;
 
-    nn.optimizer().alpha *= std::sqrt(minibatch_size);
-    //nn.optimizer().alpha *= 0.1;
+    //nn.optimizer().alpha *= std::sqrt(minibatch_size);
+    nn.optimizer().alpha *= 3;
     ocv::tiny_cnn::trainer tt("car_weights", minibatch_size, num_epochs);
     tt.train_and_test(nn, train_images_, train_labels_,
                       test_images_, test_labels_);
