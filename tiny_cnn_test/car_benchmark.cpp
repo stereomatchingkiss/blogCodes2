@@ -20,7 +20,7 @@ using namespace tiny_cnn::activation;
 
 namespace{
 
-cv::ImreadModes const imread_modes = cv::IMREAD_GRAYSCALE;
+constexpr cv::ImreadModes imread_modes = cv::IMREAD_GRAYSCALE;
 
 template<typename Net>
 void create_lenet(Net &nn)
@@ -118,7 +118,7 @@ void create_minivgg(Net &nn)
 
 car_benchmark::car_benchmark()
 {            
-    bool const train_augment = true;
+    constexpr bool train_augment = true;
     load_car_data("train_cars", load_car_region("cars_train_annos.txt"),
                   train_augment, train_images_, train_labels_);
     load_car_data("test_cars", load_car_region("cars_test_annos.txt"),
@@ -151,8 +151,8 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
 {
     using namespace ocv::tiny_cnn;
     if(!img.empty()){
-        float const min = -1;
-        float const max = 1;
+        constexpr float min = -1;
+        constexpr float max = 1;
         cv::Mat resize_img;
         cv::resize(img, resize_img, {32,32});
         imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
@@ -182,7 +182,7 @@ void car_benchmark::load_car_data(const std::string &folder,
                                   Labels &labels)
 {
     auto const names = ocv::file::get_directory_files(folder);
-    int const expand_pix = 16;
+    constexpr int expand_pix = 16;
     for(auto const &name : names){
         cv::Mat img = cv::imread(folder + "/" + name,
                                  imread_modes);
@@ -228,8 +228,8 @@ void car_benchmark::train_test()
 
     create_lenet(nn);
 
-    int const minibatch_size = 20;
-    int const num_epochs = 12;
+    constexpr int minibatch_size = 20;
+    constexpr int num_epochs = 12;
 
     //nn.optimizer().alpha *= std::sqrt(minibatch_size);
     nn.optimizer().alpha *= 3;
