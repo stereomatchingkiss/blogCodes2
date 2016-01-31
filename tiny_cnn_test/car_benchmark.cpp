@@ -29,7 +29,9 @@ void create_lenet(Net &nn)
 
     //lenet 0
     //1913/2000, c1, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
-    //1941/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>
+    //1941/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1950/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1944/2000, c3, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
        << max_pooling_layer<activate>(32, 32, 12, 2)
        //<< dropout_layer(16*16*12, 0.25)
@@ -87,8 +89,9 @@ void create_minivgg(Net &nn)
 {
     using activate = relu;
 
+    //mvgg0
     //1550/2000, 10 epoch, 15 batch, 1 alpha, relu, net<mse,adam>, 18000 cars, 18000 non cars, augment horizontal,vertical
-    nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
        << convolutional_layer<activate>(32, 32, 3, 32, 32, padding::same)
        << max_pooling_layer<activate>(32, 32, 32, 2)
        << dropout_layer(16*16*32, 0.25)
@@ -97,6 +100,17 @@ void create_minivgg(Net &nn)
        << max_pooling_layer<activate>(16, 16, 64, 2)
        << dropout_layer(8*8*64, 0.25)
        << fully_connected_layer<softmax>(8*8*64, 2);//*/
+
+    //mvgg1
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
+       << convolutional_layer<activate>(32, 32, 3, 32, 32, padding::same)
+       << max_pooling_layer<activate>(32, 32, 32, 2, 1)
+       << dropout_layer(32*32*32, 0.25)
+       << convolutional_layer<activate>(32, 32, 3, 32, 64, padding::same)
+       << convolutional_layer<activate>(32, 32, 3, 64, 64, padding::same)
+       << max_pooling_layer<activate>(32, 32, 64, 2, 1)
+       << dropout_layer(32*32*64, 0.25)
+       << fully_connected_layer<softmax>(32*32*64, 2);//*/
 }
 
 
