@@ -28,8 +28,9 @@ void create_lenet(Net &nn)
     using activate = relu;
 
     //lenet 0
-    //1913/2000, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
-    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
+    //1913/2000, c1, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
+    //1941/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
        << max_pooling_layer<activate>(32, 32, 12, 2)
        //<< dropout_layer(16*16*12, 0.25)
        << convolutional_layer<activate>(16, 16, 3, 12, 18, padding::same)
@@ -39,10 +40,17 @@ void create_lenet(Net &nn)
        << fully_connected_layer<softmax>(384, 2);//*/
 
     //lenet 1
-    //1927/2000, 15 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
-    //1000/2000, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adam>, 18000 cars, 18000 non cars
-    //1934/2000, 10 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars
-    nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
+    //1927/2000, c1, 15 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
+    //1000/2000, c1, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adam>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1934/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1938/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1932/2000, c1, 12 epoch, 20 batch, 3 alpha, elu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1933/2000, c1, 15 epoch, 20 batch, 3 alpha, elu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1936/2000, c1, 18 epoch, 20 batch, 3 alpha, elu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1929/2000, c1, 12 epoch, 20 batch, 3 alpha, leaky_relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1936/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 24000 cars, 24000 non cars, augment horizontal/vertical/(h+v)
+    //1906/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
        //<< dropout_layer(32*32*16, 0.25)
        << max_pooling_layer<activate>(32, 32, 10, 2)
        << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
@@ -53,18 +61,16 @@ void create_lenet(Net &nn)
        << fully_connected_layer<softmax>(4*4*24, 2);//*/
 
     //lenet 2
+    //1898/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1885/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
-       //<< dropout_layer(32*32*16, 0.25)
-       << max_pooling_layer<activate>(32, 32, 10, 2)
+       << max_pooling_layer<activate>(32, 32, 10, 3, 2)
        << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
-       //<< dropout_layer(16*16*20, 0.25)
-       << max_pooling_layer<activate>(16, 16, 16, 2)
+       << max_pooling_layer<activate>(16, 16, 16, 3, 2)
        << convolutional_layer<activate>(8, 8, 5, 16, 24)
-       << max_pooling_layer<activate>(4, 4, 24, 3, 2)
-       << fully_connected_layer<softmax>(3*3*24, 2);//*/
+       << fully_connected_layer<softmax>(4*4*24, 2);//*/
 
-    //lenet 3
-    //10 epoch, 15 batch, 1 alpha, relu, network<mse, adagrad>
+    //lenet 3    
     /*nn << convolutional_layer<activate>(32, 32, 3, 1, 10, padding::same)
        << max_pooling_layer<activate>(32, 32, 10, 2)
        << convolutional_layer<activate>(16, 16, 3, 10, 16, padding::same)
@@ -80,9 +86,9 @@ template<typename Net>
 void create_minivgg(Net &nn)
 {
     using activate = relu;
-    //net<mse,adam>
-    //1550/2000, 10 epoch, 15 batch, 1 alpha, relu
-    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
+
+    //1550/2000, 10 epoch, 15 batch, 1 alpha, relu, net<mse,adam>, 18000 cars, 18000 non cars, augment horizontal,vertical
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 32, padding::same)
        << convolutional_layer<activate>(32, 32, 3, 32, 32, padding::same)
        << max_pooling_layer<activate>(32, 32, 32, 2)
        << dropout_layer(16*16*32, 0.25)
@@ -90,7 +96,7 @@ void create_minivgg(Net &nn)
        << convolutional_layer<activate>(16, 16, 3, 64, 64, padding::same)
        << max_pooling_layer<activate>(16, 16, 64, 2)
        << dropout_layer(8*8*64, 0.25)
-       << fully_connected_layer<softmax>(8*8*64, 2);**/
+       << fully_connected_layer<softmax>(8*8*64, 2);//*/
 }
 
 
@@ -140,6 +146,7 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
 
         if(augment){
             cv::Mat origin = resize_img.clone();
+
             cv::flip(origin, resize_img, 0); //flip horizontal
             imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
             labels.emplace_back(label);
@@ -147,6 +154,10 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
             cv::flip(origin, resize_img, 1); //flip vertical
             imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
             labels.emplace_back(label);
+
+            //cv::flip(origin, resize_img, -1); //flip vertical and horizontal
+            //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
+            //labels.emplace_back(label);
         }
     }
 }
@@ -204,7 +215,7 @@ void car_benchmark::train_test()
     create_lenet(nn);
 
     int const minibatch_size = 20;
-    int const num_epochs = 10;
+    int const num_epochs = 12;
 
     //nn.optimizer().alpha *= std::sqrt(minibatch_size);
     nn.optimizer().alpha *= 3;
