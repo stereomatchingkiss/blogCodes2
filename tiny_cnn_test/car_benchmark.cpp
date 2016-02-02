@@ -32,12 +32,15 @@ void create_lenet(Net &nn)
     //1941/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     //1950/2000, c1, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     //1944/2000, c3, 12 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
-    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
-       << max_pooling_layer<activate>(32, 32, 12, 2)
-       //<< dropout_layer(16*16*12, 0.25)
+    //1955/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1956/2000, c1, 12 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1951/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 24000 cars, 24000 non cars, augment horizontal/vertical/illu
+    //1949/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 30000 cars, 30000 non cars, augment horizontal/vertical/illu/v+h
+    //1949/2000, c1, 10 epoch, 12 batch, 1.8 alpha, relu, network<mse, adagrad>, 24000 cars, 24000 non cars, augment horizontal/vertical/illu
+    nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
+       << max_pooling_layer<activate>(32, 32, 12, 2)    
        << convolutional_layer<activate>(16, 16, 3, 12, 18, padding::same)
-       << max_pooling_layer<activate>(16, 16, 18, 2)
-       //<< dropout_layer(8*8*18, 0.5)
+       << max_pooling_layer<activate>(16, 16, 18, 2)       
        << convolutional_layer<activate>(8, 8, 5, 18, 24)
        << fully_connected_layer<softmax>(384, 2);//*/
 
@@ -183,7 +186,9 @@ void create_lenet(Net &nn)
     //1949/2000, c1, 10 epoch, 20 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     //1921/2000, c1, 10 epoch, 20 batch, 3 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
     //1956/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
-    nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
+    //1944/2000, c1, 12 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    //1942/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical/illu
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
        << max_pooling_layer<activate>(32, 32, 12, 2)
        << convolutional_layer<activate>(16, 16, 3, 12, 18, padding::same)
        << max_pooling_layer<activate>(16, 16, 18, 2)
@@ -191,6 +196,20 @@ void create_lenet(Net &nn)
        << max_pooling_layer<activate>(8, 8, 24, 2)
        << convolutional_layer<activate>(4, 4, 3, 24, 32, padding::same)
        << max_pooling_layer<activate>(4, 4, 32, 2)
+       << convolutional_layer<activate>(2, 2, 3, 32, 36, padding::same)
+       << fully_connected_layer<softmax>(2*2*36, 2);//*/
+
+    //lenet 12
+    //1940/2000, c1, 10 epoch, 15 batch, 2 alpha, relu, network<mse, adagrad>, 18000 cars, 18000 non cars, augment horizontal/vertical
+    /*nn << convolutional_layer<activate>(32, 32, 3, 1, 12, padding::same)
+       << max_pooling_layer<activate>(32, 32, 12, 2)
+       << convolutional_layer<activate>(16, 16, 3, 12, 18, padding::same)
+       << max_pooling_layer<activate>(16, 16, 18, 2)
+       << convolutional_layer<activate>(8, 8, 5, 18, 24, padding::same)
+       << max_pooling_layer<activate>(8, 8, 24, 2)
+       << convolutional_layer<activate>(4, 4, 3, 24, 32, padding::same)
+       << max_pooling_layer<activate>(4, 4, 32, 2)
+       << dropout_layer(2*2*32, 0.5)
        << convolutional_layer<activate>(2, 2, 3, 32, 36, padding::same)
        << fully_connected_layer<softmax>(2*2*36, 2);//*/
 }
@@ -269,7 +288,6 @@ void create_minivgg(Net &nn)
        << fully_connected_layer<softmax>(8*8*16, 2);//*/
 }
 
-
 }
 
 car_benchmark::car_benchmark()
@@ -329,12 +347,12 @@ void car_benchmark::add_data(label_t label, cv::Mat const &img,
             //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
             //labels.emplace_back(label);
 
-            //static std::random_device rd;
-            //std::mt19937 gen(rd());
-            //std::uniform_int_distribution<int> uid(-60, 60);
-            //resize_img = origin + uid(gen);
-            //imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
-            //labels.emplace_back(label);
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            static std::uniform_int_distribution<int> uid(-60, 60);
+            resize_img = origin + uid(gen);
+            imgs.emplace_back(cvmat_to_img<vec_t>(resize_img, min, max));
+            labels.emplace_back(label);
         }
     }
 }
@@ -392,7 +410,7 @@ void car_benchmark::train_test()
     create_lenet(nn);
 
     constexpr int minibatch_size = 15;
-    constexpr int num_epochs = 12;
+    constexpr int num_epochs = 10;
 
     //nn.optimizer().alpha *= std::sqrt(minibatch_size);
     nn.optimizer().alpha *= 2;
