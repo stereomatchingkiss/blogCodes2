@@ -26,7 +26,9 @@ int main(int argc, char *argv[])
         auto result = get_directory_path(input_folder, true);
         std::ofstream out(output_file);
         for(auto const &path : result){
-            out<<absolute(path).generic_string()<<"\n";
+            if(is_regular_file(path)){
+                out<<absolute(path).generic_string()<<"\n";
+            }
         }
     }catch(std::exception const &ex){
         std::cout<<ex.what()<<std::endl;
@@ -51,7 +53,7 @@ variables_map parse_command_line(int argc, char *argv[])
         return vm;
     }
 
-     notify(vm);
+    notify(vm);
 
     return vm;
 }
