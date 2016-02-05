@@ -290,8 +290,8 @@ void create_minivgg(Net &nn)
 
 }
 
-car_benchmark::car_benchmark()
-{            
+void car_benchmark::load_data()
+{
     constexpr bool train_augment = true;
     load_car_data("train_cars", load_car_region("cars_train_annos.txt"),
                   train_augment, train_images_, train_labels_);
@@ -311,12 +311,29 @@ car_benchmark::car_benchmark()
     parse_cifar10("cifar-10-batches-bin/test_batch.bin", &test_images_, &test_labels_, 0, 1, 0, 0);//*/
 
     ocv::ml::shuffles(train_images_, train_labels_);
+}
 
-    try{
-        train_test();
-    }catch(std::exception const &ex){
-        std::cout<<ex.what()<<std::endl;
+car_benchmark::car_benchmark()
+{                
+    create_lenet(nn_);
+}
+
+std::vector<std::pair<double, int> >
+car_benchmark::predict(const cv::Mat &input)
+{
+    using namespace ocv::tiny_cnn;
+
+    cv::Mat resize;
+    cv::resize(input, resize, {32,32});
+    auto const vec = cvmat_to_img<vec_t>(resize);
+
+    auto const prob = nn_.predict(vec);
+    std::vector<std::pair<double, int>> result;
+    for(size_t i = 0; i != prob.size(); ++i){
+        result.emplace_back(prob[i], i);
     }
+
+    return result;
 }
 
 void car_benchmark::add_data(label_t label, cv::Mat const &img,
@@ -403,18 +420,25 @@ void car_benchmark::load_data(std::string const &folder,
     }
 }
 
-void car_benchmark::train_test()
-{
-    network<mse, adagrad> nn;
+void car_benchmark::train()
+{    
+    try{
+        load_data();
 
-    create_lenet(nn);
+        network<mse, adagrad> nn;
+        create_lenet(nn);
 
-    constexpr int minibatch_size = 15;
-    constexpr int num_epochs = 10;
+        constexpr int minibatch_size = 15;
+        constexpr int num_epochs = 10;
 
-    //nn.optimizer().alpha *= std::sqrt(minibatch_size);
-    nn.optimizer().alpha *= 2;
-    ocv::tiny_cnn::trainer tt("car_weights", minibatch_size, num_epochs);
-    tt.train_and_test(nn, train_images_, train_labels_,
-                      test_images_, test_labels_);
+        //nn.optimizer().alpha *= std::sqrt(minibatch_size);
+        nn.optimizer().alpha *= 2;
+        ocv::tiny_cnn::trainer tt("car_weights", minibatch_size, num_epochs);
+        tt.train_and_test(nn, train_images_, train_labels_,
+                          test_images_, test_labels_);
+    }catch(std::exception const &ex){
+        std::cout<<ex.what()<<std::endl;
+    }
+
+
 }
