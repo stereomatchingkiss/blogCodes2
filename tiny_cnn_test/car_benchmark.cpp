@@ -316,6 +316,8 @@ void car_benchmark::load_data()
 car_benchmark::car_benchmark()
 {                
     create_lenet(nn_);
+    std::ifstream in("car_weights_lenet0_c1_1949_2000_v_h_i");
+    in>>nn_;
 }
 
 std::vector<std::pair<double, int> >
