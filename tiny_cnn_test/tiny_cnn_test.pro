@@ -31,7 +31,8 @@ include(../../pri/tiny_cnn.pri)
 SOURCES += main.cpp\
     car_benchmark.cpp \
     mnist_benchmark.cpp \
-    ../../ocv_libs/file/utility.cpp
+    ../../ocv_libs/file/utility.cpp \
+    ../../ocv_libs/cmd/command_prompt_utility.cpp
 
 HEADERS  += \
     mnist_benchmark.hpp \
