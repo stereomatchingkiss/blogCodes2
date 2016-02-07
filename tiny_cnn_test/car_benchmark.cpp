@@ -62,9 +62,6 @@ void create_lenet(Net &nn)
        << convolutional_layer<activate>(8, 8, 5, 18, 24)
        << fully_connected_layer<softmax>(4*4*24, 2);//*/
 
-    std::ifstream in("car_weights_lenet0_c1_1943_2000_8144_v_h");
-    in>>nn;
-
     //lenet 1
     //1927/2000, c1, 15 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adagrad>
     //1000/2000, c1, 10 epoch, 20 batch, sqrt(20) alpha, relu, network<mse, adam>, 6000, augment h/v
@@ -399,9 +396,9 @@ void car_benchmark::load_data()
 
 car_benchmark::car_benchmark()
 {                
-    //create_lenet(nn_);
-    //std::ifstream in("car_weights_lenet0_c1_1956_2000");
-    //in>>nn_;
+    create_lenet(nn_);
+    std::ifstream in("car_weights_lenet0_c1_1951_2000_8144_v_h");
+    in>>nn_;
 }
 
 std::vector<std::pair<double, int> >
