@@ -94,6 +94,9 @@
    <property name="toolTip">
     <string>Stop algorithm</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionOpenFolder">
    <property name="icon">
@@ -133,6 +136,9 @@
    <property name="toolTip">
     <string>Clear all of the files/videos</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionNext">
    <property name="enabled">
@@ -148,6 +154,9 @@
    <property name="toolTip">
     <string>Next image</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
   </action>
   <action name="actionPrevious">
    <property name="enabled">
@@ -162,6 +171,9 @@
    </property>
    <property name="toolTip">
     <string>Previous image</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionRegion">
