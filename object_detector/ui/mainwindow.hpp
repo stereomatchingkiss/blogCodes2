@@ -35,13 +35,18 @@ private slots:
 
     void on_actionClearAll_triggered();
 
+    void on_actionRegion_triggered();
+
 private:
+    void has_image(bool value);
+
     Ui::MainWindow *ui;
 
-    std::unique_ptr<cvmat_to_pixmap> mat_to_pixmap_;
+    bool label_has_focus_;
     QStringList file_names_;
     cv::Mat img_;
     QSize maximum_size_;
+    std::unique_ptr<cvmat_to_pixmap> mat_to_pixmap_;
     setting_window *setting_win_;
 };
 
