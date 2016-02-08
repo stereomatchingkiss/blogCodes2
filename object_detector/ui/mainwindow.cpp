@@ -26,11 +26,13 @@ MainWindow::MainWindow(QWidget *parent) :
     showMaximized();
     maximum_size_ = ui->label_img->size();
     qDebug()<<maximum_size_;
-    qDebug()<<ui->label_img->sizeHint();
     qDebug()<<size();
     qDebug()<<ui->label_img->contentsRect();
     ui->comboBoxTasks->addItems(global::algo_list);
-    ui->label_img->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    //ui->label_img->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    //easiest way to figure out the pixmap position, but the results are
+    //far from perfect, next time should use QGraphicsView to show image
+    ui->label_img->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     ui->label_img->setScaledContents(false);
 
     mat_to_pixmap_ =
@@ -54,7 +56,6 @@ void MainWindow::on_actionOpenFolder_triggered()
         file_names_ = dialog.selectedFiles();
         if(!file_names_.isEmpty()){
             ui->label_img->setPixmap(mat_to_pixmap_->to_pixmap(file_names_[0]));
-            //ui->label_img->setPixmap(QPixmap(file_names_[0]));
             label_has_focus_ = false;
             ui->label_img->clearFocus();
             ui->label_img->clear_rubber_band();
