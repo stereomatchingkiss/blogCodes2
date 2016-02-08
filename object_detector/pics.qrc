@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pics/open_folder.png</file>
+        <file>pics/setting.png</file>
+        <file>pics/start.png</file>
+        <file>pics/stop.png</file>
+        <file>pics/clipboard_empty.png</file>
+        <file>pics/resultset_next.png</file>
+        <file>pics/resultset_previous.png</file>
+        <file>pics/layer.png</file>
+        <file>pics/layer_delete.png</file>
+    </qresource>
+</RCC>

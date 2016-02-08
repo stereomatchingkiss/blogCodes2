@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>677</width>
+    <height>409</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Object recognition</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Tasks</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="comboBoxTasks"/>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="qte::img_region_selector" name="label_img">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenFolder"/>
+   <addaction name="actionClearAll"/>
+   <addaction name="separator"/>
+   <addaction name="actionStart"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionNext"/>
+   <addaction name="actionPrevious"/>
+   <addaction name="separator"/>
+   <addaction name="actionRegion"/>
+   <addaction name="actionSetting"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionStart">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/start.png</normaloff>:/pics/start.png</iconset>
+   </property>
+   <property name="text">
+    <string>start</string>
+   </property>
+   <property name="toolTip">
+    <string>Start algorithm</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/stop.png</normaloff>:/pics/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop algorithm</string>
+   </property>
+  </action>
+  <action name="actionOpenFolder">
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/open_folder.png</normaloff>:/pics/open_folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>OpenFolder</string>
+   </property>
+   <property name="toolTip">
+    <string>Open folder</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/setting.png</normaloff>:/pics/setting.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+   <property name="toolTip">
+    <string>Setting tools</string>
+   </property>
+  </action>
+  <action name="actionClearAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/clipboard_empty.png</normaloff>:/pics/clipboard_empty.png</iconset>
+   </property>
+   <property name="text">
+    <string>ClearAll</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear all of the files/videos</string>
+   </property>
+  </action>
+  <action name="actionNext">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/resultset_next.png</normaloff>:/pics/resultset_next.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next</string>
+   </property>
+   <property name="toolTip">
+    <string>Next image</string>
+   </property>
+  </action>
+  <action name="actionPrevious">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../pics.qrc">
+     <normaloff>:/pics/resultset_previous.png</normaloff>:/pics/resultset_previous.png</iconset>
+   </property>
+   <property name="text">
+    <string>previous</string>
+   </property>
+   <property name="toolTip">
+    <string>Previous image</string>
+   </property>
+  </action>
+  <action name="actionRegion">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/pics/layer.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>region</string>
+   </property>
+   <property name="toolTip">
+    <string>Select region</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>qte::img_region_selector</class>
+   <extends>QLabel</extends>
+   <header>img_region_selector.hpp</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../pics.qrc"/>
+ </resources>
+ <connections/>
+</ui>
