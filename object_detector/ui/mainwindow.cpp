@@ -43,7 +43,10 @@ void MainWindow::on_actionOpenFolder_triggered()
 {
     QFileDialog dialog(nullptr, tr("Open File"));
     dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setOption(QFileDialog::DontResolveSymlinks);
+    dialog.setOption(QFileDialog::DontResolveSymlinks);    
+    QStringList filters;
+    filters << "Image files (*.png *.bmp *.jpg)";
+    dialog.setNameFilters(filters);
     if(dialog.exec()){
         file_names_ = dialog.selectedFiles();
         if(!file_names_.isEmpty()){
