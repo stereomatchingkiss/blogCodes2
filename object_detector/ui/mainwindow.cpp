@@ -47,7 +47,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionOpenFolder_triggered()
 {
     QFileDialog dialog(nullptr, tr("Open File"));
-    dialog.setFileMode(QFileDialog::ExistingFiles);
+    dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setOption(QFileDialog::DontResolveSymlinks);
     QStringList filters;
     filters << "Image files (*.png *.bmp *.jpg)";
@@ -66,6 +66,7 @@ void MainWindow::on_actionOpenFolder_triggered()
 
 void MainWindow::on_actionStart_triggered()
 {    
+
 }
 
 void MainWindow::on_actionStop_triggered()
