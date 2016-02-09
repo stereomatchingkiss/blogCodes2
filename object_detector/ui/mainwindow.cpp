@@ -18,22 +18,16 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    img_index_(0),
     label_has_focus_(false),
     setting_win_(new setting_window(this))
 {
     ui->setupUi(this);
 
     showMaximized();
-    maximum_size_ = ui->label_img->size();
-    qDebug()<<maximum_size_;
-    qDebug()<<size();
-    qDebug()<<ui->label_img->contentsRect();
+    maximum_size_ = ui->graphicsViewImg->size();
+    ui->graphicsViewImg->set_enable_focus(false);
     ui->comboBoxTasks->addItems(global::algo_list);
-    //ui->label_img->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    //easiest way to figure out the pixmap position, but the results are
-    //far from perfect, next time should use QGraphicsView to show image
-    ui->label_img->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    ui->label_img->setScaledContents(false);
 
     mat_to_pixmap_ =
             std::make_unique<cvmat_to_pixmap>(maximum_size_);
@@ -55,10 +49,10 @@ void MainWindow::on_actionOpenFolder_triggered()
     if(dialog.exec()){
         file_names_ = dialog.selectedFiles();
         if(!file_names_.isEmpty()){
-            ui->label_img->setPixmap(mat_to_pixmap_->to_pixmap(file_names_[0]));
+            ui->graphicsViewImg->set_pixmap(mat_to_pixmap_->to_pixmap(file_names_[0]));
             label_has_focus_ = false;
-            ui->label_img->clearFocus();
-            ui->label_img->clear_rubber_band();
+            ui->graphicsViewImg->clear_rubber_band();
+            img_index_ = 0;
             has_image(true);
         }
     }
@@ -66,7 +60,10 @@ void MainWindow::on_actionOpenFolder_triggered()
 
 void MainWindow::on_actionStart_triggered()
 {    
-
+    //algo_dispatch_->run(file_names_[img_index_],
+    //                    setting_win_,
+    //                    ui->label_img->regions(),
+    //                    ui->label_img->pixmap()->size());
 }
 
 void MainWindow::on_actionStop_triggered()
@@ -88,11 +85,11 @@ void MainWindow::on_actionRegion_triggered()
 {
     if(label_has_focus_){
         ui->actionRegion->setIcon(QIcon(":/pics/layer.png"));
-        ui->label_img->clearFocus();
-        ui->label_img->clear_rubber_band();
+        ui->graphicsViewImg->set_enable_focus(false);
+        ui->graphicsViewImg->clear_rubber_band();
     }else{
         ui->actionRegion->setIcon(QIcon(":/pics/layer_delete.png"));
-        ui->label_img->setFocus();
+        ui->graphicsViewImg->set_enable_focus(true);
     }
     label_has_focus_ = !label_has_focus_;
 }

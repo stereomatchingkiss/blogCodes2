@@ -29,14 +29,17 @@
      </widget>
     </item>
     <item row="0" column="1">
-     <widget class="QComboBox" name="comboBoxTasks"/>
-    </item>
-    <item row="1" column="0" colspan="2">
-     <widget class="qte::img_region_selector" name="label_img">
-      <property name="text">
-       <string/>
+     <widget class="QComboBox" name="comboBoxTasks">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
      </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="qte::img_region_selector" name="graphicsViewImg"/>
     </item>
    </layout>
   </widget>
@@ -197,7 +200,7 @@
  <customwidgets>
   <customwidget>
    <class>qte::img_region_selector</class>
-   <extends>QLabel</extends>
+   <extends>QGraphicsView</extends>
    <header>img_region_selector.hpp</header>
   </customwidget>
  </customwidgets>

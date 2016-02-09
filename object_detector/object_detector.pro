@@ -29,18 +29,21 @@ SOURCES += main.cpp\
     algo/tiny_cnn_car_classifier.cpp \
     algo/cvmat_to_pixmap.cpp \
     ../../ocv_libs/qt/mat_and_qimage.cpp \
-    ../../ocv_libs/core/resize.cpp
+    ../../ocv_libs/core/resize.cpp \
+    ui/object_classify_setting.cpp
 
 HEADERS  += ui/mainwindow.hpp \
     ui/setting_window.hpp \
     ui/general_setting.hpp \
     utility/global.hpp \
     algo/tiny_cnn_car_classifier.hpp \
-    algo/cvmat_to_pixmap.hpp
+    algo/cvmat_to_pixmap.hpp \
+    ui/object_classify_setting.hpp
 
 FORMS    += ui/mainwindow.ui \
     ui/setting_window.ui \
-    ui/general_setting.ui
+    ui/general_setting.ui \
+    ui/object_classify_setting.ui
 
 RESOURCES += \
     pics.qrc
