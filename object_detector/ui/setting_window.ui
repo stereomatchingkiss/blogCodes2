@@ -20,10 +20,8 @@
    <item row="0" column="1" rowspan="2">
     <widget class="QStackedWidget" name="stackedWidgetSetting">
      <property name="currentIndex">
-      <number>0</number>
+      <number>-1</number>
      </property>
-     <widget class="QWidget" name="page"/>
-     <widget class="QWidget" name="page_2"/>
     </widget>
    </item>
    <item row="1" column="0">
