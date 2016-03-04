@@ -49,7 +49,8 @@ void MainWindow::on_actionOpenFolder_triggered()
     if(dialog.exec()){
         file_names_ = dialog.selectedFiles();
         if(!file_names_.isEmpty()){
-            ui->graphicsViewImg->set_pixmap(mat_to_pixmap_->to_pixmap(file_names_[0]));
+            ui->graphicsViewImg->set_pixmap(QPixmap(file_names_[0]));
+            ui->graphicsViewImg->fit_in_view();
             label_has_focus_ = false;
             ui->graphicsViewImg->clear_rubber_band();
             img_index_ = 0;
