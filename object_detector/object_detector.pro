@@ -19,7 +19,7 @@ include(../../pri/cv.pri)
 include(../../pri/boost.pri)
 include(../../pri/tiny_cnn.pri)
 
-LIBS += ../../build-qt_enhance-vc2013_64-Release/release/qt_enhance.lib
+LIBS += ../../build-qt_enhance-Desktop_Qt_5_6_0_MSVC2013_64bit-Release/release/qt_enhance.lib
 
 SOURCES += main.cpp\
         ui/mainwindow.cpp \
