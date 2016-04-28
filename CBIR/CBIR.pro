@@ -10,15 +10,16 @@ msvc:QMAKE_CXXFLAGS_RELEASE += /openmp
 
 #DEFINES += ARMA_USE_CXX11
 DEFINES += ARMA_NO_DEBUG
-DEFINES += ARMA_USE_HDF5
+#DEFINES += ARMA_USE_HDF5
 
 include(../../pri/arma.pri)
 include(../../pri/blas.pri)
 include(../../pri/boost.pri)
-include(../../pri/cv.pri)
-include(../../pri/hdf5.pri)
+include(../../pri/cv_dev.pri)
+#include(../../pri/hdf5.pri)
 include(../../pri/lapack.pri)
 include(../../pri/rapidjson.pri)
+include(../../pri/tbb.pri)
 
 SOURCES += main.cpp \
     cbir_bovw.cpp \
