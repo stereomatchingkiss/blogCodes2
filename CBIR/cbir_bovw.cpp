@@ -133,10 +133,20 @@ void cbir_bovw::run()
             auto const build_invert_index_duration =
                     measure<>::execution([&]()
             {
-                create_inverted_index(size_array[i].GetInt());
+                build_inverted_index(size_array[i].GetInt());
             });
             std::cout<<"build_invert_index_duration(msec) : "
                     <<build_invert_index_duration<<std::endl;
+        }
+
+        if(setting_["measure_result"] == true){
+            auto const measure_duration =
+                    measure<>::execution([&]()
+            {
+                measure_result(size_array[i].GetInt());
+            });
+            std::cout<<"measure_duration(msec) : "
+                    <<measure_duration<<std::endl;
         }
 
         std::cout<<std::endl;
@@ -208,7 +218,7 @@ void cbir_bovw::build_bovw_hist(size_t code_size)
             std::to_string(code_size));
 }
 
-void cbir_bovw::create_inverted_index(size_t code_size)
+void cbir_bovw::build_inverted_index(size_t code_size)
 {
     using hist_type = arma::Mat<feature_type>;
     using invert_value_type = arma::uword;
@@ -225,6 +235,14 @@ void cbir_bovw::create_inverted_index(size_t code_size)
     invert.save(setting_["inverted_index"].GetString() +
             std::string("_") +
             std::to_string(code_size));
+    /*auto it = invert.find(1);
+    if(it != std::end(invert)){
+        std::cout<<"sive of vec : "<<it->second.size()<<std::endl;
+        for(auto val : it->second){
+            std::cout<<val<<", ";
+        }
+    }
+    std::cout<<std::endl;//*/
 }
 
 cv::Mat cbir_bovw::
@@ -235,6 +253,98 @@ read_img(const std::string &name, bool to_gray) const
     }else{
         return cv::imread(name);
     }
+}
+
+void cbir_bovw::measure_result(size_t code_size)
+{
+    using hist_type = arma::Mat<feature_type>;
+    using invert_value_type = arma::uword;
+    using invert_index =
+    ocv::inverted_index<arma::uword, invert_value_type>;
+
+    //the format of relevant.json should same as the one
+    //come with ukbench data set
+    std::ifstream ifs(setting_["relevant"].GetString());
+    if(!ifs.is_open()){
+        std::cout<<"cannot open relevant file : "<<
+                   setting_["relevant"].GetString()
+                <<std::endl;
+        return;
+    }
+
+    rapidjson::IStreamWrapper isw(ifs);
+    rapidjson::Document doc;
+    doc.ParseStream(isw);
+
+    invert_index iv;
+    iv.load(setting_["inverted_index"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+
+    hist_type hist;
+    hist.load(setting_["hist"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+    ocv::cbir::searcher<invert_index> searcher(iv, 16);
+
+    cv::Ptr<cv::KAZE> detector = cv::KAZE::create();
+    cv::Ptr<cv::KAZE> descriptor = detector;
+    ocv::cbir::f2d_detector f2d(detector, descriptor);
+    ocv::cbir::bovw<feature_type, hist_type> bovw;
+    arma::Mat<feature_type> code_book;
+    code_book.load(setting_["code_book"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+    double total_score = 0;
+    auto const folder =
+            std::string(setting_["img_folder"].GetString());
+    //iterate through the image inside the folder,
+    //extract features and keypoints
+    auto const files = ocv::file::get_directory_files(folder);
+    for(int i = 0; i != files.size(); ++i){
+        std::cout<<"target "<<i<<std::endl;
+        cv::Mat gray =
+                cv::imread(folder + "/" + files[i],
+                           cv::IMREAD_GRAYSCALE);
+        //std::cout<<"read image"<<std::endl;
+        auto describe =
+                f2d.get_descriptor(gray);
+        //std::cout<<"after descirbe"<<std::endl;
+        arma::Mat<feature_type> const
+                arma_features(describe.second.ptr<feature_type>(0),
+                              describe.second.cols,
+                              describe.second.rows,
+                              false);
+        auto target_hist =
+                bovw.describe(arma_features,
+                              code_book);
+        //std::cout<<"describe bovw"<<std::endl;
+        auto const result =
+                searcher.search(target_hist, hist);
+        //std::cout<<"search size : "<<result.size()<<std::endl;
+        auto const &value = doc[files[i].c_str()];
+        std::set<std::string> relevant;
+        for(rapidjson::SizeType j = 0;
+            j != value.Size(); ++j){
+            relevant.insert(value[j].GetString());
+        }
+        //std::cout<<"build relevant"<<std::endl;
+        size_t cur_score = 0;
+        for(size_t j = 0; j != relevant.size(); ++j){
+            auto it = relevant.find(files[result[j]]);
+            if(it != std::end(relevant)){
+                ++total_score;
+                ++cur_score;
+            }
+        }
+        //std::cout<<"cur score : "<<cur_score<<"\n";//*/
+    }
+    //raw 2.976,
+    //raw + spatial 2.988
+    //raw + idf 2.932
+    static std::ofstream out("result.txt");
+    std::cout<<code_size<<" : "<<total_score / 1000.0<<std::endl;
+    out<<code_size<<" : "<<total_score / 1000.0<<std::endl;//*/
 }
 
 void cbir_bovw::visualize_code_book(size_t code_size)

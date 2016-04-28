@@ -4,8 +4,9 @@
 "build_code_book" : false,
 "create_hdf5" : false,
 "visualize" : false,
-"create_hist" : true,
-"create_inverted_index" : true,
+"create_hist" : false,
+"create_inverted_index" : false,
+"measure_result" : true,
 
 "hist" : "ukbench_hist",
 "code_book" : "ukbench_code_book",
@@ -14,6 +15,6 @@
 "images_info" : "ukbench.h5",
 "img_folder" : "C:/Users/yyyy/Qt/programming/tutorial/pyimagesearch_guru/ch03/codes/extracting/ukbench_quiz",
 "vocab_folder" : "vocab",
-"inverted_index" : "ukbench_invert_index"
-
+"inverted_index" : "ukbench_invert_index",
+"relevant" : "relevant.json"
 }
