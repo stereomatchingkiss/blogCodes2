@@ -35,6 +35,8 @@ private:
      */
     void build_code_book(size_t code_size);
 
+    void build_bovw_hist(size_t code_size);
+
     cv::Mat read_img(std::string const &name,
                      bool to_gray = true) const;
 

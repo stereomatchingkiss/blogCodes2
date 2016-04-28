@@ -54,12 +54,13 @@ cbir_bovw::cbir_bovw() :
     ifs_("setting.json"),
     isw_(ifs_)
 {        
+    //std::cout<<"enter constructor"<<std::endl;
     if(!ifs_.is_open()){
         throw std::runtime_error("cannot open setting.json");
     }
     setting_.ParseStream(isw_);
 
-    //std::cout<<setting_["images_info"].GetString()<<std::endl;
+    std::cout<<setting_["images_info"].GetString()<<std::endl;
     fi_.open(setting_["images_info"].GetString());
     std::cout<<"can open hdf5"<<std::endl;
     if(setting_["create_hdf5"] == true){
@@ -79,6 +80,7 @@ cbir_bovw::cbir_bovw() :
 void cbir_bovw::run()
 {
     using namespace ocv::time;
+    std::cout<<"run start"<<std::endl;
 
     if(setting_["add_data"] == true){
         auto const add_data_duration = measure<>::execution([&]()
@@ -88,6 +90,7 @@ void cbir_bovw::run()
         std::cout<<"add_data_duration(msec) : "
                 <<add_data_duration<<std::endl;
     }
+    std::cout<<"pass add data"<<std::endl;
 
     //Read the code size array, iterate through different code size
     //Different code size will
@@ -115,6 +118,15 @@ void cbir_bovw::run()
             });
             std::cout<<"visualize_duration(msec) : "
                     <<visualize_duration<<std::endl;
+        }
+
+        if(setting_["create_hist"] == true){
+            auto const build_hist_duration = measure<>::execution([&]()
+            {
+               build_bovw_hist(size_array[i].GetInt());
+            });
+            std::cout<<"build_hist_durationbuild_hist_duration(msec) : "
+                    <<build_hist_duration<<std::endl;
         }
 
         std::cout<<std::endl;
@@ -162,6 +174,27 @@ void cbir_bovw::build_code_book(size_t code_size)
             std::string("_") +
             std::to_string(code_size),
             arma::arma_ascii);
+}
+
+void cbir_bovw::build_bovw_hist(size_t code_size)
+{
+    using namespace ocv::cbir;
+    using hist_creator =
+    bovw_hist_creator<
+    float, float, float, arma::Mat
+    >;
+
+    arma::Mat<float> code_book;
+    code_book.load(setting_["code_book"].GetString() +
+            std::string("_") +
+            std::to_string(code_size),
+            arma::arma_ascii);
+
+    hist_creator bh(fi_);
+    auto const hist = bh.create(code_book);
+    hist.save(setting_["hist"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
 }
 
 cv::Mat cbir_bovw::
