@@ -123,10 +123,20 @@ void cbir_bovw::run()
         if(setting_["create_hist"] == true){
             auto const build_hist_duration = measure<>::execution([&]()
             {
-               build_bovw_hist(size_array[i].GetInt());
+                build_bovw_hist(size_array[i].GetInt());
             });
             std::cout<<"build_hist_durationbuild_hist_duration(msec) : "
                     <<build_hist_duration<<std::endl;
+        }
+
+        if(setting_["create_inverted_index"] == true){
+            auto const build_invert_index_duration =
+                    measure<>::execution([&]()
+            {
+                create_inverted_index(size_array[i].GetInt());
+            });
+            std::cout<<"build_invert_index_duration(msec) : "
+                    <<build_invert_index_duration<<std::endl;
         }
 
         std::cout<<std::endl;
@@ -181,10 +191,11 @@ void cbir_bovw::build_bovw_hist(size_t code_size)
     using namespace ocv::cbir;
     using hist_creator =
     bovw_hist_creator<
-    float, float, float, arma::Mat
+    feature_type, feature_type,
+    feature_type, arma::Mat
     >;
 
-    arma::Mat<float> code_book;
+    arma::Mat<feature_type> code_book;
     code_book.load(setting_["code_book"].GetString() +
             std::string("_") +
             std::to_string(code_size),
@@ -193,6 +204,25 @@ void cbir_bovw::build_bovw_hist(size_t code_size)
     hist_creator bh(fi_);
     auto const hist = bh.create(code_book);
     hist.save(setting_["hist"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+}
+
+void cbir_bovw::create_inverted_index(size_t code_size)
+{
+    using hist_type = arma::Mat<feature_type>;
+    using invert_value_type = arma::uword;
+    using invert_index =
+    ocv::inverted_index<arma::uword, invert_value_type>;
+
+    hist_type hist;
+    hist.load(setting_["hist"].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+
+    invert_index invert;
+    ocv::cbir::build_inverted_index(hist, invert);
+    invert.save(setting_["inverted_index"].GetString() +
             std::string("_") +
             std::to_string(code_size));
 }

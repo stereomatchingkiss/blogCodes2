@@ -37,6 +37,8 @@ private:
 
     void build_bovw_hist(size_t code_size);
 
+    void create_inverted_index(size_t code_size);
+
     cv::Mat read_img(std::string const &name,
                      bool to_gray = true) const;
 
