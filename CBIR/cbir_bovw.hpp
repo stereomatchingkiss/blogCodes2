@@ -15,13 +15,13 @@
 class cbir_bovw
 {
 public:
+    using feature_type = float;
+
     cbir_bovw();
 
     void run();
 
 private:
-    using feature_type = float;
-
     /**
      * Extract features and keypoints from images
      * and save as hdf5 format
@@ -41,6 +41,8 @@ private:
 
     cv::Mat read_img(std::string const &name,
                      bool to_gray = true) const;
+
+    rapidjson::Document read_relevant_json() const;
 
     void measure_result(size_t code_size);
 

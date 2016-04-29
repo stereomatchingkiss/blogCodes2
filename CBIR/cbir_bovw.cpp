@@ -33,6 +33,11 @@
 
 namespace{
 
+using hist_type = arma::Mat<cbir_bovw::feature_type>;
+using invert_value_type = arma::uword;
+using invert_index =
+ocv::inverted_index<arma::uword, invert_value_type>;
+
 template<typename T>
 struct cv_type_map;
 
@@ -47,6 +52,91 @@ struct cv_type_map<uchar>
 {
     enum{type = CV_8U};
 };
+
+template<typename T>
+T read_mat(rapidjson::Document const &setting,
+           std::string const &file_name,
+           size_t code_size)
+{
+    T mat;
+    mat.load(setting[file_name.c_str()].GetString() +
+            std::string("_") +
+            std::to_string(code_size));
+
+    return mat;
+}
+
+//api of this function is suck, but I think it is
+//acceptable in this small case
+template<typename Searcher, typename BOVW, typename SPatialVefirier>
+double measure_impl(Searcher &searcher,
+                    ocv::cbir::f2d_detector &f2d,
+                    BOVW const &bovw,
+                    hist_type const &hist,
+                    arma::Mat<cbir_bovw::feature_type> const &code_book,
+                    arma::Mat<float> const &idf_cf,
+                    SPatialVefirier const &spv,
+                    rapidjson::Document const &doc,
+                    rapidjson::Document const &setting)
+{
+    double total_score = 0;
+    auto const folder =
+            std::string(setting["img_folder"].GetString());
+
+    bool const use_idf = setting["use_idf"].GetBool();
+    bool const use_spatial_info =
+            setting["use_spatial_info"].GetBool();
+    auto const files = ocv::file::get_directory_files(folder);
+    for(int i = 0; i != files.size(); ++i){
+        std::cout<<"target "<<i<<std::endl;
+        cv::Mat gray =
+                cv::imread(folder + "/" + files[i],
+                           cv::IMREAD_GRAYSCALE);
+        //f2d.get_descriptor is the bottle neck
+        //of the program, more than 85% of computation
+        //times come by it
+        auto describe =
+                f2d.get_descriptor(gray);
+        arma::Mat<cbir_bovw::feature_type> const
+                arma_features(describe.second.ptr<cbir_bovw::feature_type>(0),
+                              describe.second.cols,
+                              describe.second.rows,
+                              false);
+        auto target_hist =
+                bovw.describe(arma_features,
+                              code_book);
+        if(use_idf){
+            target_hist %= idf_cf;
+        }
+        auto result =
+                searcher.search(target_hist, hist);
+        if(use_spatial_info){
+            auto const sort_res =
+                    spv.rerank(describe.first,
+                               describe.second,
+                               result);
+            std::copy(std::begin(sort_res), std::end(sort_res),
+                      std::begin(result));
+        }
+        auto const &value = doc[files[i].c_str()];
+        std::set<std::string> relevant;
+        for(rapidjson::SizeType j = 0;
+            j != value.Size(); ++j){
+            relevant.insert(value[j].GetString());
+        }
+        size_t cur_score = 0;
+        for(size_t j = 0; j != relevant.size(); ++j){
+            auto it = relevant.find(files[result[j]]);
+            if(it != std::end(relevant)){
+                ++total_score;
+                ++cur_score;
+            }
+        }
+        //std::cout<<"cur score : "<<cur_score<<"\n";//*/
+    }
+
+    return total_score;
+}
 
 }
 
@@ -220,11 +310,6 @@ void cbir_bovw::build_bovw_hist(size_t code_size)
 
 void cbir_bovw::build_inverted_index(size_t code_size)
 {
-    using hist_type = arma::Mat<feature_type>;
-    using invert_value_type = arma::uword;
-    using invert_index =
-    ocv::inverted_index<arma::uword, invert_value_type>;
-
     hist_type hist;
     hist.load(setting_["hist"].GetString() +
             std::string("_") +
@@ -235,14 +320,6 @@ void cbir_bovw::build_inverted_index(size_t code_size)
     invert.save(setting_["inverted_index"].GetString() +
             std::string("_") +
             std::to_string(code_size));
-    /*auto it = invert.find(1);
-    if(it != std::end(invert)){
-        std::cout<<"sive of vec : "<<it->second.size()<<std::endl;
-        for(auto val : it->second){
-            std::cout<<val<<", ";
-        }
-    }
-    std::cout<<std::endl;//*/
 }
 
 cv::Mat cbir_bovw::
@@ -255,13 +332,8 @@ read_img(const std::string &name, bool to_gray) const
     }
 }
 
-void cbir_bovw::measure_result(size_t code_size)
+rapidjson::Document cbir_bovw::read_relevant_json() const
 {
-    using hist_type = arma::Mat<feature_type>;
-    using invert_value_type = arma::uword;
-    using invert_index =
-    ocv::inverted_index<arma::uword, invert_value_type>;
-
     //the format of relevant.json should same as the one
     //come with ukbench data set
     std::ifstream ifs(setting_["relevant"].GetString());
@@ -269,79 +341,75 @@ void cbir_bovw::measure_result(size_t code_size)
         std::cout<<"cannot open relevant file : "<<
                    setting_["relevant"].GetString()
                 <<std::endl;
-        return;
+        throw std::runtime_error("cannot open relevant json file");
     }
 
     rapidjson::IStreamWrapper isw(ifs);
     rapidjson::Document doc;
     doc.ParseStream(isw);
 
-    invert_index iv;
-    iv.load(setting_["inverted_index"].GetString() +
-            std::string("_") +
-            std::to_string(code_size));
+    return doc;
+}
 
-    hist_type hist;
-    hist.load(setting_["hist"].GetString() +
-            std::string("_") +
-            std::to_string(code_size));
-    ocv::cbir::searcher<invert_index> searcher(iv, 16);
+void cbir_bovw::measure_result(size_t code_size)
+{
+    auto const iv = read_mat<invert_index>(setting_,
+                                           "inverted_index", code_size);
 
+    auto hist = read_mat<hist_type>(setting_,
+                                    "hist", code_size);
+
+    //Reuse the data from histogram would be faster to compute.
+    //I prefer to extract the features of the image again, because
+    //I want to measure computation time of whole process
     cv::Ptr<cv::KAZE> detector = cv::KAZE::create();
     cv::Ptr<cv::KAZE> descriptor = detector;
     ocv::cbir::f2d_detector f2d(detector, descriptor);
-    ocv::cbir::bovw<feature_type, hist_type> bovw;
-    arma::Mat<feature_type> code_book;
-    code_book.load(setting_["code_book"].GetString() +
-            std::string("_") +
-            std::to_string(code_size));
-    double total_score = 0;
-    auto const folder =
-            std::string(setting_["img_folder"].GetString());
-    //iterate through the image inside the folder,
-    //extract features and keypoints
-    auto const files = ocv::file::get_directory_files(folder);
-    for(int i = 0; i != files.size(); ++i){
-        std::cout<<"target "<<i<<std::endl;
-        cv::Mat gray =
-                cv::imread(folder + "/" + files[i],
-                           cv::IMREAD_GRAYSCALE);
-        //std::cout<<"read image"<<std::endl;
-        auto describe =
-                f2d.get_descriptor(gray);
-        //std::cout<<"after descirbe"<<std::endl;
-        arma::Mat<feature_type> const
-                arma_features(describe.second.ptr<feature_type>(0),
-                              describe.second.cols,
-                              describe.second.rows,
-                              false);
-        auto target_hist =
-                bovw.describe(arma_features,
-                              code_book);
-        //std::cout<<"describe bovw"<<std::endl;
-        auto const result =
-                searcher.search(target_hist, hist);
-        //std::cout<<"search size : "<<result.size()<<std::endl;
-        auto const &value = doc[files[i].c_str()];
-        std::set<std::string> relevant;
-        for(rapidjson::SizeType j = 0;
-            j != value.Size(); ++j){
-            relevant.insert(value[j].GetString());
+
+    auto const code_book =
+            read_mat<arma::Mat<feature_type>>(setting_,
+                                              "code_book", code_size);
+    arma::Mat<float> idf_cf;
+    if(setting_["use_idf"] == true){
+        std::map<arma::uword, float> idf;
+        ocv::cbir::convert_to_idf(iv, hist.n_cols, idf);
+        idf_cf.set_size(hist.n_rows, 1);
+        for(auto const &val : idf){
+            idf_cf[val.first] = val.second;
         }
-        //std::cout<<"build relevant"<<std::endl;
-        size_t cur_score = 0;
-        for(size_t j = 0; j != relevant.size(); ++j){
-            auto it = relevant.find(files[result[j]]);
-            if(it != std::end(relevant)){
-                ++total_score;
-                ++cur_score;
-            }
+
+        for(arma::uword i = 0; i != hist.n_cols; ++i){
+            hist.col(i) %= idf_cf;
         }
-        //std::cout<<"cur score : "<<cur_score<<"\n";//*/
     }
-    //raw 2.976,
-    //raw + spatial 2.988
+
+    ocv::cbir::spatial_verifier<
+            arma::Mat<feature_type>,
+            feature_type> spv(fi_, code_book);
+
+    double total_score = 0;
+    if(setting_["use_idf"] == true){
+        ocv::cbir::searcher<invert_index,
+                ocv::armd::cosine_similarity<feature_type>,
+                std::greater<feature_type>>
+                searcher(iv, 16);
+        total_score = measure_impl(searcher, f2d,
+                                   ocv::cbir::bovw<feature_type, hist_type>(),
+                                   hist, code_book,
+                                   idf_cf, spv, read_relevant_json(),
+                                   setting_);
+    }else{
+        ocv::cbir::searcher<invert_index> searcher(iv, 16);
+        total_score = measure_impl(searcher, f2d,
+                                   ocv::cbir::bovw<feature_type, hist_type>(),
+                                   hist, code_book,
+                                   idf_cf, spv, read_relevant_json(),
+                                   setting_);
+    }
+    //raw 3.044,
     //raw + idf 2.932
+    //raw + spatial 2.988
+    //raw + idf + spatial 2.932
     static std::ofstream out("result.txt");
     std::cout<<code_size<<" : "<<total_score / 1000.0<<std::endl;
     out<<code_size<<" : "<<total_score / 1000.0<<std::endl;//*/
