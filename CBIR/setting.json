@@ -7,6 +7,8 @@
 "create_hist" : false,
 "create_inverted_index" : false,
 "measure_result" : true,
+"use_idf" : true,
+"use_spatial_info" : true,
 
 "hist" : "ukbench_hist",
 "code_book" : "ukbench_code_book",
