@@ -407,9 +407,9 @@ void cbir_bovw::measure_result(size_t code_size)
                                    setting_);
     }
     //raw 3.044,
-    //raw + idf 2.932
-    //raw + spatial 2.988
-    //raw + idf + spatial 2.932
+    //raw + idf 3.035
+    //raw + spatial 3.082
+    //raw + idf + spatial 3.13
     static std::ofstream out("result.txt");
     std::cout<<code_size<<" : "<<total_score / 1000.0<<std::endl;
     out<<code_size<<" : "<<total_score / 1000.0<<std::endl;//*/
