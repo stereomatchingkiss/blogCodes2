@@ -12,10 +12,7 @@ INCLUDE_DIRECTORIES(${OCV_PATH})
 add_executable(${PROJECT_NAME}
 main.cpp
 correlation_trackers.hpp
-correlation_trackers.cpp
-#cam_shift_tracker.hpp
-#cam_shift_tracker.cpp
-${OCV_PATH}/ocv_libs/cbir/color_descriptor.cpp)
+correlation_trackers.cpp)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv_dev.cmake)
