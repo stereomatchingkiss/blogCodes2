@@ -20,12 +20,7 @@ void video_to_image(std::string const &video,
                     std::string const &save_to);
 
 int main()
-{
-    //video_to_image("v1.mp4", "v1_frames");
-    //video_to_image("v2.mp4", "v2_frames");
-    //video_to_image("v3.mp4", "v3_frames");
-    //video_to_image("v4.mp4", "v4_frames");
-
+{    
     //<image file='v1_frames\img00433.jpg'>
     //    <box top='139' left='145' width='40' height='92'/>
     //    <box top='141' left='287' width='46' height='86'/>
@@ -53,9 +48,7 @@ int main()
 
 void video_to_image(std::string const &video,
                     std::string const &save_to)
-{
-    using namespace std::placeholders;
-
+{    
     cv::VideoCapture cap;
     cap.open(video);
     if(!cap.isOpened()){
@@ -121,8 +114,6 @@ void gmg_test()
 {
     using namespace cv::bgsegm;
 
-    cv::setNumThreads(-1);
-
     cv::Ptr<cv::BackgroundSubtractor> fgbg =
             createBackgroundSubtractorGMG(20, 0.7);
     cv::Ptr<cv::BackgroundSubtractor> mog2 =
@@ -144,13 +135,13 @@ void gmg_test()
         if(frame.empty()){
             break;
         }
-        //fgbg->apply(frame, fgmask);
+        fgbg->apply(frame, fgmask);
         mog2->apply(frame, fgmask2);
         frame.convertTo(segm, CV_8U, 0.5);
         //segm = frame + {100,100,0}
         //cv::add(frame, cv::Scalar{100,100,0}, segm, fgmask);
         cv::imshow("frame", frame);
-        //cv::imshow("fg seg", segm);
+        cv::imshow("fg seg", segm);
         cv::imshow("mog2", fgmask2);
         int c = cv::waitKey(30);
         if (c == 'q' || c == 'Q' || (c & 255) == 27){
