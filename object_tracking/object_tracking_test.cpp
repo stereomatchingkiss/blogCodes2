@@ -3,11 +3,13 @@
 
 #include <dlib/dir_nav.h>
 
+#include <opencv2/core/utility.hpp>
 #include <opencv2/bgsegm.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/video/background_segm.hpp>
+#include <opencv2/tracking.hpp>
 
 #include <iostream>
 #include <sstream>
@@ -63,8 +65,8 @@ void test_correlation_track()
     //    <box top='139' left='145' width='40' height='92'/>
     //    <box top='141' left='287' width='46' height='86'/>
     //</image>
-    //correlation_tracker_test("v1_frames", {433},
-    //{{145,139,40,92}, {287,141,46,86}});
+    correlation_tracker_test("v1_frames", {433},
+    {{145,139,40,92}, {287,141,46,86}});
 
     //<image file='v2_frames\img00398.jpg'>
     //    <box top='156' left='201' width='46' height='103'/>
@@ -103,7 +105,7 @@ void test_gmg()
         return;
     }
 
-    cv::Mat frame, fgmask, fgmask2, segm;
+    cv::Mat frame, fgmask, fgmask2;
     while(1){
         cap >> frame;
         if(frame.empty()){
@@ -111,14 +113,60 @@ void test_gmg()
         }
         fgbg->apply(frame, fgmask);
         mog2->apply(frame, fgmask2);
-        frame.convertTo(segm, CV_8U, 0.5);
+        //frame.convertTo(segm, CV_8U, 0.5);
         //segm = frame + {100,100,0}
         //cv::add(frame, cv::Scalar{100,100,0}, segm, fgmask);
         cv::imshow("frame", frame);
-        cv::imshow("fg seg", segm);
+        cv::imshow("fg seg", fgmask);
         cv::imshow("mog2", fgmask2);
         int c = cv::waitKey(30);
         if (c == 'q' || c == 'Q' || (c & 255) == 27){
+            break;
+        }
+    }
+}
+
+void test_tracking_module()
+{
+    cv::MultiTrackerTLD trackers;
+    std::vector<cv::Rect2d> const objects
+    {{145,139,40,92}, {287,141,46,86}};
+    //std::vector<cv::Rect2d> objects;
+
+    auto files =
+            dlib::get_files_in_directory_tree("v1_frames",
+                                              dlib::match_ending(".jpg"));
+    std::sort(std::begin(files), std::end(files));
+
+    auto frame = cv::imread("v1_frames/" +
+                            files[433].name());
+    //cv::selectROI("tracker", frame, objects);
+    for(auto const &obj : objects){
+        trackers.addTarget(frame, obj, "BOOSTING");
+    }
+    //trackers.add(frame, objects);
+
+    for(size_t i = 434; i != files.size(); ++i){
+        frame = cv::imread("v1_frames/" + files[i].name());
+        if(!frame.empty()){
+            //trackers.update(frame, objects);
+            auto const track_all = trackers.update(frame);
+            if(!track_all){
+                std::cout<<"maybe losing object"<<std::endl;
+                std::cin.get();
+            }
+            for(size_t j = 0; j < trackers.targetNum; ++j){
+                //std::cout<<j<<" : "<<objects[j]<<std::endl;
+                //cv::rectangle(frame, objects[j], colors[j]);
+                cv::rectangle(frame, trackers.boundingBoxes[j],
+                              trackers.colors[j]);
+            }
+            cv::imshow("tracker", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }
+        }else{
             break;
         }
     }

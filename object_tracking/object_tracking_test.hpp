@@ -3,5 +3,6 @@
 
 void test_gmg();
 void test_correlation_track();
+void test_tracking_module();
 
 #endif
