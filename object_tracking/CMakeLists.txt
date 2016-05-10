@@ -12,7 +12,9 @@ add_definitions(-DDLIB_JPEG_SUPPORT)
 add_executable(${PROJECT_NAME}
 main.cpp
 correlation_trackers.hpp
-correlation_trackers.cpp)
+correlation_trackers.cpp
+object_tracking_test.hpp
+object_tracking_test.cpp)
 
 #include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv_dev.cmake)
