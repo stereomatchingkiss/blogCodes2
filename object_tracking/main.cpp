@@ -9,33 +9,108 @@
 #include <opencv2/video/background_segm.hpp>
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 
-void correlation_tracker_test();
+void correlation_tracker_test(std::string const &folder,
+                              size_t frame_num,
+                              std::vector<cv::Rect> const &roi);
 void gmg_test();
+void video_to_image(std::string const &video,
+                    std::string const &save_to);
 
 int main()
-{          
+{
+    //video_to_image("v1.mp4", "v1_frames");
+    //video_to_image("v2.mp4", "v2_frames");
+    //video_to_image("v3.mp4", "v3_frames");
+    //video_to_image("v4.mp4", "v4_frames");
+
+    //<image file='v1_frames\img00433.jpg'>
+    //    <box top='139' left='145' width='40' height='92'/>
+    //    <box top='141' left='287' width='46' height='86'/>
+    //</image>
+    //correlation_tracker_test("v1_frames", {433},
+    //{{145,139,40,92}, {287,141,46,86}});
+
+    //<image file='v2_frames\img00398.jpg'>
+    //    <box top='156' left='201' width='46' height='103'/>
+    //    <box top='170' left='281' width='32' height='69'/>
+    //</image>
+    //correlation_tracker_test("v2_frames", {398},
+    //{{201,156,46,103}, {281,170,32,69}});
+
+    //<image file='v3_frames\img01713.jpg'>
+    //    <box top='162' left='100' width='40' height='105'/>
+    //    <box top='176' left='164' width='41' height='88'/>
+    //    <box top='188' left='259' width='30' height='63'/>
+    //    <box top='166' left='318' width='40' height='101'/>
+    //</image>
+    //correlation_tracker_test("v3_frames", {1713},
+    //{{100,162,40,105}, {164,176,41,88},
+    // {259,188,30,63}, {318,166,40,101}});
 }
 
-void correlation_tracker_test()
+void video_to_image(std::string const &video,
+                    std::string const &save_to)
 {
+    using namespace std::placeholders;
+
+    cv::VideoCapture cap;
+    cap.open(video);
+    if(!cap.isOpened()){
+        std::cerr<<"cannot read video\n";
+        return;
+    }
+
+    cv::Mat frame;
+    for(size_t i = 0; ; ++i){
+        cap>>frame;
+        if(!frame.empty()){
+            std::stringstream ss;
+            ss<<save_to<<"/img"<<std::setfill('0')
+             <<std::setw(5)<<i<<".jpg";
+            cv::imwrite(ss.str(), frame);
+        }else{
+            break;
+        }
+    }
+}
+
+void correlation_tracker_test(std::string const &folder,
+                              size_t frame_num,
+                              std::vector<cv::Rect> const &roi)
+{        
     auto files =
-            dlib::get_files_in_directory_tree("video_frames",
+            dlib::get_files_in_directory_tree(folder,
                                               dlib::match_ending(".jpg"));
     std::sort(std::begin(files), std::end(files));
 
+    auto img = cv::imread(folder + "/" +
+                          files[frame_num].name());
     correlation_tracker tracker;
-    auto img = cv::imread("video_frames/" + files[0].name());
-    tracker.add_track(img, {93-38/2,110-86/2,38,86});
-    for(size_t i = 1; i != files.size(); ++i){
-        img = cv::imread("video_frames/" + files[i].name());
+    for(size_t i = 0; i != roi.size(); ++i){
+        tracker.add_track(img, roi[i]);
+    }
+
+    std::vector<cv::Scalar> const colors{{255, 0, 0},
+                                         {0, 255, 0},
+                                         {0, 0, 255},
+                                         {255, 255, 0}};
+
+    for(size_t i = frame_num + 1; i != files.size(); ++i){
+        img = cv::imread(folder + "/" + files[i].name());
         if(!img.empty()){
             tracker.update(img);
-            auto const position = tracker.get_position(0);
-            cv::rectangle(img, position, {255, 0, 0});
-            cv::imshow("img", img);
-            cv::waitKey(30);
+            auto const positions = tracker.get_position();
+            for(size_t j = 0; j != positions.size(); ++j){
+                cv::rectangle(img, positions[j], colors[j]);
+            }
+            cv::imshow("tracking demo", img);
+            int const key = cv::waitKey(10);
+            if(key == 'q'){
+                break;
+            }
         }else{
             break;
         }
