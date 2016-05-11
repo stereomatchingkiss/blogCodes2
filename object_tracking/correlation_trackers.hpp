@@ -18,7 +18,7 @@ public:
      * @param input input image with target want to track
      * @param roi roi of the target
      */
-    void add_track(cv::Mat const &input,
+    void add(cv::Mat const &input,
                    cv::Rect const &roi);
 
     void clear();

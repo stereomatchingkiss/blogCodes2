@@ -4,7 +4,7 @@
 
 #include <opencv2/imgproc.hpp>
 
-void correlation_tracker::add_track(const cv::Mat &input,
+void correlation_tracker::add(const cv::Mat &input,
                                     const cv::Rect &roi)
 {
     using namespace dlib;
