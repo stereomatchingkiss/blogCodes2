@@ -65,15 +65,19 @@ bool should_track_again(std::vector<cv::Rect> const &reference,
     if(tracker.empty()){
         return true;
     }
+    if(reference.empty()){
+        return false;
+    }
 
     auto const track_region = tracker.get_position();
     for(auto const &trect : track_region){
-        auto it = std::find_if(std::begin(reference), std::end(reference),
-                               [&](cv::Rect const &rec)
+        auto const should_track =
+                std::none_of(std::begin(reference), std::end(reference),
+                             [&](cv::Rect const &rec)
         {
-                return ocv::saliency::calculate_iou(rec, trect) < 0.5;
-    });
-        if(it != std::end(reference)){
+                return ocv::saliency::calculate_iou(rec, trect) > 0.5;
+        });
+        if(should_track){
             return true;
         }
     }
@@ -121,7 +125,7 @@ void test_gmg()
     }
 
     cv::VideoCapture cap;
-    cap.open("v1.mp4");
+    cap.open("v2.mp4");
     if(!cap.isOpened()){
         std::cout<<"cannot read video"<<std::endl;
         return;
@@ -151,7 +155,7 @@ void test_gmg()
             for(auto const &ct : contours){
                 //cv::drawContours(fgmask, contours, i, {255, 0, 0});
                 auto const Rect = cv::boundingRect(ct);
-                if(Rect.area() > 1500){
+                if(Rect.area() > 1000){
                     rects.push_back(Rect);
                 }
             }
