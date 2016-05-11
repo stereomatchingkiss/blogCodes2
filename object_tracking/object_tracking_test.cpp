@@ -32,7 +32,7 @@ void correlation_tracker_test(std::string const &folder,
                           files[frame_num].name());
     correlation_tracker tracker;
     for(size_t i = 0; i != roi.size(); ++i){
-        tracker.add_track(img, roi[i]);
+        tracker.add(img, roi[i]);
     }
 
     std::vector<cv::Scalar> const colors{{255, 0, 0},
@@ -163,7 +163,7 @@ void test_gmg()
         if(segment_bg && should_track_again(rects, tracker)){
             tracker.clear();
             for(auto const &rect : rects){
-                tracker.add_track(frame, rect);
+                tracker.add(frame, rect);
                 cv::rectangle(frame, rect, {255,0,0});
             }
         }else{
