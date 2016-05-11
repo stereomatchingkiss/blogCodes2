@@ -1,6 +1,8 @@
 #include "object_tracking_test.hpp"
 #include "correlation_trackers.hpp"
 
+#include <ocv_libs/saliency/utility.hpp>
+
 #include <dlib/dir_nav.h>
 
 #include <opencv2/core/utility.hpp>
@@ -57,6 +59,28 @@ void correlation_tracker_test(std::string const &folder,
     }
 }
 
+bool should_track_again(std::vector<cv::Rect> const &reference,
+                        correlation_tracker const &tracker)
+{
+    if(tracker.empty()){
+        return true;
+    }
+
+    auto const track_region = tracker.get_position();
+    for(auto const &trect : track_region){
+        auto it = std::find_if(std::begin(reference), std::end(reference),
+                               [&](cv::Rect const &rec)
+        {
+                return ocv::saliency::calculate_iou(rec, trect) < 0.5;
+    });
+        if(it != std::end(reference)){
+            return true;
+        }
+    }
+
+    return false;
+}
+
 }
 
 void test_correlation_track()
@@ -92,9 +116,7 @@ void test_gmg()
 
     cv::Ptr<cv::BackgroundSubtractor> fgbg =
             createBackgroundSubtractorGMG(20, 0.7);
-    cv::Ptr<cv::BackgroundSubtractor> mog2 =
-            cv::createBackgroundSubtractorMOG2(500,16,false);
-    if(!fgbg || !mog2){
+    if(!fgbg){
         return;
     }
 
@@ -105,20 +127,50 @@ void test_gmg()
         return;
     }
 
-    cv::Mat frame, fgmask, fgmask2;
-    while(1){
+    cv::Mat frame, fgmask;
+    std::vector<std::vector<cv::Point>> contours;
+    //auto const kernel =
+    //        cv::getStructuringElement(cv::MORPH_RECT, {5,5});
+    correlation_tracker tracker;
+    std::vector<cv::Rect> rects;
+    for(size_t i = 0; ;++i){
         cap >> frame;
         if(frame.empty()){
             break;
         }
+        cv::blur(frame, frame, {3,3});
         fgbg->apply(frame, fgmask);
-        mog2->apply(frame, fgmask2);
-        //frame.convertTo(segm, CV_8U, 0.5);
-        //segm = frame + {100,100,0}
-        //cv::add(frame, cv::Scalar{100,100,0}, segm, fgmask);
+        //cv::morphologyEx(fgmask, fgmask,
+        //                 cv::MORPH_OPEN, kernel);
+        //cv::morphologyEx(fgmask, fgmask,
+        //                 cv::MORPH_CLOSE, kernel);
+        bool const segment_bg = (i % 500) == 0;
+        if(segment_bg){
+            cv::findContours(fgmask, contours, cv::RETR_EXTERNAL,
+                             cv::CHAIN_APPROX_SIMPLE);
+            for(auto const &ct : contours){
+                //cv::drawContours(fgmask, contours, i, {255, 0, 0});
+                auto const Rect = cv::boundingRect(ct);
+                if(Rect.area() > 2000){
+                    rects.push_back(Rect);
+                }
+            }
+        }
+        if(segment_bg && should_track_again(rects, tracker)){
+            tracker.clear();
+            for(auto const &rect : rects){
+                tracker.add_track(frame, rect);
+                cv::rectangle(frame, rect, {255,0,0});
+            }
+        }else{
+            tracker.update(frame);
+            auto const positions = tracker.get_position();
+            for(auto const &pos : positions){
+                cv::rectangle(frame, pos, {255,0,0});
+            }
+        }
         cv::imshow("frame", frame);
         cv::imshow("fg seg", fgmask);
-        cv::imshow("mog2", fgmask2);
         int c = cv::waitKey(30);
         if (c == 'q' || c == 'Q' || (c & 255) == 27){
             break;
