@@ -144,14 +144,14 @@ void test_gmg()
         //                 cv::MORPH_OPEN, kernel);
         //cv::morphologyEx(fgmask, fgmask,
         //                 cv::MORPH_CLOSE, kernel);
-        bool const segment_bg = (i % 500) == 0;
+        bool const segment_bg = i >= 300 ? (i % 15) == 0 : (i % 300) == 0;
         if(segment_bg){
             cv::findContours(fgmask, contours, cv::RETR_EXTERNAL,
                              cv::CHAIN_APPROX_SIMPLE);
             for(auto const &ct : contours){
                 //cv::drawContours(fgmask, contours, i, {255, 0, 0});
                 auto const Rect = cv::boundingRect(ct);
-                if(Rect.area() > 2000){
+                if(Rect.area() > 1500){
                     rects.push_back(Rect);
                 }
             }
@@ -168,6 +168,10 @@ void test_gmg()
             for(auto const &pos : positions){
                 cv::rectangle(frame, pos, {255,0,0});
             }
+        }
+
+        if(segment_bg){
+            rects.clear();
         }
         cv::imshow("frame", frame);
         cv::imshow("fg seg", fgmask);
