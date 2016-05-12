@@ -78,7 +78,7 @@ bool should_track_again(std::vector<cv::Rect> const &reference,
                              [&](cv::Rect const &rec)
         {
                 return ocv::saliency::calculate_iou(rec, trect) > 0.5;
-        });
+    });
         if(should_track){
             return true;
         }
@@ -193,33 +193,29 @@ void test_tracking_module()
     cv::MultiTrackerTLD trackers;
     std::vector<cv::Rect2d> const objects
     {{145,139,40,92}, {287,141,46,86}};
-    //std::vector<cv::Rect2d> objects;
+
+    size_t const start = 500;
+    std::string const video = "v1_frames";
 
     auto files =
-            dlib::get_files_in_directory_tree("v1_frames",
+            dlib::get_files_in_directory_tree(video,
                                               dlib::match_ending(".jpg"));
     std::sort(std::begin(files), std::end(files));
 
-    auto frame = cv::imread("v1_frames/" +
-                            files[433].name());
-    //cv::selectROI("tracker", frame, objects);
+    auto frame = cv::imread(video + "/" +
+                            files[start].name());
+    auto const rect = cv::selectROI("pp", frame,
+                                    false, false);
+    trackers.addTarget(frame, rect, "KCF");
     for(auto const &obj : objects){
-        trackers.addTarget(frame, obj, "KCF");
-    }
-    //trackers.add(frame, objects);
+        //trackers.addTarget(frame, obj, "KCF");
+    }    
 
-    for(size_t i = 434; i != files.size(); ++i){
-        frame = cv::imread("v1_frames/" + files[i].name());
-        if(!frame.empty()){
-            //trackers.update(frame, objects);
-            auto const track_all = trackers.update(frame);
-            if(!track_all){
-                std::cout<<"maybe losing object"<<std::endl;
-                std::cin.get();
-            }
+    for(size_t i = start+1; i != files.size(); ++i){
+        frame = cv::imread(video + "/" + files[i].name());
+        if(!frame.empty()){     
+            trackers.update(frame);
             for(size_t j = 0; j < trackers.targetNum; ++j){
-                //std::cout<<j<<" : "<<objects[j]<<std::endl;
-                //cv::rectangle(frame, objects[j], colors[j]);
                 cv::rectangle(frame, trackers.boundingBoxes[j],
                               trackers.colors[j]);
             }
@@ -254,23 +250,31 @@ void test_cmt()
     //    <box top='166' left='318' width='40' height='101'/>
     //</image>
 
+    std::string const video = "v1_frames";
+    size_t const start = 433;
+
     cmt::CMT cmt;
-    std::vector<cv::Rect2d> const objects
-    {cv::Rect2d{201*2,156*2,46*2,103*2}};
+    std::vector<cv::Rect2d> objects
+    {cv::Rect2d{100,162,40,105}};
 
     auto files =
-            dlib::get_files_in_directory_tree("v2_frames",
+            dlib::get_files_in_directory_tree(video,
                                               dlib::match_ending(".jpg"));
+    std::cout<<"num of files "<<files.size()<<std::endl;
     std::sort(std::begin(files), std::end(files));
 
-    auto frame = cv::imread("v2_frames/" +
-                            files[398].name());
+    auto frame = cv::imread(video + "/" +
+                            files[start].name());
+
     cv::Mat gframe;
     cv::cvtColor(frame, gframe, CV_BGR2GRAY);
-    cmt.initialize(gframe, objects[0]);
+    //cmt.initialize(gframe, objects[0]);
+    auto const box = cv::selectROI("ff", frame, false, false);
+    std::cout<<box<<std::endl;
+    cmt.initialize(gframe, box);
 
-    for(size_t i = 398+1; i != files.size(); ++i){
-        frame = cv::imread("v2_frames/" + files[i].name());
+    for(size_t i = start+1; i != files.size(); ++i){
+        frame = cv::imread(video + "/" + files[i].name());
         if(!frame.empty()){
             cv::cvtColor(frame, gframe, CV_BGR2GRAY);
             cmt.processFrame(gframe);
@@ -289,5 +293,5 @@ void test_cmt()
         }else{
             break;
         }
-    }
+    }//*/
 }
