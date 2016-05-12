@@ -1,7 +1,8 @@
 #include "object_tracking_test.hpp"
 #include "correlation_trackers.hpp"
 #include "CppMT/CMT.h"
-
+#include "fixed_size_trackers.hpp"
+#include "player_detector.hpp"
 
 #include <ocv_libs/saliency/utility.hpp>
 
@@ -294,4 +295,39 @@ void test_cmt()
             break;
         }
     }//*/
+}
+
+void test_fixed_size_trackers()
+{
+    //std::string const video = "v1_frames";
+}
+
+void test_pedestrian_detection()
+{
+    cv::VideoCapture cap;
+    cap.open("v1.mp4");
+    if(!cap.isOpened()){
+        std::cout<<"cannot open video"<<std::endl;
+        return;
+    }
+
+    cv::Mat frame;
+    player_detector pd(2);
+    for(;;){
+        cap>>frame;
+        if(!frame.empty()){
+            auto const result = pd.search(frame);
+            for(auto const &rect : result){
+                cv::rectangle(frame, rect, {255,0,0});
+            }
+            cv::imshow("frame", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }
+        }else{
+            break;
+        }
+    }
+
 }
