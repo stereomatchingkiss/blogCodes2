@@ -15,6 +15,8 @@ correlation_trackers.hpp
 correlation_trackers.cpp
 object_tracking_test.hpp
 object_tracking_test.cpp
+fixed_size_trackers.hpp
+fixed_size_trackers.cpp
 )
 
 #include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
