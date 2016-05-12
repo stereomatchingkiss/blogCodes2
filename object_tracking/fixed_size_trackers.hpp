@@ -18,12 +18,11 @@ public:
     std::function<std::vector<cv::Rect2d>(cv::Mat const&)>;
 
     /**
-     * @param search_strategy specify the strategy to search the target, this
-     * strategy will be called when occlusion or miss frame happen
-     * @param search strategy of the tracking solution
+     * @param search_func specify the strategy to search the target,
+     * this strategy will be called when occlusion or miss frame happen
      * @param max_player maximum player of the tracker tracking
      * @param miss_frame If the tracking box stuck at the
-     * same location >= miss_fram_count, this algorithm
+     * same location >= miss_frame_count, this algorithm
      * will start the re-track progress.If the value == 0, it will
      * never re-track even the tracking box stuck.
      * @param occlusion_thresh If the value of IoU(intersection
