@@ -1,5 +1,7 @@
 #include "object_tracking_test.hpp"
 #include "correlation_trackers.hpp"
+#include "CppMT/CMT.h"
+
 
 #include <ocv_libs/saliency/utility.hpp>
 
@@ -202,7 +204,7 @@ void test_tracking_module()
                             files[433].name());
     //cv::selectROI("tracker", frame, objects);
     for(auto const &obj : objects){
-        trackers.addTarget(frame, obj, "BOOSTING");
+        trackers.addTarget(frame, obj, "KCF");
     }
     //trackers.add(frame, objects);
 
@@ -221,6 +223,64 @@ void test_tracking_module()
                 cv::rectangle(frame, trackers.boundingBoxes[j],
                               trackers.colors[j]);
             }
+            cv::imshow("tracker", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }
+        }else{
+            break;
+        }
+    }
+}
+
+void test_cmt()
+{
+    //<image file='v1_frames\img00433.jpg'>
+    //    <box top='139' left='145' width='40' height='92'/>
+    //    <box top='141' left='287' width='46' height='86'/>
+    //</image>
+
+    //<image file='v2_frames\img00398.jpg'>
+    //    <box top='156' left='201' width='46' height='103'/>
+    //    <box top='170' left='281' width='32' height='69'/>
+    //</image>
+    //{{201,156,46,103}, {281,170,32,69}});
+
+    //<image file='v3_frames\img01713.jpg'>
+    //    <box top='162' left='100' width='40' height='105'/>
+    //    <box top='176' left='164' width='41' height='88'/>
+    //    <box top='188' left='259' width='30' height='63'/>
+    //    <box top='166' left='318' width='40' height='101'/>
+    //</image>
+
+    cmt::CMT cmt;
+    std::vector<cv::Rect2d> const objects
+    {cv::Rect2d{201*2,156*2,46*2,103*2}};
+
+    auto files =
+            dlib::get_files_in_directory_tree("v2_frames",
+                                              dlib::match_ending(".jpg"));
+    std::sort(std::begin(files), std::end(files));
+
+    auto frame = cv::imread("v2_frames/" +
+                            files[398].name());
+    cv::Mat gframe;
+    cv::cvtColor(frame, gframe, CV_BGR2GRAY);
+    cmt.initialize(gframe, objects[0]);
+
+    for(size_t i = 398+1; i != files.size(); ++i){
+        frame = cv::imread("v2_frames/" + files[i].name());
+        if(!frame.empty()){
+            cv::cvtColor(frame, gframe, CV_BGR2GRAY);
+            cmt.processFrame(gframe);
+            auto const &pts = cmt.points_active;
+            for(auto const pt : pts){
+                cv::circle(frame, pt, 1, {255,0,0});
+            }
+
+            auto const rect = cmt.bb_rot.boundingRect();
+            cv::rectangle(frame, rect, {255, 0, 0});
             cv::imshow("tracker", frame);
             int const key = cv::waitKey(30);
             if(key == 'q'){
