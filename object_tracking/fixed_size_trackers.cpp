@@ -6,13 +6,15 @@
 
 fixed_size_trackers::
 fixed_size_trackers(search_func search,
+                    warm_func warm_strategy,
                     size_t max_player,
                     size_t miss_frame,
                     double occlusion_thresh) :
     max_player_(std::max(max_player,size_t(1))),
     miss_frame_(miss_frame),
     occlusion_thresh_(occlusion_thresh),
-    search_strategy_(search)
+    search_strategy_(search),
+    warm_strategy_(warm_strategy)
 {
 
 }
@@ -87,6 +89,8 @@ void fixed_size_trackers::update(const cv::Mat &input)
                     add(input, new_roi[i], track_strategy_[i]);
                 }
             }
+        }else{
+            warm_strategy_(input);
         }
     }
 }

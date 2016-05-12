@@ -17,9 +17,14 @@ public:
     using search_func =
     std::function<std::vector<cv::Rect2d>(cv::Mat const&)>;
 
+    using warm_func =
+    std::function<void(cv::Mat const&)>;
+
     /**
      * @param search_func specify the strategy to search the target,
      * this strategy will be called when occlusion or miss frame happen
+     * @param warm_strategy some algorithms need to warm up on every frame
+     * even no target is miss(ex : MOG2)
      * @param max_player maximum player of the tracker tracking
      * @param miss_frame If the tracking box stuck at the
      * same location >= miss_frame_count, this algorithm
@@ -31,6 +36,7 @@ public:
      * the re-track progress
      */
     explicit fixed_size_trackers(search_func search_strategy,
+                                 warm_func warm_strategy,
                                  size_t max_player = 1,
                                  size_t miss_frame = 150,
                                  double occlusion_thresh = 0.5);
@@ -72,6 +78,7 @@ private:
     search_func search_strategy_;
     cv::MultiTrackerTLD trackers_;
     std::vector<std::string> track_strategy_;
+    warm_func warm_strategy_;
 };
 
 #endif //FIXED_SIZE_TRACKERS_HPP
