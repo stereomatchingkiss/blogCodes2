@@ -6,6 +6,7 @@ player_detector::player_detector(size_t max_player) :
     max_player_(max_player)
 {
     bgs_ = cv::createBackgroundSubtractorMOG2();
+    //bgs_ = cv::bgsegm::createBackgroundSubtractorGMG(20, 0.7);
     auto *ptr =
             static_cast<cv::BackgroundSubtractorMOG2*>(bgs_.get());
     //ptr->setShadowThreshold(0.7);
@@ -21,7 +22,7 @@ search_simple(const cv::Mat &input)
     std::vector<cv::Rect2d> locations;
     for(auto const &contour : contours_){
         auto const rect = cv::boundingRect(contour);
-        if(rect.area() > 600){
+        if(rect.area() > 800){
             locations.emplace_back(rect);
         }
     }
@@ -38,7 +39,7 @@ search(const cv::Mat &input)
     {
         return lhs.area() > rhs.area();
     });
-    locations.resize(max_player_);
+    locations.resize(std::min(max_player_, locations.size()));
 
     return locations;
 }
