@@ -38,7 +38,7 @@ public:
     explicit fixed_size_trackers(search_func search_strategy,
                                  warm_func warm_strategy,
                                  size_t max_player = 1,
-                                 size_t miss_frame = 150,
+                                 size_t miss_frame = 150,                                 
                                  double occlusion_thresh = 0.5);
 
     /**
@@ -70,6 +70,7 @@ public:
     void update(cv::Mat const &input);
 
 private:        
+    void retrack(const cv::Mat &input);
     bool should_retrack(std::vector<cv::Rect2d> const &old_pos);
 
     size_t max_player_;
@@ -77,9 +78,10 @@ private:
     std::vector<size_t> miss_records_;
     double occlusion_thresh_;
     search_func search_strategy_;
+    bool target_was_lost_;
     cv::MultiTrackerTLD trackers_;
     std::vector<std::string> track_strategy_;
-    warm_func warm_strategy_;
+    warm_func warm_strategy_;    
 };
 
 #endif //FIXED_SIZE_TRACKERS_HPP

@@ -14,6 +14,7 @@ fixed_size_trackers(search_func search,
     miss_frame_(miss_frame),
     occlusion_thresh_(occlusion_thresh),
     search_strategy_(search),
+    target_was_lost_(false),
     warm_strategy_(warm_strategy)
 {
 
@@ -87,25 +88,32 @@ void fixed_size_trackers::set_occlusion_thresh(double value)
     occlusion_thresh_ = value;
 }
 
+void fixed_size_trackers::retrack(const cv::Mat &input)
+{
+    clear();
+    static size_t rt = 0;
+    std::cout<<"retrack : "<<rt++<<std::endl;
+    std::vector<cv::Rect2d> const new_roi =
+            search_strategy_(input);
+    if(new_roi.size() >= max_player_){
+        for(size_t i = 0; i != new_roi.size(); ++i){
+            add(input, new_roi[i], track_strategy_[i]);
+        }
+    }
+}
+
 void fixed_size_trackers::update(const cv::Mat &input)
 {
-    if(!empty()){        
+    if(!empty() || target_was_lost_){
         auto const old_pos = trackers_.boundingBoxes;
         trackers_.update(input);
         if(should_retrack(old_pos)){
-            clear();
-            std::cout<<"retrack"<<std::endl;
-            std::vector<cv::Rect2d> const new_roi =
-                    search_strategy_(input);
-            if(new_roi.size() >= max_player_){
-                for(size_t i = 0; i != new_roi.size(); ++i){
-                    add(input, new_roi[i], track_strategy_[i]);
-                }
-            }
+            target_was_lost_ = true;
+            retrack(input);
         }else{
             warm_strategy_(input);
         }
-    }
+    }       
 }
 
 bool fixed_size_trackers::
@@ -139,6 +147,10 @@ should_retrack(const std::vector<cv::Rect2d> &old_pos)
                 return true;
             }
         }
+    }
+
+    if(empty() && target_was_lost_){
+        return true;
     }
 
     return false;
