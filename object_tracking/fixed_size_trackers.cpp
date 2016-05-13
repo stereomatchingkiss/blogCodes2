@@ -9,10 +9,13 @@ fixed_size_trackers(search_func search,
                     warm_func warm_strategy,
                     size_t max_player,
                     size_t miss_frame,
+                    size_t occlusion_frame,
                     double occlusion_thresh) :
     max_player_(std::max(max_player,size_t(1))),
     miss_frame_(miss_frame),
     occlusion_thresh_(occlusion_thresh),
+    occlusion_frame_(occlusion_frame),
+    occlusion_record_(0),
     search_strategy_(search),
     target_was_lost_(false),
     warm_strategy_(warm_strategy)
@@ -58,6 +61,11 @@ size_t fixed_size_trackers::get_max_player() const
     return max_player_;
 }
 
+size_t fixed_size_trackers::get_occlusion_frame() const
+{
+    return occlusion_frame_;
+}
+
 std::vector<cv::Rect2d> const&
 fixed_size_trackers::get_position() const
 {
@@ -81,6 +89,11 @@ cv::Rect2d fixed_size_trackers::get_position(size_t target) const
 void fixed_size_trackers::set_miss_frame(size_t value)
 {
     miss_frame_ = value;
+}
+
+void fixed_size_trackers::set_occlusion_frame(size_t value)
+{
+    occlusion_frame_ = value;
 }
 
 void fixed_size_trackers::set_occlusion_thresh(double value)
@@ -144,8 +157,12 @@ should_retrack(const std::vector<cv::Rect2d> &old_pos)
                     std::any_of(std::begin(box) + i + 1,
                                 std::end(box), func);
             if(occlusion){
-                return true;
+                ++occlusion_record_;
+            }else{
+                occlusion_record_ = 0;
             }
+
+            return occlusion && (occlusion_frame_ >= occlusion_record_);
         }
     }
 

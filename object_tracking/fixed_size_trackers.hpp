@@ -38,7 +38,8 @@ public:
     explicit fixed_size_trackers(search_func search_strategy,
                                  warm_func warm_strategy,
                                  size_t max_player = 1,
-                                 size_t miss_frame = 150,                                 
+                                 size_t miss_frame = 150,
+                                 size_t occlusion_frame = 150,
                                  double occlusion_thresh = 0.5);
 
     /**
@@ -59,11 +60,13 @@ public:
     size_t get_miss_frame() const;
     double get_occlusion_thresh() const;
     size_t get_max_player() const;
+    size_t get_occlusion_frame() const;
     cv::Rect2d get_position(size_t target) const;
     std::vector<cv::Rect2d> const& get_position() const;    
 
     void set_max_player(size_t max_player);
     void set_miss_frame(size_t value);
+    void set_occlusion_frame(size_t value);
     void set_occlusion_thresh(double value);
     void set_search(search_func search_strategy);
 
@@ -77,6 +80,8 @@ private:
     size_t miss_frame_;
     std::vector<size_t> miss_records_;
     double occlusion_thresh_;
+    size_t occlusion_frame_;
+    size_t occlusion_record_;
     search_func search_strategy_;
     bool target_was_lost_;
     cv::MultiTrackerTLD trackers_;
