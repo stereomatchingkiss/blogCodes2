@@ -39,6 +39,7 @@ void fixed_size_trackers::clear()
     trackers_.trackers.clear();
     trackers_.boundingBoxes.clear();
     trackers_.colors.clear();
+    occlusion_record_ = 0;
 }
 
 bool fixed_size_trackers::empty() const
@@ -112,6 +113,7 @@ void fixed_size_trackers::retrack(const cv::Mat &input)
         for(size_t i = 0; i != new_roi.size(); ++i){
             add(input, new_roi[i], track_strategy_[i]);
         }
+        occlusion_record_ = 0;
     }
 }
 
@@ -162,7 +164,7 @@ should_retrack(const std::vector<cv::Rect2d> &old_pos)
                 occlusion_record_ = 0;
             }
 
-            return occlusion && (occlusion_frame_ >= occlusion_record_);
+            return occlusion && (occlusion_record_ >= occlusion_frame_);
         }
     }
 
