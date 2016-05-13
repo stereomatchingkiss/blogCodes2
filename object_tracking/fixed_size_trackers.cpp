@@ -34,6 +34,7 @@ void fixed_size_trackers::clear()
     miss_records_.clear();
     trackers_.trackers.clear();
     trackers_.boundingBoxes.clear();
+    trackers_.colors.clear();
 }
 
 bool fixed_size_trackers::empty() const
@@ -60,6 +61,11 @@ std::vector<cv::Rect2d> const&
 fixed_size_trackers::get_position() const
 {
     return trackers_.boundingBoxes;
+}
+
+void fixed_size_trackers::set_max_player(size_t max_player)
+{
+    max_player_ = std::max(size_t(1), max_player);
 }
 
 cv::Rect2d fixed_size_trackers::get_position(size_t target) const

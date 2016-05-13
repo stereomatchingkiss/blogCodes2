@@ -62,6 +62,7 @@ public:
     cv::Rect2d get_position(size_t target) const;
     std::vector<cv::Rect2d> const& get_position() const;    
 
+    void set_max_player(size_t max_player);
     void set_miss_frame(size_t value);
     void set_occlusion_thresh(double value);
     void set_search(search_func search_strategy);
