@@ -49,7 +49,7 @@ public:
      * "MIL", "BOOSTING", "MEDIANFLOW", "TLD", "KCF"
      */
     void add(cv::Mat const &input,
-             cv::Rect const &roi,
+             cv::Rect2d const &roi,
              std::string const &strategy = "MEDIANFLOW");
 
     void clear();
@@ -58,9 +58,9 @@ public:
 
     size_t get_miss_frame() const;
     double get_occlusion_thresh() const;
+    size_t get_max_player() const;
     cv::Rect2d get_position(size_t target) const;
-    std::vector<cv::Rect2d> const& get_position() const;
-    size_t get_track_size() const;
+    std::vector<cv::Rect2d> const& get_position() const;    
 
     void set_miss_frame(size_t value);
     void set_occlusion_thresh(double value);

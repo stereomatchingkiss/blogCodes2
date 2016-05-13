@@ -21,7 +21,7 @@ fixed_size_trackers(search_func search,
 
 void fixed_size_trackers::
 add(cv::Mat const &input,
-    cv::Rect const &roi,
+    cv::Rect2d const &roi,
     std::string const &strategy)
 {
     miss_records_.emplace_back(0);
@@ -48,6 +48,11 @@ size_t fixed_size_trackers::get_miss_frame() const
 double fixed_size_trackers::get_occlusion_thresh() const
 {
     return occlusion_thresh_;
+}
+
+size_t fixed_size_trackers::get_max_player() const
+{
+    return max_player_;
 }
 
 std::vector<cv::Rect2d> const&
