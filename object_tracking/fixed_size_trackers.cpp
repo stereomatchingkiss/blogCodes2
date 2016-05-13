@@ -33,6 +33,7 @@ void fixed_size_trackers::clear()
 {
     miss_records_.clear();
     trackers_.trackers.clear();
+    trackers_.boundingBoxes.clear();
 }
 
 bool fixed_size_trackers::empty() const
@@ -82,11 +83,12 @@ void fixed_size_trackers::set_occlusion_thresh(double value)
 
 void fixed_size_trackers::update(const cv::Mat &input)
 {
-    if(!empty()){
+    if(!empty()){        
         auto const old_pos = trackers_.boundingBoxes;
         trackers_.update(input);
         if(should_retrack(old_pos)){
             clear();
+            std::cout<<"retrack"<<std::endl;
             std::vector<cv::Rect2d> const new_roi =
                     search_strategy_(input);
             if(new_roi.size() >= max_player_){
