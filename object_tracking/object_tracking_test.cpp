@@ -210,11 +210,11 @@ void test_tracking_module()
     trackers.addTarget(frame, rect, "KCF");
     for(auto const &obj : objects){
         //trackers.addTarget(frame, obj, "KCF");
-    }    
+    }
 
     for(size_t i = start+1; i != files.size(); ++i){
         frame = cv::imread(video + "/" + files[i].name());
-        if(!frame.empty()){     
+        if(!frame.empty()){
             trackers.update(frame);
             for(size_t j = 0; j < trackers.targetNum; ++j){
                 cv::rectangle(frame, trackers.boundingBoxes[j],
@@ -299,7 +299,47 @@ void test_cmt()
 
 void test_fixed_size_trackers()
 {
-    //std::string const video = "v1_frames";
+    std::string const video = "v1.mp4";
+    cv::VideoCapture cap(video);
+    if(!cap.isOpened()){
+        std::cout<<"cannot open video"<<std::endl;
+        return;
+    }
+
+    namespace ph = std::placeholders;
+
+    cv::Mat frame;
+    size_t const max_player = 2;
+    player_detector pd(max_player);
+    auto search = [&](cv::Mat const &input){ return pd.search(input); };
+    auto warm_up = [&](cv::Mat const &input){ pd.warm_up(input); };
+    fixed_size_trackers tracker(search, warm_up, max_player);
+    tracker.set_miss_frame(90);
+    cv::namedWindow("track");
+
+    for(;;){
+        cap>>frame;
+        if(!frame.empty()){
+            tracker.update(frame);
+            for(auto const &rect : tracker.get_position()){
+                cv::rectangle(frame, rect, {255,0,0});
+            }
+            cv::imshow("track", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }else if(key == 'c'){
+                tracker.clear();
+                for(size_t i = 0; i != tracker.get_max_player(); ++i){
+                    auto const rect = cv::selectROI("capture", frame,
+                                                    false, false);
+                    tracker.add(frame, rect, "KCF");
+                }
+            }
+        }else{
+            break;
+        }
+    }
 }
 
 void test_pedestrian_detection()
@@ -329,5 +369,4 @@ void test_pedestrian_detection()
             break;
         }
     }
-
 }
