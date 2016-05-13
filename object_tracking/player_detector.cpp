@@ -3,7 +3,8 @@
 #include <opencv2/imgproc.hpp>
 
 player_detector::player_detector(size_t max_player) :
-    max_player_(max_player)
+    max_player_(max_player),
+    min_area_(700)
 {
     bgs_ = cv::createBackgroundSubtractorMOG2();
     //bgs_ = cv::bgsegm::createBackgroundSubtractorGMG(20, 0.7);
@@ -22,7 +23,7 @@ search_simple(const cv::Mat &input)
     std::vector<cv::Rect2d> locations;
     for(auto const &contour : contours_){
         auto const rect = cv::boundingRect(contour);
-        if(rect.area() > 800){
+        if(rect.area() > min_area_){
             locations.emplace_back(rect);
         }
     }
@@ -42,6 +43,11 @@ search(const cv::Mat &input)
     locations.resize(std::min(max_player_, locations.size()));
 
     return locations;
+}
+
+void player_detector::set_min_area(double value)
+{
+    min_area_ = value;
 }
 
 void player_detector::warm_up(const cv::Mat &input)

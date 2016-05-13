@@ -22,6 +22,8 @@ public:
      */
     std::vector<cv::Rect2d> search(cv::Mat const &input);
 
+    void set_min_area(double value);
+
     /**
      * some algorithms need to warm_up, like MOG2 of opencv
      * @param input input image
@@ -34,6 +36,7 @@ private:
    cv::Mat gray_img_;
    cv::Mat fmask_;
    size_t max_player_;
+   double min_area_;
 };
 
 #endif
