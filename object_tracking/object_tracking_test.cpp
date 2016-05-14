@@ -2,6 +2,7 @@
 #include "correlation_trackers.hpp"
 #include "CppMT/CMT.h"
 #include "fixed_size_trackers.hpp"
+#include "hsv_range_observer.hpp"
 #include "player_detector.hpp"
 
 #include <ocv_libs/saliency/utility.hpp>
@@ -128,7 +129,7 @@ void test_gmg()
     }
 
     cv::VideoCapture cap;
-    cap.open("v2.mp4");
+    cap.open("v1.mp4");
     if(!cap.isOpened()){
         std::cout<<"cannot read video"<<std::endl;
         return;
@@ -140,13 +141,18 @@ void test_gmg()
     //        cv::getStructuringElement(cv::MORPH_RECT, {5,5});
     correlation_tracker tracker;
     std::vector<cv::Rect> rects;
+    std::vector<cv::Mat> channels;
+    cv::Mat hue;
     for(size_t i = 0; ;++i){
         cap >> frame;
         if(frame.empty()){
             break;
         }
-        cv::blur(frame, frame, {3,3});
-        fgbg->apply(frame, fgmask);
+        cv::cvtColor(frame, hue, CV_BGR2HSV);
+        cv::split(hue, channels);
+        //cv::blur(frame, frame, {3,3});
+        //hue = channels[2] + channels[0];
+        fgbg->apply(hue, fgmask);
         //cv::morphologyEx(fgmask, fgmask,
         //                 cv::MORPH_OPEN, kernel);
         //cv::morphologyEx(fgmask, fgmask,
@@ -299,7 +305,7 @@ void test_cmt()
 
 void test_fixed_size_trackers()
 {
-    std::string const video = "v1.mp4";
+    std::string const video = "v3.mp4";
     cv::VideoCapture cap(video);
     if(!cap.isOpened()){
         std::cout<<"cannot open video"<<std::endl;
@@ -309,12 +315,15 @@ void test_fixed_size_trackers()
     namespace ph = std::placeholders;
 
     cv::Mat frame;
-    size_t const max_player = 2;
+    size_t const max_player = 4;
     player_detector pd(max_player);
+    pd.set_min_area(500);
     auto search = [&](cv::Mat const &input){ return pd.search(input); };
     auto warm_up = [&](cv::Mat const &input){ pd.warm_up(input); };
     fixed_size_trackers tracker(search, warm_up, max_player);
-    tracker.set_miss_frame(90);
+    tracker.set_miss_frame(300);
+    tracker.set_occlusion_frame(150);
+    tracker.set_occlusion_thresh(0.2);
     cv::namedWindow("track");
 
     for(;;){
@@ -361,6 +370,37 @@ void test_pedestrian_detection()
                 cv::rectangle(frame, rect, {255,0,0});
             }
             cv::imshow("frame", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }
+        }else{
+            break;
+        }
+    }
+}
+
+void on_trackbar(int, void*)
+{
+}
+
+void test_hsv_trackers()
+{
+    cv::VideoCapture cap;
+    cap.open("v1.mp4");
+    if(!cap.isOpened()){
+        std::cout<<"cannot open video"<<std::endl;
+        return;
+    }
+
+    cv::Mat frame, output;
+    hsv_range_observer hro("binary");
+    for(;;){
+        cap>>frame;
+        if(!frame.empty()){
+            hro.apply(frame, output);
+            cv::imshow("input", frame);
+            cv::imshow("binary", output);
             int const key = cv::waitKey(30);
             if(key == 'q'){
                 break;
