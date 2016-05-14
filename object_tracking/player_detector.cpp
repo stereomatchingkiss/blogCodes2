@@ -24,7 +24,9 @@ search_simple(const cv::Mat &input)
     for(auto const &contour : contours_){
         auto const rect = cv::boundingRect(contour);
         if(rect.area() > min_area_){
-            locations.emplace_back(rect);
+            if((rect.height / rect.width) > 1){
+                locations.emplace_back(rect);
+            }
         }
     }
 
