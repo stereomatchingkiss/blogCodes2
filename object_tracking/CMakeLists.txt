@@ -18,6 +18,8 @@ object_tracking_test.hpp
 object_tracking_test.cpp
 fixed_size_trackers.hpp
 fixed_size_trackers.cpp
+hsv_range_observer.hpp
+hsv_range_observer.cpp
 player_detector.hpp
 player_detector.cpp
 CppMT/CMT.cpp
