@@ -380,10 +380,6 @@ void test_pedestrian_detection()
     }
 }
 
-void on_trackbar(int, void*)
-{
-}
-
 void test_hsv_trackers()
 {
     cv::VideoCapture cap;
