@@ -166,7 +166,6 @@ void identify_ob_by_edges(cv::Mat const &img)
         }
     }
 
-    cv::imshow("gray", gray);
     cv::imshow("color", img_copy);
     cv::waitKey();
     cv::imwrite("result.jpg", img_copy);
@@ -232,7 +231,7 @@ void identify_ob_by_lines(cv::Mat const &img)
 
     cv::imshow("img copy", img);
     cv::waitKey();
-    cv::imwrite("result.jpg", blank);
+    cv::imwrite("result.jpg", img);
 }
 
 }
@@ -246,6 +245,6 @@ void identify_objects_sequentially()
         return;
     }
 
-    identify_ob_by_edges(img);
-    //identify_ob_by_lines(img);
+    //identify_ob_by_edges(img);
+    identify_ob_by_lines(img);
 }
