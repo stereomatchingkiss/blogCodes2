@@ -9,9 +9,9 @@ hsv_range_observer::hsv_range_observer(std::string win_name) :
     hue_low_(0),
     hue_up_(179),
     sat_low_(0),
-    sat_up_(254),
+    sat_up_(255),
     val_low_(0),
-    val_up_(254),
+    val_up_(255),
     win_name_(std::move(win_name))
 {
     cv::namedWindow(win_name_);
@@ -22,14 +22,14 @@ hsv_range_observer::hsv_range_observer(std::string win_name) :
                        &hue_up_, 179, on_hue_up, this);
 
     cv::createTrackbar("sat_low", win_name_,
-                       &sat_low_, 254, on_sat_low, this);
+                       &sat_low_, 255, on_sat_low, this);
     cv::createTrackbar("sat_up", win_name_,
-                       &sat_up_, 254, on_sat_up, this);
+                       &sat_up_, 255, on_sat_up, this);
 
     cv::createTrackbar("val_low", win_name_,
-                       &val_low_, 254, on_val_low, this);
+                       &val_low_, 255, on_val_low, this);
     cv::createTrackbar("val_up", win_name_,
-                       &val_up_, 254, on_val_up, this);
+                       &val_up_, 255, on_val_up, this);
 }
 
 void hsv_range_observer::process(cv::Mat const &input)
