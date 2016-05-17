@@ -9,16 +9,10 @@
 
 #include <iostream>
 
-std::vector<cv::Mat> get_usc_pedestrian()
+std::vector<cv::Mat>
+get_usc_pedestrian(std::vector<std::string> folders)
 {
-    read_usc_pedestrian rup;
-    std::string const prefix("../object_tracking");
-    std::vector<std::string> folders
-    {
-        prefix + "/USCPedestrianSetA/GT",
-                prefix + "/USCPedestrianSetB/GT",
-                prefix + "/USCPedestrianSetC/GT",
-    };
+    read_usc_pedestrian rup;    
     std::vector<cv::Mat> results;
 
     for(auto &folder : folders){
