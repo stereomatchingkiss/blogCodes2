@@ -36,12 +36,14 @@ read_usc_pedestrian::parse_folder(const std::string &folder)
 {
     results_type results;
 
-    auto const files = ocv::file::get_directory_files(folder);
-    for(auto const &file : files){
-        std::string img_name = file;
-        boost::replace_last(img_name, ".gt.xml", ".bmp");
-        results.insert({img_name,
-                        parse_file(folder + "/" + file)});
+    auto const img_files = ocv::file::get_directory_files(folder);
+    auto const xml_files = ocv::file::get_directory_files(folder + "/GT");
+    if(img_files.size() != xml_files.size()){
+        throw std::runtime_error("img files and xml files, size mismatch");
+    }
+    for(size_t i = 0; i != img_files.size(); ++i){
+        results.insert({img_files[i],
+                        parse_file(folder + "/GT/" + xml_files[i])});
     }
 
     return results;
