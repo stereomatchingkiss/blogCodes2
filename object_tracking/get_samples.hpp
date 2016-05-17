@@ -12,8 +12,13 @@
  * folder/GT/(ground truth)
  * @param folders folders of usc
  * @return pedestrian of usc dataset
+ * @code
+ * std::string const prefix("../computer_vision_dataset/
+ * pedestrian");
+ * get_usc_pedestrian({prefix + "/USCPedestrianSetA"})
+ * @endcode
  */
 std::vector<cv::Mat>
-get_usc_pedestrian(std::vector<std::string> folders);
+get_usc_pedestrian(std::vector<std::string> const &folders);
 
 #endif //GET_SAMPLES_HPP

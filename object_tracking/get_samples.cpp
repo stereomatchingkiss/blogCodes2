@@ -10,21 +10,20 @@
 #include <iostream>
 
 std::vector<cv::Mat>
-get_usc_pedestrian(std::vector<std::string> folders)
+get_usc_pedestrian(std::vector<std::string> const &folders)
 {
     read_usc_pedestrian rup;    
     std::vector<cv::Mat> results;
 
     for(auto &folder : folders){
         auto maps = rup.parse_folder(folder);
-        boost::replace_first(folder, "/GT", "");
         auto const files =
-                ocv::file::get_directory_files(folder);
-        for(auto const &file : files){
-            //std::cout<<file<<std::endl;
-            auto const img = cv::imread(folder + "/" + file,
+                ocv::file::get_directory_files(folder + "/img");
+        for(auto const &file : files){            
+            //std::cout<<folder + "/img/" + file<<std::endl;
+            auto const img = cv::imread(folder + "/img/" + file,
                                         cv::IMREAD_GRAYSCALE);
-            if(!img.empty()){
+            if(!img.empty()){                
                 auto it = maps.find(file);
                 if(it != std::end(maps)){
                     auto const &rects = it->second;

@@ -34,10 +34,11 @@ parse_file(std::string const &file)
 read_usc_pedestrian::results_type
 read_usc_pedestrian::parse_folder(const std::string &folder)
 {
-    results_type results;
+    using namespace ocv::file;
 
-    auto const img_files = ocv::file::get_directory_files(folder);
-    auto const xml_files = ocv::file::get_directory_files(folder + "/GT");
+    results_type results;
+    auto const img_files = get_directory_files(folder + "/img");
+    auto const xml_files = get_directory_files(folder + "/GT");
     if(img_files.size() != xml_files.size()){
         throw std::runtime_error("img files and xml files, size mismatch");
     }
