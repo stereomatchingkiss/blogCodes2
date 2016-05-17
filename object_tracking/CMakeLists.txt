@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
 ${PUGIXML_FORMAT_ADD_TO_EXECUTEABLE}
 ${OCV_PATH}/ocv_libs/file/utility.cpp
 main.cpp
+cnn_train_test.hpp
+cnn_train_test.cpp
 correlation_trackers.hpp
 correlation_trackers.cpp
 object_tracking_test.hpp
@@ -28,6 +30,8 @@ hsv_range_observer.hpp
 hsv_range_observer.cpp
 player_detector.hpp
 player_detector.cpp
+read_stanford40_pose.hpp
+read_stanford40_pose.cpp
 read_usc_pedestrian.hpp
 read_usc_pedestrian.cpp
 CppMT/CMT.cpp
