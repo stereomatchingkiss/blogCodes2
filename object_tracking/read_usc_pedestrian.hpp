@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+/**
+ * Get the bounding rect of usc dataset
+ */
 class read_usc_pedestrian
 {
 public:
