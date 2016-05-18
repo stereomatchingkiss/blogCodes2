@@ -80,13 +80,14 @@ get_indoor_scene_cvpr2009(const std::string &folder,
                  std::mt19937(seed));
     files.resize(files.size() > extract_size ? extract_size :
                                                files.size());
-
     std::vector<cv::Mat> imgs;
     for(auto const &file : files){
         auto img = cv::imread(folder + "/" + file);
         if(!img.empty()){
             preprocess(img);
             imgs.emplace_back(img);
+        }else{
+            std::cout<<"cannot open : "<<file<<std::endl;
         }
     }
 
