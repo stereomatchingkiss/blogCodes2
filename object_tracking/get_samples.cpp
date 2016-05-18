@@ -58,6 +58,50 @@ get_images(std::string const &folder,
     return results;
 }
 
+} //namespace
+
+std::vector<cv::Mat>
+get_indoor_scene_cvpr2009(const std::string &folder,
+                          size_t extract_size,
+                          std::function<void (cv::Mat &)> preprocess,
+                          unsigned int seed)
+{
+    std::vector<std::string> files;
+    for(auto const &fd : ocv::file::get_directory_folders(folder)){
+        //std::cout<<"folder : "<<fd<<std::endl;
+        auto names = ocv::file::get_directory_files(folder + "/" + fd);
+        for(auto const &name : names){
+            files.emplace_back(fd + "/" + name);
+        }
+    }
+
+    //std::cout<<"files size : "<<files.size()<<std::endl;
+    std::shuffle(std::begin(files), std::end(files),
+                 std::mt19937(seed));
+    files.resize(files.size() > extract_size ? extract_size :
+                                               files.size());
+
+    std::vector<cv::Mat> imgs;
+    for(auto const &file : files){
+        auto img = cv::imread(folder + "/" + file);
+        if(!img.empty()){
+            preprocess(img);
+            imgs.emplace_back(img);
+        }
+    }
+
+    return imgs;
+}
+
+void get_indoor_scene_cvpr2009(std::vector<cv::Mat> &inout,
+                               const std::string &folder,
+                               size_t extract_size,
+                               std::function<void (cv::Mat &)> preprocess,
+                               unsigned int seed)
+{
+    auto const imgs = get_indoor_scene_cvpr2009(folder, extract_size,
+                                                preprocess, seed);
+    std::copy(std::begin(imgs), std::end(imgs), std::back_inserter(inout));
 }
 
 std::vector<cv::Mat>
@@ -84,4 +128,29 @@ get_usc_pedestrian(std::string const &folder,
                                            extract_size,
                                            preprocess,
                                            seed);
+}
+
+void
+get_stanford40_pose(std::vector<cv::Mat> &inout,
+                    const std::string &folder,
+                    size_t extract_size,
+                    std::function<void (cv::Mat &)> preprocess,
+                    unsigned int seed)
+{
+    auto const img =
+            get_stanford40_pose(folder, extract_size,
+                                preprocess, seed);
+    std::copy(std::begin(img), std::end(img), std::back_inserter(inout));
+}
+
+void get_usc_pedestrian(std::vector<cv::Mat> &inout,
+                        const std::string &folder,
+                        size_t extract_size,
+                        std::function<void (cv::Mat &)> preprocess,
+                        unsigned int seed)
+{
+    auto const img =
+            get_usc_pedestrian(folder, extract_size,
+                               preprocess, seed);
+    std::copy(std::begin(img), std::end(img), std::back_inserter(inout));
 }
