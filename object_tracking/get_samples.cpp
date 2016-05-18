@@ -22,7 +22,6 @@ get_images(std::string const &folder,
            unsigned int seed)
 {
     Reader reader;
-    std::vector<cv::Mat> results;
     std::vector<std::string> img_path;
 
     auto const files =
@@ -39,6 +38,7 @@ get_images(std::string const &folder,
     auto const prefix = folder + "/" +
             img_sub_folder + "/";
     auto const maps = reader.parse_folder(folder);
+    std::vector<cv::Mat> results;
     for(auto const &name : img_path){
         //std::cout<<name<<std::endl;
         auto const img = cv::imread(prefix + name);
