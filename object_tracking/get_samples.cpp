@@ -58,13 +58,11 @@ get_images(std::string const &folder,
     return results;
 }
 
-} //namespace
-
 std::vector<cv::Mat>
-get_indoor_scene_cvpr2009(const std::string &folder,
-                          size_t extract_size,
-                          std::function<void (cv::Mat &)> preprocess,
-                          unsigned int seed)
+get_images(std::string const &folder,
+           size_t extract_size,
+           std::function<void(cv::Mat&)> preprocess,
+           unsigned int seed)
 {
     std::vector<std::string> files;
     for(auto const &fd : ocv::file::get_directory_folders(folder)){
@@ -73,6 +71,9 @@ get_indoor_scene_cvpr2009(const std::string &folder,
         for(auto const &name : names){
             files.emplace_back(fd + "/" + name);
         }
+    }
+    for(auto &&file : ocv::file::get_directory_files(folder)){
+        files.emplace_back(file);
     }
 
     //std::cout<<"files size : "<<files.size()<<std::endl;
@@ -92,6 +93,25 @@ get_indoor_scene_cvpr2009(const std::string &folder,
     }
 
     return imgs;
+}
+
+} //namespace
+
+std::vector<cv::Mat> get_caltech_bg(const std::string &folder,
+                                    size_t extract_size,
+                                    std::function<void (cv::Mat &)> preprocess,
+                                    unsigned int seed)
+{
+    return get_images(folder, extract_size, preprocess, seed);
+}
+
+std::vector<cv::Mat>
+get_indoor_scene_cvpr2009(const std::string &folder,
+                          size_t extract_size,
+                          std::function<void (cv::Mat &)> preprocess,
+                          unsigned int seed)
+{
+    return get_images(folder, extract_size, preprocess, seed);
 }
 
 void get_indoor_scene_cvpr2009(std::vector<cv::Mat> &inout,
@@ -153,5 +173,17 @@ void get_usc_pedestrian(std::vector<cv::Mat> &inout,
     auto const img =
             get_usc_pedestrian(folder, extract_size,
                                preprocess, seed);
+    std::copy(std::begin(img), std::end(img), std::back_inserter(inout));
+}
+
+void get_caltech_bg(std::vector<cv::Mat> &inout,
+                    const std::string &folder,
+                    size_t extract_size,
+                    std::function<void (cv::Mat &)> preprocess,
+                    unsigned int seed)
+{
+    auto const img =
+            get_caltech_bg(folder, extract_size,
+                           preprocess, seed);
     std::copy(std::begin(img), std::end(img), std::back_inserter(inout));
 }
