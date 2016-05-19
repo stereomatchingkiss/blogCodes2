@@ -29,9 +29,9 @@ private:
                         size_t replicate_num) const;
 
     std::vector<cv::Mat> loaded_data_; //data loaded from dataset
-    arma::Cube<float> train_data_;
+    arma::Cube<double> train_data_;
     arma::Row<size_t> train_labels_;
-    arma::Cube<float> test_data_;
+    arma::Cube<double> test_data_;
     arma::Row<size_t> test_labels_;
 };
 
