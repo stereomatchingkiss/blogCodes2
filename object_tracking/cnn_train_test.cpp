@@ -7,6 +7,21 @@
 #include <opencv2/imgproc.hpp>
 
 #include <mlpack/core/util/split_data.hpp>
+#include <mlpack/methods/ann/activation_functions/logistic_function.hpp>
+
+#include <mlpack/methods/ann/layer/one_hot_layer.hpp>
+#include <mlpack/methods/ann/layer/conv_layer.hpp>
+#include <mlpack/methods/ann/layer/pooling_layer.hpp>
+#include <mlpack/methods/ann/layer/softmax_layer.hpp>
+#include <mlpack/methods/ann/layer/bias_layer.hpp>
+#include <mlpack/methods/ann/layer/linear_layer.hpp>
+#include <mlpack/methods/ann/layer/base_layer.hpp>
+
+#include <mlpack/methods/ann/performance_functions/mse_function.hpp>
+#include <mlpack/core/optimizers/rmsprop/rmsprop.hpp>
+
+#include <mlpack/methods/ann/init_rules/random_init.hpp>
+#include <mlpack/methods/ann/cnn.hpp>
 
 #include <boost/range/algorithm.hpp>
 
@@ -71,20 +86,20 @@ void display_img(std::vector<cv::Mat> const &imgs)
 
 template<typename T, typename U>
 void cvmat_to_arma_cpy(std::vector<cv::Mat> const &input,
-                       std::vector<arma::Mat<U>> &output)
+                       arma::Cube<U> &output)
 {
-    output.clear();
-    output.reserve(input.size());
-    for(size_t i = 0; i != input.size(); ++i){
-        output[i].set_size(input[i].cols, input[i].rows);
-        cv::Mat temp;
-        if(input[i].isContinuous()){
-            temp = input[i];
-        }else{
-            temp = input[i].clone();
+    if(!input.empty()){
+        output = arma::Cube<U>(input[0].rows, input[0].cols, input.size());
+        for(size_t i = 0; i != input.size(); ++i){
+            cv::Mat temp;
+            if(input[i].isContinuous()){
+                temp = input[i];
+            }else{
+                temp = input[i].clone();
+            }
+            std::copy(temp.ptr<T>(0), temp.ptr<T>(0) + temp.total(),
+                      output.slice(i).memptr());
         }
-        std::copy(temp.ptr<T>(0), temp.ptr<T>(0) + temp.total(),
-                  output[i].memptr());
     }
 }
 
@@ -121,6 +136,11 @@ cnn_train_test::cnn_train_test()
     for(size_t i = 0; i != train_labels.size(); ++i){
         train_labels_[i] = train_labels[i];
     }
+}
+
+void cnn_train_test::train_test_00()
+{
+
 }
 
 void cnn_train_test::augment_data(std::vector<cv::Mat> &data,

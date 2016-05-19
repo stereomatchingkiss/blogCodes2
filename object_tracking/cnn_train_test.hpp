@@ -29,11 +29,9 @@ private:
                         size_t replicate_num) const;
 
     std::vector<cv::Mat> loaded_data_; //data loaded from dataset
-    //ref means reference, real means the container which really
-    //hold the body of the dataset
-    std::vector<arma::mat> train_data_;
+    arma::Cube<float> train_data_;
     arma::Row<size_t> train_labels_;
-    std::vector<arma::mat> test_data_;
+    arma::Cube<float> test_data_;
     arma::Row<size_t> test_labels_;
 };
 
