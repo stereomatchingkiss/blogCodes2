@@ -1,8 +1,6 @@
 #ifndef READ_DATASET_HPP
 #define READ_DATASET_HPP
 
-#include <mlpack/core.hpp>
-
 #include <opencv2/core.hpp>
 
 #include <tiny_cnn/tiny_cnn.h>
@@ -16,10 +14,6 @@ public:
 
     read_dataset();
 
-    void read_data(arma::Cube<double> &train_data,
-                   arma::mat &train_labels,
-                   arma::Cube<double> &test_data,
-                   arma::mat &test_labels);
     void read_data(std::vector<TinyImg> &train_data,
                    std::vector<tiny_cnn::label_t> &train_labels,
                    std::vector<TinyImg> &test_data,

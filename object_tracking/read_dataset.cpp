@@ -73,7 +73,7 @@ void display_img(std::vector<cv::Mat> const &imgs)
     }
 }
 
-template<typename T, typename U>
+/*template<typename T, typename U>
 void cvmat_to_arma_cpy(std::vector<cv::Mat> const &input,
                        arma::Cube<U> &output)
 {
@@ -90,7 +90,7 @@ void cvmat_to_arma_cpy(std::vector<cv::Mat> const &input,
                       output.slice(i).memptr());
         }
     }
-}
+}//*/
 
 }
 
@@ -98,7 +98,7 @@ read_dataset::read_dataset()
 {    
 }
 
-void read_dataset::
+/*void read_dataset::
 read_data(arma::Cube<double> &train_data,
           arma::mat &train_labels,
           arma::Cube<double> &test_data,
@@ -122,7 +122,7 @@ read_data(arma::Cube<double> &train_data,
     for(size_t i = 0; i != std::get<1>(data).size(); ++i){
         train_labels.col(i)(std::get<1>(data)[i]) = 1;
     }
-}
+}//*/
 
 void read_dataset::
 read_data(std::vector<TinyImg> &train_data,

@@ -40,6 +40,8 @@ read_stanford40_pose.hpp
 read_stanford40_pose.cpp
 read_usc_pedestrian.hpp
 read_usc_pedestrian.cpp
+tiny_cnn_trainer.hpp
+tiny_cnn_trainer.cpp
 CppMT/CMT.cpp
 CppMT/common.cpp
 CppMT/Consensus.cpp
@@ -54,6 +56,6 @@ CppMT/fastcluster/fastcluster.cpp
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv_dev.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/dlib.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/mlpack.cmake)
+#include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/mlpack.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/tbb.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/tiny_cnn.cmake)
