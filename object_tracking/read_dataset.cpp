@@ -1,7 +1,9 @@
-#include "cnn_train_test.hpp"
+#include "read_dataset.hpp"
 #include "get_samples.hpp"
 #include "read_stanford40_pose.hpp"
 #include "read_usc_pedestrian.hpp"
+
+#include <ocv_libs/tiny_cnn/image_converter.hpp>
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -93,8 +95,7 @@ void cvmat_to_arma_cpy(std::vector<cv::Mat> const &input,
 }
 
 read_dataset::read_dataset()
-{
-
+{    
 }
 
 void read_dataset::
@@ -120,6 +121,37 @@ read_data(arma::Cube<double> &train_data,
     train_labels.set_size(2, std::get<1>(data).size());
     for(size_t i = 0; i != std::get<1>(data).size(); ++i){
         train_labels.col(i)(std::get<1>(data)[i]) = 1;
+    }
+}
+
+void read_dataset::
+read_data(std::vector<TinyImg> &train_data,
+          std::vector<tiny_cnn::label_t> &train_labels,
+          std::vector<TinyImg> &test_data,
+          std::vector<tiny_cnn::label_t> &test_labels)
+{
+    using namespace ocv::tiny_cnn;
+
+    auto data = load_data();
+    train_data.clear();
+    test_data.clear();
+    std::cout<<"cvmat to arma"<<std::endl;
+    cvmat_to_img(std::get<0>(data), train_data);
+    std::get<0>(data).clear();
+
+    std::cout<<"cvmat to arma"<<std::endl;
+    cvmat_to_img(std::get<2>(data), test_data);
+    std::get<2>(data).clear();
+
+    std::cout<<"set label"<<std::endl;
+    test_labels.resize(std::get<3>(data).size());
+    for(size_t i = 0; i != std::get<3>(data).size(); ++i){
+        test_labels[i] = std::get<3>(data)[i];
+    }
+
+    train_labels.resize(std::get<1>(data).size());
+    for(size_t i = 0; i != std::get<1>(data).size(); ++i){
+        train_labels[i] = std::get<1>(data)[i];
     }
 }
 
