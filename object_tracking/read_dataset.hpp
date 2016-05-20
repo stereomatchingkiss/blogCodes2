@@ -1,5 +1,5 @@
-#ifndef CNN_TRAIN_TEST_HPP
-#define CNN_TRAIN_TEST_HPP
+#ifndef READ_DATASET_HPP
+#define READ_DATASET_HPP
 
 #include <mlpack/core.hpp>
 
@@ -7,14 +7,22 @@
 
 #include <vector>
 
-class cnn_train_test
+class read_dataset
 {
 public:
-    cnn_train_test();
+    read_dataset();
 
-    void train_test_00();
+    void read_data(arma::Cube<double> &train_data,
+                   arma::mat &train_labels,
+                   arma::Cube<double> &test_data,
+                   arma::mat &test_labels);
+    //void read_data();
 
 private:
+    std::tuple<std::vector<cv::Mat>, std::vector<size_t>,
+    std::vector<cv::Mat>, std::vector<size_t>>
+    load_data();
+
     void augment_data(std::vector<cv::Mat> &data,
                       std::vector<size_t> &labels) const;
     std::vector<cv::Mat> change_contrast(std::vector<cv::Mat> const &input,
@@ -29,10 +37,6 @@ private:
                         size_t replicate_num) const;
 
     std::vector<cv::Mat> loaded_data_; //data loaded from dataset
-    arma::Cube<double> train_data_;
-    arma::Row<size_t> train_labels_;
-    arma::Cube<double> test_data_;
-    arma::Row<size_t> test_labels_;
 };
 
-#endif CNN_TRAIN_TEST_HPP
+#endif READ_DATASET_HPP
