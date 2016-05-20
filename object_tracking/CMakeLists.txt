@@ -12,12 +12,18 @@ INCLUDE_DIRECTORIES(${OCV_PATH})
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/pugixml.cmake)
 
+add_definitions(-DCNN_USE_TBB)
+add_definitions(-DCNN_USE_AVX)
+#DEFINES += CNN_USE_SSE
+#msvc:QMAKE_CXXFLAGS_RELEASE += /openmp /arch:AVX
+
+
 add_executable(${PROJECT_NAME}
 ${PUGIXML_FORMAT_ADD_TO_EXECUTEABLE}
 ${OCV_PATH}/ocv_libs/file/utility.cpp
 main.cpp
-cnn_train_test.hpp
-cnn_train_test.cpp
+read_dataset.hpp
+read_dataset.cpp
 correlation_trackers.hpp
 correlation_trackers.cpp
 object_tracking_test.hpp
@@ -48,3 +54,6 @@ CppMT/fastcluster/fastcluster.cpp
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv_dev.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/dlib.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/mlpack.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/tbb.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/tiny_cnn.cmake)
