@@ -18,7 +18,7 @@
 namespace{
 
 void train_test_split(std::vector<cv::Mat> const &data,
-                      std::vector<size_t> &data_labels,
+                      std::vector<size_t> const &data_labels,
                       std::vector<cv::Mat> &train,
                       std::vector<size_t> &train_labels,
                       std::vector<cv::Mat> &test,
@@ -73,56 +73,48 @@ void display_img(std::vector<cv::Mat> const &imgs)
     }
 }
 
-/*template<typename T, typename U>
-void cvmat_to_arma_cpy(std::vector<cv::Mat> const &input,
-                       arma::Cube<U> &output)
+void display_labels_size(std::vector<size_t> const &labels)
 {
-    if(!input.empty()){
-        output = arma::Cube<U>(input[0].rows, input[0].cols, input.size());
-        for(size_t i = 0; i != input.size(); ++i){
-            cv::Mat temp;
-            if(input[i].isContinuous()){
-                temp = input[i];
-            }else{
-                temp = input[i].clone();
-            }
-            std::copy(temp.ptr<T>(0), temp.ptr<T>(0) + temp.total(),
-                      output.slice(i).memptr());
+    size_t pexample = 0, nexample = 0;
+    for(size_t i = 0; i != labels.size(); ++i){
+        if(labels[i] == 0){
+            ++nexample;
+        }else{
+            ++pexample;
         }
     }
-}//*/
+    std::cout<<"positive size : "<<pexample<<std::endl;
+    std::cout<<"negative size : "<<nexample<<std::endl;
+}
+
+template<typename T>
+void copy_dataset(T &tuples,
+                  std::vector<cv::Mat> &train,
+                  std::vector<size_t> &train_labels,
+                  std::vector<cv::Mat> &test,
+                  std::vector<size_t> &test_labels)
+{
+    for(size_t i = 0; i != std::get<0>(tuples).size(); ++i){
+        train.emplace_back(std::get<0>(tuples)[i]);
+        train_labels.emplace_back(std::get<1>(tuples)[i]);
+    }
+
+    for(size_t i = 0; i != std::get<2>(tuples).size(); ++i){
+        test.emplace_back(std::get<2>(tuples)[i]);
+        test_labels.emplace_back(std::get<3>(tuples)[i]);
+    }
+
+    std::get<0>(tuples).clear();
+    std::get<1>(tuples).clear();
+    std::get<2>(tuples).clear();
+    std::get<3>(tuples).clear();
+}
 
 }
 
 read_dataset::read_dataset()
 {    
 }
-
-/*void read_dataset::
-read_data(arma::Cube<double> &train_data,
-          arma::mat &train_labels,
-          arma::Cube<double> &test_data,
-          arma::mat &test_labels)
-{
-    auto data = load_data();
-    std::cout<<"cvmat to arma"<<std::endl;
-    cvmat_to_arma_cpy<uchar>(std::get<0>(data), train_data);
-    std::get<0>(data).clear();
-    std::cout<<"cvmat to arma"<<std::endl;
-    cvmat_to_arma_cpy<uchar>(std::get<2>(data), test_data);
-    std::get<2>(data).clear();
-
-    std::cout<<"set label"<<std::endl;
-    test_labels.set_size(2, std::get<3>(data).size());
-    for(size_t i = 0; i != std::get<3>(data).size(); ++i){
-        test_labels.col(i)(std::get<3>(data)[i]) = 1;
-    }
-
-    train_labels.set_size(2, std::get<1>(data).size());
-    for(size_t i = 0; i != std::get<1>(data).size(); ++i){
-        train_labels.col(i)(std::get<1>(data)[i]) = 1;
-    }
-}//*/
 
 void read_dataset::
 read_data(std::vector<TinyImg> &train_data,
@@ -133,6 +125,10 @@ read_data(std::vector<TinyImg> &train_data,
     using namespace ocv::tiny_cnn;
 
     auto data = load_data();
+
+    //display_img(std::get<0>(data), std::get<1>(data));
+    //display_img(std::get<2>(data), std::get<3>(data));
+
     train_data.clear();
     test_data.clear();
     std::cout<<"cvmat to arma"<<std::endl;
@@ -160,23 +156,50 @@ std::vector<cv::Mat>, std::vector<size_t>>
 read_dataset::load_data()
 {
     loaded_data_.clear();
-    auto const positive_size = read_postive_data();
-    read_negative_data();
-    std::vector<size_t> labels(loaded_data_.size());
-    //std::cout<<"labels size : "<<labels.size()<<std::endl;
-    std::fill(std::begin(labels), std::begin(labels) + positive_size, 1);
-    std::fill(std::begin(labels) + positive_size, std::end(labels), 0);
+    read_postive_data();
+    std::vector<size_t> labels(loaded_data_.size(), 1);
+    auto pos_data = load_data(labels);
+    loaded_data_.clear();
 
+    read_negative_data();
+    labels.resize(loaded_data_.size());
+    std::fill(std::begin(labels), std::end(labels), 0);
+    auto neg_data = load_data(labels);
+    loaded_data_.clear();
+
+    std::vector<cv::Mat> train_data;
+    std::vector<size_t> train_labels;
+    std::vector<cv::Mat> test_data;
+    std::vector<size_t> test_labels;
+
+    copy_dataset(pos_data, train_data, train_labels,
+                 test_data, test_labels);
+    copy_dataset(neg_data, train_data, train_labels,
+                 test_data, test_labels);
+    display_labels_size(train_labels);
+    display_labels_size(test_labels);
+    std::cout<<"augment data"<<std::endl;
+    augment_data(train_data, train_labels);
+
+    return std::make_tuple(std::move(train_data),
+                           std::move(train_labels),
+                           std::move(test_data),
+                           std::move(test_labels));
+}
+
+std::tuple<std::vector<cv::Mat>,
+std::vector<size_t>, std::vector<cv::Mat>,
+std::vector<size_t>> read_dataset::
+load_data(const std::vector<size_t> &labels)
+{
     std::vector<cv::Mat> train_data;
     std::vector<cv::Mat> test_data;
     std::vector<size_t> train_labels;
     std::vector<size_t> test_labels;
     std::cout<<"train test split"<<std::endl;
     train_test_split(loaded_data_, labels, train_data,
-                     train_labels, test_data, test_labels);
-    std::cout<<"augment data"<<std::endl;
-    augment_data(train_data, train_labels);
-    loaded_data_.clear();
+                     train_labels, test_data,
+                     test_labels, 0.2, 10);
 
     return std::make_tuple(std::move(train_data),
                            std::move(train_labels),

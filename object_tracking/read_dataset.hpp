@@ -24,6 +24,10 @@ private:
     std::vector<cv::Mat>, std::vector<size_t>>
     load_data();
 
+    std::tuple<std::vector<cv::Mat>, std::vector<size_t>,
+    std::vector<cv::Mat>, std::vector<size_t>>
+    load_data(std::vector<size_t> const &labels);
+
     void augment_data(std::vector<cv::Mat> &data,
                       std::vector<size_t> &labels) const;
     std::vector<cv::Mat> change_contrast(std::vector<cv::Mat> const &input,
