@@ -95,20 +95,10 @@ void copy_dataset(T &tuples,
                   std::vector<cv::Mat> &test,
                   std::vector<size_t> &test_labels)
 {
-    for(size_t i = 0; i != std::get<0>(tuples).size(); ++i){
-        train.emplace_back(std::get<0>(tuples)[i]);
-        train_labels.emplace_back(std::get<1>(tuples)[i]);
-    }
-
-    for(size_t i = 0; i != std::get<2>(tuples).size(); ++i){
-        test.emplace_back(std::get<2>(tuples)[i]);
-        test_labels.emplace_back(std::get<3>(tuples)[i]);
-    }
-
-    std::get<0>(tuples).clear();
-    std::get<1>(tuples).clear();
-    std::get<2>(tuples).clear();
-    std::get<3>(tuples).clear();
+    train = std::move(std::get<0>(tuples));
+    train_labels = std::move(std::get<1>(tuples));
+    test = std::move(std::get<2>(tuples));
+    test_labels = std::move(std::get<3>(tuples));
 }
 
 }
@@ -142,26 +132,19 @@ read_data(std::vector<TinyImg> &train_data,
         std::get<2>(data) = mcn.transform(std::get<2>(data));
     }
 
-    train_data.clear();
-    test_data.clear();
     std::cout<<"cvmat to arma"<<std::endl;
+    train_data.clear();
     cvmat_to_img(std::get<0>(data), train_data);
     std::get<0>(data).clear();
 
     std::cout<<"cvmat to arma"<<std::endl;
+    test_data.clear();
     cvmat_to_img(std::get<2>(data), test_data);
     std::get<2>(data).clear();
 
     std::cout<<"set label"<<std::endl;
-    test_labels.resize(std::get<3>(data).size());
-    for(size_t i = 0; i != std::get<3>(data).size(); ++i){
-        test_labels[i] = std::get<3>(data)[i];
-    }
-
-    train_labels.resize(std::get<1>(data).size());
-    for(size_t i = 0; i != std::get<1>(data).size(); ++i){
-        train_labels[i] = std::get<1>(data)[i];
-    }
+    test_labels = std::move(std::get<3>(data));
+    train_labels = std::move(std::get<1>(data));
 }
 
 std::tuple<std::vector<cv::Mat>, std::vector<size_t>,
@@ -189,7 +172,9 @@ read_dataset::load_data()
                  test_data, test_labels);
     copy_dataset(neg_data, train_data, train_labels,
                  test_data, test_labels);
+    std::cout<<"taining set labels distribution"<<std::endl;
     display_labels_size(train_labels);
+    std::cout<<"test set labels distribution"<<std::endl;
     display_labels_size(test_labels);
     std::cout<<"augment data"<<std::endl;
     augment_data(train_data, train_labels);
@@ -225,16 +210,19 @@ void read_dataset::augment_data(std::vector<cv::Mat> &data,
 {    
     auto aug_horizontal = flip_horizontal(data);
     auto aug_vertical = flip_vertical(data);
-    //auto aug_contrast = change_contrast(data, 1.5, 20);
+    auto aug_contrast_0 = change_contrast(data, 1.5, 20);
+    auto aug_contrast_1 = change_contrast(data, 1.3, 50);
 
     std::cout<<"aug_horizontal"<<std::endl;
     boost::copy(aug_horizontal, std::back_inserter(data));
     std::cout<<"aug_vertical"<<std::endl;
     boost::copy(aug_vertical, std::back_inserter(data));
-    //std::cout<<"aug_contrast"<<std::endl;
-    //boost::copy(aug_contrast, std::back_inserter(data));
+    std::cout<<"aug_contrast_0"<<std::endl;
+    boost::copy(aug_contrast_0, std::back_inserter(data));
+    std::cout<<"aug_contrast_1"<<std::endl;
+    boost::copy(aug_contrast_1, std::back_inserter(data));
 
-    replicate_data(labels, 2);
+    replicate_data(labels, 4);
 }
 
 std::vector<cv::Mat>
