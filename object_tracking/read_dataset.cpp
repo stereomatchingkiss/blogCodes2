@@ -133,7 +133,7 @@ read_data(std::vector<TinyImg> &train_data,
         //normalize_zero_pix_mean(std::get<0>(data));
         mean_cv_image_normalization mcn(CV_64F);
         std::get<0>(data) = mcn.fit_transform(std::get<0>(data));
-        std::get<2>(data) = mcn.fit_transform(std::get<2>(data));
+        std::get<2>(data) = mcn.transform(std::get<2>(data));
     }
 
     train_data.clear();
