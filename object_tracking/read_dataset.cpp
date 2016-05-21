@@ -94,11 +94,24 @@ void copy_dataset(T &tuples,
                   std::vector<size_t> &train_labels,
                   std::vector<cv::Mat> &test,
                   std::vector<size_t> &test_labels)
-{
-    train = std::move(std::get<0>(tuples));
-    train_labels = std::move(std::get<1>(tuples));
-    test = std::move(std::get<2>(tuples));
-    test_labels = std::move(std::get<3>(tuples));
+{    
+    train.insert(std::end(train),
+                 std::begin(std::get<0>(tuples)),
+                 std::end(std::get<0>(tuples)));
+    train_labels.insert(std::end(train_labels),
+                        std::begin(std::get<1>(tuples)),
+                        std::end(std::get<1>(tuples)));
+    test.insert(std::end(test),
+                std::begin(std::get<2>(tuples)),
+                std::end(std::get<2>(tuples)));
+    test_labels.insert(std::end(test_labels),
+                       std::begin(std::get<3>(tuples)),
+                       std::end(std::get<3>(tuples)));
+
+    std::get<0>(tuples).clear();
+    std::get<1>(tuples).clear();
+    std::get<2>(tuples).clear();
+    std::get<3>(tuples).clear();
 }
 
 }
