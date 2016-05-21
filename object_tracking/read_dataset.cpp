@@ -132,6 +132,12 @@ read_data(std::vector<TinyImg> &train_data,
         using namespace ocv::normalize;
         //normalize_zero_pix_mean(std::get<0>(data));
         mean_cv_image_normalization mcn(CV_64F);
+        for(auto &mat : std::get<0>(data)){
+            mat.convertTo(mat, CV_64F);
+        }
+        for(auto &mat : std::get<2>(data)){
+            mat.convertTo(mat, CV_64F);
+        }
         std::get<0>(data) = mcn.fit_transform(std::get<0>(data));
         std::get<2>(data) = mcn.transform(std::get<2>(data));
     }
@@ -228,7 +234,7 @@ void read_dataset::augment_data(std::vector<cv::Mat> &data,
     //std::cout<<"aug_contrast"<<std::endl;
     //boost::copy(aug_contrast, std::back_inserter(data));
 
-    replicate_data(labels, 3);
+    replicate_data(labels, 2);
 }
 
 std::vector<cv::Mat>
