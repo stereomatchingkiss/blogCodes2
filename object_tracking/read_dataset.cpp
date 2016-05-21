@@ -3,6 +3,7 @@
 #include "read_stanford40_pose.hpp"
 #include "read_usc_pedestrian.hpp"
 
+#include <ocv_libs/normalize/mean_cvmat_normalization.hpp>
 #include <ocv_libs/tiny_cnn/image_converter.hpp>
 
 #include <opencv2/highgui.hpp>
@@ -120,14 +121,20 @@ void read_dataset::
 read_data(std::vector<TinyImg> &train_data,
           std::vector<tiny_cnn::label_t> &train_labels,
           std::vector<TinyImg> &test_data,
-          std::vector<tiny_cnn::label_t> &test_labels)
+          std::vector<tiny_cnn::label_t> &test_labels,
+          bool mean_image_normalization)
 {
     using namespace ocv::tiny_cnn;
 
     auto data = load_data();
 
-    //display_img(std::get<0>(data), std::get<1>(data));
-    //display_img(std::get<2>(data), std::get<3>(data));
+    if(mean_image_normalization){
+        using namespace ocv::normalize;
+        //normalize_zero_pix_mean(std::get<0>(data));
+        mean_cv_image_normalization mcn(CV_64F);
+        std::get<0>(data) = mcn.fit_transform(std::get<0>(data));
+        std::get<2>(data) = mcn.fit_transform(std::get<2>(data));
+    }
 
     train_data.clear();
     test_data.clear();
@@ -209,15 +216,19 @@ load_data(const std::vector<size_t> &labels)
 
 void read_dataset::augment_data(std::vector<cv::Mat> &data,
                                 std::vector<size_t> &labels) const
-{
-    std::cout<<"aug horizontal"<<std::endl;
+{    
     auto aug_horizontal = flip_horizontal(data);
-    auto aug_contrast = change_contrast(data, 1.5, 20);
-    boost::copy(aug_horizontal, std::back_inserter(data));
-    std::cout<<"aug contrast"<<std::endl;
-    boost::copy(aug_contrast, std::back_inserter(data));
+    auto aug_vertical = flip_vertical(data);
+    //auto aug_contrast = change_contrast(data, 1.5, 20);
 
-    replicate_data(labels, 2);
+    std::cout<<"aug_horizontal"<<std::endl;
+    boost::copy(aug_horizontal, std::back_inserter(data));
+    std::cout<<"aug_vertical"<<std::endl;
+    boost::copy(aug_vertical, std::back_inserter(data));
+    //std::cout<<"aug_contrast"<<std::endl;
+    //boost::copy(aug_contrast, std::back_inserter(data));
+
+    replicate_data(labels, 3);
 }
 
 std::vector<cv::Mat>
@@ -234,6 +245,16 @@ read_dataset::change_contrast(std::vector<cv::Mat> const &input,
 
 std::vector<cv::Mat> read_dataset::
 flip_horizontal(std::vector<cv::Mat> const &input) const
+{
+    std::vector<cv::Mat> aug_horizon(input.size());
+    for(size_t i = 0; i != input.size(); ++i){
+        cv::flip(input[i], aug_horizon[i], 0);
+    }
+    return aug_horizon;
+}
+
+std::vector<cv::Mat> read_dataset::
+flip_vertical(std::vector<cv::Mat> const &input) const
 {
     std::vector<cv::Mat> aug_horizon(input.size());
     for(size_t i = 0; i != input.size(); ++i){

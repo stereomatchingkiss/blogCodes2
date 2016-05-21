@@ -17,7 +17,8 @@ public:
     void read_data(std::vector<TinyImg> &train_data,
                    std::vector<tiny_cnn::label_t> &train_labels,
                    std::vector<TinyImg> &test_data,
-                   std::vector<tiny_cnn::label_t> &test_labels);
+                   std::vector<tiny_cnn::label_t> &test_labels,
+                   bool mean_image_normalization = true);
 
 private:
     std::tuple<std::vector<cv::Mat>, std::vector<size_t>,
@@ -34,6 +35,7 @@ private:
                                          double alpha = 1.5,
                                          double beta = 20) const;
     std::vector<cv::Mat> flip_horizontal(std::vector<cv::Mat> const &input) const;
+    std::vector<cv::Mat> flip_vertical(std::vector<cv::Mat> const &input) const;
 
     size_t read_negative_data();
     size_t read_postive_data();
