@@ -57,7 +57,7 @@ std::string const dataset_prefix("C:/Users/yyyy/Qt/computer_vision_dataset");
 
 auto resize_to_gray = [](cv::Mat &input)
 {
-    cv::resize(input, input, {32,32});
+    cv::resize(input, input, {64,64});
     if(input.channels() == 3){
         cv::cvtColor(input, input, CV_BGR2GRAY);
     }
@@ -114,10 +114,6 @@ void copy_dataset(T &tuples,
     std::get<3>(tuples).clear();
 }
 
-}
-
-read_dataset::read_dataset()
-{    
 }
 
 void read_dataset::

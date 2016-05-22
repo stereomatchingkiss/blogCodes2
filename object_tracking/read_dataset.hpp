@@ -12,8 +12,6 @@ class read_dataset
 public:
     using TinyImg = tiny_cnn::vec_t;
 
-    read_dataset();
-
     void read_data(std::vector<TinyImg> &train_data,
                    std::vector<tiny_cnn::label_t> &train_labels,
                    std::vector<TinyImg> &test_data,
