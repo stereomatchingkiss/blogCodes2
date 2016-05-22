@@ -7,17 +7,17 @@
 fixed_size_trackers::
 fixed_size_trackers(search_func search,
                     warm_func warm_strategy,
-                    size_t max_player,
+                    size_t track_size,
                     size_t miss_frame,
                     size_t occlusion_frame,
-                    double occlusion_thresh) :
-    max_player_(std::max(max_player,size_t(1))),
+                    double occlusion_thresh) :    
     miss_frame_(miss_frame),
     occlusion_thresh_(occlusion_thresh),
     occlusion_frame_(occlusion_frame),
     occlusion_record_(0),
     search_strategy_(search),
     target_was_lost_(false),
+    track_size_(std::max(track_size,size_t(1))),
     warm_strategy_(warm_strategy)
 {
 
@@ -57,9 +57,9 @@ double fixed_size_trackers::get_occlusion_thresh() const
     return occlusion_thresh_;
 }
 
-size_t fixed_size_trackers::get_max_player() const
+size_t fixed_size_trackers::get_track_size() const
 {
-    return max_player_;
+    return track_size_;
 }
 
 size_t fixed_size_trackers::get_occlusion_frame() const
@@ -75,7 +75,7 @@ fixed_size_trackers::get_position() const
 
 void fixed_size_trackers::set_max_player(size_t max_player)
 {
-    max_player_ = std::max(size_t(1), max_player);
+    track_size_ = std::max(size_t(1), max_player);
 }
 
 cv::Rect2d fixed_size_trackers::get_position(size_t target) const
@@ -109,7 +109,7 @@ void fixed_size_trackers::retrack(const cv::Mat &input)
     std::cout<<"retrack : "<<rt++<<std::endl;
     std::vector<cv::Rect2d> const new_roi =
             search_strategy_(input);
-    if(new_roi.size() >= max_player_){
+    if(new_roi.size() >= track_size_){
         for(size_t i = 0; i != new_roi.size(); ++i){
             add(input, new_roi[i], track_strategy_[i]);
         }

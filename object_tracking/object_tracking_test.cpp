@@ -341,7 +341,7 @@ void test_fixed_size_trackers()
                 break;
             }else if(key == 'c'){
                 tracker.clear();
-                for(size_t i = 0; i != tracker.get_max_player(); ++i){
+                for(size_t i = 0; i != tracker.get_track_size(); ++i){
                     auto const rect = cv::selectROI("capture", frame,
                                                     false, false);
                     tracker.add(frame, rect, "KCF");
