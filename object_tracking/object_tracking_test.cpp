@@ -1,6 +1,6 @@
-#include "correlation_trackers.hpp"
+#include "tracker/correlation_trackers.hpp"
 #include "CppMT/CMT.h"
-#include "fixed_size_trackers.hpp"
+#include "tracker/fixed_size_trackers.hpp"
 #include "hsv_range_observer.hpp"
 #include "object_tracking_test.hpp"
 #include "player_detector.hpp"

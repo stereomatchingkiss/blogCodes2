@@ -24,12 +24,12 @@ ${OCV_PATH}/ocv_libs/file/utility.cpp
 main.cpp
 dataset_reader/read_dataset.hpp
 dataset_reader/read_dataset.cpp
-correlation_trackers.hpp
-correlation_trackers.cpp
+tracker/correlation_trackers.hpp
+tracker/correlation_trackers.cpp
 object_tracking_test.hpp
 object_tracking_test.cpp
-fixed_size_trackers.hpp
-fixed_size_trackers.cpp
+tracker/fixed_size_trackers.hpp
+tracker/fixed_size_trackers.cpp
 dataset_reader/get_samples.hpp
 dataset_reader/get_samples.cpp
 hsv_range_observer.hpp
