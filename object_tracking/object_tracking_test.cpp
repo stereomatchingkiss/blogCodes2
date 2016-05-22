@@ -1,9 +1,11 @@
-#include "object_tracking_test.hpp"
 #include "correlation_trackers.hpp"
 #include "CppMT/CMT.h"
 #include "fixed_size_trackers.hpp"
 #include "hsv_range_observer.hpp"
+#include "object_tracking_test.hpp"
 #include "player_detector.hpp"
+#include "read_dataset.hpp"
+#include "tiny_cnn_trainer.hpp"
 
 #include <ocv_libs/saliency/utility.hpp>
 
@@ -405,4 +407,10 @@ void test_hsv_trackers()
             break;
         }
     }
+}
+
+void test_cnn()
+{   
+    tiny_cnn_tainer tct;
+    tct.train();
 }
