@@ -4,7 +4,6 @@
 #include "hsv_range_observer.hpp"
 #include "object_tracking_test.hpp"
 #include "player_detector.hpp"
-#include "read_dataset.hpp"
 #include "tiny_cnn_trainer.hpp"
 
 #include <ocv_libs/saliency/utility.hpp>

@@ -1,5 +1,5 @@
 #include "tiny_cnn_trainer.hpp"
-#include "read_dataset.hpp"
+#include "dataset_reader/read_dataset.hpp"
 
 #include <ocv_libs/ml/utility/shuffle_data.hpp>
 #include <ocv_libs/tiny_cnn/image_converter.hpp>
