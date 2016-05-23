@@ -21,6 +21,7 @@ add_definitions(-DCNN_USE_AVX)
 add_executable(${PROJECT_NAME}
 ${PUGIXML_FORMAT_ADD_TO_EXECUTEABLE}
 ${OCV_PATH}/ocv_libs/file/utility.cpp
+${OCV_PATH}/ocv_libs/utility/hsv_range_observer.cpp
 main.cpp
 dataset_reader/read_dataset.hpp
 dataset_reader/read_dataset.cpp
@@ -32,8 +33,6 @@ tracker/fixed_size_trackers.hpp
 tracker/fixed_size_trackers.cpp
 dataset_reader/get_samples.hpp
 dataset_reader/get_samples.cpp
-hsv_range_observer.hpp
-hsv_range_observer.cpp
 player_detector.hpp
 player_detector.cpp
 dataset_reader/read_stanford40_pose.hpp
