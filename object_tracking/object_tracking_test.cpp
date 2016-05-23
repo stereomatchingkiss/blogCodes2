@@ -2,7 +2,7 @@
 #include "CppMT/CMT.h"
 #include "tracker/fixed_size_trackers.hpp"
 #include "object_tracking_test.hpp"
-#include "player_detector.hpp"
+#include "human_detector/player_detector.hpp"
 #include "tiny_cnn_trainer.hpp"
 
 #include <ocv_libs/utility/hsv_range_observer.hpp>

@@ -33,8 +33,8 @@ tracker/fixed_size_trackers.hpp
 tracker/fixed_size_trackers.cpp
 dataset_reader/get_samples.hpp
 dataset_reader/get_samples.cpp
-player_detector.hpp
-player_detector.cpp
+human_detector/player_detector.hpp
+human_detector/player_detector.cpp
 dataset_reader/read_stanford40_pose.hpp
 dataset_reader/read_stanford40_pose.cpp
 dataset_reader/read_usc_pedestrian.hpp
