@@ -123,7 +123,7 @@ read_data(std::vector<TinyImg> &train_data,
           std::vector<tiny_cnn::label_t> &test_labels,
           bool mean_image_normalization)
 {
-    using namespace ocv::tiny_cnn;
+    using namespace ocv::tcnn;
 
     auto data = load_data();
 
