@@ -8,7 +8,7 @@
 using namespace tiny_cnn;
 using namespace tiny_cnn::activation;
 
-using NetType = network<mse, adam>;
+using NetType = network<cross_entropy, adam>;
 
 namespace{
 
@@ -206,6 +206,10 @@ std::string create_arch_64_00(NetType &nn)
     //720/800, 15 epoch, 128 batch, 0.7 alpha, leaky_relu, network<mse, adagrad>, 3200, augment h/v, contrast 0,1
     //400/800, 15 epoch, 128 batch, 1.4 alpha, leaky_relu, network<mse, adagrad>, 3200, augment h/v, contrast 0,1
     //673/800, 15 epoch, 128 batch, 1.4 alpha, leaky_relu, network<mse, adam>, 3200, augment h/v, contrast 0,1
+    //728/800, 15 epoch, 128 batch, 0.3 alpha, leaky_relu, network<mse, adam>, 3200, augment h/v, contrast 0,1
+    //721/800, 15 epoch, 32 batch, 0.3 alpha, leaky_relu, network<mse, adam>, 3200, augment h/v, contrast 0,1
+    //721/800, 15 epoch, 256 batch, 0.3 alpha, leaky_relu, network<mse, adam>, 3200, augment h/v, contrast 0,1
+    //725/800, 15 epoch, 128 batch, 0.3 alpha, leaky_relu, network<cross_entropy, adam>, 3200, augment h/v, contrast 0,1
     nn << convolutional_layer<activate>(64, 64, 3, 1, 12, padding::same)
        << max_pooling_layer<activate>(64, 64, 12, 2)
        << convolutional_layer<activate>(32, 32, 3, 12, 18, padding::same)
@@ -286,7 +290,7 @@ void tiny_cnn_tainer::train()
             //{64,4.5},{64,4.25},{64,4},{64,3.75},
             //{64,3.5},{64,3.25},{64,3},{64,2.75},{64,2.5},{64,2.25},
             //{64,2},{64,1.75},{64,1.5},{64,1.25},{64,1.0},{64,0.75},
-            {128,1.4}
+            {128,0.3}
         };
         for(size_t i = 0; i != params.size(); ++i){
             NetType nn;
@@ -299,7 +303,7 @@ void tiny_cnn_tainer::train()
                     "_" + std::to_string(learning_rate);
             //nn.optimizer().alpha *= std::sqrt(minibatch_size);
             nn.optimizer().alpha *= learning_rate;
-            ocv::tiny_cnn::trainer tt("car_weights_" + str,
+            ocv::tcnn::trainer tt("human_weights_" + str,
                                       minibatch_size, num_epochs);
             std::ofstream out("net_" + str + ".txt");
             tt.train_and_test(nn, train_images_, train_labels_,
