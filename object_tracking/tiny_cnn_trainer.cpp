@@ -8,7 +8,7 @@
 using namespace tiny_cnn;
 using namespace tiny_cnn::activation;
 
-using NetType = network<cross_entropy, adam>;
+using NetType = network<mse, adam>;
 
 namespace{
 
@@ -273,6 +273,22 @@ std::string create_arch_64_03(NetType &nn)
     return __func__;
 }
 
+std::string create_arch_64_04(NetType &nn)
+{
+    using activate = leaky_relu;
+
+    //725/800, 15 epoch, 128 batch, 0.3 alpha, leaky_relu, network<cross_entropy, adam>, 3200, augment h/v, contrast 0,1
+    nn << convolutional_layer<activate>(64, 64, 3, 1, 12, padding::same)
+       << dropout_layer(64*64*12, 0.5)
+       << max_pooling_layer<activate>(64, 64, 12, 2)
+       << convolutional_layer<activate>(32, 32, 3, 12, 18, padding::same)
+       << max_pooling_layer<activate>(32, 32, 18, 2)
+       << convolutional_layer<activate>(16, 16, 5, 18, 24)
+       << fully_connected_layer<softmax>(12*12*24, 2);//*/
+
+    return __func__;
+}
+
 }
 
 void tiny_cnn_tainer::train()
@@ -294,7 +310,7 @@ void tiny_cnn_tainer::train()
         };
         for(size_t i = 0; i != params.size(); ++i){
             NetType nn;
-            auto const arch = create_arch_64_00(nn);
+            auto const arch = create_arch_64_04(nn);
             size_t const minibatch_size = params[i].first;
             auto const learning_rate = params[i].second;
             constexpr int num_epochs = 15;
