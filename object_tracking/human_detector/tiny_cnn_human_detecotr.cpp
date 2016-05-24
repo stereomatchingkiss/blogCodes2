@@ -58,24 +58,17 @@ bool tiny_cnn_human_detector::is_human(const cv::Mat &input, bool do_preprocess)
     cv::resize(gray_img_, candidate_mat_, {64,64});
     ocv::tcnn::cvmat_to_img(candidate_mat_, candiate_img_);
     auto const presult = predictor_.predict(candiate_img_);
-    if(verbose_){
+    /*if(verbose_){
         for(auto const &val : presult){
             std::cout<<val.first<<", "<<val.second<<"\n";
         }
         std::cout<<std::endl;
     }//*/
-    if(presult.size() == 2){
-        using val_type = std::pair<double,int>;
+    if(presult.size() == 2){        
         auto const max = presult[0].first > presult[1].first ?
                                            presult[0] : presult[1];
-        if(max.second == 1 &&
-                max.first >= threshold_){
-            if(verbose_){
-                cv::imshow("player", input);
-                cv::waitKey();
-            }
-            return true;
-        }
+
+        return max.second == 1 && max.first >= threshold_;
     }
 
     return false;
@@ -88,23 +81,28 @@ search_simple(const cv::Mat &input)
 
     std::vector<cv::Rect2d> results;
     cv::Size2i const min_size(20, 35);
-    cv::Size2i const step(16,16);
+    cv::Size2i const step(4,4);
     cv::Size2i const win_size(20, 35);
     double const scale = 1.5;
     ocv::saliency::pyramid_scan scanner(min_size, win_size,
                                         step, scale);
 
-    auto detector = [&results, this]
+    auto in_copy = input.clone();
+    auto detector = [&results, &in_copy, &input, this]
             (int row, int col, cv::Mat const &sub_img,
              double wratio, double hratio)
-    {
-        cv::imshow("sub img", sub_img);
-        cv::waitKey();
-        if(is_human(sub_img, false)){
+    {        
+        /*if(is_human(sub_img, false)){
             results.emplace_back(col*wratio, row*hratio,
                                  sub_img.cols*wratio,
                                  sub_img.rows*hratio);
-        }
+        }*/
+        cv::rectangle(in_copy,
+                      cv::Rect(col, row, sub_img.cols, sub_img.rows),
+        {255,0,0});
+        cv::imshow("sub image", in_copy);
+        cv::waitKey();
+        input.copyTo(in_copy);
     };
 
     scanner.scan(input, detector);
