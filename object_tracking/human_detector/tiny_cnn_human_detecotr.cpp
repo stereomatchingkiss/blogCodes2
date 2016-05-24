@@ -15,7 +15,7 @@
 
 namespace{
 
-constexpr double human_aspect = 2;
+constexpr double human_aspect = 1.4;
 
 }
 
@@ -63,11 +63,13 @@ bool tiny_cnn_human_detector::is_human(const cv::Mat &input, bool do_preprocess)
             std::cout<<val.first<<", "<<val.second<<"\n";
         }
         std::cout<<std::endl;
-    }
+    }//*/
     if(presult.size() == 2){
-        auto const pair = std::minmax(std::begin(presult), std::end(presult));
-        if(pair.first->second == 1 &&
-                pair.first->first >= threshold_){
+        using val_type = std::pair<double,int>;
+        auto const max = presult[0].first > presult[1].first ?
+                                           presult[0] : presult[1];
+        if(max.second == 1 &&
+                max.first >= threshold_){
             if(verbose_){
                 cv::imshow("player", input);
                 cv::waitKey();
@@ -84,27 +86,28 @@ search_simple(const cv::Mat &input)
 {
     preprocess(input);
 
-    dlib::cv_image<uchar> dimg(gray_img_);
-    constexpr size_t candidate_width = 32;
-    constexpr size_t candidate_height = candidate_width * human_aspect;
-    constexpr size_t candidate_size = candidate_width*candidate_height;
+    std::vector<cv::Rect2d> results;
+    cv::Size2i const min_size(20, 35);
+    cv::Size2i const step(16,16);
+    cv::Size2i const win_size(20, 35);
+    double const scale = 1.5;
+    ocv::saliency::pyramid_scan scanner(min_size, win_size,
+                                        step, scale);
 
-    std::vector<dlib::rectangle> rects;
-    dlib::find_candidate_object_locations
-            (dimg, rects, dlib::linspace(50,200,3),
-             candidate_size);
-    dlib::remove_duplicates(rects);
-    std::vector<cv::Rect2d> results =
-            ocv::odlib::rect_to_cv_rect<double>(rects);
-
-    auto not_human = [&](cv::Rect2d const &a)
+    auto detector = [&results, this]
+            (int row, int col, cv::Mat const &sub_img,
+             double wratio, double hratio)
     {
-        return !is_human(gray_img_(a), false);
+        cv::imshow("sub img", sub_img);
+        cv::waitKey();
+        if(is_human(sub_img, false)){
+            results.emplace_back(col*wratio, row*hratio,
+                                 sub_img.cols*wratio,
+                                 sub_img.rows*hratio);
+        }
     };
-    auto it = std::remove_if(std::begin(results),
-                             std::end(results),
-                             not_human);
-    results.erase(it, std::end(results));
+
+    scanner.scan(input, detector);
 
     return results;
 }
