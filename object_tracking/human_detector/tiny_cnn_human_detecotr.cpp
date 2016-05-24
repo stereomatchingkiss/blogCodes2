@@ -1,6 +1,7 @@
 #include "tiny_cnn_human_detecotr.hpp"
 
 #include <ocv_libs/dlib/cv_to_dlib.hpp>
+#include <ocv_libs/saliency/pyramid_scan.hpp>
 #include <ocv_libs/tiny_cnn/image_converter.hpp>
 #include <ocv_libs/tiny_cnn/predictor.hpp>
 
@@ -23,7 +24,8 @@ tiny_cnn_human_detector(size_t max_player) :
     max_player_(max_player),
     min_area_(700),
     predictor_(create_network()),
-    threshold_(0.8)
+    threshold_(0.8),
+    verbose_(false)
 {
 
 }
@@ -56,16 +58,20 @@ bool tiny_cnn_human_detector::is_human(const cv::Mat &input, bool do_preprocess)
     cv::resize(gray_img_, candidate_mat_, {64,64});
     ocv::tcnn::cvmat_to_img(candidate_mat_, candiate_img_);
     auto const presult = predictor_.predict(candiate_img_);
-    for(auto const &val : presult){
-        std::cout<<val.first<<", "<<val.second<<"\n";
+    if(verbose_){
+        for(auto const &val : presult){
+            std::cout<<val.first<<", "<<val.second<<"\n";
+        }
+        std::cout<<std::endl;
     }
-    std::cout<<std::endl;
     if(presult.size() == 2){
         auto const pair = std::minmax(std::begin(presult), std::end(presult));
         if(pair.first->second == 1 &&
                 pair.first->first >= threshold_){
-            cv::imshow("player", input);
-            cv::waitKey();
+            if(verbose_){
+                cv::imshow("player", input);
+                cv::waitKey();
+            }
             return true;
         }
     }
@@ -98,7 +104,7 @@ search_simple(const cv::Mat &input)
     auto it = std::remove_if(std::begin(results),
                              std::end(results),
                              not_human);
-    results.erase(it, std::end(results));//*/
+    results.erase(it, std::end(results));
 
     return results;
 }
@@ -116,6 +122,11 @@ void tiny_cnn_human_detector::set_min_area(double value)
 void tiny_cnn_human_detector::set_threshold(double threshold)
 {
     threshold_ = threshold;
+}
+
+void tiny_cnn_human_detector::set_verbose(bool value)
+{
+    verbose_ = value;
 }
 
 tiny_cnn_human_detector::NetType

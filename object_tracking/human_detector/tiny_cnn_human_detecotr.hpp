@@ -52,6 +52,12 @@ public:
     void set_threshold(double threshold);
 
     /**
+     * open/close the debug message
+     * @param value true, open debug message and vice versa
+     */
+    void set_verbose(bool value);
+
+    /**
      * do nothing, only for api consistency
      */
     void warm_up(cv::Mat const&){}
@@ -80,6 +86,7 @@ private:
     ocv::tcnn::predictor<NetType> predictor_;
 
     double threshold_;
+    bool verbose_;
 };
 
 #endif
