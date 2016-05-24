@@ -427,55 +427,10 @@ void test_tiny_cnn()
         return;
     }
 
-    using Imgs = std::vector<tiny_cnn::vec_t>;
-    using Labels = std::vector<tiny_cnn::label_t>;
-
-    /*std::vector<cv::Mat> load_data;
-    auto resize_to_gray = [](cv::Mat &input)
-    {
-        cv::resize(input, input, {64,64});
-        if(input.channels() == 3){
-            cv::cvtColor(input, input, CV_BGR2GRAY);
-        }
-    };
-
-    /*get_stanford40_pose(load_data,
-                        prefix + "/human_pose/Stanford40",
-                        1184, resize_to_gray);//*/
-    //313
-    /*get_usc_pedestrian(load_data,
-                       prefix + "/pedestrian/USCPedestrianSetA",
-                       205, resize_to_gray);//*/
-    //271, 271 + 313 = 584
-    /*get_usc_pedestrian(load_data,
-                       prefix + "/pedestrian/USCPedestrianSetB",
-                       54, resize_to_gray);//*/
-    //232, 584 + 232 = 816
-    /*get_usc_pedestrian(load_data,
-                       prefix + "/pedestrian/USCPedestrianSetC",
-                       100, resize_to_gray);//*/
-
-    /*get_caltech_bg(load_data,
-                   prefix + "/background/caltech_bg",
-                   859, resize_to_gray);//*/
-    /*get_indoor_scene_cvpr2009(load_data,
-                              prefix + "/background/indoorCVPR_09/no_human",
-                              1141, resize_to_gray);//*/
-
-    /*tiny_cnn_human_detector hd;
-    for(size_t i = 0; i != load_data.size(); ++i){
-        hd.search_simple(load_data[i]);
-        int const key = cv::waitKey(30);
-        if(key == 'q'){
-            break;
-        }
-    }//*/
-
-    //Imgs train_images_;
-    //Labels train_labels_;
-
     cv::Mat frame;
+    cv::Mat small_frame;
     tiny_cnn_human_detector hd;
+    hd.set_verbose(true);
     while(1){
         cap>>frame;
         if(!frame.empty()){
@@ -486,10 +441,27 @@ void test_tiny_cnn()
             }else if(key == 'c'){
                 auto box = cv::selectROI("select", frame,
                                          false, false);
-                //box = ocv::expand_region(frame.size(), box, 32);
-                hd.is_human(frame(box));
+                box = ocv::expand_region(frame.size(), box, 32);
+                std::cout<<box<<std::endl;
+                //hd.is_human(frame(box));
+                auto const results = hd.search_simple(frame(box));
+                std::cout<<"search obj size "<<results.size()<<std::endl;
+                for(auto const &rect : results){
+                    cv::rectangle(frame, rect, {255,0,0}, 2);
+                }
+                cv::imshow("frame", frame);
+                cv::waitKey();//*/
             }else{
-                hd.search_simple(frame);
+                /*cv::resize(frame, small_frame, {},
+                           0.5, 0.5);
+                auto const results = hd.search_simple(small_frame);
+                std::cout<<"search obj size "<<results.size()<<std::endl;
+                for(auto const &rect : results){
+                    cv::rectangle(frame, rect, {255,0,0}, 2);
+                }
+                if(!results.empty()){
+                    cv::waitKey();
+                }//*/
             }
         }else{
             break;
