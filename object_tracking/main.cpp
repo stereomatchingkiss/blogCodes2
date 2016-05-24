@@ -12,7 +12,18 @@ void video_to_image(std::string const &video,
 
 int main()
 {    
-
+    try{
+        test_tiny_cnn();
+        //test_cmt();
+        //test_correlation_track();
+        //test_fixed_size_trackers();
+        //test_gmg();
+        //test_hsv_trackers();
+        //test_pedestrian_detection();
+        //test_tracking_module();
+    }catch(std::exception const &ex){
+        std::cerr<<ex.what()<<"\n";
+    }
 }
 
 void video_to_image(std::string const &video,
