@@ -1,7 +1,7 @@
 #ifndef OBJECT_TRACKING_TEST_HPP
 #define OBJECT_TRACKING_TEST_HPP
 
-void test_cnn();
+void test_tiny_cnn();
 void test_cmt();
 void test_correlation_track();
 void test_fixed_size_trackers();

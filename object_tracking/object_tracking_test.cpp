@@ -1,12 +1,17 @@
-#include "tracker/correlation_trackers.hpp"
-#include "CppMT/CMT.h"
-#include "tracker/fixed_size_trackers.hpp"
 #include "object_tracking_test.hpp"
-#include "human_detector/player_detector.hpp"
 #include "tiny_cnn_trainer.hpp"
 
+#include "CppMT/CMT.h"
+#include "dataset_reader/get_samples.hpp"
+#include "human_detector/player_detector.hpp"
+#include "human_detector/tiny_cnn_human_detecotr.hpp"
+#include "tracker/correlation_trackers.hpp"
+#include "tracker/fixed_size_trackers.hpp"
+
+#include <ocv_libs/core/utility.hpp>
 #include <ocv_libs/utility/hsv_range_observer.hpp>
 #include <ocv_libs/saliency/utility.hpp>
+#include <ocv_libs/tiny_cnn/image_converter.hpp>
 
 #include <dlib/dir_nav.h>
 
@@ -23,6 +28,8 @@
 #include <vector>
 
 namespace{
+
+std::string const prefix("../../computer_vision_dataset");
 
 void correlation_tracker_test(std::string const &folder,
                               size_t frame_num,
@@ -408,8 +415,84 @@ void test_hsv_trackers()
     }
 }
 
-void test_cnn()
+void test_tiny_cnn()
 {   
-    tiny_cnn_tainer tct;
-    tct.train();
+    //tiny_cnn_tainer tct;
+    //tct.train();
+
+    cv::VideoCapture cap;
+    cap.open(prefix + "/tracking/v1.mp4");
+    if(!cap.isOpened()){
+        std::cout<<"cannot open video"<<std::endl;
+        return;
+    }
+
+    using Imgs = std::vector<tiny_cnn::vec_t>;
+    using Labels = std::vector<tiny_cnn::label_t>;
+
+    /*std::vector<cv::Mat> load_data;
+    auto resize_to_gray = [](cv::Mat &input)
+    {
+        cv::resize(input, input, {64,64});
+        if(input.channels() == 3){
+            cv::cvtColor(input, input, CV_BGR2GRAY);
+        }
+    };
+
+    /*get_stanford40_pose(load_data,
+                        prefix + "/human_pose/Stanford40",
+                        1184, resize_to_gray);//*/
+    //313
+    /*get_usc_pedestrian(load_data,
+                       prefix + "/pedestrian/USCPedestrianSetA",
+                       205, resize_to_gray);//*/
+    //271, 271 + 313 = 584
+    /*get_usc_pedestrian(load_data,
+                       prefix + "/pedestrian/USCPedestrianSetB",
+                       54, resize_to_gray);//*/
+    //232, 584 + 232 = 816
+    /*get_usc_pedestrian(load_data,
+                       prefix + "/pedestrian/USCPedestrianSetC",
+                       100, resize_to_gray);//*/
+
+    /*get_caltech_bg(load_data,
+                   prefix + "/background/caltech_bg",
+                   859, resize_to_gray);//*/
+    /*get_indoor_scene_cvpr2009(load_data,
+                              prefix + "/background/indoorCVPR_09/no_human",
+                              1141, resize_to_gray);//*/
+
+    /*tiny_cnn_human_detector hd;
+    for(size_t i = 0; i != load_data.size(); ++i){
+        hd.search_simple(load_data[i]);
+        int const key = cv::waitKey(30);
+        if(key == 'q'){
+            break;
+        }
+    }//*/
+
+    //Imgs train_images_;
+    //Labels train_labels_;
+
+    cv::Mat frame;
+    tiny_cnn_human_detector hd;
+    while(1){
+        cap>>frame;
+        if(!frame.empty()){
+            cv::imshow("frame", frame);
+            int const key = cv::waitKey(30);
+            if(key == 'q'){
+                break;
+            }else if(key == 'c'){
+                auto box = cv::selectROI("select", frame,
+                                         false, false);
+                //box = ocv::expand_region(frame.size(), box, 32);
+                hd.is_human(frame(box));
+            }else{
+                hd.search_simple(frame);
+            }
+        }else{
+            break;
+        }
+    }//*/
 }
