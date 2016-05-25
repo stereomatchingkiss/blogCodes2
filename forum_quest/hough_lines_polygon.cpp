@@ -75,6 +75,7 @@ void detect_by_contour()
         cv::imshow("img", img);
         cv::waitKey();
     }
+    cv::imwrite("polygon.jpg", img);
 }
 
 }
