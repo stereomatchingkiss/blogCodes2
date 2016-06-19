@@ -14,7 +14,8 @@ include_directories(${PHASH_PATH})
 
 add_executable(${PROJECT_NAME}
 #main.cpp
-hash_samples.cpp
+#hash_samples.cpp
+phash_performance.cpp
 ${CV_PATH}/src/average_hash.cpp
 ${CV_PATH}/src/block_mean_hash.cpp
 ${CV_PATH}/src/marr_hildreth_hash.cpp
