@@ -24,6 +24,9 @@ void test_img_hash(cv::Mat const &input, cv::Mat const &target,
 void contrast_attack(cv::Mat const &input);
 void gaussian_noise_attack(cv::Mat const &input);
 void diff_img_attack(cv::Mat const &input);
+void measure_comparison_time();
+std::vector<cv::Mat> measure_comparison_time(Ptr<img_hash::ImgHashBase> hashFunc,
+                                             std::string const &msg);
 void measure_computation_time();
 void measure_computation_time(Ptr<img_hash::ImgHashBase> hashFunc,
                               std::string const &msg);
@@ -37,7 +40,8 @@ int main()
     //contrast_attack(input);
     //diff_img_attack(input);
     //gaussian_noise_attack(input);
-    measure_computation_time();
+    measure_comparison_time();
+    //measure_computation_time();
     //resize_attack(input);
     //rotate_attack(input);
     //saltpepper_noise(input);
@@ -91,6 +95,51 @@ void gaussian_noise_attack(cv::Mat const &input)
         std::cout<<"("<<stddev[i]<<")\t";
         test_by_class(input, target);
     }
+}
+
+void measure_comparison_time()
+{
+    using namespace cv::img_hash;
+    measure_comparison_time(AverageHash::create(), "Averaga hash computation time");
+    measure_comparison_time(PHash::create(), "PHash computation time");
+    measure_comparison_time(MarrHildrethHash::create(), "Marr hash computation time");
+    measure_comparison_time(RadialVarianceHash::create(), "Radial hash computation time");
+    measure_comparison_time(BlockMeanHash::create(0), "BMH zero computation time");
+    measure_comparison_time(BlockMeanHash::create(1), "BMH one computation time");
+}
+
+std::vector<cv::Mat> measure_comparison_time(Ptr<img_hash::ImgHashBase> hashFunc,
+                                             std::string const &msg)
+{
+    cv::Mat hash;
+    std::vector<cv::Mat> imgs(100);
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        //ukbench03000
+        imgs[i] = cv::imread("ukbench/ukbench0" +
+                             std::to_string(i + 3000) +
+                             ".jpg");
+    }
+
+    std::vector<cv::Mat> hashes(imgs.size());
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        hashFunc->compute(imgs[i], hash);
+        hashes[i] = (hash.clone());
+    }
+
+    std::cout<<msg<<" : ";
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        hashFunc->compare(hashes[0], hashes[i]);
+    }
+    end = std::chrono::system_clock::now();
+    std::cout<<"elapsed : "<<
+               std::chrono::duration_cast<std::chrono::microseconds>(end - start).count()<<std::endl;
+
+    return hashes;
 }
 
 void measure_computation_time()
