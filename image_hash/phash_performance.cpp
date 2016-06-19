@@ -33,16 +33,142 @@ BinHash* _ph_bmb_new(uint32_t bytelength);
 int ph_bmb_imagehash(CImg<uint8_t> &img, uint8_t method,
                      BinHash **ret_hash);
 
+double ph_hammingdistance2(uint8_t *hashA, int lenA,
+                           uint8_t *hashB, int lenB);
+
+int ph_crosscorr(const Digest &x,const Digest &y,
+                 double &pcc,double threshold);
+
 void test_block_mean_hash(uint8_t method);
 void test_marr_hash();
 void test_radial_hash();
 
+void test_block_mean_hash_compare(uint8_t method);
+void test_marr_hash_compare();
+void test_radial_hash_compare();
+
 int main()
 {
-    test_block_mean_hash(1);
-    test_block_mean_hash(2);
-    test_marr_hash();
-    test_radial_hash();
+    //test_block_mean_hash(1);
+    //test_block_mean_hash(2);
+    //test_marr_hash();
+    //test_radial_hash();
+
+    //test_block_mean_hash_compare(1);
+    //test_block_mean_hash_compare(2);
+    //test_marr_hash_compare();
+    test_radial_hash_compare();
+}
+
+void test_radial_hash_compare()
+{
+    std::vector<CImg<uint8_t>> imgs = read_img();
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    std::cout<<"test radial hash comparison : ";
+    Digest digest;
+    std::vector<Digest> digests;
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        digest.coeffs = 0;
+        ph_image_digest(imgs[i], 1.0, 1.0, digest);
+        if(digest.coeffs)
+        {
+            digests.push_back(digest);
+        }
+        else
+        {
+            throw std::runtime_error("hash computation failed");
+        }
+    }
+    start = std::chrono::system_clock::now();
+    double pcc = 0;
+    for(size_t i = 0; i != digests.size(); ++i)
+    {
+        ph_crosscorr(digests[0], digests[i], pcc, 0.9);
+    }
+    end = std::chrono::system_clock::now();;
+    std::cout<<std::chrono::duration_cast<std::chrono::microseconds>
+               (end - start).count()<<std::endl;
+    for(size_t i = 0; i != digests.size(); ++i)
+    {
+        free(digests[i].coeffs);
+    }
+}
+
+void test_marr_hash_compare()
+{
+    std::vector<CImg<uint8_t>> imgs = read_img();
+    std::cout<<"test Marr hash : ";
+    time_point start, end;
+    std::vector<uint8_t*> hashes;
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        int N = 0;
+        uint8_t *hash = ph_mh_imagehash(imgs[i], N);
+        if(hash)
+        {
+            hashes.emplace_back(hash);
+        }
+        else
+        {
+            throw std::runtime_error("hash computation failed");
+        }
+    }
+    start = std::chrono::system_clock::now();
+    for(size_t i = 0; i != hashes.size(); ++i)
+    {
+        //if you do not assign the value, compiler
+        //may not do anything in this loop
+        double const value = ph_hammingdistance2(hashes[0], 72, hashes[i], 72);
+    }
+    end = std::chrono::system_clock::now();;
+    std::cout<<std::chrono::duration_cast<std::chrono::microseconds>
+               (end - start).count()<<std::endl;
+    for(size_t i = 0; i != hashes.size(); ++i)
+    {
+        free(hashes[i]);
+    }
+}
+
+void test_block_mean_hash_compare(uint8_t method)
+{
+    std::vector<CImg<uint8_t>> imgs = read_img();
+    std::cout<<"test block mean hash method "<<(method - 1)<<" : ";
+
+    std::vector<BinHash*> hashs;
+    for(size_t i = 0; i != imgs.size(); ++i)
+    {
+        BinHash *hash = 0;
+        ph_bmb_imagehash(imgs[i], method, &hash);
+        if(hash)
+        {
+            hashs.emplace_back(hash);
+        }
+        else
+        {
+            throw std::runtime_error("hash conputation fail");
+        }
+    }
+
+    time_point start, end;
+    start = std::chrono::system_clock::now();
+    for(size_t i = 0; i != hashs.size(); ++i)
+    {
+        //if you do not assign the value, compiler
+        //may not do anything in this loop
+        double const value = ph_hammingdistance2(hashs[0]->hash,
+                hashs[0]->bytelength,
+                hashs[i]->hash,
+                hashs[i]->bytelength);
+        //std::cout<<i<<" : "<<value<<std::endl;
+    }
+    end = std::chrono::system_clock::now();;
+    std::cout<<std::chrono::duration_cast<std::chrono::microseconds>
+               (end - start).count()<<std::endl;
+    for(size_t i = 0; i != hashs.size(); ++i)
+    {
+        ph_bmb_free(hashs[i]);
+    }
 }
 
 void test_block_mean_hash(uint8_t method)
@@ -53,7 +179,6 @@ void test_block_mean_hash(uint8_t method)
     start = std::chrono::system_clock::now();
     for(size_t i = 0; i != imgs.size(); ++i)
     {
-        int N = 0;
         BinHash *hash = 0;
         ph_bmb_imagehash(imgs[i], method, &hash);
         if(hash)
@@ -99,7 +224,7 @@ void test_radial_hash()
         ph_image_digest(imgs[i], 1.0, 1.0, digest);
         if(digest.coeffs)
         {
-          free(digest.coeffs);
+            free(digest.coeffs);
         }
     }
     end = std::chrono::system_clock::now();;
@@ -168,12 +293,12 @@ int ph_bmb_imagehash(CImg<uint8_t> &img, uint8_t method, BinHash **ret_hash)
         pixrowstep /= 2;
 
         number_of_blocks =
-            ((preset_size_x / blk_size_x) * 2 - 1) *
-            ((preset_size_y / blk_size_y) * 2 - 1);
+                ((preset_size_x / blk_size_x) * 2 - 1) *
+                ((preset_size_y / blk_size_y) * 2 - 1);
     } else {
         number_of_blocks =
-            preset_size_x / blk_size_x *
-            preset_size_y / blk_size_y;
+                preset_size_x / blk_size_x *
+                preset_size_y / blk_size_y;
     }
 
     bitsize= number_of_blocks;
@@ -574,4 +699,31 @@ uint8_t* ph_mh_imagehash(CImg<uint8_t> &src, int &N,
     }
 
     return hash;
+}
+
+int ph_bitcount8(uint8_t val){
+    int num = 0;
+    while (val){
+        ++num;
+        val &= val - 1;
+    }
+    return num;
+}
+
+double ph_hammingdistance2(uint8_t *hashA, int lenA, uint8_t *hashB, int lenB){
+    if (lenA != lenB){
+        return -1.0;
+    }
+    if ((hashA == NULL) || (hashB == NULL) || (lenA <= 0)){
+        return -1.0;
+    }
+    double dist = 0;
+    uint8_t D = 0;
+    for (int i=0;i<lenA;i++){
+        D = hashA[i]^hashB[i];
+        dist = dist + (double)ph_bitcount8(D);
+    }
+    double bits = (double)lenA*8;
+    return dist/bits;
+
 }
