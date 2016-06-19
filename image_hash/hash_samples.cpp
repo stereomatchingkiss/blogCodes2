@@ -22,8 +22,10 @@ void test_img_hash(cv::Mat const &input, cv::Mat const &target,
                    cv::Ptr<cv::img_hash::ImgHashBase> &algo);
 
 void contrast_attack(cv::Mat const &input);
-void gaussian_noise_attack(cv::Mat const &input);
 void diff_img_attack(cv::Mat const &input);
+void find_target();
+void find_target(cv::Ptr<cv::img_hash::ImgHashBase> algo, bool smaller = true);
+void gaussian_noise_attack(cv::Mat const &input);
 void measure_comparison_time();
 std::vector<cv::Mat> measure_comparison_time(Ptr<img_hash::ImgHashBase> hashFunc,
                                              std::string const &msg);
@@ -39,8 +41,9 @@ int main()
     //Mat input = imread("lena.png", cv::IMREAD_GRAYSCALE);
     //contrast_attack(input);
     //diff_img_attack(input);
+    find_target();
     //gaussian_noise_attack(input);
-    measure_comparison_time();
+    //measure_comparison_time();
     //measure_computation_time();
     //resize_attack(input);
     //rotate_attack(input);
@@ -75,6 +78,69 @@ void diff_img_attack(cv::Mat const &input)
     std::cout.setf(std::ios::right);
     std::cout<<"nothing\t";
     test_by_class(input, target);
+}
+
+void find_target()
+{
+    using namespace cv::img_hash;
+
+    find_target(AverageHash::create());
+    find_target(PHash::create());
+    find_target(MarrHildrethHash::create());
+    find_target(RadialVarianceHash::create(), false);
+    find_target(BlockMeanHash::create(0));
+    find_target(BlockMeanHash::create(1));
+}
+
+void find_target(cv::Ptr<cv::img_hash::ImgHashBase> algo, bool smaller)
+{
+    using namespace cv::img_hash;
+
+    cv::Mat input = cv::imread("ukbench/ukbench03037.jpg");
+    //not a good way to reuse the codes by calling
+    //measure comparision time, please bear with me
+    std::vector<cv::Mat> targets = measure_comparison_time(algo, "");
+
+    double idealValue;
+    if(smaller)
+    {
+        idealValue = std::numeric_limits<double>::max();
+    }
+    else
+    {
+        idealValue = std::numeric_limits<double>::min();
+    }
+    size_t targetIndex = 0;
+    cv::Mat inputHash;
+    algo->compute(input, inputHash);
+    for(size_t i = 0; i != targets.size(); ++i)
+    {
+        double const value = algo->compare(inputHash, targets[i]);
+        if(smaller)
+        {
+            if(value < idealValue)
+            {
+                idealValue = value;
+                targetIndex = i;
+            }
+        }
+        else
+        {
+            if(value > idealValue)
+            {
+                idealValue = value;
+                targetIndex = i;
+            }
+        }
+    }
+    std::cout<<"mismatch value : "<<idealValue<<std::endl;
+    cv::Mat result = cv::imread("ukbench/ukbench0" +
+                                std::to_string(targetIndex + 3000) +
+                                ".jpg");
+    cv::imshow("input", input);
+    cv::imshow("found img " + std::to_string(targetIndex + 3000), result);
+    cv::waitKey();
+    cv::destroyAllWindows();
 }
 
 void gaussian_noise_attack(cv::Mat const &input)
@@ -234,7 +300,7 @@ void saltpepper_noise(cv::Mat const &input)
         target.setTo(0, noise < lowTH[i]);
         target.setTo(255, noise > highTH[i]);
         std::cout<<"("<<static_cast<size_t>(lowTH[i])
-                 <<","<<static_cast<size_t>(highTH[i])<<")\t";
+                <<","<<static_cast<size_t>(highTH[i])<<")\t";
         test_by_class(input, target);
     }
 }
