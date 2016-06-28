@@ -19,6 +19,9 @@ size_t const outWidth = 15;
 
 void print_header(std::string const &type);
 
+void print_header(std::string const &type,
+                  std::ostream &out);
+
 void test_by_class(cv::Mat const &input, cv::Mat const &target);
 
 void test_img_hash(cv::Mat const &input, cv::Mat const &target,
@@ -87,7 +90,7 @@ void diff_img_attack(cv::Mat const &input)
                                     std::to_string(index + i) +
                                     ".jpg");
         test_by_class(input, target);
-    }    
+    }
 }
 
 void find_target()
@@ -371,15 +374,21 @@ void test_by_class(cv::Mat const &input, cv::Mat const &target)
     outFile<<"\n";
 }
 
+void print_header(std::string const &type, std::ostream &out)
+{
+    out.setf(std::ios::left);
+    out<<std::setw(outWidth)<<type<<
+         std::setw(outWidth)<<"Average hash\t"<<
+         std::setw(outWidth)<<"PHash\t"<<
+         std::setw(outWidth)<<"Marr hash\t"<<
+         std::setw(outWidth)<<"Radical hash\t"<<
+         std::setw(outWidth)<<"BMH zero\t"<<
+         std::setw(outWidth)<<"BMH one"<<
+         std::setw(outWidth)<<"Color mean\t"<<std::endl;
+}
+
 void print_header(std::string const &type)
 {
-    std::cout.setf(std::ios::left);
-    std::cout<<std::setw(outWidth)<<type<<
-               std::setw(outWidth)<<"Average hash\t"<<
-               std::setw(outWidth)<<"PHash\t"<<
-               std::setw(outWidth)<<"Marr hash\t"<<
-               std::setw(outWidth)<<"Radical hash\t"<<
-               std::setw(outWidth)<<"BMH zero\t"<<
-               std::setw(outWidth)<<"BMH one"<<
-               std::setw(outWidth)<<"Color mean\t"<<std::endl;
+    print_header(type, std::cout);
+    print_header(type, outFile);
 }
