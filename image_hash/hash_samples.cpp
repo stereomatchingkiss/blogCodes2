@@ -1,15 +1,19 @@
 #include <opencv2/core.hpp>
+#include <opencv2/core/ocl.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/img_hash.hpp>
 #include <opencv2/imgproc.hpp>
 
 #include <bitset>
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 
 using namespace cv;
+
+std::ofstream outFile("out.txt");
 
 size_t const outWidth = 15;
 
@@ -37,14 +41,15 @@ void rotate_attack(cv::Mat const &input);
 void saltpepper_noise(cv::Mat const &input);
 
 int main()
-{   
-    //Mat input = imread("lena.png", cv::IMREAD_GRAYSCALE);
+{      
+    cv::ocl::setUseOpenCL(false);
+    //Mat input = imread("lena.png");
     //contrast_attack(input);
     //diff_img_attack(input);
-    find_target();
+    //find_target();
     //gaussian_noise_attack(input);
     //measure_comparison_time();
-    //measure_computation_time();
+    measure_computation_time();
     //resize_attack(input);
     //rotate_attack(input);
     //saltpepper_noise(input);
@@ -72,12 +77,17 @@ void contrast_attack(cv::Mat const &input)
 }
 
 void diff_img_attack(cv::Mat const &input)
-{
-    cv::Mat target = cv::imread("001.jpg");
+{    
     print_header("diff");
     std::cout.setf(std::ios::right);
     std::cout<<"nothing\t";
-    test_by_class(input, target);
+    size_t index = 3000;
+    for(size_t i = 0; i != 100; ++i){
+        cv::Mat target = cv::imread("ukbench/ukbench0" +
+                                    std::to_string(index + i) +
+                                    ".jpg");
+        test_by_class(input, target);
+    }    
 }
 
 void find_target()
@@ -90,6 +100,7 @@ void find_target()
     find_target(RadialVarianceHash::create(), false);
     find_target(BlockMeanHash::create(0));
     find_target(BlockMeanHash::create(1));
+    find_target(ColorMomentHash::create());
 }
 
 void find_target(cv::Ptr<cv::img_hash::ImgHashBase> algo, bool smaller)
@@ -148,16 +159,18 @@ void gaussian_noise_attack(cv::Mat const &input)
     std::cout<<"gaussian noise attack"<<std::endl;
     print_header("stddev");
 
-    cv::Mat noise(input.size(), CV_64F);
+    int const fType = input.channels() == 1 ? CV_64F : CV_64FC3;
+    cv::Mat noise(input.size(), fType);
     cv::Mat result;
     cv::Mat target;
     double const stddev[] = {0.01, 0.1, 0.5, 1.0, 1.5, 2.0};
     std::cout.setf(std::ios::right);
     for(size_t i = 0; i != sizeof(stddev)/sizeof(double); ++i){
-        cv::normalize(input, result, 0, 1, CV_MINMAX, CV_64F);
+        cv::normalize(input, result, 0, 1, CV_MINMAX, fType);
         cv::randn(noise, 0, 0.05);
-        result = result + noise;
-        cv::normalize(result, target, 0, 255, CV_MINMAX, CV_8U);
+        result += noise;
+        int const tType = input.channels() == 1 ? CV_8U : CV_8UC3;
+        cv::normalize(result, target, 0, 255, CV_MINMAX, tType);
         std::cout<<"("<<stddev[i]<<")\t";
         test_by_class(input, target);
     }
@@ -166,12 +179,13 @@ void gaussian_noise_attack(cv::Mat const &input)
 void measure_comparison_time()
 {
     using namespace cv::img_hash;
-    measure_comparison_time(AverageHash::create(), "Averaga hash computation time");
-    measure_comparison_time(PHash::create(), "PHash computation time");
-    measure_comparison_time(MarrHildrethHash::create(), "Marr hash computation time");
-    measure_comparison_time(RadialVarianceHash::create(), "Radial hash computation time");
-    measure_comparison_time(BlockMeanHash::create(0), "BMH zero computation time");
-    measure_comparison_time(BlockMeanHash::create(1), "BMH one computation time");
+    //measure_comparison_time(AverageHash::create(), "Averaga hash comparison time");
+    //measure_comparison_time(PHash::create(), "PHash comparison time");
+    //measure_comparison_time(MarrHildrethHash::create(), "Marr hash comparison time");
+    //measure_comparison_time(RadialVarianceHash::create(), "Radial hash comparison time");
+    //measure_comparison_time(BlockMeanHash::create(0), "BMH zero comparison time");
+    //measure_comparison_time(BlockMeanHash::create(1), "BMH one comparison time");
+    measure_comparison_time(ColorMomentHash::create(), "Color mean comparison time");
 }
 
 std::vector<cv::Mat> measure_comparison_time(Ptr<img_hash::ImgHashBase> hashFunc,
@@ -211,12 +225,13 @@ std::vector<cv::Mat> measure_comparison_time(Ptr<img_hash::ImgHashBase> hashFunc
 void measure_computation_time()
 {
     using namespace cv::img_hash;
-    measure_computation_time(AverageHash::create(), "Averaga hash computation time");
-    measure_computation_time(PHash::create(), "PHash computation time");
-    measure_computation_time(MarrHildrethHash::create(), "Marr hash computation time");
-    measure_computation_time(RadialVarianceHash::create(), "Radial hash computation time");
+    //measure_computation_time(AverageHash::create(), "Averaga hash computation time");
+    //measure_computation_time(PHash::create(), "PHash computation time");
+    //measure_computation_time(MarrHildrethHash::create(), "Marr hash computation time");
+    //measure_computation_time(RadialVarianceHash::create(), "Radial hash computation time");
     measure_computation_time(BlockMeanHash::create(0), "BMH zero computation time");
-    measure_computation_time(BlockMeanHash::create(1), "BMH one computation time");
+    //measure_computation_time(BlockMeanHash::create(1), "BMH one computation time");
+    //measure_computation_time(ColorMomentHash::create(), "Color mean computation time");
 }
 
 void measure_computation_time(Ptr<img_hash::ImgHashBase> hashFunc,
@@ -238,7 +253,7 @@ void measure_computation_time(Ptr<img_hash::ImgHashBase> hashFunc,
     for(size_t i = 0; i != 100; ++i)
     {
         hashFunc->compute(imgs[i], hash);
-        std::cout<<hash<<"\n";
+        //std::cout<<hash<<"\n";
     }
     end = std::chrono::system_clock::now();
     std::cout<<"elapsed : "<<
@@ -279,6 +294,7 @@ void rotate_attack(cv::Mat const &input)
                                         angle,1.0);
         cv::warpAffine(input, rotImg, rotMat, input.size());
         std::cout<<"angle("<<angle<<")\t";
+        outFile<<"angle("<<angle<<")\t";
         test_by_class(input, rotImg);
     }
 }
@@ -308,11 +324,12 @@ void saltpepper_noise(cv::Mat const &input)
 void test_img_hash(cv::Mat const &input, cv::Mat const &target,
                    cv::Mat &inHash, cv::Mat &targetHash,
                    cv::Ptr<cv::img_hash::ImgHashBase> &algo)
-{
+{    
     algo->compute(input, inHash);
     algo->compute(target, targetHash);
     double const mismatch = algo->compare(inHash, targetHash);
     std::cout<<std::setw(outWidth)<<std::right<<mismatch<<"\t";
+    outFile<<std::setw(outWidth)<<std::right<<mismatch<<"\t";
 }
 
 //benefits of using class is potential performance gain, because
@@ -346,7 +363,12 @@ void test_by_class(cv::Mat const &input, cv::Mat const &target)
     hashFunc.staticCast<img_hash::BlockMeanHash>()->setMode(1);
     test_img_hash(input, target,
                   inHash, outHash, hashFunc);
+
+    hashFunc = img_hash::ColorMomentHash::create();
+    test_img_hash(input, target,
+                  inHash, outHash, hashFunc);
     std::cout<<std::endl;
+    outFile<<"\n";
 }
 
 void print_header(std::string const &type)
@@ -358,5 +380,6 @@ void print_header(std::string const &type)
                std::setw(outWidth)<<"Marr hash\t"<<
                std::setw(outWidth)<<"Radical hash\t"<<
                std::setw(outWidth)<<"BMH zero\t"<<
-               std::setw(outWidth)<<"BMH one"<<std::endl;
+               std::setw(outWidth)<<"BMH one"<<
+               std::setw(outWidth)<<"Color mean\t"<<std::endl;
 }
