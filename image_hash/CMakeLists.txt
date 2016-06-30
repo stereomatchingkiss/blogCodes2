@@ -15,9 +15,11 @@ include_directories(${PHASH_PATH})
 add_executable(${PROJECT_NAME}
 #main.cpp
 #hash_samples.cpp
-phash_performance.cpp
+#phash_performance.cpp
+better_test.cpp
 ${CV_PATH}/src/average_hash.cpp
 ${CV_PATH}/src/block_mean_hash.cpp
+${CV_PATH}/src/color_moment_hash.cpp
 ${CV_PATH}/src/marr_hildreth_hash.cpp
 ${CV_PATH}/src/phash.cpp
 ${CV_PATH}/src/radial_variance_hash.cpp
@@ -25,3 +27,4 @@ ${CV_PATH}/src/radial_variance_hash.cpp
 )
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/cv_dev.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../pri/boost.cmake)
