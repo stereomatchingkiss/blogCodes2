@@ -15,6 +15,8 @@ main.cpp
 ${OCV_PATH}/ocv_libs/core/attribute.cpp
 hough_lines_polygon.hpp
 hough_lines_polygon.cpp
+mapping_files.hpp
+mapping_files.cpp
 so_obj_detect_00.hpp
 so_obj_detect_00.cpp
 )
