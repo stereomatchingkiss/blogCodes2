@@ -41,7 +41,7 @@ void map_files()
 
 void mapping_files()
 {
-    cv::Mat map_01 = cv::imread("map01.jpg");
+    cv::Mat const map_01 = cv::imread("map01.jpg");
     cv::Mat binarize;
     cv::cvtColor(map_01, binarize, CV_BGR2GRAY);
     cv::GaussianBlur(map_01, map_01, {5,5}, 3,3);
@@ -55,11 +55,30 @@ void mapping_files()
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(binarize.clone(), contours, CV_RETR_EXTERNAL,
                      CV_CHAIN_APPROX_SIMPLE);
+    auto rit = std::remove_if(std::begin(contours), std::end(contours),
+                   [](auto const &ct)
+    {
+        auto const rect = cv::boundingRect(ct);
+        return rect.height > rect.width;
+    });
+    contours.erase(rit, std::end(contours));
+
+    cv::Mat draw_map = map_01.clone();
     for(auto const &ct : contours){
-        cv::rectangle(map_01, cv::boundingRect(ct), {255,0,0});
+        //get the information of each rect
+        cv::Mat temp = map_01.clone();
+        std::cout<<cv::boundingRect(ct)<<std::endl;
+        cv::rectangle(temp, cv::boundingRect(ct), {255,0,0});
+        cv::imshow("temp", temp);
+        cv::waitKey();
+        cv::destroyAllWindows();
+
+        //draw_map is used to show all of the rect at once
+        cv::rectangle(draw_map, cv::boundingRect(ct), {255,0,0});
     }
 
-    cv::imshow("draw map", map_01);
+    cv::imshow("draw map", draw_map);
     cv::imshow("dilate", binarize);
+    cv::imwrite("draw_map.jpg", draw_map);
     cv::waitKey();
 }
