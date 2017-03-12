@@ -1,0 +1,12 @@
+{  
+  "clip" : false,
+  "clip_lower_bound" : 0.02,
+  "clip_upper_bound" : 0.98,  
+  "im_dir" : "/home/ramsus/Qt/computer_vision_dataset/dog_vs_cat/kaggle/test1",
+  "model" : "./models/resnet200_00",
+  "model_epoch" : 2,
+  "output" : "mxnet_resnet200_00.txt",
+  "random_crop" : 1,
+  "im_depth" : 3,
+  "im_dim" : 224
+}
