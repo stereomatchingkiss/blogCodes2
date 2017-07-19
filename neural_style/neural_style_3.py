@@ -38,10 +38,11 @@ def read_img(im_name, shp):
     
     return preproc(style_arr)
 
-content_img_name = "dog"
+content_img_name = "building"
+art_img_name = "alice"
 content_img_arr = read_img(dpath + "img/{}.png".format(content_img_name), [])
 content_shp = content_img_arr.shape
-style_img_arr = read_img(dpath + "img/starry.png", content_shp)
+style_img_arr = read_img(dpath + "img/{}.png".format(art_img_name), content_shp)
 
 content_base = K.variable(content_img_arr)
 style_base = K.variable(style_img_arr)
@@ -110,7 +111,7 @@ def solve_img(evalu, niter, x):
         print(i, ',Current loss value:', min_val)
         x = x.reshape(content_shp)
         simg = deproc(x.copy())
-        img_name = '{}_{}_neural_style_img_{}.png'.format(dpath + "gen_img/", content_img_name, i)
+        img_name = '{}{}_{}_neural_style_img_{}.png'.format(dpath + "gen_img/", content_img_name, art_img_name, i)
         imsave(img_name, simg[0])
     return x
 
