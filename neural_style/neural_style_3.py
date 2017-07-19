@@ -1,5 +1,7 @@
 from PIL import Image
 
+import os
+
 import keras.backend as K
 import vgg16_avg
 
@@ -20,7 +22,7 @@ rn_mean = np.array([123.68, 116.779, 103.939], dtype=np.float32)
 preproc = lambda x: (x - rn_mean)[:,:,:,::-1]
 deproc = lambda x: x[:,:,:,::-1] + rn_mean
 
-dpath="/home/ramsus/Qt/courses/fast_ai_part_2/exercise/neural_style/"
+dpath= os.getcwd() + "/"
 
 #I make the size of content image, style image, generated img
 #have the same shape, but this is not mandatory
@@ -31,14 +33,15 @@ def read_img(im_name, shp):
         style_img = style_img.resize((shp[2], shp[1]))
     style_arr = np.array(style_img)    
     #The image read by PIL is three dimensions, but the model
-    #need a four dimensions tensor(use one dim to store batch size)
+    #need a four dimensions tensor(first dim is batch size)
     style_arr = np.expand_dims(style_arr, 0)
     
     return preproc(style_arr)
 
-content_img_arr = read_img(dpath + "bird.png", [])
+content_img_name = "dog"
+content_img_arr = read_img(dpath + "img/{}.png".format(content_img_name), [])
 content_shp = content_img_arr.shape
-style_img_arr = read_img(dpath + "starry.png", content_shp)
+style_img_arr = read_img(dpath + "img/starry.png", content_shp)
 
 content_base = K.variable(content_img_arr)
 style_base = K.variable(style_img_arr)
@@ -107,7 +110,7 @@ def solve_img(evalu, niter, x):
         print(i, ',Current loss value:', min_val)
         x = x.reshape(content_shp)
         simg = deproc(x.copy())
-        img_name = '{}neural_style_img_{}.png'.format(dpath, i)
+        img_name = '{}_{}_neural_style_img_{}.png'.format(dpath + "gen_img/", content_img_name, i)
         imsave(img_name, simg[0])
     return x
 
