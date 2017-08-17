@@ -46,7 +46,8 @@ class colorization_net(nn.Module):
         self._m_res3 = res_block(64, 64)
         self._m_res4 = res_block(64, 64)
         self._m_conv2 = nn.Sequential(
-            nn.Conv2d(64, 2, 9, 1, 4),
+            #nn.Convd2d(64, 2, 9, 1, 4), #for solution 1 and 2
+            nn.Conv2d(64, 3, 9, 1, 4), #for solution 3
             nn.Tanh()
         )
         self._m_tanh = nn.Tanh()
@@ -58,10 +59,10 @@ class colorization_net(nn.Module):
         out = self._m_res3(out)
         out = self._m_res4(out)
         out = self._m_conv2(out)
-        out = out * 127 + 128 #out is CrCb
-        out = torch.cat([x, out], 1) #Now out become YCrCb
+        out = out * 127 + 128 #out predict CrCb for solution 1 and 2, predict rgb for solution 3
+        #out = torch.cat([x, out], 1) #Now out become YCrCb
         
-        #I give 2 solutions a try, none of them work
+        #I give 3 solutions a try, none of them work
                         
         #Solution 1 : clamp value to [0,255]
         #Converted value may not fall in [0,255], so I clamp it to [0, 255]
@@ -69,14 +70,18 @@ class colorization_net(nn.Module):
         #If I do not clamp it, generated color is very weird
         #This function convert ycrcb to rgb, follow the formula from opencv
         #I transform out back to rgb because vgg expect the color space of input as RGB
-        out = ycrcb_to_rgb_torch(out, 128)
-        out = out.clamp(0, 255)
+        #out = ycrcb_to_rgb_torch(out, 128)
+        #out = out.clamp(0, 255)
         
         #Solution 2 : instead of clamp the output to [0,255]
         #pass it to activation again, this generate image
         #close to plain white
         #out = ycrcb_to_rgb_torch(out, 128)
         #out = self._m_tanh(out)
-        #out = out * 127 + 128                
+        #out = out * 127 + 128 
+        
+        #Solution 3 : I change the lass convolution net from 
+        #nn.Conv2d(64, 2, 9, 1, 4) to nn.Conv2d(64, 3, 9, 1, 4)
+        #assume the net will generate the rgb image directly
         
         return out
