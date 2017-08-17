@@ -91,4 +91,4 @@ def train(epoch, niter, weights = [0.2, 0.8, 0.2], lr_rate = [0.01, 0.001]):
         torch.save(transform_net.state_dict(), 'color_transform_net_epoch_{}_iter_{}'.format(e+1, niter))
 
 #I try with learning rate 0.01, 0.001
-train(1, 2000, [0.2, 0.8, 0.2], [0.001])
+train(2, 2000, [0.2, 0.8, 0.2], [0.001, 0.001])
