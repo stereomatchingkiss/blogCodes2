@@ -9,8 +9,7 @@
 
 feature_stitch::feature_stitch() :
     akaze_(cv::AKAZE::create())
-{
-    akaze_->setThreshold(3e-4);
+{    
 }
 
 std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, cv::Mat const &img2,
@@ -18,8 +17,8 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
                                                           double ratio, double reproj_thresh,
                                                           bool draw_matches)
 {
-    auto const kpts_desc1 = detect_and_compute(img1);
-    auto const kpts_desc2 = detect_and_compute(img2);
+    auto const kpts_desc1 = detect_and_compute(img2);
+    auto const kpts_desc2 = detect_and_compute(img1);
 
     keypoints matches1, matches2;
     cv::Mat hmat;
@@ -30,24 +29,21 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
 
     if(!hmat.empty()){
         cv::Mat dst;
-        cv::Size dsize;
-        cv::Rect copy_region;
+        cv::Size dsize;        
         if(direction == stitch_direction::horizontal){
             CV_Assert(img1.rows == img2.rows);
 
             dsize.width = img1.cols + img2.cols;
-            dsize.height = img1.rows;            
-            copy_region = cv::Rect(img1.cols, 0, img2.cols, img2.rows);
+            dsize.height = img1.rows;
         }else{
             CV_Assert(img1.cols == img2.cols);
 
             dsize.height = img1.rows + img2.rows;
-            dsize.width = img1.cols;
-            copy_region = cv::Rect(0, img1.rows, img2.cols, img2.rows);
+            dsize.width = img1.cols;            
         }
 
-        cv::warpPerspective(img1, dst, hmat, dsize);
-        img2.copyTo(dst(copy_region));
+        cv::warpPerspective(img2, dst, hmat, dsize);
+        //img1.copyTo(dst(cv::Rect(0, 0, img2.cols, img2.rows)));
 
         if(draw_matches){
             return std::make_pair(std::move(dst),
@@ -70,8 +66,7 @@ feature_stitch::match_keypoints(feature_stitch::keypoints const &kpts1, feature_
 
     //exhaustively compute euclidean distance between all feature vectors from both images
     //find the pairs of descriptors that have the smallest distance
-    cv::BFMatcher matcher;
-    //cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
+    cv::BFMatcher matcher(cv::NORM_HAMMING);
     std::vector<match_vec> nn_matches;
     //top 2 matches because we need to apply David Lowe's ratio test
     matcher.knnMatch(descriptor1, descriptor2, nn_matches, 2);
@@ -84,7 +79,8 @@ feature_stitch::match_keypoints(feature_stitch::keypoints const &kpts1, feature_
             matches1.emplace_back(kpts1[m[0].queryIdx]);
             matches2.emplace_back(kpts2[m[0].trainIdx]);
         }
-    }
+    }    
+    std::cout<<matches1[0].pt<<","<<matches2[0].pt<<std::endl;
 
     if(matches1.size() > 4){
         std::vector<cv::Point2f> points1, points2;
@@ -111,9 +107,6 @@ std::pair<feature_stitch::keypoints, cv::Mat> feature_stitch::detect_and_compute
         gray = img;
     }
     akaze_->detectAndCompute(gray, cv::noArray(), kpts, descriptor);
-
-    //cv::Ptr<cv::xfeatures2d::SIFT> sift = cv::xfeatures2d::SIFT::create();
-    //sift->detectAndCompute(gray, cv::noArray(), kpts, descriptor);
 
     return std::make_pair(std::move(kpts), std::move(descriptor));
 }
