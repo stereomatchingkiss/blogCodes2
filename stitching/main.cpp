@@ -17,9 +17,9 @@ void measure_elapsed_time(std::function<void()> func);
 cv::Mat read_img(std::string const &img_location);
 
 void test_stitching(std::string const &folder,
-                           std::string const &img1_name,
-                           std::string const &img2_name,
-                           std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher);
+                    std::string const &img1_name,
+                    std::string const &img2_name,
+                    std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher);
 
 int main(int argc, char *argv[])try
 {            
@@ -89,9 +89,9 @@ cv::Mat read_img(std::string const &img_location)
 }
 
 void test_stitching(std::string const &folder,
-                           std::string const &img1_name,
-                           std::string const &img2_name,
-                           std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher)
+                    std::string const &img1_name,
+                    std::string const &img2_name,
+                    std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher)
 {
     auto img1 = read_img(folder + img1_name);
     auto img2 = read_img(folder + img2_name);
