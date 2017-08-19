@@ -15,12 +15,12 @@ another one use the Stitcher class of opencv.
 # Results of PyimageSearch solution
 
 <img src="https://s12.postimg.org/8sfwmyr7h/PICT0107a_stitch_resut.jpg" width="220px">
-<img src="https://s12.postimg.org/3whbsdxdp/green_nature1_stitch_resut.jpg">
+<img src="https://s12.postimg.org/3whbsdxdp/green_nature1_stitch_resut.jpg" width="220px">
 
 # Results of OpenCV solution
 
-<img src="https://s12.postimg.org/8sfwmyr7h/PICT0107a_stitch_resut.jpg" width="220px">
-<img src="https://s12.postimg.org/3whbsdxdp/green_nature1_stitch_resut.jpg">
+<img src="https://s12.postimg.org/i5gyagbwd/PICT0107a_stitch_resut.jpg" width="220px">
+<img src="https://s12.postimg.org/ttb050119/green_nature1_stitch_resut.jpg" width="220px">
 
 Almost every images I test, OpenCV solution able to produce more appealing results than 
 PyImageSearch solution, but it is also slower(around 2 times slower). Stitch class of OpenCV
