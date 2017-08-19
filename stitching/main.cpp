@@ -1,6 +1,7 @@
 #include "feature_stitch.hpp"
 
 #include <opencv2/core.hpp>
+#include <opencv2/features2d.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/stitching.hpp>
@@ -18,8 +19,8 @@ void test_feature_solution(std::string const &folder,
                            std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher);
 
 int main()try
-{    
-    std::string const folder("C:/Users/yyyy/Qt/computer_vision_dataset/stitching/images/");
+{            
+    std::string const folder("../../computer_vision_dataset/stitching/images/");
     std::string const img1_location("bryce_left_02.png");
     std::string const img2_location("bryce_right_02.png");
     test_feature_solution(folder, img1_location, img2_location, [](cv::Mat const &img1, cv::Mat const &img2)
@@ -67,9 +68,9 @@ void test_feature_solution(std::string const &folder,
     auto img2 = read_img(folder + img2_name);
 
     std::cout<<img2.size()<<","<<img1.size()<<std::endl;
-    cv::resize(img1, img1, cv::Size(400, static_cast<int>(img1.rows * 400.0/img1.cols)));
-    cv::resize(img2, img2, cv::Size(400, static_cast<int>(img2.rows * 400.0/img2.cols)));
-    cv::resize(img2, img2, cv::Size(img2.cols, img1.rows));
+    //cv::resize(img1, img1, cv::Size(400, static_cast<int>(img1.rows * 400.0/img1.cols)));
+    //cv::resize(img2, img2, cv::Size(400, static_cast<int>(img2.rows * 400.0/img2.cols)));
+    //cv::resize(img2, img2, cv::Size(img2.cols, img1.rows));
 
     cv::Mat stitch_result;
     cv::Mat matches_points;
