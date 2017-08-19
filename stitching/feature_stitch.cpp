@@ -43,7 +43,7 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
         }
 
         cv::warpPerspective(img2, dst, hmat, dsize);
-        //img1.copyTo(dst(cv::Rect(0, 0, img2.cols, img2.rows)));
+        img1.copyTo(dst(cv::Rect(0, 0, img2.cols, img2.rows)));
 
         if(draw_matches){
             return std::make_pair(std::move(dst),
