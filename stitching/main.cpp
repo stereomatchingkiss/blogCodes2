@@ -50,7 +50,7 @@ int main(int argc, char *argv[])try
         {
             test_stitching(folder, img1_location, img2_location, [](cv::Mat const &img1, cv::Mat const &img2)
             {
-                cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::SCANS, true);
+                cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA, true);
                 std::vector<cv::Mat> imgs{img1, img2};
                 cv::Mat stitch_result;
                 cv::Stitcher::Status const status = stitcher->stitch(imgs, stitch_result);
