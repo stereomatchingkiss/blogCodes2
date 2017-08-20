@@ -27,8 +27,7 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
                             kpts_desc1.second, kpts_desc2.second,
                             ratio, reproj_thresh);
 
-    if(!hmat.empty()){
-        cv::Mat dst;
+    if(!hmat.empty()){        
         cv::Size dsize;        
         if(direction == stitch_direction::horizontal){
             CV_Assert(img1.rows == img2.rows);
@@ -42,6 +41,7 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
             dsize.width = img1.cols;            
         }
 
+        cv::Mat dst;
         cv::warpPerspective(img2, dst, hmat, dsize);
         img1.copyTo(dst(cv::Rect(0, 0, img2.cols, img2.rows)));
 
@@ -98,14 +98,14 @@ feature_stitch::match_keypoints(feature_stitch::keypoints const &kpts1, feature_
 std::pair<feature_stitch::keypoints, cv::Mat> feature_stitch::detect_and_compute(const cv::Mat &img)
 {
     CV_Assert(img.channels() == 1 || img.channels() == 3);
-    keypoints kpts;
-    cv::Mat descriptor;
     cv::Mat gray;
     if(img.channels() == 3){
         cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
     }else{
         gray = img;
     }
+    keypoints kpts;
+    cv::Mat descriptor;
     akaze_->detectAndCompute(gray, cv::noArray(), kpts, descriptor);
 
     return std::make_pair(std::move(kpts), std::move(descriptor));
