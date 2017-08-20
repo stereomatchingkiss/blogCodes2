@@ -23,7 +23,7 @@ void test_stitching(std::string const &folder,
 
 int main(int argc, char *argv[])try
 {            
-    if(argc < 4){
+    if(argc < 5){
         cerr<<"Argument must not less than 4. They are folder of images, \n"
            <<"name of left image, name of right image, and stitch mode. Mode "
              "0 will use feature stitch, 1 will use Stitcher class of opencv.\n"
