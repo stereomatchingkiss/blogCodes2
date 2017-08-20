@@ -29,6 +29,8 @@ int main(int argc, char *argv[])try
              "0 will use feature stitch, 1 will use Stitcher class of opencv.\n"
              "Example:\n"
              "stitching ../../computer_vision_dataset/stitching/images/ bryce_left_02.png bryce_right_02.png 0";
+
+        return -1;
     }
 
     std::string const folder(argv[1]);
