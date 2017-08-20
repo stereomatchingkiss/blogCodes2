@@ -43,16 +43,16 @@ private:
     std::pair<keypoints, cv::Mat> detect_and_compute(cv::Mat const &img);
     cv::Mat draw_matches_img(cv::Mat const &img1, cv::Mat const &img2,
                              keypoints const &matches1, keypoints const &matches2,
-                             cv::Mat const &hmat);
+                             cv::Mat const &hmat) const;
 
     std::tuple<keypoints, keypoints, std::vector<cv::DMatch>>
     find_inliers(keypoints const &matches1, keypoints const &matches2,
-                 cv::Mat const &hmat);
+                 cv::Mat const &hmat) const;
 
     std::tuple<feature_stitch::keypoints, feature_stitch::keypoints, cv::Mat>
     match_keypoints(keypoints const &kpts1, keypoints const &kpts2,
                     cv::Mat const &descriptor1, cv::Mat const &descriptor2,
-                    double ratio = 0.75, double reproj_thresh = 4.0);
+                    double ratio = 0.75, double reproj_thresh = 4.0) const;
 
     cv::Ptr<cv::AKAZE> akaze_;
 

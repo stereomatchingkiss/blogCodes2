@@ -60,7 +60,7 @@ std::pair<cv::Mat, cv::Mat> feature_stitch::stitch_images(cv::Mat const &img1, c
 std::tuple<feature_stitch::keypoints, feature_stitch::keypoints, cv::Mat>
 feature_stitch::match_keypoints(feature_stitch::keypoints const &kpts1, feature_stitch::keypoints const &kpts2,
                                 cv::Mat const &descriptor1, cv::Mat const &descriptor2,
-                                double ratio, double reproj_thresh)
+                                double ratio, double reproj_thresh) const
 {
     using match_vec = std::vector<cv::DMatch>;
 
@@ -114,7 +114,7 @@ std::pair<feature_stitch::keypoints, cv::Mat> feature_stitch::detect_and_compute
 cv::Mat feature_stitch::draw_matches_img(cv::Mat const &img1, cv::Mat const &img2,
                                          keypoints const &matches1,
                                          keypoints const &matches2,
-                                         cv::Mat const &hmat)
+                                         cv::Mat const &hmat) const
 {
     cv::Mat dst;
     keypoints inliers1, inliers2;
@@ -128,7 +128,7 @@ cv::Mat feature_stitch::draw_matches_img(cv::Mat const &img1, cv::Mat const &img
 std::tuple<feature_stitch::keypoints, feature_stitch::keypoints, std::vector<cv::DMatch>>
 feature_stitch::find_inliers(keypoints const &matches1,
                              keypoints const &matches2,
-                             cv::Mat const &hmat)
+                             cv::Mat const &hmat) const
 {
     constexpr double inlier_threshold = 2.5;
     keypoints inliers1, inliers2;
