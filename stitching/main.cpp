@@ -100,8 +100,7 @@ void test_stitching(std::string const &folder,
 
     std::cout<<img2.size()<<","<<img1.size()<<std::endl;
     cv::resize(img1, img1, cv::Size(400, static_cast<int>(img1.rows * 400.0/img1.cols)));
-    cv::resize(img2, img2, cv::Size(400, static_cast<int>(img2.rows * 400.0/img2.cols)));
-    cv::resize(img2, img2, cv::Size(img2.cols, img1.rows));
+    cv::resize(img2, img2, cv::Size(400, static_cast<int>(img1.rows)));
 
     size_t const pos1 = img1_name.find_last_of(".");
     size_t const pos2 = img2_name.find_last_of(".");
