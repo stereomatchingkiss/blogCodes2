@@ -133,12 +133,15 @@ feature_stitch::find_inliers(keypoints const &matches1,
     constexpr double inlier_threshold = 2.5;
     keypoints inliers1, inliers2;
     std::vector<cv::DMatch> good_matches;
+    //measure distance of feature points after mapping
+    //if their distance is small enough, we treat them
+    //as inliers and vice versa
     for(size_t i = 0; i != matches1.size(); ++i){        
         cv::Mat col = cv::Mat::ones(3,1, CV_64F);
         col.at<double>(0) = matches1[i].pt.x;
         col.at<double>(1) = matches1[i].pt.y;
-        col *= hmat;
-        col /= col.at<double>(2);        
+        col = hmat * col;
+        col /= col.at<double>(2);
         double const dist = std::sqrt(std::pow(col.at<double>(0) - matches2[i].pt.x, 2) +
                                       std::pow(col.at<double>(1) - matches2[i].pt.y, 2));
         if(dist < inlier_threshold){
