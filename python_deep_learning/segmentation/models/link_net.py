@@ -112,51 +112,43 @@ class link_net(nn.Module):
         self._deconv_2 = deconv_block(32, category, 2, 2, 0)
         
     
-    def forward(self, x):
-        print("origin size,", x.size())
-        
+    def forward(self, x, debug = False):
+                                        
         conv_down_out = self._mconv_1(x)
-        print("conv downsample size,", conv_down_out.size())
-        
         max_pool_out = self._mmax_pool(conv_down_out)
-        print("max pool size,", max_pool_out.size())
-        
+                
         encoder_1_out = self._mencoder_1(max_pool_out)
-        print("encoder 1 size,", encoder_1_out.size())
-        
-        encoder_2_out = self._mencoder_2(encoder_1_out)
-        print("encoder 2 size,", encoder_2_out.size())
-        
-        encoder_3_out = self._mencoder_3(encoder_2_out)
-        print("encoder 3 size,", encoder_3_out.size())
-        
+        encoder_2_out = self._mencoder_2(encoder_1_out)                
+        encoder_3_out = self._mencoder_3(encoder_2_out)        
         encoder_4_out = self._mencoder_4(encoder_3_out)
-        print("encoder 4 size,", encoder_4_out.size())
         
-        decoder_4_out = self._mdecoder_4(encoder_4_out, encoder_3_out.size())
-        decoder_4_out = decoder_4_out + encoder_3_out
-        print("decoder 4 size,", decoder_4_out.size())
         
-        decoder_3_out = self._mdecoder_3(decoder_4_out, encoder_2_out.size())
-        decoder_3_out = decoder_3_out + encoder_2_out
-        print("decoder 3 size,", decoder_3_out.size())
-
-        decoder_2_out = self._mdecoder_2(decoder_3_out, encoder_1_out.size())
-        decoder_2_out = decoder_2_out + encoder_1_out
-        print("decoder 2 size,", decoder_2_out.size())
+        decoder_4_out = self._mdecoder_4(encoder_4_out, encoder_3_out.size()) + encoder_3_out
+        decoder_3_out = self._mdecoder_3(decoder_4_out, encoder_2_out.size()) + encoder_2_out
+        decoder_2_out = self._mdecoder_2(decoder_3_out, encoder_1_out.size()) + encoder_1_out
+        decoder_1_out = self._mdecoder_1(decoder_2_out, max_pool_out.size())
         
-        out = self._mdecoder_1(decoder_2_out, max_pool_out.size())
-        print("decoder 1 size,", out.size())
         
-        out = self._deconv_1(out, conv_down_out.size())
-        print("deconv_out size,", out.size())
+        deconv_out = self._deconv_1(decoder_1_out, conv_down_out.size())
+        conv_2_out = self._mconv_2(deconv_out)
+        out = self._deconv_2(conv_2_out, x.size())
         
-        out = self._mconv_2(out)
-        print("conv out size,", out.size())
-        
-        out = self._deconv_2(out, x.size())
-        print("deconv2 out size,", out.size())
-        
+        if debug:
+            print("origin size,", x.size())
+            print("conv downsample size,", conv_down_out.size())
+            print("max pool size,", max_pool_out.size())
+            print("encoder 1 size,", encoder_1_out.size())
+            print("encoder 2 size,", encoder_2_out.size())
+            print("encoder 3 size,", encoder_3_out.size())
+            print("encoder 4 size,", encoder_4_out.size())
+            print("decoder 4 size,", decoder_4_out.size())
+            print("decoder 3 size,", decoder_3_out.size())
+            print("decoder 2 size,", decoder_2_out.size())
+            print("decoder 1 size,", decoder_1_out.size())
+            print("deconv_out size,", deconv_out.size())
+            print("conv2 out size,", conv_2_out.size())
+            print("deconv2 out size,", out.size())
+                
         return out
         
 
