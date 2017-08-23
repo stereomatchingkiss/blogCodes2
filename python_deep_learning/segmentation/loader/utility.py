@@ -103,17 +103,3 @@ def relabel_color(source_folder, target_folder, colors):
     pool.close()
     pool.join()        
     
-def split_train_test(raw_pics_location, label_location, train_pics_location, train_label_location, train_size):
-    raw_pics = list(glob.glob(raw_pics_location + "*.png"))
-    label_pics = list(glob.glob(label_location + "*.png"))
-    
-    combine_list = []
-    for i in range(len(raw_pics)):
-        combine_list.append([raw_pics[i], label_pics[i]])
-    
-    combine_list = shuffle(combine_list)
-    for i in range(train_size):
-        os.rename(raw_pics[i], train_pics_location + raw_pics[i].split("/")[-1])
-        os.rename(label_pics[i], train_label_location + label_pics[i].split("/")[-1])
-
- 
