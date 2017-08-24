@@ -1,5 +1,7 @@
 import imghdr
+import numpy as np
 import os
+import PIL as pil
 import re
 import torch
 
