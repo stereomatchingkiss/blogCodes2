@@ -1,3 +1,5 @@
+import imghdr
+import os
 import re
 import torch
 
