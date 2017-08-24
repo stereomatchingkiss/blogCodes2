@@ -7,8 +7,10 @@ from multiprocessing import Pool
 from random import shuffle
 
 def count_img_pix(img, color_count):
-    """Count pixel number of the image. img is a numpy array with shape == height,width,channels.
-    color_count is a dictionary with key == (r,g,b), value = occur number of pixel
+    """Count pixel number of the image.
+    Args:
+        img(numpy ndarray): is a numpy array with shape == height,width,channels.
+        color_count(dictionary): is a dictionary with key == (r,g,b), value = occur number of pixel
     
     Example:
     
@@ -55,7 +57,8 @@ def write_color_count_sorted(file_location, color_count, color_table, total):
     "r g b occur_number occur_probability label_of_the_color". The resutls will
     be sorted by occur number of the pixel value.
     
-    color_count is a dictionary with key == (r,g,b), value = occur number of pixel
+    Args:
+        color_count: A dictionary with key == (r,g,b), value = occur number of pixel
     total is the total number of the pixels
     
     Example:
