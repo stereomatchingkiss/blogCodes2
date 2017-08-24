@@ -17,19 +17,6 @@ def read_label_color(location):
     
     return color_table            
 
-#read color_count.txt, format of input file is
-#r g b occur_number
-def read_color_count(file_location):
-    color_count = []
-    with open(file_location, "r") as f:
-        for line in f:
-            line = line.replace("\n", "")
-            info = line.split(" ")        
-            color_count.append([int(i) for i in info])
-        
-    return sorted(color_count, key=lambda color: color[3], reverse = True)
-
-
 class data_loader(Dataset):
     """This class load data of image segmentation and return raw image and label in a dictionary. 
     If cache is true, this class will save all of the images(including raws and labels) into
