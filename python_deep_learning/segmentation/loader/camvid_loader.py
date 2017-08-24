@@ -48,6 +48,7 @@ class data_loader(Dataset):
         """
 
         result = {}
+        idx = idx % len(self._mraw_names)
         if(self._mcache):
             result = {'raw' : self._mraw_imgs[idx], 'label' : self._mlabel_imgs[idx]}
         else:            
