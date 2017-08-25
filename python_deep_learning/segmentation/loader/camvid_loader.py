@@ -53,7 +53,7 @@ class data_loader(Dataset):
             result = {'raw' : self._mraw_imgs[idx], 'label' : self._mlabel_imgs[idx]}
         else:            
             #print(self._mraw_names[idx], self._mlabel_names[idx])
-            result = {'raw' : np.array(pil.Image.open(self._mraw_names[idx])), 'label' : np.array(pil.Image.open(self._mlabel_names[idx]))}
+            result = {'raw' : np.array(pil.Image.open(self._mraw_names[idx])).astype('float32'), 'label' : np.array(pil.Image.open(self._mlabel_names[idx])).astype('float32')}            
             
         if self._mtransform:
             result = self._mtransform(result)
@@ -80,9 +80,9 @@ class data_loader(Dataset):
                     label_names.append(label_folder + label_name)
                     if cache:
                         img = pil.Image.open(raw_folder + f)
-                        raw_imgs.append(np.array(img))
+                        raw_imgs.append(np.array(img).astype('float32'))
                         img = pil.Image.open(label_folder + label_name)
-                        label_imgs.append(np.array(img))
+                        label_imgs.append(np.array(img).astype('float32'))
                                         
         return raw_names, raw_imgs, label_names, label_imgs
 
