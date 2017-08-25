@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 
 class flip_horizontal(object):
@@ -6,9 +7,13 @@ class flip_horizontal(object):
     
     def __call__(self, sample):        
         if np.random.randint(0, 2) == 1:            
-            return {'raw' : sample['raw'][:, ::-1, :], 'label' : sample['label'][:, ::-1, :]}
+            #return {'raw' : sample['raw'][:, ::-1, :], 'label' : sample['label'][:, ::-1, :]}
+            print('shape of fh:', sample['raw'].shape)
+            raw = sample['raw'][:, ::-1, ...]
+            label = sample['label'][:, ::-1, ...]
+            return {'raw': np.swapaxes(np.swapaxes(raw, 0, 1)[::-1], 0, 1), 'label' : np.swapaxes(np.swapaxes(label, 0, 1)[::-1], 0, 1)}
         else:
-            return sample        
+            return sample
 
 class random_crop(object):
     """Crop randomly the image in a sample.
@@ -27,7 +32,7 @@ class random_crop(object):
             self._moutput_size = output_size
 
     def __call__(self, sample):
-        image, landmarks = sample['raw'], sample['label']
+        image, label = sample['raw'], sample['label']
 
         h, w = image.shape[:2]
         new_h, new_w = self._moutput_size
@@ -37,21 +42,21 @@ class random_crop(object):
 
         image = image[top: top + new_h,
                       left: left + new_w]        
-        landmarks = landmarks[top: top + new_h,
-                              left: left + new_w]
+        label = label[top: top + new_h,
+                      left: left + new_w]
 
-        return {'raw': image, 'label': landmarks}    
+        return {'raw': image, 'label': label}    
     
     
 class to_tensor(object):
     """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
-        image, landmarks = sample['raw'], sample['label']
+        image, label = sample['raw'], sample['label']
 
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
         return {'raw': torch.from_numpy(image),
-                'label': torch.from_numpy(landmarks)}
+                'label': torch.from_numpy(label)}
