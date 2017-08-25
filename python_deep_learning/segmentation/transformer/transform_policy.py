@@ -7,8 +7,6 @@ class flip_horizontal(object):
     
     def __call__(self, sample):        
         if np.random.randint(0, 2) == 1:            
-            #return {'raw' : sample['raw'][:, ::-1, :], 'label' : sample['label'][:, ::-1, :]}
-            print('shape of fh:', sample['raw'].shape)
             raw = sample['raw'][:, ::-1, ...]
             label = sample['label'][:, ::-1, ...]
             return {'raw': np.swapaxes(np.swapaxes(raw, 0, 1)[::-1], 0, 1), 'label' : np.swapaxes(np.swapaxes(label, 0, 1)[::-1], 0, 1)}
