@@ -56,5 +56,6 @@ class to_tensor(object):
         # numpy image: H x W x C
         # torch image: C X H X W
         image = image.transpose((2, 0, 1))
+        label = label.transpose((2, 0, 1))
         return {'raw': torch.from_numpy(image),
                 'label': torch.from_numpy(label)}
