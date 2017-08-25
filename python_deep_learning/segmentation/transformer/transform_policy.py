@@ -9,6 +9,7 @@ class flip_horizontal(object):
         if np.random.randint(0, 2) == 1:            
             raw = sample['raw'][:, ::-1, ...]
             label = sample['label'][:, ::-1, ...]
+            #sample['raw'][:, ::-1] do not work, so I use swapaxes to flip the image horizontally
             return {'raw': np.swapaxes(np.swapaxes(raw, 0, 1)[::-1], 0, 1), 'label' : np.swapaxes(np.swapaxes(label, 0, 1)[::-1], 0, 1)}
         else:
             return sample
