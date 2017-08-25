@@ -52,7 +52,7 @@ class data_loader(Dataset):
         if(self._mcache):
             result = {'raw' : self._mraw_imgs[idx], 'label' : self._mlabel_imgs[idx]}
         else:            
-            print(self._mraw_names[idx], self._mlabel_names[idx])
+            #print(self._mraw_names[idx], self._mlabel_names[idx])
             result = {'raw' : np.array(pil.Image.open(self._mraw_names[idx])), 'label' : np.array(pil.Image.open(self._mlabel_names[idx]))}
             
         if self._mtransform:
