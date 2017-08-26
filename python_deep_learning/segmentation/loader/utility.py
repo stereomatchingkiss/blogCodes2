@@ -7,6 +7,39 @@ from functools import partial
 from multiprocessing import Pool
 from random import shuffle
 
+def convert_label_to_integer(source_folder, target_folder, label_colors):
+    """convert label to integer
+    Args:
+        source_folder(string): folder of labels want to convert to integer
+        target_folder(string): save the labels after converted
+        label_colors(list):  list which store the color, color will transforme to integer 
+        by the order
+    """
+    label_to_int = transform_policy.label_to_integer(label_colors, 0)
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+    
+    for i, src_name in enumerate(list(glob.glob(source_folder + "*.png"))):
+        print(i, src_name)
+        img = np.array(pil.Image.open(src_name))
+        img = label_to_int(img)
+        pil.Image.fromarray(img.astype('uint8')).save(target_folder + src_name.split("/")[-1])
+        
+def convert_integer_to_label(img, label_colors):
+    """Convert integer to label
+        Args:
+            img(ndarray, H x W): ndarray with image contents, H x W
+            label_colors : list which store the color, integer will transforme to color by the order.
+    """
+    integer_to_label = { i:color for i, color in enumerate(label_colors) }
+    label = np.zeros((img.shape[0], img.shape[1], 3)).astype('uint8')
+    for row in range(img.shape[0]):
+        for col in range(img.shape[1]):
+            key = int(img[row, col])
+            label[row, col] = integer_to_label[key]
+    
+    return label
+
 def count_img_pix(img, color_count):
     """Count pixel number of the image.
     Args:
