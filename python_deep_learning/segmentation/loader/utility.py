@@ -3,6 +3,7 @@ import numpy as np
 import os
 import PIL as pil
 
+from functools import partial
 from multiprocessing import Pool
 from random import shuffle
 
@@ -73,7 +74,8 @@ def write_color_count_sorted(file_location, color_count, color_table, total):
         cc = [[k[0], k[1], k[2], v] for k,v in color_count.items()]        
         cc = sorted(cc, key=lambda color: color[3], reverse = True)
         for k in cc:
-            if (k[0], k[1], k[2]) in color_table:                
+            if (k[0], k[1], k[2]) in color_table:            
+                #r, g, b, occur number, percentage, name
                 f.write("{:3d} {:3d} {:3d} {:10d} {:5f} {}\n".format(k[0], k[1], k[2], k[3], k[3]/total, color_table[(k[0], k[1], k[2])]))
 
 def relabel_func(colors, target_folder, img_location):
@@ -83,7 +85,7 @@ def relabel_func(colors, target_folder, img_location):
     img = np.array(pil.Image.open(img_location))
     for row in range(img.shape[0]):
         for col in range(img.shape[1]):
-            pix = [img[row, col, 0], img[row, col, 1], img[row, col, 2]]                
+            pix = (img[row, col, 0], img[row, col, 1], img[row, col, 2])
             if pix not in colors:
                 img[row, col, :] = 0
                     
