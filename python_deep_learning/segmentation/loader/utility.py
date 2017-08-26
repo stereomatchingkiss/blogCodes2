@@ -2,6 +2,7 @@ import glob
 import numpy as np
 import os
 import PIL as pil
+import re
 
 from functools import partial
 from multiprocessing import Pool
@@ -86,30 +87,19 @@ def count_imgs_pix(img_folder):
         
     return color_count, total
 
-def write_color_count_sorted(file_location, color_count, color_table, total):    
-    """write color count with sorted data, format of output file is 
-    "r g b occur_number occur_probability label_of_the_color". The resutls will
-    be sorted by occur number of the pixel value.
+def read_color_count_sorted(file_location):
+    results = []
+    with open(file_location, 'r') as f:
+        for line in f:
+            info = re.split(' *', line.strip())            
+            info[0] = int(info[0])
+            info[1] = int(info[1])
+            info[2] = int(info[2])
+            info[3] = int(info[3])
+            info[4] = float(info[4])
+            results.append(info)
     
-    Args:
-        color_count: A dictionary with key == (r,g,b), value = occur number of pixel
-    total is the total number of the pixels
-    
-    Example:
-    
-    #read label color read the label color info from camvid dataset,it is a key with format
-    #key : (r,g,b), value : occur number of pixel
-    color_table = camvid_loader.read_label_color("camvid/label_colors.txt")
-    color_count, total = count_imgs_pix("camvid/LabeledApproved_full")
-    write_color_count_sorted("count_color.txt", color_count, color_table, total)
-    """
-    with open(file_location, "w") as f:
-        cc = [[k[0], k[1], k[2], v] for k,v in color_count.items()]        
-        cc = sorted(cc, key=lambda color: color[3], reverse = True)
-        for k in cc:
-            if (k[0], k[1], k[2]) in color_table:            
-                #r, g, b, occur number, percentage, name
-                f.write("{:3d} {:3d} {:3d} {:10d} {:5f} {}\n".format(k[0], k[1], k[2], k[3], k[3]/total, color_table[(k[0], k[1], k[2])]))
+    return results
 
 def relabel_func(colors, target_folder, img_location):
     """implementation details of relabel_color
@@ -139,5 +129,30 @@ def relabel_color(source_folder, target_folder, colors):
     func = partial(relabel_func, colors, target_folder)
     pool.map(func, imgs_location)
     pool.close()
-    pool.join()        
+    pool.join()
+
+def write_color_count_sorted(file_location, color_count, color_table, total):    
+    """write color count with sorted data, format of output file is 
+    "r g b occur_number occur_probability label_of_the_color". The resutls will
+    be sorted by occur number of the pixel value.
     
+    Args:
+        color_count: A dictionary with key == (r,g,b), value = occur number of pixel
+    total is the total number of the pixels
+    
+    Example:
+    
+    #read label color read the label color info from camvid dataset,it is a key with format
+    #key : (r,g,b), value : occur number of pixel
+    color_table = camvid_loader.read_label_color("camvid/label_colors.txt")
+    color_count, total = count_imgs_pix("camvid/LabeledApproved_full")
+    write_color_count_sorted("count_color.txt", color_count, color_table, total)
+    """
+    with open(file_location, "w") as f:
+        cc = [[k[0], k[1], k[2], v] for k,v in color_count.items()]        
+        cc = sorted(cc, key=lambda color: color[3], reverse = True)
+        for k in cc:
+            if (k[0], k[1], k[2]) in color_table:            
+                #r, g, b, occur number, percentage, name
+                f.write("{:3d} {:3d} {:3d} {:10d} {:5f} {}\n".format(k[0], k[1], k[2], k[3], k[3]/total, color_table[(k[0], k[1], k[2])]))
+
