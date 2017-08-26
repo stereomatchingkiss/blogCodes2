@@ -70,12 +70,12 @@ class normalize(object):
         self._mcopy = copy
         self._mmean = np.array(mean)        
         
-    def __call__(self, sample):
+    def __call__(self, raw_img):
         raw = None
         if self._mcopy:
-            raw = sample['raw'].copy()
+            raw = raw_img.copy()
         else:
-            raw = sample['raw']
+            raw = raw_img
             
         if(raw.dtype != 'float32'):
             raw = raw.astype('float32')
