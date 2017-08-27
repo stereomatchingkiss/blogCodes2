@@ -131,14 +131,16 @@ def relabel_color(source_folder, target_folder, colors):
     pool.close()
     pool.join()
 
-def write_color_count_sorted(file_location, color_count, color_table, total):    
+def write_color_count_sorted(save_as, color_count, color_table, total):    
     """write color count with sorted data, format of output file is 
     "r g b occur_number occur_probability label_of_the_color". The resutls will
     be sorted by occur number of the pixel value.
     
     Args:
-        color_count: A dictionary with key == (r,g,b), value = occur number of pixel
-    total is the total number of the pixels
+        save_as(string): self explained
+        color_count(dictionary): A dictionary with key == (r,g,b), value = occur number of pixel
+        color_table(dicitonary): A dictionary with key == (r,g,b), value = label(name of object like car, bus etc) of color        
+        total(int,float): Total number of the pixels of the dataset
     
     Example:
     
@@ -148,7 +150,7 @@ def write_color_count_sorted(file_location, color_count, color_table, total):
     color_count, total = count_imgs_pix("camvid/LabeledApproved_full")
     write_color_count_sorted("count_color.txt", color_count, color_table, total)
     """
-    with open(file_location, "w") as f:
+    with open(save_as, "w") as f:
         cc = [[k[0], k[1], k[2], v] for k,v in color_count.items()]        
         cc = sorted(cc, key=lambda color: color[3], reverse = True)
         for k in cc:
