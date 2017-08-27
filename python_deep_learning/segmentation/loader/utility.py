@@ -88,6 +88,13 @@ def count_imgs_pix(img_folder):
     return color_count, total
 
 def read_color_count_sorted(file_location):
+    """Read the file save by the function "write_color_count_sorted"
+    Args:
+        file_location(string): self explained
+        
+    Return:
+        A list, [r value, g value, b value, total pixels, percentage, name of object]
+    """
     results = []
     with open(file_location, 'r') as f:
         for line in f:
@@ -97,12 +104,13 @@ def read_color_count_sorted(file_location):
             info[2] = int(info[2])
             info[3] = int(info[3])
             info[4] = float(info[4])
+            info[5] = info[5]
             results.append(info)
     
     return results
 
-def relabel_func(colors, target_folder, img_location):
-    """implementation details of relabel_color
+def _relabel_func(colors, target_folder, img_location):
+    """implementation details of relabel_color.
     """
     print(img_location)
     img = np.array(pil.Image.open(img_location))
@@ -117,7 +125,11 @@ def relabel_func(colors, target_folder, img_location):
     img.save(target_folder + img_location.split("/")[-1])
 
 def relabel_color(source_folder, target_folder, colors):
-    """If the color do not exist in colors, make it as void(0,0,0)
+    """This function change the color do not exist in colors as void(0,0,0)
+    Args:
+        source_folder(string): self explained
+        target_folder(string): relabel results will save at here
+        colors(list): list store tuple with rgb value. Like [(12,12,12), (0,0,0)]
     """
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
@@ -126,7 +138,7 @@ def relabel_color(source_folder, target_folder, colors):
     print("img location size:", len(imgs_location))        
     
     pool = Pool(4)
-    func = partial(relabel_func, colors, target_folder)
+    func = partial(_relabel_func, colors, target_folder)
     pool.map(func, imgs_location)
     pool.close()
     pool.join()
