@@ -5,8 +5,9 @@ import re
 
 from loader_base import data_loader
 
-#read label info from label_colors.txt
-def read_label_color(location):    
+def read_label_color(location):
+    """read label info from label_colors.txt from camvid dataset
+    """    
     color_table = {}
     with open(location, "r") as f:
         for line in f:            
@@ -17,7 +18,11 @@ def read_label_color(location):
     
     return color_table
 
-def read_data_location(raw_folder, label_folder):
+def _read_data_location(raw_folder, label_folder):
+    """implemntation details of camvid loader.
+    This function read the files location of raw images in 701_StillsRaw_full
+    and LabeledApproved_full
+    """
     raw_names = []    
     label_names = []    
     valid_types = ['jpg', 'jpeg', 'png', 'bmp']            
@@ -33,4 +38,4 @@ def read_data_location(raw_folder, label_folder):
     return raw_names, label_names
 
 def create_camvid_loader(raw_folder, label_folder, transform = None, normalizer = None, cache = True):
-    return data_loader(raw_folder, label_folder, read_data_location, transform, normalizer, cache)
+    return data_loader(raw_folder, label_folder, _read_data_location, transform, normalizer, cache)
