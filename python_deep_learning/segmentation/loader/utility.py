@@ -4,6 +4,11 @@ import os
 import PIL as pil
 import re
 
+import sys
+sys.path.append('./../transformer')
+
+import transformer.transform_policy as transform_policy
+
 from functools import partial
 from multiprocessing import Pool
 from random import shuffle
@@ -32,6 +37,7 @@ def convert_integer_to_label(img, label_colors):
             img(ndarray, H x W): ndarray with image contents, H x W
             label_colors : list which store the color, integer will transforme to color by the order.
     """
+        
     integer_to_label = { i:color for i, color in enumerate(label_colors) }
     label = np.zeros((img.shape[0], img.shape[1], 3)).astype('uint8')
     for row in range(img.shape[0]):
@@ -41,38 +47,46 @@ def convert_integer_to_label(img, label_colors):
     
     return label
 
-def count_img_pix(img, color_count):
-    """Count pixel number of the image.
+def count_img_pix(img, color_count, label_colors):
+    """Count pixel number in label_colors of the image
+    
     Args:
         img(numpy ndarray): is a numpy array with shape == height,width,channels.
         color_count(dictionary): is a dictionary with key == (r,g,b), value = occur number of pixel
+        label_colors(list) : A list with (r,g,b) values want to count
     
     Example:
+    
     
     img = np.array(pil.Image.open("lena.png"))
     color_count = {}
-    
-    count_img_px(img, color_count)
+    label_colors = utility.read_color_integer(camvid_folder + 'label_integer.txt')
+    count_img_px(img, color_count, label_colors)
     """    
-    for row in range(img.shape[0]):
-        for col in range(img.shape[1]):
-             (r, g, b) = int(img[row,col][0]), int(img[row,col][1]), int(img[row,col][2])
-             if (r, g, b) in color_count:
-                 color_count[(r, g, b)] += 1
-             else:
-                 color_count[(r, g, b)] = 1
     
+    for pix in label_colors:
+        mask = img == pix     
+        if pix in color_count:
+            color_count[pix] += int(mask.sum())
+        else:
+            color_count[pix] = int(mask.sum())
+        
     return color_count, img.shape[0] * img.shape[1]
 
 #count pixel number of the images
-def count_imgs_pix(img_folder):
-    """Count pixel number of the images in the folder.
+def count_imgs_pix(img_folder, label_colors):
+    """Count pixel number in label_colors of the images
+    
+    Args:
+        img_folder(string) : self explained
+        label_colors(list) : A list with (r,g,b) values want to count 
     
     Example:
     
+    label_colors = utility.read_color_integer(camvid_folder + 'label_integer.txt')
     #color_count is a dictionary with key == (r,g,b), value = occur number of pixel
     #total is the total number of the pixels
-    color_count, total = count_imgs_pix("camvid/LabeledApproved_full")
+    color_count, total = count_imgs_pix("camvid/LabeledApproved_full", label_colors)
     """
     color_count = {}
     imgs_name = list(glob.glob(img_folder + "*.png" ))
@@ -82,7 +96,7 @@ def count_imgs_pix(img_folder):
         print(i, ":", name)
         img = pil.Image.open(name)
         img = np.array(img)
-        color_count, pix_num = count_img_pix(img, color_count)
+        color_count, pix_num = count_img_pix(img, color_count, label_colors)
         total = total + pix_num
         
     return color_count, total
@@ -98,7 +112,7 @@ def read_color_count_sorted(file_location):
     results = []
     with open(file_location, 'r') as f:
         for line in f:
-            info = re.split(' *', line.strip())            
+            info = re.split(' +', line.strip())            
             info[0] = int(info[0])
             info[1] = int(info[1])
             info[2] = int(info[2])
@@ -107,6 +121,29 @@ def read_color_count_sorted(file_location):
             info[5] = info[5]
             results.append(info)
     
+    return results
+
+def read_color_integer(file_location):
+    """Read the color value. The file should have following format
+    
+    r g b
+    
+    I use this file to map the r,g,b value to integer, fisrt r,g,b 
+    value will treated as 0, second is 1 and so on
+    
+    Args:
+        file_location(string): self explained
+    
+    Return:
+        A list of (r,g,b)        
+    """
+    results = []
+    with open(file_location) as f:
+        for line in f:
+            info = re.split(' +', line.strip())
+            pix = (int(info[0]), int(info[1]), int(info[2]))
+            results.append(pix)
+            
     return results
 
 def _relabel_func(colors, target_folder, img_location):
@@ -144,7 +181,7 @@ def relabel_color(source_folder, target_folder, colors):
     pool.join()
 
 def write_color_count_sorted(save_as, color_count, color_table, total):    
-    """write color count with sorted data, format of output file is 
+    """write color count will sort the color count and save it into a file with the format 
     "r g b occur_number occur_probability label_of_the_color". The resutls will
     be sorted by occur number of the pixel value.
     
