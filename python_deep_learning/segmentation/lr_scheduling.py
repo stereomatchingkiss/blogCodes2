@@ -1,3 +1,4 @@
+#Originally come from https://github.com/meetshah1995/pytorch-semseg/blob/master/lr_scheduling.py
 def poly_lr_scheduler(optimizer, init_lr, iter, lr_decay_iter=1, max_iter=30000, power=0.9,):
     """Polynomial decay of learning rate
         :param init_lr is base learning rate
