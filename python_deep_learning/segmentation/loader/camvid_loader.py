@@ -10,7 +10,7 @@ def read_label_color(location):
     color_table = {}
     with open(location, "r") as f:
         for line in f:            
-            info = re.split(" |\t*", line.strip())
+            info = re.split(" |\t+", line.strip())
             (r,g,b) = int(info[0]), int(info[1]), int(info[2])
             if (r,g,b) not in color_table:
                 color_table[(r,g,b)] = info[3]
