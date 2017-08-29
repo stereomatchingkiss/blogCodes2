@@ -36,6 +36,8 @@ parser.add_argument('--cache', type = bool, default = True, help = 'True will lo
                     'False will load the images and labels everytime')
 parser.add_argument('--save_model_as', type = str, default = 'link_net', help = 'The name of model being saved')
 parser.add_argument('--save_per_epoch', type = int, default = 200, help = 'Save the model after epoch % args[save_per_epoch] == 0')
+parser.add_argument('--random_crop_height', type = int, default = 320, help = 'Random crop height')
+parser.add_argument('--random_crop_width', type = int, default = 480, help = 'Random crop width')
 
 args = vars(parser.parse_args())
 
@@ -44,7 +46,7 @@ args = vars(parser.parse_args())
 label_colors = utility.read_color_integer(args['camvid_folder'] + "label_integer.txt")
 
 #create loader of camvid dataset
-transform_func = transforms.Compose([transform_policy.random_crop((320, 480)), transform_policy.flip_horizontal(), transform_policy.to_tensor()])
+transform_func = transforms.Compose([transform_policy.random_crop((args['random_crop_height'], args['random_crop_width'])), transform_policy.flip_horizontal(), transform_policy.to_tensor()])
 normalizer = transform_policy.normalize(copy = False)
 loader = camvid_loader.create_camvid_loader(args['camvid_folder'] + "train_raws/", 
                                             args['camvid_folder'] + "train_int_labels/", 
