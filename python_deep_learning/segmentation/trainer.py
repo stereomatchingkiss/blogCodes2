@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import multiprocessing
 import PIL as pil
+import time
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
@@ -78,7 +79,7 @@ def train(model, loader, weights, epoch, lr_rate, save_model_as):
         optimizer = torch.optim.Adam(model.parameters(), lr = lr_rate)
     elif args['optimizer'] == 'RMSProp':
         optimizer = torch.optim.RMSProp(model.parameters(), lr = lr_rate)
-    elif argsp['optimizer'] == 'SGD':
+    elif args['optimizer'] == 'SGD':
         optimizer == torch.optim.SGD(model.parameters(), lr = lr_rate)
     else:
         raise Exception('Wrong optimizer, please pick you optimizer within Adam, RMSProp and SGD')
@@ -122,5 +123,7 @@ def train(model, loader, weights, epoch, lr_rate, save_model_as):
     
     return model
 
-
+start_time = time.time()
 model = train(model, data_loader, weights, args['epoch'], args['init_lr'], args['save_model_as'])
+elapsed_time = time.time() - start_time
+print("elapsed time:", elapsed_time)
