@@ -80,7 +80,7 @@ def train(model, loader, weights, epoch, lr_rate, save_model_as):
     elif args['optimizer'] == 'RMSprop':
         optimizer = torch.optim.RMSprop(model.parameters(), lr = lr_rate)
     elif args['optimizer'] == 'SGD':
-        optimizer == torch.optim.SGD(model.parameters(), lr = lr_rate)
+        optimizer = torch.optim.SGD(model.parameters(), lr = lr_rate)
     else:
         raise Exception('Wrong optimizer, please pick you optimizer within Adam, RMSprop and SGD')
     
