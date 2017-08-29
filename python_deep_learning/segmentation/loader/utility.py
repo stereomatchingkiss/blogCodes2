@@ -1,4 +1,5 @@
 import glob
+import multiprocessing
 import numpy as np
 import os
 import PIL as pil
@@ -13,6 +14,12 @@ from functools import partial
 from multiprocessing import Pool
 from random import shuffle
 
+def _convert_label_to_integer(target_folder, label_colors, label_to_int, src_name):
+    print("label_to_int:", src_name)
+    img = np.array(pil.Image.open(src_name))
+    img = label_to_int(img)
+    pil.Image.fromarray(img.astype('uint8')).save(target_folder + src_name.split("/")[-1])
+
 def convert_label_to_integer(source_folder, target_folder, label_colors):
     """convert label to integer
     Args:
@@ -24,12 +31,12 @@ def convert_label_to_integer(source_folder, target_folder, label_colors):
     label_to_int = transform_policy.label_to_integer(label_colors, 0)
     if not os.path.exists(target_folder):
         os.makedirs(target_folder)
-    
-    for i, src_name in enumerate(list(glob.glob(source_folder + "*.png"))):
-        print(i, src_name)
-        img = np.array(pil.Image.open(src_name))
-        img = label_to_int(img)
-        pil.Image.fromarray(img.astype('uint8')).save(target_folder + src_name.split("/")[-1])
+        
+    pool = Pool(multiprocessing.cpu_count())
+    func = partial(_convert_label_to_integer, target_folder, label_colors, label_to_int)
+    pool.map(func, list(glob.glob(source_folder + "*.png")))
+    pool.close()
+    pool.join()       
         
 def convert_integer_to_label(img, label_colors):
     """Convert integer to label
@@ -174,7 +181,7 @@ def relabel_color(source_folder, target_folder, colors):
     imgs_location = glob.glob(source_folder + "*.png")    
     print("img location size:", len(imgs_location))        
     
-    pool = Pool(4)
+    pool = Pool(multiprocessing.cpu_count())
     func = partial(_relabel_func, colors, target_folder)
     pool.map(func, imgs_location)
     pool.close()
