@@ -31,7 +31,7 @@ parser.add_argument('--camvid_folder', type = str, default = "/home/ramsus/Qt/co
 parser.add_argument('--epoch', type = int, default = 800, help = 'Number of epoch')
 parser.add_argument('--batch_size', type = int, default = 16, help = 'Batch of training set')
 parser.add_argument('--init_lr', type = float, default = 5e-4, help = 'Initial learning rate')
-parser.add_argument('--optimizer', type = str, default = "Adam", help = 'Optimizer type, could be Adam, RMSProp or SGD')
+parser.add_argument('--optimizer', type = str, default = "Adam", help = 'Optimizer type, could be Adam, RMSprop or SGD')
 parser.add_argument('--cache', type = bool, default = True, help = 'True will load and cache the training images and labels in ram.'
                     'False will load the images and labels everytime')
 parser.add_argument('--save_model_as', type = str, default = 'link_net', help = 'The name of model being saved')
@@ -77,12 +77,12 @@ def train(model, loader, weights, epoch, lr_rate, save_model_as):
     best_model_epoch = 0
     if args['optimizer'] == 'Adam':
         optimizer = torch.optim.Adam(model.parameters(), lr = lr_rate)
-    elif args['optimizer'] == 'RMSProp':
-        optimizer = torch.optim.RMSProp(model.parameters(), lr = lr_rate)
+    elif args['optimizer'] == 'RMSprop':
+        optimizer = torch.optim.RMSprop(model.parameters(), lr = lr_rate)
     elif args['optimizer'] == 'SGD':
         optimizer == torch.optim.SGD(model.parameters(), lr = lr_rate)
     else:
-        raise Exception('Wrong optimizer, please pick you optimizer within Adam, RMSProp and SGD')
+        raise Exception('Wrong optimizer, please pick you optimizer within Adam, RMSprop and SGD')
     
     #plot_2d update the loss graph every epoch
     plot = visualize.plot_2d(min_x = 0, max_x = epoch)    
