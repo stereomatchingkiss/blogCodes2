@@ -18,15 +18,10 @@ from random import shuffle
 """
 
 parser = argparse.ArgumentParser(description = 'Hyper params')
+
 parser.add_argument('--camvid_folder', type = str, default = "/home/ramsus/Qt/computer_vision_dataset/segmentation/camvid/",
                     help = 'This folder should contains the files and folders clone from https://github.com/mostafaizz/camvid')
 
-args = vars(parser.parse_args())
-
-parser.add_argument('--raw_pics_folder', type = str, default = args['camvid_folder'] + '701_StillsRaw_full/',
-                    help = 'Path to the raw images')
-parser.add_argument('--label_pics_folder', type = str, default = args['camvid_folder'] + 'LabeledApproved_full/',
-                    help = 'Path to the label images')
 parser.add_argument('--train_size', type = int, default = 368, 
                     help = 'Size of training data after split')
 parser.add_argument('--copy', type = bool, default = True,
