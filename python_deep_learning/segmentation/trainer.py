@@ -31,26 +31,36 @@ parser.add_argument('--camvid_folder', type = str, default = "/home/ramsus/Qt/co
 parser.add_argument('--epoch', type = int, default = 800, help = 'Number of epoch')
 parser.add_argument('--batch_size', type = int, default = 16, help = 'Batch of training set')
 parser.add_argument('--init_lr', type = float, default = 5e-4, help = 'Initial learning rate')
-parser.add_argument('--optimizer', type = str, default = "Adam", help = 'Optimizer type, could be Adam, RMSprop or SGD')
-parser.add_argument('--cache', type = bool, default = True, help = 'True will load and cache the training images and labels in ram.'
+parser.add_argument('--optimizer', type = str, default = "RMSprop", help = 'Optimizer type, could be Adam, RMSprop or SGD')
+parser.add_argument('--cache', type = str, default = 'y', help = 'True will load and cache the training images and labels in ram.'
                     'False will load the images and labels everytime')
 parser.add_argument('--save_model_as', type = str, default = 'link_net', help = 'The name of model being saved')
 parser.add_argument('--save_per_epoch', type = int, default = 200, help = 'Save the model after epoch % args[save_per_epoch] == 0')
 parser.add_argument('--random_crop_height', type = int, default = 320, help = 'Random crop height')
 parser.add_argument('--random_crop_width', type = int, default = 480, help = 'Random crop width')
+parser.add_argument('--weighthing', type = str, default = 'y', help = 'True will adopt weights on loss function and vice versa')
 
 args = vars(parser.parse_args())
+
+def str_to_bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 #read_color_integer read the rgb value from label_integer.txt, this file store the rgb
 #value according to the order of label.
 label_colors = utility.read_color_integer(args['camvid_folder'] + "label_integer.txt")
 
-#create loader of camvid dataset
-transform_func = transforms.Compose([transform_policy.random_crop((args['random_crop_height'], args['random_crop_width'])), transform_policy.flip_horizontal(), transform_policy.to_tensor()])
+#create loader of camvid dataset    
+random_crop = transform_policy.random_crop((args['random_crop_height'], args['random_crop_width']), copy = str_to_bool(args['cache']))
+transform_func = transforms.Compose([random_crop, transform_policy.flip_horizontal(), transform_policy.to_tensor()])
 normalizer = transform_policy.normalize(copy = False)
 loader = camvid_loader.create_camvid_loader(args['camvid_folder'] + "train_raws/", 
                                             args['camvid_folder'] + "train_int_labels/", 
-                                            transform_func, normalizer, cache = args['cache'])
+                                            transform_func, normalizer, cache = str_to_bool(args['cache']))
 
 #create link net model
 model = segment_models.link_net(len(label_colors))
@@ -61,27 +71,32 @@ color_info = utility.read_color_count_sorted(args['camvid_folder'] + 'color_coun
 color_info = { (data[0], data[1], data[2]): data[4] for data in color_info}
 
 #build the weights matrix according to the formula 1/ln(1.02 + w)
-weights = []
-for color in label_colors:
-    w = color_info[color]
-    w = 1 / math.log(1.02 + w, 2)
-    weights.append(w)
+weights = None
+if str_to_bool(args['weighthing']):
+    print("set weights")
+    weights = []
+    for color in label_colors:
+        w = color_info[color]
+        w = 1 / math.log(1.02 + w, 2)
+        weights.append(w)
 
-weights = np.array(weights)
-weights = torch.from_numpy(weights.astype('float32'))
+    weights = np.array(weights)
+    weights = torch.from_numpy(weights.astype('float32')).cuda()
+else:
+    print("zero weights")
 
 def train(model, loader, weights, epoch, lr_rate, save_model_as):    
     model.cuda()
     model.train(True)
     best_loss = 99999999
-    loss_func = loss_2d.cross_entropy_loss_2d(weights.cuda())
+    loss_func = loss_2d.cross_entropy_loss_2d(weights)
     optimizer = None
     best_model_epoch = 0
-    if args['optimizer'] == 'Adam':
+    if args['optimizer'].lower() == 'adam':
         optimizer = torch.optim.Adam(model.parameters(), lr = lr_rate)
-    elif args['optimizer'] == 'RMSprop':
+    elif args['optimizer'].lower() == 'rmsprop':
         optimizer = torch.optim.RMSprop(model.parameters(), lr = lr_rate)
-    elif args['optimizer'] == 'SGD':
+    elif args['optimizer'].lower() == 'sgd':
         optimizer = torch.optim.SGD(model.parameters(), lr = lr_rate)
     else:
         raise Exception('Wrong optimizer, please pick you optimizer within Adam, RMSprop and SGD')
@@ -126,6 +141,6 @@ def train(model, loader, weights, epoch, lr_rate, save_model_as):
     return model
 
 start_time = time.time()
-model = train(model, data_loader, weights, args['epoch'], args['init_lr'], args['save_model_as'])
+train(model, data_loader, weights, args['epoch'], args['init_lr'], args['save_model_as'])
 elapsed_time = time.time() - start_time
 print("elapsed time:", elapsed_time)
