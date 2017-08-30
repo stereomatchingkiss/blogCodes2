@@ -70,15 +70,26 @@ def count_img_pix(img, color_count, label_colors):
     label_colors = utility.read_color_integer(camvid_folder + 'label_integer.txt')
     count_img_px(img, color_count, label_colors)
     """    
+            
+    for row in range(img.shape[0]):
+        for col in range(img.shape[1]):
+            pix = img[row, col]
+            pix = (pix[0], pix[1], pix[2])
+            if pix in color_count:
+                color_count[pix] += 1
+            else:
+                color_count[pix] = 1    
     
+    """
     for pix in label_colors:
         mask = img == pix     
         if pix in color_count:
             color_count[pix] += int(mask.sum())
         else:
             color_count[pix] = int(mask.sum())
-        
-    return color_count, img.shape[0] * img.shape[1]
+    """
+    
+    return color_count, img.shape[0] * img.shape[1]    
 
 #count pixel number of the images
 def count_imgs_pix(img_folder, label_colors):
@@ -104,8 +115,15 @@ def count_imgs_pix(img_folder, label_colors):
         img = pil.Image.open(name)
         img = np.array(img)
         color_count, pix_num = count_img_pix(img, color_count, label_colors)
+        print("pix num:", pix_num)
         total = total + pix_num
         
+    print("total:", total)
+    sum_percentage = 0
+    for k,v in color_count.items():
+        print("percentage:", v/total, "pix num:", v)
+        sum_percentage += v/total
+    print("sum percentage:", sum_percentage)
     return color_count, total
 
 def read_color_count_sorted(file_location):
