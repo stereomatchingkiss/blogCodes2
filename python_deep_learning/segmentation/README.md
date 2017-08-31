@@ -36,6 +36,13 @@ To study more details, please check the post [Let us create a semantic segmentat
 
 1. python3 test.py --camvid_folder /your_path/camvid/ --model /your_path2/model_name
 
+# Model
+
+[Model trained with 368 images, 12 labels](
+https://mega.nz/#!lhEwlJCT!YIwOLPKqF5QahbZ8EtOZKQQ-qQ_GZGBmxZ31SVgxwTI
+).
+
+
 # To do
 
 1. Train on larger dataset like cityscapes(Have to find another dataset because I do not have the right to access cityscapes).
