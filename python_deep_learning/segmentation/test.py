@@ -23,7 +23,7 @@ parser.add_argument('--input_height', type = int, default = 0,
                     'If you specify height, do not forget width either, else the height will remain the same as original height')
 parser.add_argument('--input_width', type = int, default = 0, 
                     help = 'width of input image, by default it is same as the original width of input image.'
-                    'If you specify height, do not forget width either, else the width will remain the same as original width')
+                    'If you specify width, do not forget height either, else the width will remain the same as original width')
 
 args = vars(parser.parse_args())
         
