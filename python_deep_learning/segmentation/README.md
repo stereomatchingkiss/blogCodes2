@@ -48,6 +48,11 @@ https://mega.nz/#!lhEwlJCT!YIwOLPKqF5QahbZ8EtOZKQQ-qQ_GZGBmxZ31SVgxwTI
 1. Train on larger dataset like cityscapes(Have to find another dataset because I do not have the right to access cityscapes).
 2. Implement another segmentation algorithm
 3. Improve result of LinkNet, like using dilated convolution to replace normal convolution
+4. Optimize ultra slow for loop by cython(this part is much easier to be done by c++ if you ask me,
+the reason I prefer cython is I want to keep the project easier to install)
+5. Figure out how to ignore void category when training
+6. Figure out how to get rid of void category when testing
+7. Use dilated convolution to replace normal convolution in encoder
 
 If you liked this article, please help others find it by clicking the star icon above. Thanks a lot!
 
