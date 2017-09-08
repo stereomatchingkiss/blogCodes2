@@ -59,6 +59,8 @@ void object_detector::detect(QObject *qml_cam)
                 qDebug()<<"new qcamera";
                 cam_capture_ = new QCameraImageCapture(camera, this);
                 cam_capture_->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
+                bool const support_dest = cam_capture_->isCaptureDestinationSupported(QCameraImageCapture::CaptureToBuffer);
+                emit message(QString("support capture to buffer:%1").arg(support_dest));
                 qDebug()<<"support capture to buffer:"<<
                           cam_capture_->isCaptureDestinationSupported(QCameraImageCapture::CaptureToBuffer);
                 connect(cam_capture_, &QCameraImageCapture::imageCaptured, this, &object_detector::image_capture);
@@ -104,9 +106,9 @@ void object_detector::paint(QPainter *painter)
 {
     if(!buffer_.isNull()){
         qDebug()<<"draw image";
-        painter->drawImage(buffer_.rect(), buffer_);
-        emit objectDetected();
-        buffer_ = QImage();
+        QPoint const point((width() - buffer_.width())/2, (height() - buffer_.height()) / 2);
+        painter->drawImage(point, buffer_);
+        emit objectDetected();        
     }else{
         qDebug()<<"buffer is null";
     }
@@ -137,6 +139,7 @@ void object_detector::image_capture(int id, QImage const &img)
 
     future_ = QtConcurrent::run(QThreadPool::globalInstance(), [this, img]()
     {
+        buffer_ = QImage();
         if(buffer_.format() != QImage::Format_RGB888){
             buffer_ = img.convertToFormat(QImage::Format_RGB888);
         }else{

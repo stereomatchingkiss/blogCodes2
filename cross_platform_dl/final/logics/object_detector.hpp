@@ -25,7 +25,7 @@ public:
     void paint(QPainter *painter);
 
 signals:
-    void message();
+    void message(QString msg);
     void objectDetected();
 
 private:
