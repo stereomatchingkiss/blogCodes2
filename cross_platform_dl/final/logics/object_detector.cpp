@@ -20,10 +20,14 @@ object_detector::object_detector(QQuickItem *parent) :
 {
     connect(&watcher_, &QFutureWatcher<void>::finished, [this]()
     {
-        update();
+        if(detector_){
+            update();
+        }else{
+            emit message(tr("Cannot detect object because detector cannot be opened"));
+        }
     });
 
-    init();    
+    init();
 
     try{
 #ifdef Q_OS_WIN32
@@ -41,6 +45,7 @@ object_detector::object_detector(QQuickItem *parent) :
 #endif
     }catch(std::exception const &ex){
         qDebug()<<"cannot new detector, exception:"<<ex.what();
+        emit message(tr("Cannot detect object because detector cannot be opened"));
     }
 }
 
@@ -77,12 +82,12 @@ QString object_detector::copy_asset_file(QString const &source)
 
 void object_detector::detect(QObject *qml_cam)
 {
-    qDebug()<<"detection start";    
+    qDebug()<<"detection start";
     if(qml_cam){
         qDebug()<<"qml camera is valid";
         QCamera *camera = qvariant_cast<QCamera*>(qml_cam->property("mediaObject"));
         if(camera){
-            qDebug()<<"cam is valid";            
+            qDebug()<<"cam is valid";
             if(!cam_capture_){
                 qDebug()<<"new qcamera";
                 cam_capture_ = new QCameraImageCapture(camera, this);
@@ -161,9 +166,9 @@ void object_detector::draw_detect_results(const ssd_detector::result_type &resul
                 rectangle(inout, rect, it->second);
             }else{
                 rectangle(inout, rect, Scalar(0, 255, 0));
-            }            
+            }
             putText(inout, pair.first, Point(rect.x, rect.y - 10),
-                    FONT_HERSHEY_SIMPLEX, 2, Scalar(0,0,255), 2);            
+                    FONT_HERSHEY_SIMPLEX, 2, Scalar(0,0,255), 2);
         }
     }
 }
@@ -174,16 +179,18 @@ void object_detector::image_capture(int id, QImage const &img)
 
     future_ = QtConcurrent::run(QThreadPool::globalInstance(), [this, img]()
     {
-        buffer_ = QImage();
-        if(buffer_.format() != QImage::Format_RGB888){
-            buffer_ = img.convertToFormat(QImage::Format_RGB888);
-        }else{
-            buffer_ = img.copy();
+        if(detector_){
+            buffer_ = QImage();
+            if(buffer_.format() != QImage::Format_RGB888){
+                buffer_ = img.convertToFormat(QImage::Format_RGB888);
+            }else{
+                buffer_ = img.copy();
+            }
+            buffer_ = buffer_.scaled(static_cast<int>(width()), static_cast<int>(height()), Qt::AspectRatioMode::KeepAspectRatio);
+            cv::Mat mat = cv::Mat(buffer_.height(), buffer_.width(), CV_8UC3, buffer_.bits(), buffer_.bytesPerLine());
+            auto const results = detector_->detect(mat, 0.5);
+            draw_detect_results(results, mat);
         }
-        buffer_ = buffer_.scaled(static_cast<int>(width()), static_cast<int>(height()), Qt::AspectRatioMode::KeepAspectRatio);                
-        cv::Mat mat = cv::Mat(buffer_.height(), buffer_.width(), CV_8UC3, buffer_.bits(), buffer_.bytesPerLine());        
-        auto const results = detector_->detect(mat, 0.5);        
-        draw_detect_results(results, mat);        
     });
     watcher_.setFuture(future_);
 }
