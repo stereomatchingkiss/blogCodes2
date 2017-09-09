@@ -21,6 +21,7 @@ public:
     ~object_detector();
 
     Q_INVOKABLE void detect(QObject *qml_cam);
+    Q_INVOKABLE void clear_graph();
 
     void paint(QPainter *painter);
 
@@ -29,8 +30,9 @@ signals:
     void objectDetected();
 
 private:
+    QString copy_asset_file(QString const &source);
     void draw_detect_results(ssd_detector::result_type const &results,
-                             cv::Mat &inout) const;
+                             cv::Mat &inout);
     void image_capture(int id, QImage const &img);
 
     QImage buffer_;

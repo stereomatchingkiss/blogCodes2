@@ -6,7 +6,9 @@
 #include <QCameraImageCapture>
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QPainter>
+#include <QStandardPaths>
 #include <QtConcurrent/QtConcurrentRun>
 
 #include <opencv2/highgui.hpp>
@@ -21,7 +23,7 @@ object_detector::object_detector(QQuickItem *parent) :
         update();
     });
 
-    init();
+    init();    
 
     try{
 #ifdef Q_OS_WIN32
@@ -47,6 +49,32 @@ object_detector::~object_detector()
 
 }
 
+QString object_detector::copy_asset_file(QString const &source)
+{
+    if(QFile::exists(source)){
+        qDebug()<<source<<" exist";
+        QString const app_location = QStandardPaths::writableLocation(QStandardPaths::StandardLocation::AppDataLocation);
+        QString const target(app_location + "/" + QFileInfo(source).fileName());
+        if(!QFile::exists(target)){
+            bool const can_copy = QFile::copy(source, app_location + "/" + QFileInfo(source).fileName());
+            if(can_copy){
+                qDebug()<<"can copy file("<<source<<"):"<<can_copy;
+                return target;
+            }else{
+                qDebug()<<"cannot copy the file";
+            }
+        }else{
+            qDebug()<<"target:"<<target<<" already exist";
+            return target;
+        }
+    }else{
+        qDebug()<<"cannot open:"<<source;
+    }
+
+    return {};
+}
+
+
 void object_detector::detect(QObject *qml_cam)
 {
     qDebug()<<"detection start";
@@ -66,6 +94,7 @@ void object_detector::detect(QObject *qml_cam)
                 connect(cam_capture_, &QCameraImageCapture::imageCaptured, this, &object_detector::image_capture);
                 connect(cam_capture_, &QCameraImageCapture::imageSaved, [](int, QString const &file_name)
                 {
+                    qDebug()<<"save image at:"<<file_name;
                     QFile::remove(file_name);
                 });
                 cam_capture_->capture();
@@ -75,6 +104,12 @@ void object_detector::detect(QObject *qml_cam)
             }
         }
     }
+}
+
+void object_detector::clear_graph()
+{
+    buffer_ = QImage();
+    update();
 }
 
 void object_detector::init()
@@ -108,13 +143,13 @@ void object_detector::paint(QPainter *painter)
         qDebug()<<"draw image";
         QPoint const point((width() - buffer_.width())/2, (height() - buffer_.height()) / 2);
         painter->drawImage(point, buffer_);
-        emit objectDetected();        
+        emit objectDetected();
     }else{
-        qDebug()<<"buffer is null";
+        painter->fillRect(QRect(0, 0, width(), height()), QColor(255,255,255));
     }
 }
 
-void object_detector::draw_detect_results(const ssd_detector::result_type &results, cv::Mat &inout) const
+void object_detector::draw_detect_results(const ssd_detector::result_type &results, cv::Mat &inout)
 {
     using namespace cv;
     for(auto const &pair : results.first){
@@ -126,9 +161,10 @@ void object_detector::draw_detect_results(const ssd_detector::result_type &resul
                 rectangle(inout, rect, it->second);
             }else{
                 rectangle(inout, rect, Scalar(0, 255, 0));
-            }
-            putText(inout, pair.first, Point(rect.x, rect.y - results.second.y - 20),
-                    FONT_HERSHEY_SIMPLEX, 2, Scalar(0,0,255));
+            }            
+            putText(inout, pair.first, Point(rect.x, rect.y - 10),
+                    FONT_HERSHEY_SIMPLEX, 2, Scalar(0,0,255));            
+            emit message(QString("Detect %1").arg(pair.first.c_str()));
         }
     }
 }
@@ -150,9 +186,13 @@ void object_detector::image_capture(int id, QImage const &img)
         qDebug()<<"to mat";
         cv::Mat mat = cv::Mat(buffer_.height(), buffer_.width(), CV_8UC3, buffer_.bits(), buffer_.bytesPerLine());
         qDebug()<<"detect start";
-        auto const results = detector_->detect(mat);
+        auto const results = detector_->detect(mat, 0.5);
         qDebug()<<"draw detect results";
         draw_detect_results(results, mat);
+        //QString const app_location = QStandardPaths::writableLocation(QStandardPaths::writableLocation::GenericDataLocation);
+        //bool const can_save = buffer_.save(app_location + "/0.jpg");
+        //emit message(QString("save at:%1/0.jpg, can save:%2").arg(app_location).arg(can_save));
+        //qDebug()<<"save at:"<<(app_location + "/0.jpg")<<", can save:"<<can_save;
     });
     watcher_.setFuture(future_);
 }
