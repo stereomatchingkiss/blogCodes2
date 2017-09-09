@@ -1,10 +1,10 @@
 import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 
-Text
-{
-    wrapMode: Text.Wrap
+MessageBoard{
 
-    text: "<b>LightDetector</b><br>" +
+    text: "<b>LightDetector helps</b><br>" +
           "<br>" +
           "<br>" +
           "This application take a picture and detect location of 20 different objects." +
@@ -13,7 +13,7 @@ Text
           "<br>" +
           "motorbike, person, pottedplant, sheep, sofa, train, tvmonitor." +
           "<br>" +
-          "It is aIt is aimed to help C++/Qt/QML/OpenCV developers by showing an example project how to " +
+          "It is aimed to help C++/Qt/QML/OpenCV developers by showing an example project how to " +
           "<br>" +
           "<br>" +
           "1 : Access camera frame of qml camera" +
@@ -46,8 +46,7 @@ Text
           "<br>" +
           "All icons used in this application are downloaded from <a href=\"https://openclipart.org/\">openclipart</a>."
 
-    onLinkActivated:
-    {
+    onLinkActivated:{
         if(link === "settings"){
             tab_bar.currentIndex = 2
         }else if(link === "camera"){
@@ -56,4 +55,5 @@ Text
             Qt.openUrlExternally(link)
         }
     }
+
 }

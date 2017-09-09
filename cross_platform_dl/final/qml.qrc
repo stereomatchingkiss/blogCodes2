@@ -10,5 +10,6 @@
         <file>HelpMenu.qml</file>
         <file>Settings.qml</file>
         <file>images/settings.png</file>
+        <file>MessageBoard.qml</file>
     </qresource>
 </RCC>
