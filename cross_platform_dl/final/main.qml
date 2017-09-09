@@ -77,6 +77,7 @@ ApplicationWindow {
         {
             text: qsTr("Settings")
             height: parent.height
+            enabled: false
             contentItem: Image
             {
                 anchors.fill: parent

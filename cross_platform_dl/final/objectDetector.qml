@@ -76,6 +76,7 @@ Page {
 
     Component.onCompleted: {
         btn.enabled = true
+        tab_bar.itemAt(2).enabled = true
     }
 
     Column{
