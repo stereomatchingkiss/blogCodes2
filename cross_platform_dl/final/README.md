@@ -14,8 +14,21 @@ train, tvmonitor.
 6. Draw predicted results by QQuickPaintedItem
 
   For all other questions, open an issue at github or send me an email thamngapwei@gmail.com
+  
+# Preview
 
-#Dependencies
+<img src="https://s26.postimg.org/po0jwg33d/Screenshot_2017-09-10-01-49-40.png" height="220px">
+<img src="https://s26.postimg.org/jcvcg11ux/Screenshot_2017-09-10-03-14-12.png" height="220px">
+<img src="https://s26.postimg.org/caxetty95/Screenshot_2017-09-10-03-14-17.png" height="220px">
+
+
+# Icons
+
+[Link of icons](
+https://mega.nz/#!Y9E21DAI!rpn0Gv6tjAi2E1TOccPPyCbDmaNlZnUtnuhneM4CdeE
+)
+
+# Dependencies
 
 1. Qt5.9.1
 2. opencv3.3
