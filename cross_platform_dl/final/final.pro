@@ -2,23 +2,20 @@ QT += qml quick multimedia
 
 CONFIG += c++11
 
-INCLUDEPATH += ../../..
+TARGET = LightDetector
 
 include(../../../pri/cv_dev.pri)
 
 linux: android:{
 
-#ANDROID_PACKAGE_SOURCE_DIR = android
-#DISTFILES += $$ANDROID_PACKAGE_SOURCE_DIR/assets
-#DISTFILES += $$ANDROID_PACKAGE_SOURCE_DIR/assets/MobileNetSSD_deploy.caffemodel
-#DISTFILES += $$ANDROID_PACKAGE_SOURCE_DIR/assets/MobileNetSSD_deploy.prototxt
+ANDROID_PACKAGE_SOURCE_DIR = android
+DISTFILES += $$ANDROID_PACKAGE_SOURCE_DIR/assets
 
 }
 
 
 SOURCES += main.cpp \
-    logics/ssd_detector.cpp \    
-    ../../../ocv_libs/qt/mat_and_qimage.cpp \
+    logics/ssd_detector.cpp \
     logics/object_detector.cpp
 
 RESOURCES += qml.qrc
@@ -56,6 +53,37 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+QMAKE_TARGET_DESCRIPTION = "This application helps you take a picture, apply SSDMobileNet to detect 20 objects"
+
