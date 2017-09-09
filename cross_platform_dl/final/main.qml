@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
     width: Qt.platform.os == "windows" ? 640 : win.width
     height: Qt.platform.os == "windows" ? 480 : win.height
-    title: qsTr("Hello World")
+    title: qsTr("LightDetector")
 
     SwipeView {
         id: swipe_view
@@ -19,11 +19,21 @@ ApplicationWindow {
         currentIndex: tab_bar.currentIndex
 
         ObjectDetector{
+            id: obj_detector
 
+            confident: settings.confident_value
         }
 
         HelpMenu{
 
+        }
+
+        Settings{
+            id : settings
+            onChangeCamera: {
+                console.log("Change camera")
+                obj_detector.changeCamera(device_id)
+            }
         }
 
         Privacy{
@@ -49,10 +59,6 @@ ApplicationWindow {
                 fillMode: Qt.KeepAspectRatio
                 source: "qrc:/images/camera.png"
             }
-            onClicked: {
-                //stack_view.pop()
-                //stack_view.push("qrc:/ObjectDetector.qml")
-            }
         }
 
         TabButton
@@ -65,9 +71,18 @@ ApplicationWindow {
                 fillMode: Qt.KeepAspectRatio
                 source: "qrc:/images/helps.png"
             }
-            onClicked: {
-                //stack_view.pop()
-                //stack_view.push("qrc:/HelpMenu.qml")
+        }
+
+        TabButton
+        {
+            text: qsTr("Settings")
+            height: parent.height
+            contentItem: Image
+            {
+                anchors.fill: parent
+                fillMode: Qt.KeepAspectRatio
+                source: "qrc:/images/settings.png"
+                opacity: parent.enabled ? 1.0 : 0.5
             }
         }
 
@@ -80,10 +95,6 @@ ApplicationWindow {
                 anchors.fill: parent
                 fillMode: Qt.KeepAspectRatio
                 source: "qrc:/images/privacy.png"
-            }
-            onClicked: {
-                //stack_view.pop()
-                //stack_view.push("qrc:/Privacy.qml")
             }
         }
     }
