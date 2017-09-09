@@ -1,9 +1,5 @@
 #include "ssd_detector.hpp"
 
-#include <QDebug>
-
-#include <type_traits>
-
 using namespace cv;
 using namespace std;
 
@@ -54,24 +50,17 @@ ssd_detector::result_type ssd_detector::detect(const cv::Mat &input, float min_c
     constexpr float in_scale_factor = 0.007843f;
     constexpr float mean_val = 127.5;
 
-    //qDebug()<<"blob from image";
     Mat const input_blob = dnn::blobFromImage(input, in_scale_factor, cv::Size(in_width, in_height),
                                               mean_val, swap_rb_);
-    //qDebug()<<"set input blob";
-    net_.setInput(input_blob, "data");
-    //qDebug()<<"detection out";
-    Mat detection = net_.forward("detection_out");
-    //qDebug()<<"create detection mat";
-    Mat detection_mat(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());
-    //qDebug()<<"center crop";
-    Mat const crop_input = input(center_crop_rect(input.size()));
-    //qDebug()<<"shift points";
+    net_.setInput(input_blob, "data");    
+    Mat detection = net_.forward("detection_out");    
+    Mat detection_mat(detection.size[2], detection.size[3], CV_32F, detection.ptr<float>());    
+    Mat const crop_input = input(center_crop_rect(input.size()));    
     Point const shift = Point((input.cols - crop_input.cols) / 2,
                               (input.rows - crop_input.rows) / 2);
 
     result_type::first_type mapper;
-    for(int i = 0; i < detection_mat.rows; ++i){
-        //qDebug()<<"detection mat row:"<<i;
+    for(int i = 0; i < detection_mat.rows; ++i){        
         float const confidence = detection_mat.at<float>(i, 2);
         if(confidence > min_confident){            
             size_t const object_class = static_cast<size_t>(detection_mat.at<float>(i, 1));
@@ -91,9 +80,7 @@ ssd_detector::result_type ssd_detector::detect(const cv::Mat &input, float min_c
                 mapper.emplace(std::make_pair(class_names_[object_class], std::move(values)));
             }
         }
-    }
-
-    //qDebug()<<"all done";
+    }    
 
     return std::make_pair(std::move(mapper), shift);
 }

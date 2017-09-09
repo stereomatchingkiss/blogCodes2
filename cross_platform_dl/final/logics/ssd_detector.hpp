@@ -3,7 +3,6 @@
 
 #include <opencv2/dnn.hpp>
 
-#include <functional>
 #include <map>
 #include <vector>
 
