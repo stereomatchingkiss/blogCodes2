@@ -20,7 +20,7 @@ public:
     explicit object_detector(QQuickItem *parent = nullptr);
     ~object_detector();
 
-    Q_INVOKABLE void detect(QObject *qml_cam);
+    Q_INVOKABLE void detect(QObject *qml_cam, float confident, QString const &device_id);
     Q_INVOKABLE void clear_graph();
 
     void paint(QPainter *painter);
@@ -33,15 +33,17 @@ private:
     QString copy_asset_file(QString const &source);
     void draw_detect_results(ssd_detector::result_type const &results,
                              cv::Mat &inout);
+    void init();
     void image_capture(int id, QImage const &img);
 
     QImage buffer_;
     QCameraImageCapture *cam_capture_;
+    float confident_ = 0.2f;
+    QString device_id_;
     QFuture<void> future_;
     std::unique_ptr<ssd_detector> detector_;
     std::map<QString, cv::Scalar> name_to_color_;
-    QFutureWatcher<void> watcher_;
-    void init();
+    QFutureWatcher<void> watcher_;    
 };
 
 #endif // OBJECT_DETECTOR_HPP

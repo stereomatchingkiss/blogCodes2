@@ -54,6 +54,42 @@ object_detector::~object_detector()
 
 }
 
+void object_detector::detect(QObject *qml_cam, float confident, const QString &device_id)
+{
+    qDebug()<<"detection start";
+    if(qml_cam){
+        confident_ = confident;
+        qDebug()<<"qml camera is valid";
+        QCamera *camera = qvariant_cast<QCamera*>(qml_cam->property("mediaObject"));
+        if(camera){
+            qDebug()<<"cam is valid";
+            if(!cam_capture_  || device_id_ != device_id){
+                qDebug()<<"new qcamera";
+                device_id_ = device_id;
+                if(cam_capture_){
+                    cam_capture_->deleteLater();
+                }
+                cam_capture_ = new QCameraImageCapture(camera, this);
+                cam_capture_->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
+                connect(cam_capture_, &QCameraImageCapture::imageCaptured, this, &object_detector::image_capture);
+                connect(cam_capture_, &QCameraImageCapture::imageSaved, [](int, QString const &file_name)
+                {
+                    qDebug()<<"save image at:"<<file_name;
+                    QFile::remove(file_name);
+                });
+                cam_capture_->capture();
+            }else{
+                qDebug()<<"start capture";
+                cam_capture_->capture();
+            }
+        }else{
+            emit message(tr("Cannot open camera"));
+        }
+    }else{
+        emit message(tr("Cannot open device camera"));
+    }
+}
+
 QString object_detector::copy_asset_file(QString const &source)
 {
     if(QFile::exists(source)){
@@ -77,38 +113,6 @@ QString object_detector::copy_asset_file(QString const &source)
     }
 
     return {};
-}
-
-
-void object_detector::detect(QObject *qml_cam)
-{
-    qDebug()<<"detection start";
-    if(qml_cam){
-        qDebug()<<"qml camera is valid";
-        QCamera *camera = qvariant_cast<QCamera*>(qml_cam->property("mediaObject"));
-        if(camera){
-            qDebug()<<"cam is valid";
-            if(!cam_capture_){
-                qDebug()<<"new qcamera";
-                cam_capture_ = new QCameraImageCapture(camera, this);
-                cam_capture_->setCaptureDestination(QCameraImageCapture::CaptureToBuffer);
-                connect(cam_capture_, &QCameraImageCapture::imageCaptured, this, &object_detector::image_capture);
-                connect(cam_capture_, &QCameraImageCapture::imageSaved, [](int, QString const &file_name)
-                {
-                    qDebug()<<"save image at:"<<file_name;
-                    QFile::remove(file_name);
-                });
-                cam_capture_->capture();
-            }else{
-                qDebug()<<"start capture";
-                cam_capture_->capture();
-            }
-        }else{
-            emit message(tr("Cannot open camera"));
-        }
-    }else{
-        emit message(tr("Cannot open device camera"));
-    }
 }
 
 void object_detector::clear_graph()
@@ -188,7 +192,7 @@ void object_detector::image_capture(int id, QImage const &img)
             }
             buffer_ = buffer_.scaled(static_cast<int>(width()), static_cast<int>(height()), Qt::AspectRatioMode::KeepAspectRatio);
             cv::Mat mat = cv::Mat(buffer_.height(), buffer_.width(), CV_8UC3, buffer_.bits(), buffer_.bytesPerLine());
-            auto const results = detector_->detect(mat, 0.5);
+            auto const results = detector_->detect(mat, confident_);
             draw_detect_results(results, mat);
         }
     });

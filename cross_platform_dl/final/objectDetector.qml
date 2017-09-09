@@ -5,27 +5,37 @@ import QtMultimedia 5.9
 
 import CVLogics 1.0
 
-Item {
+Page {
     id: obj
+
+    property real confident : 0.2
+
+    function changeCamera(device_id){
+        if(camera.deviceId !== device_id){
+            camera.stop()
+            camera.deviceId = device_id
+            camera.start()
+        }
+    }
 
     Camera{
         id: camera
     }
 
     Dialog {
-         id: dialog
-         modal: true
-         standardButtons: Dialog.Ok
-         x: (parent.width - width) / 2
-         y: (parent.height - height) / 2
+        id: dialog
+        modal: true
+        standardButtons: Dialog.Ok
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
 
-         Label{
-             id: label
-             font.bold: true
-             wrapMode: Text.Wrap
-             width: parent.width
-         }
-     }
+        Label{
+            id: label
+            font.bold: true
+            wrapMode: Text.Wrap
+            width: parent.width
+        }
+    }
 
     ObjDetector{
         id : obj_detector
@@ -44,6 +54,7 @@ Item {
             obj_detector.visible = true
             busy.running = false
             btn.enabled = true
+            tab_bar.itemAt(2).enabled = true
         }
     }
 
@@ -60,6 +71,7 @@ Item {
         width: obj_detector.width
         source: camera
         autoOrientation: true
+        fillMode: Qt.KeepAspectRatio
     }
 
     Component.onCompleted: {
@@ -83,12 +95,17 @@ Item {
                     obj_detector.clear_graph()
                 }else{
                     console.log("start detect")
-                    obj_detector.detect(camera)
-                    video.visible = false
-                    busy.running = true
-                    btn.enabled = false
+                    tab_bar.itemAt(2).enabled = false
+                    if(camera){
+                        obj_detector.detect(camera, confident, camera.deviceId)
+                        video.visible = false
+                        busy.running = true
+                        btn.enabled = false
+                    }else{
+                        label.text = qsTr("Cannot access camera, please try again later")
+                    }
                 }
             }
         }
-    }//*/
+    }
 }
