@@ -9,8 +9,8 @@ import CVLogics 1.0
 ApplicationWindow {
     id: win
     visible: true
-    width: 640
-    height: 480
+    width: Qt.platform.os == "windows" ? 640 : win.width
+    height: Qt.platform.os == "windows" ? 480 : win.height
     title: qsTr("Hello World")
 
     Camera{
@@ -20,13 +20,9 @@ ApplicationWindow {
     ObjDetector{
         id : obj_detector
 
-        height: win.height - 60
+        height: win.height - btn.height - 10
         width: win.width
-        visible: false
-
-        onMessage: {
-            msg_text.text = message
-        }
+        visible: false        
 
         onObjectDetected: {
             console.log("object detected")
@@ -48,18 +44,15 @@ ApplicationWindow {
         height: obj_detector.height
         width: obj_detector.width
         source: camera
+        autoOrientation: true
     }
 
     Column{
         anchors.top: obj_detector.bottom
-        Text{
-            id: msg_text
-            width: win.width
-        }
 
         Button{
             id: btn
-            width: win.width
+            width: win.width            
             text: obj_detector.visible ?  "Start Camera" : "Analyze"
 
             onClicked: {
@@ -67,8 +60,9 @@ ApplicationWindow {
                     console.log("set video to visible")
                     obj_detector.visible = false
                     video.visible = true
+                    obj_detector.clear_graph()
                 }else{
-                    console.log("start detect")
+                    console.log("start detect")                    
                     obj_detector.detect(camera)
                     video.visible = false
                     busy.running = true
