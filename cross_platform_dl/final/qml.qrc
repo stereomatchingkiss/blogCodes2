@@ -2,5 +2,11 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>qtquickcontrols2.conf</file>
+        <file>ObjectDetector.qml</file>
+        <file>images/camera.png</file>
+        <file>images/helps.png</file>
+        <file>images/privacy.png</file>
+        <file>Privacy.qml</file>
+        <file>HelpMenu.qml</file>
     </qresource>
 </RCC>

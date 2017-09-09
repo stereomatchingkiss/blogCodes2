@@ -13,86 +13,77 @@ ApplicationWindow {
     height: Qt.platform.os == "windows" ? 480 : win.height
     title: qsTr("Hello World")
 
-    Camera{
-        id: camera
-    }
+    SwipeView {
+        id: swipe_view
+        anchors.fill: parent
+        currentIndex: tab_bar.currentIndex
 
-    Dialog {
-         id: dialog
-         modal: true
-         standardButtons: Dialog.Ok
-         x: (parent.width - width) / 2
-         y: (parent.height - height) / 2
+        ObjectDetector{
 
-         Label{
-             id: label
-             font.bold: true
-             wrapMode: Text.Wrap
-             width: parent.width
-         }
-     }
-
-    ObjDetector{
-        id : obj_detector
-
-        height: win.height - btn.height - 10
-        width: win.width
-        visible: false
-
-        onMessage: {
-            label.text = msg
-            dialog.open()
         }
 
-        onObjectDetected: {
-            console.log("object detected")
-            obj_detector.visible = true
-            busy.running = false
-            btn.enabled = true
+        HelpMenu{
+
+        }
+
+        Privacy{
+
         }
     }
 
-    BusyIndicator{
-        id: busy
+    footer: TabBar
+    {
+        id: tab_bar
 
-        anchors.centerIn: parent
-    }
+        padding: 10
 
-    VideoOutput{
-        id: video
+        currentIndex: swipe_view.currentIndex
 
-        height: obj_detector.height
-        width: obj_detector.width
-        source: camera
-        autoOrientation: true
-    }
-
-    Component.onCompleted: {
-        btn.enabled = true
-    }
-
-    Column{
-        anchors.top: obj_detector.bottom
-
-        Button{
-            id: btn
-            width: win.width
-            enabled: fasle
-            text: obj_detector.visible ?  qsTr("Start Camera") : qsTr("Analyze")
-
+        TabButton
+        {
+            text: qsTr("Camera")
+            height: parent.height
+            contentItem: Image
+            {
+                anchors.fill: parent
+                fillMode: Qt.KeepAspectRatio
+                source: "qrc:/images/camera.png"
+            }
             onClicked: {
-                if(obj_detector.visible){
-                    console.log("set video to visible")
-                    obj_detector.visible = false
-                    video.visible = true
-                    obj_detector.clear_graph()
-                }else{
-                    console.log("start detect")                    
-                    obj_detector.detect(camera)
-                    video.visible = false
-                    busy.running = true
-                    btn.enabled = false
-                }
+                //stack_view.pop()
+                //stack_view.push("qrc:/ObjectDetector.qml")
+            }
+        }
+
+        TabButton
+        {
+            text: qsTr("Helps")
+            height: parent.height
+            contentItem: Image
+            {
+                anchors.fill: parent
+                fillMode: Qt.KeepAspectRatio
+                source: "qrc:/images/helps.png"
+            }
+            onClicked: {
+                //stack_view.pop()
+                //stack_view.push("qrc:/HelpMenu.qml")
+            }
+        }
+
+        TabButton
+        {
+            text: qsTr("Privacy")
+            height: parent.height
+            contentItem: Image
+            {
+                anchors.fill: parent
+                fillMode: Qt.KeepAspectRatio
+                source: "qrc:/images/privacy.png"
+            }
+            onClicked: {
+                //stack_view.pop()
+                //stack_view.push("qrc:/Privacy.qml")
             }
         }
     }
