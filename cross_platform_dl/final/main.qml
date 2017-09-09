@@ -1,5 +1,5 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
 
 import QtMultimedia 5.9
@@ -17,12 +17,32 @@ ApplicationWindow {
         id: camera
     }
 
+    Dialog {
+         id: dialog
+         modal: true
+         standardButtons: Dialog.Ok
+         x: (parent.width - width) / 2
+         y: (parent.height - height) / 2
+
+         Label{
+             id: label
+             font.bold: true
+             wrapMode: Text.Wrap
+             width: parent.width
+         }
+     }
+
     ObjDetector{
         id : obj_detector
 
         height: win.height - btn.height - 10
         width: win.width
-        visible: false        
+        visible: false
+
+        onMessage: {
+            label.text = msg
+            dialog.open()
+        }
 
         onObjectDetected: {
             console.log("object detected")
@@ -47,13 +67,18 @@ ApplicationWindow {
         autoOrientation: true
     }
 
+    Component.onCompleted: {
+        btn.enabled = true
+    }
+
     Column{
         anchors.top: obj_detector.bottom
 
         Button{
             id: btn
-            width: win.width            
-            text: obj_detector.visible ?  "Start Camera" : "Analyze"
+            width: win.width
+            enabled: fasle
+            text: obj_detector.visible ?  qsTr("Start Camera") : qsTr("Analyze")
 
             onClicked: {
                 if(obj_detector.visible){
