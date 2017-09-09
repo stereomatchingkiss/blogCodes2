@@ -8,5 +8,7 @@
         <file>images/privacy.png</file>
         <file>Privacy.qml</file>
         <file>HelpMenu.qml</file>
+        <file>Settings.qml</file>
+        <file>images/settings.png</file>
     </qresource>
 </RCC>
