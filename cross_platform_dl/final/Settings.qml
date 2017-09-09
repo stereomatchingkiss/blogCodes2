@@ -8,12 +8,13 @@ Page
 {
     signal changeCamera(var device_id)
 
-    property alias confident_value: confident.value
+    property alias confident_value: confident_slider.value
 
     ColumnLayout{
         anchors.fill: parent
 
         GroupBox{
+            id: box
             title: qsTr("Settings")
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -24,6 +25,7 @@ Page
                 RowLayout{
                     Layout.margins: 10
                     Label{
+                        id: cam_label
                         text: qsTr("Camera")
                         font.bold: true
                     }
@@ -50,15 +52,18 @@ Page
                     }
 
                     Slider {
-                        id: confident
+                        id: confident_slider
                         from: 0.2
                         to: 1.0
-                        value: 0.2
+                        Layout.fillWidth: true
                     }
+                }
 
-                    Text{
-                       text: confident.value
-                       font.bold: true
+                RowLayout{
+                    Layout.margins: 10
+                    Label{
+                        text: qsTr("Confident value = ") + confident_slider.value
+                        font.bold: true
                     }
                 }
             }
