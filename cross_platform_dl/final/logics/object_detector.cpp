@@ -31,8 +31,8 @@ object_detector::object_detector(QQuickItem *parent) :
 
     try{
 #ifdef Q_OS_WIN32
-        detector_ = std::make_unique<ssd_detector>("C:/Users/yyyy/Qt/computer_vision_model/caffe/MobileNetSSD_deploy.caffemodel",
-                                                   "C:/Users/yyyy/Qt/computer_vision_model/caffe/MobileNetSSD_deploy.prototxt",
+        detector_ = std::make_unique<ssd_detector>("../../../computer_vision_model/caffe/MobileNetSSD_deploy.caffemodel",
+                                                   "../../../computer_vision_model/caffe/MobileNetSSD_deploy.prototxt",
                                                    false);
 #endif
 #ifdef Q_OS_ANDROID
