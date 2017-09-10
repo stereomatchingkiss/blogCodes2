@@ -21,7 +21,11 @@ object_detector::object_detector(QQuickItem *parent) :
     connect(&watcher_, &QFutureWatcher<void>::finished, [this]()
     {
         if(detector_){
-            update();
+            if(message_.isEmpty()){
+                update();
+            }else{
+                emit message(message_);
+            }
         }else{
             emit message(tr("Cannot detect object because detector cannot be opened"));
         }
@@ -184,6 +188,11 @@ void object_detector::image_capture(int id, QImage const &img)
 
     future_ = QtConcurrent::run(QThreadPool::globalInstance(), [this, img]()
     {
+        if(img.isNull()){
+            message_ = tr("Cannot understand format of the camera");
+            return;
+        }
+
         if(detector_){
             buffer_ = QImage();
             if(buffer_.format() != QImage::Format_RGB888){
@@ -195,6 +204,7 @@ void object_detector::image_capture(int id, QImage const &img)
             cv::Mat mat = cv::Mat(buffer_.height(), buffer_.width(), CV_8UC3, buffer_.bits(), buffer_.bytesPerLine());
             auto const results = detector_->detect(mat, confident_);
             draw_detect_results(results, mat);
+            message_.clear();
         }
     });
     watcher_.setFuture(future_);

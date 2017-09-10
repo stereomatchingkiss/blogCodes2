@@ -39,9 +39,10 @@ private:
     QImage buffer_;
     QCameraImageCapture *cam_capture_;
     float confident_ = 0.2f;
-    QString device_id_;
+    QString device_id_;    
+    std::unique_ptr<ssd_detector> detector_;    
     QFuture<void> future_;
-    std::unique_ptr<ssd_detector> detector_;
+    QString message_;
     std::map<QString, cv::Scalar> name_to_color_;
     QFutureWatcher<void> watcher_;    
 };
