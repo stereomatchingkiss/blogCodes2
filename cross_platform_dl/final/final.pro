@@ -1,6 +1,6 @@
 QT += qml quick multimedia
 
-CONFIG += c++11
+CONFIG += c++14
 
 TARGET = LightDetector
 
@@ -10,9 +10,9 @@ linux: android:{
 
 ANDROID_PACKAGE_SOURCE_DIR = android
 DISTFILES += $$ANDROID_PACKAGE_SOURCE_DIR/assets
+DEFINES += DEVELOP_ON_ANDROID
 
 }
-
 
 SOURCES += main.cpp \
     logics/ssd_detector.cpp \

@@ -34,7 +34,7 @@ object_detector::object_detector(QQuickItem *parent) :
     init();
 
     try{
-#if defined(Q_OS_WIN32) || defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+#if defined(Q_OS_WIN32) || defined(Q_OS_MAC) || (defined(Q_OS_LINUX) && !defined(DEVELOP_ON_ANDROID))
 
         detector_ = std::make_unique<ssd_detector>("../../../computer_vision_model/caffe/MobileNetSSD_deploy.caffemodel",
                                                    "../../../computer_vision_model/caffe/MobileNetSSD_deploy.prototxt",
@@ -122,7 +122,7 @@ QString object_detector::copy_asset_file(QString const &source)
 
 void object_detector::clear_graph()
 {
-    buffer_ = QImage();
+    clear_graph_ = true;
     update();
 }
 
@@ -153,7 +153,7 @@ void object_detector::init()
 
 void object_detector::paint(QPainter *painter)
 {
-    if(!buffer_.isNull()){
+    if(!clear_graph_ && !buffer_.isNull()){
         qDebug()<<"draw image";
         QPoint const point((width() - buffer_.width())/2, (height() - buffer_.height()) / 2);
         painter->drawImage(point, buffer_);
@@ -194,6 +194,8 @@ void object_detector::image_capture(int id, QImage const &img)
         }
 
         if(detector_){
+            //without clearning the buffer, there will have some weird
+            //remnant when drawing
             buffer_ = QImage();
             if(buffer_.format() != QImage::Format_RGB888){
                 buffer_ = img.convertToFormat(QImage::Format_RGB888);
@@ -205,6 +207,7 @@ void object_detector::image_capture(int id, QImage const &img)
             auto const results = detector_->detect(mat, confident_);
             draw_detect_results(results, mat);
             message_.clear();
+            clear_graph_ = false;
         }
     });
     watcher_.setFuture(future_);

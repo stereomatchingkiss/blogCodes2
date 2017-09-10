@@ -38,6 +38,7 @@ private:
 
     QImage buffer_;
     QCameraImageCapture *cam_capture_;
+    bool clear_graph_ = false;
     float confident_ = 0.2f;
     QString device_id_;    
     std::unique_ptr<ssd_detector> detector_;    
