@@ -21,6 +21,15 @@ train, tvmonitor.
 <img src="https://s26.postimg.org/jcvcg11ux/Screenshot_2017-09-10-03-14-12.png" height="220px">
 <img src="https://s26.postimg.org/caxetty95/Screenshot_2017-09-10-03-14-17.png" height="220px">
 
+# Support platforms
+
+1. windows
+2. mac
+3. linux
+4. android
+
+ios?In theory Qt5 and opencv3.3 both support ios, but I do not have any ios device, cannot test it.
+
 # Binary
 
 [Google Store](https://play.google.com/store/apps/details?id=com.tham.vision.apps)
