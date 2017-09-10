@@ -103,6 +103,7 @@ Page {
                         busy.running = true
                         btn.enabled = false
                     }else{
+                        dialog.open()
                         label.text = qsTr("Cannot access camera, please try again later")
                     }
                 }
