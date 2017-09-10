@@ -30,7 +30,8 @@ object_detector::object_detector(QQuickItem *parent) :
     init();
 
     try{
-#ifdef Q_OS_WIN32
+#if defined(Q_OS_WIN32) || defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+
         detector_ = std::make_unique<ssd_detector>("../../../computer_vision_model/caffe/MobileNetSSD_deploy.caffemodel",
                                                    "../../../computer_vision_model/caffe/MobileNetSSD_deploy.prototxt",
                                                    false);
