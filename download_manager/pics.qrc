@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>pics/add.png</file>
-        <file>pics/resume</file>
-        <file>pics/delete.png</file>
-    </qresource>
-</RCC>
