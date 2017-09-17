@@ -38,8 +38,14 @@ To study more details, please check the post [Let us create a semantic segmentat
 
 # Model
 
-[Model trained with 368 images, 12 labels(include void), random crop 480,320,800 epoch](
-https://mega.nz/#!px8ClbjI!3dOuvJdy-mipcN6csMuFOJ-sm7ggKAgaC3OMSPZvHeo
+1 : [Model trained with 368 images, 12 labels(include void), random crop(128x128),800 epoch](
+https://mega.nz/#!48M3SBQZ!PZY_1p0kZlyIAs4kCaKuZBJ22E59-wILskgluWYnWbA
+).
+2 : [Model trained with 368 images, 12 labels(include void), random crop(480x320),800 epoch](
+https://mega.nz/#!Mh9WxB4A!PZawXq0K3MtzGkRUa6gyQfsHWaxYMjgSWzOQhBOEGQE
+). 
+3 : [Model trained with 368 images, 12 labels(include void), random crop(512x512),800 epoch](
+https://mega.nz/#!psEnEC4Q!-TXrNCYDmvyVbWdhxJgrgMPhhX17fpjrLGN5GbiWsYI
 ).
 
 
