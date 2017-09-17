@@ -30,6 +30,12 @@ train, tvmonitor.
 
 ios?In theory Qt5 and opencv3.3 both support ios, but I do not have any ios device, cannot test it.
 
+# Dependency
+
+1. [Qt5.9.1](https://www1.qt.io/download/)
+2. [opencv3.3](http://opencv.org/)
+3. [pri](https://github.com/stereomatchingkiss/pri)
+
 # Binary
 
 [Google Store](https://play.google.com/store/apps/details?id=com.tham.vision.apps)
