@@ -134,9 +134,9 @@ point_type random_crop(cv::Size const &input_size, int crop_size,
     int const center_y = input_size.height / 2 + dist(rd);
     crop_size = crop_size / 2;
     results[0] = cv::Point2f(center_x - crop_size, center_y - crop_size); //top left
-    results[1] = cv::Point2f(center_x + crop_size - 1, center_y - crop_size); //top right
-    results[2] = cv::Point2f(center_x - crop_size, center_y + crop_size - 1); //bottom left
-    results[3] = cv::Point2f(center_x + crop_size - 1, center_y + crop_size - 1); //bottom right
+    results[1] = cv::Point2f(center_x + crop_size, center_y - crop_size); //top right
+    results[2] = cv::Point2f(center_x - crop_size, center_y + crop_size); //bottom left
+    results[3] = cv::Point2f(center_x + crop_size, center_y + crop_size); //bottom right
 
     return results;
 }
