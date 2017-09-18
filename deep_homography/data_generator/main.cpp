@@ -36,7 +36,7 @@ void create_parser(QCommandLineParser &parser);
  *
  * @param img_name name of the image
  * @param save_at where to save the generated images
- * @param save_as_bgr true, save image as bgr image, false save as gray image
+ * @param save_as_color true, save image as color image, false save as gray image
  * @param out_file this file will save the corners points of associate image
  * @param dist uniform int distribution to pretube the points of input
  * @param rd random number generator of dist
@@ -45,7 +45,7 @@ void create_parser(QCommandLineParser &parser);
  */
 bool generate_image_pair(QString const &img_name,
                          QString const &save_at,
-                         bool save_as_bgr,
+                         bool save_as_color,
                          std::ofstream &out_file,
                          std::uniform_int_distribution<int> &dist,
                          std::random_device &rd,
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])try
     size_t const max_size = parser.value("max_size").toInt();
     size_t gen_image_size = 0;
     std::ofstream out_file((parser.value("output") + "/info.txt").toStdString());
-    bool const save_as_bgr = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    bool const save_as_color = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
     while(dir.hasNext()){
         bool const debug = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
         if(debug && i == 10){
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])try
         qDebug()<<i++<<":"<<info.fileName();
         bool const can_gen_image = generate_image_pair(info.absoluteFilePath(),
                                                        parser.value("output"),
-                                                       save_as_bgr, out_file,
+                                                       save_as_color, out_file,
                                                        dist, rd, debug);
         if(can_gen_image){
             ++gen_image_size;
@@ -210,7 +210,7 @@ void write_h4pts(point_type const &i_pts, point_type const &ip_pts, std::ofstrea
 
 bool generate_image_pair(QString const &img_name,
                          QString const &save_at,
-                         bool save_as_bgr,
+                         bool save_as_color,
                          std::ofstream &out_file,
                          std::uniform_int_distribution<int> &dist,
                          std::random_device &rd,
@@ -225,7 +225,7 @@ bool generate_image_pair(QString const &img_name,
         auto const pertube_pts = pertube_points(origin_pts, dist, rd);
         cv::Mat const hmat = cv::getPerspectiveTransform(origin_pts, pertube_pts).inv(cv::DECOMP_SVD);
         cv::Mat img_ip; //image I' mentioned by the paper
-        if(!save_as_bgr){
+        if(!save_as_color){
             cv::cvtColor(img_i, img_i, CV_BGR2GRAY);
         }
         cv::warpPerspective(img_i, img_ip, hmat, img_i.size());
