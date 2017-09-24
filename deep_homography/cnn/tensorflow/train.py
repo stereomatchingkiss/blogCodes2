@@ -78,7 +78,7 @@ with tf.Session() as sess:
 
         print("total loss epoch:" + str(epoch), total_loss/100.0)
         out_file.write("total loss epoch:" + str(epoch) + ","  + str(total_loss/100.0) + "\n")
-        plot.update(e + 1, total_loss / 100)
+        plot.update(epoch + 1, total_loss / 100)
     
     plot.savefig("ten_epoch.png")
     #saver = tf.train.Saver()
