@@ -56,10 +56,11 @@ trainer = optimizer.minimize(loss)
 out_file = open("record.txt", "w")
 with tf.Session() as sess:
     batch_size = 100
-    plot = visualize.plot_2d(min_x = 0, max_x = epoch)    
+    max_epoch = 5
+    plot = visualize.plot_2d(min_x = 0, max_x = max_epoch)
     sess.run(tf.global_variables_initializer())
 
-    for epoch in range(10):
+    for epoch in range(max_epoch):
         total_loss = 0
         for i in range(100):
             index = i*batch_size
