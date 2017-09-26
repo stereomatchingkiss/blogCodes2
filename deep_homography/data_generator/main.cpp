@@ -75,7 +75,7 @@ int main(int argc, char *argv[])try
     qDebug()<<"folder is set:"<<parser.value("folder");
 
     QDirIterator dir(parser.value("folder"),
-                     QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg",
+                     QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg"<<"*.JPEG",
                      QDir::NoDotAndDotDot | QDir::Files, QDirIterator::Subdirectories);
     size_t i = 0;
     constexpr int pertube = 32;
@@ -85,9 +85,10 @@ int main(int argc, char *argv[])try
     size_t gen_image_size = 0;
     std::ofstream out_file((parser.value("output") + "/info.txt").toStdString());
     bool const save_as_color = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
-    while(dir.hasNext()){
-        bool const debug = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    bool const debug = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    while(dir.hasNext()){        
         if(debug && i == 10){
+            qDebug()<<"reach debug size";
             break;
         }
         QFileInfo const info(dir.next());
@@ -99,6 +100,7 @@ int main(int argc, char *argv[])try
         if(can_gen_image){
             ++gen_image_size;
             if(gen_image_size >= max_size){
+                qDebug()<<"reach max size";
                 break;
             }
         }
@@ -221,6 +223,7 @@ bool generate_image_pair(QString const &img_name,
         if(img_i.rows < 240 || img_i.cols < 320){
             return false;
         }
+        cv::resize(img_i, img_i, {320, 240});
         auto const origin_pts = random_crop(img_i.size(), 128, dist, rd);
         auto const pertube_pts = pertube_points(origin_pts, dist, rd);
         cv::Mat const hmat = cv::getPerspectiveTransform(origin_pts, pertube_pts).inv(cv::DECOMP_SVD);
