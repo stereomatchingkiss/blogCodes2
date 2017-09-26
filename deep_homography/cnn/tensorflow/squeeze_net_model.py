@@ -15,7 +15,7 @@ def _conv_block(inputs, filters, kernel_size = 3, is_training = True):
     output = tf.contrib.layers.batch_norm(output, is_training = is_training)    
     return tf.nn.relu(output)    
 
-def fire_module(inputs, fire_id, s1, e1, e3, is_training = True):
+def _fire_module(inputs, fire_id, s1, e1, e3, is_training = True):
     """
     Basic module that makes up the SqueezeNet architecture. It has two layers.
      1. Squeeze layer (1x1 convolutions)
@@ -43,7 +43,7 @@ def create_model(features, class_num = 8, is_training = True):
     
     Args:
         features : input features, should be 2 stack of gray image or color image with size 128*128
-        mode : color expect two stack of color images, gray expect 2 stack of gray image        
+        is_training : True will set batch_norm on training mode and vice versa
     """
     
     net = tf.layers.conv2d(inputs = features, filters = 64, kernel_size = [3, 3], strides = (2, 2), padding = 'same')
@@ -51,19 +51,19 @@ def create_model(features, class_num = 8, is_training = True):
     net = tf.nn.relu(net)
     net = tf.layers.max_pooling2d(net, pool_size = [3, 3], strides = 2)
     
-    net = fire_module(net, "fire2", 16, 64, 64, is_training)
-    net = fire_module(net, "fire3", 16, 64, 64, is_training)
+    net = _fire_module(net, "fire2", 16, 64, 64, is_training)
+    net = _fire_module(net, "fire3", 16, 64, 64, is_training)
     net = tf.layers.max_pooling2d(net, pool_size = [3, 3], strides = 2)
     
-    net = fire_module(net, "fire4", 32, 128, 128, is_training)
-    net = fire_module(net, "fire4", 32, 128, 128, is_training)
+    net = _fire_module(net, "fire4", 32, 128, 128, is_training)
+    net = _fire_module(net, "fire4", 32, 128, 128, is_training)
     net = tf.layers.max_pooling2d(net, pool_size = [3, 3], strides = 2)
     
-    net = fire_module(net, "fire4", 48, 192, 192, is_training)
-    net = fire_module(net, "fire4", 48, 192, 192, is_training)
-    net = fire_module(net, "fire4", 64, 256, 256, is_training)
-    net = fire_module(net, "fire4", 64, 256, 256, is_training)
-        
+    net = _fire_module(net, "fire4", 48, 192, 192, is_training)
+    net = _fire_module(net, "fire4", 48, 192, 192, is_training)
+    net = _fire_module(net, "fire4", 64, 256, 256, is_training)
+    net = _fire_module(net, "fire4", 64, 256, 256, is_training)
+            
     #net = tf.layers.dropout(net, training = is_training)
     #net = tf.layers.conv2d(inputs = net, filters = class_num, kernel_size = [1, 1])
     #net = tf.nn.relu(net)
