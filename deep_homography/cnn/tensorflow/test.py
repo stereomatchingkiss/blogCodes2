@@ -52,52 +52,44 @@ def read_imgs(imgs_name, folder, shape, debug = False):
 #imgs_folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/imagenet_train_gray_500032/" #total loss: 57.39
 imgs_folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/ms_coco_train_gray_10000/" #total loss: 84.48
 imgs_names, points = read_imgs_info(imgs_folder + '/info.txt')
-print(imgs_names[0])
-#for i in inference_graph.get_operations():
-#    print(i.name)
 
-with tf.Session() as sess:        
-    saver = tf.train.import_meta_graph('/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_70000.ckpt.meta')
-    inference_graph = tf.get_default_graph()
-    #load as reshape_final.ckpt.data-00000-of-00001 will throw exception, I really do not know why 
-    #tensorflow always like to give their users surprise
-    saver.restore(sess, '/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_70000.ckpt')
-    #saver.restore(sess, '/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/reshape_final.ckpt')
-    batch_size = 100
-    img_size = len(imgs_names)
+def test():
+    with tf.Session() as sess:        
+        saver = tf.train.import_meta_graph('/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_final.ckpt.meta')
+        inference_graph = tf.get_default_graph()
+        #load as reshape_final.ckpt.data-00000-of-00001 will throw exception, I really do not know why 
+        #tensorflow always like to give their users surprise, is this fun?Or I am too stupid?
+        saver.restore(sess, '/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_final.ckpt')
+        batch_size = 100
+        img_size = len(imgs_names)
     
-    if img_size%batch_size != 0:
-        raise Exception('img_size%batch_size != 0')
+        if img_size%batch_size != 0:
+            raise Exception('img_size%batch_size != 0')
     
-    iteration = int(img_size/batch_size)
-    _accuracy = inference_graph.get_tensor_by_name('regression_output/BiasAdd:0')
-    _features  = inference_graph.get_tensor_by_name('input:0')
-    total_loss = 0
+        iteration = int(img_size/batch_size)
+        #Name of the tensor bug me some times to get it right, why do they add :0?
+        #Where are the documents of using the trained model?
+        _accuracy = inference_graph.get_tensor_by_name('regression_output/BiasAdd:0')
+        _features  = inference_graph.get_tensor_by_name('input:0')
+        total_l2_loss = 0
+        total_sqrt_l2_loss = 0
     
-    for i in range(iteration):
-        rng = slice(i*batch_size, i*batch_size+batch_size)
-        real_poinst = points[rng]
-        name_list = imgs_names[rng]
-        results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
-        l2_loss = (np.sum((results-real_poinst) ** 2)/2)/batch_size
-        total_loss += loss
-        print(i, loss)
-    print('total loss:', total_loss/iteration)
-    #name_list = [imgs_names[1]]
-    #results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, folder, [None, 128, 128, 2])})
-    #print(results)
-    #print(points[1])
-    #a = np.asarray(results[0])
-    #b = np.asarray(points[1])
-    #print(np.sum(np.abs(a-b))/8)
-    #for i in range(100):
-    #    index = i*batch_size%img_size
-    #    rng = slice(index, index+batch_size)
-    #    train_imgs = read_imgs(imgs_name[rng], folder, input_shape)
-    #    real_points = points[rng]
+        for i in range(iteration):
+            rng = slice(i*batch_size, i*batch_size+batch_size)
+            real_poinst = points[rng]
+            name_list = imgs_names[rng]
+            results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
+            l2_loss = np.sum((results-real_poinst) ** 2)/2
+            sqrt_l2_loss = np.sqrt(l2_loss)        
+            total_l2_loss += l2_loss
+            total_sqrt_l2_loss += sqrt_l2_loss
+            print("{},sqrt_l2_loss:{}, l2_loss:{}".format(i, sqrt_l2_loss, l2_loss))
         
+        print('\ntotal l2 loss:{}, total sqrt l2 loss:{}'.format(total_l2_loss/iteration, total_sqrt_l2_loss/iteration))
+        print('avg total l2 loss:{}, avg total sqrt l2 loss:{}'.format(total_l2_loss/iteration/batch_size, total_sqrt_l2_loss/iteration/batch_size))            
     
 
 start = timer()
+test()
 end = timer()
 print("elapsed time:", end - start)
