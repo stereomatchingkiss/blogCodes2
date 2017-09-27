@@ -10,6 +10,7 @@ def _conv_block(inputs, filters, kernel_size = 3, is_training = True):
         inputs = inputs,
         filters = filters,
         kernel_size = [kernel_size, kernel_size],
+        kernel_initializer = tf.contrib.layers.xavier_initializer(),
         padding='same')
         
     output = tf.contrib.layers.batch_norm(output, is_training = is_training)    
@@ -70,6 +71,6 @@ def create_model(features, class_num = 8, is_training = True):
     #net = tf.layers.average_pooling2d(net, pool_size = 7, strides = 7, padding = 'same')    
         
     net = tf.reshape(net, [-1, 512 * 7 * 7])
-    net = tf.layers.dense(inputs = net, units = class_num, name = 'regression_output')
+    net = tf.layers.dense(inputs = net, units = class_num, kernel_initializer = tf.contrib.layers.xavier_initializer(), name = 'regression_output')
         
     return net
