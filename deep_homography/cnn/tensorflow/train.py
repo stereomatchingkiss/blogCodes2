@@ -62,14 +62,14 @@ def read_imgs(imgs_name, folder, shape, debug = False):
     for i in range(0, len(imgs_name)):
         if debug:
             print(i, "read img:", imgs_name[i])
-        img = np.empty(shape=([shape[1],shape[2],shape[3]]))
+        img = np.empty(shape=([shape[1],shape[2],shape[3]]), dtype='float32')
         if shape[3] == 2:
             img[:,:,0] = misc.imread(folder + '/' + imgs_name[i][0])
-            img[:,:,1] = misc.imread(folder + '/' + imgs_name[i][1])
+            img[:,:,1] = misc.imread(folder + '/' + imgs_name[i][1])            
         else:
             img[:,:,0:3] = misc.imread(folder + '/' + imgs_name[i][0])
-            img[:,:,3:6] = misc.imread(folder + '/' + imgs_name[i][1])
-        imgs.append(img)    
+            img[:,:,3:6] = misc.imread(folder + '/' + imgs_name[i][1])            
+        imgs.append(img/255.0)    
         
     return imgs
 
@@ -90,7 +90,13 @@ learning_rate = tf.train.piecewise_constant(global_step, boundaries, values)
 
 x = tf.placeholder(tf.float32, shape=[None,8])
 #apply sqrt to avoid the loss value bloated
-loss = tf.sqrt(tf.nn.l2_loss(model - x))
+loss = tf.sqrt((tf.nn.l2_loss(model - x)))
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    saver = tf.train.Saver()
+    saver.save(sess, 'reshape_final.ckpt')
+    tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph_final.pb')
 
 def train(batch_size, loss_record_step, total_steps):
     out_file = open("loss.txt", "w")
@@ -115,10 +121,10 @@ def train(batch_size, loss_record_step, total_steps):
             train_accuracy = loss.eval(feed_dict={features : train_imgs, x : real_points})
             print(i, "batch acc", train_accuracy, learning_rate.eval())
             total_loss += train_accuracy
-            if i % loss_record_step == 0:
+            if i % loss_record_step == 0 and i != 0:
                 saver = tf.train.Saver()
-                saver.save(sess, 'reshape.ckpt')
-                tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph.pb')
+                saver.save(sess, 'reshape_{}.ckpt'.format(i))
+                tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph_{}.pb'.format(i))
                 
                 print("total loss at {}/{} step : {}\n".format(i, total_steps, total_loss/loss_record_step))
                 out_file.write("total loss per {} step:{}, learning rate = {}\n".format(loss_record_step, total_loss/loss_record_step, learning_rate.eval()))
@@ -136,11 +142,11 @@ def train(batch_size, loss_record_step, total_steps):
     
         plot.savefig("{}_steps_{}_{}_images.png".format(total_steps, img_size, gray_or_color))
         saver = tf.train.Saver()
-        saver.save(sess, 'reshape.ckpt')
-        tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph.pb')
+        saver.save(sess, 'reshape_final.ckpt')
+        tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph_final.pb')
 
 start = timer()
-train(64, 10000, 90000)
+#train(64, 10000, 90000)
 #train(100, 100, 500)
 end = timer()
 print("elapsed time:", end - start)
