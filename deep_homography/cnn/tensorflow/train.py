@@ -57,6 +57,9 @@ def read_imgs_info(file_name):
             
     return imgs_name, points
 
+#Read the image by pil rather than tensorflow queue, 
+#because tensorflow queue is much more complicated and
+#less flexible
 def read_imgs(imgs_name, folder, shape, debug = False):
     imgs = []    
     for i in range(0, len(imgs_name)):
