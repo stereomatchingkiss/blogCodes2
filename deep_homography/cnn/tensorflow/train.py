@@ -73,20 +73,11 @@ def read_imgs(imgs_name, folder, shape, debug = False):
         
     return imgs
 
-def show_imgs(img):
-    fig = plt.figure()
-    fig.add_subplot(1,2,1)
-    plt.imshow(img[:,:,0])
-    fig.add_subplot(1,2,2)
-    plt.imshow(img[:,:,1])
-    plt.show()
-
-#folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/imagenet_train_gray_500032/"
-folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/ms_coco_train_gray_10000/"
+folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/imagenet_train_gray_500032/"
+#folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/ms_coco_train_gray_10000/"
 
 input_shape = [None,128,128,2]
 imgs_name, points = read_imgs_info(folder + 'info.txt')
-
 
 features = tf.placeholder(tf.float32, input_shape, name = 'input')
 model = squeeze_net_model.create_model(features)
@@ -100,15 +91,6 @@ learning_rate = tf.train.piecewise_constant(global_step, boundaries, values)
 x = tf.placeholder(tf.float32, shape=[None,8])
 #apply sqrt to avoid the loss value bloated
 loss = tf.sqrt(tf.nn.l2_loss(model - x))
-
-"""
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-
-    saver = tf.train.Saver()
-    saver.save(sess, 'reshape.ckpt')
-    tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph.pb')
-"""
 
 def train(batch_size, loss_record_step, total_steps):
     out_file = open("loss.txt", "w")
@@ -158,8 +140,8 @@ def train(batch_size, loss_record_step, total_steps):
         tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph.pb')
 
 start = timer()
-#train(64, 10000, 90000)
-train(100, 100, 500)
+train(64, 10000, 90000)
+#train(100, 100, 500)
 end = timer()
 print("elapsed time:", end - start)
 
@@ -168,7 +150,7 @@ python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/freeze_gra
 python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/optimize_for_inference.py --input frozen_graph.pb --output opt_graph.pb --frozen_graph True --input_names input --output_names avgpool10
 ~/Qt/3rdLibs/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/transform_graph --in_graph=opt_graph.pb --out_graph=fused_graph.pb --inputs=input --outputs=avgpool10 --transforms="fold_constants sort_by_execution_order"
 
-#python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/freeze_graph.py --input_graph=graph.pb --input_checkpoint=reshape.ckpt --output_graph=frozen_graph.pb --output_node_names=regression_output/BiasAdd
-#python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/optimize_for_inference.py --input frozen_graph.pb --output opt_graph.pb --frozen_graph True --input_names input --output_names regression_output/BiasAdd
-#~/Qt/3rdLibs/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/transform_graph --in_graph=opt_graph.pb --out_graph=fused_graph.pb --inputs=input --outputs=regression_output/BiasAdd --transforms="fold_constants sort_by_execution_order"
+#python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/freeze_graph.py --input_graph=sgd_gray_500032/graph.pb --input_checkpoint=sgd_gray_500032/reshape.ckpt --output_graph=sgd_gray_500032/frozen_graph.pb --output_node_names=regression_output/BiasAdd
+#python3 ~/.keras2/lib/python3.5/site-packages/tensorflow/python/tools/optimize_for_inference.py --input sgd_gray_500032/frozen_graph.pb --output sgd_gray_500032/opt_graph.pb --frozen_graph True --input_names input --output_names regression_output/BiasAdd
+#~/Qt/3rdLibs/tensorflow/bazel-bin/tensorflow/tools/graph_transforms/transform_graph --in_graph=sgd_gray_500032/opt_graph.pb --out_graph=sgd_gray_500032/fused_graph.pb --inputs=input --outputs=regression_output/BiasAdd --transforms="fold_constants sort_by_execution_order"
 """
