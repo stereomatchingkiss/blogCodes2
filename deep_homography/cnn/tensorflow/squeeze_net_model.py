@@ -57,13 +57,13 @@ def create_model(features, class_num = 8, is_training = True):
     net = tf.layers.max_pooling2d(net, pool_size = [3, 3], strides = 2)
     
     net = _fire_module(net, "fire4", 32, 128, 128, is_training)
-    net = _fire_module(net, "fire4", 32, 128, 128, is_training)
+    net = _fire_module(net, "fire5", 32, 128, 128, is_training)
     net = tf.layers.max_pooling2d(net, pool_size = [3, 3], strides = 2)
     
-    net = _fire_module(net, "fire4", 48, 192, 192, is_training)
-    net = _fire_module(net, "fire4", 48, 192, 192, is_training)
-    net = _fire_module(net, "fire4", 64, 256, 256, is_training)
-    net = _fire_module(net, "fire4", 64, 256, 256, is_training)
+    net = _fire_module(net, "fire6", 48, 192, 192, is_training)
+    net = _fire_module(net, "fire7", 48, 192, 192, is_training)
+    net = _fire_module(net, "fire8", 64, 256, 256, is_training)
+    net = _fire_module(net, "fire9", 64, 256, 256, is_training)
             
     #net = tf.layers.dropout(net, training = is_training)
     #net = tf.layers.conv2d(inputs = net, filters = class_num, kernel_size = [1, 1])
