@@ -48,14 +48,14 @@ def read_imgs_info(file_name):
         file_name : name of the input file
     """
     imgs_name = []
-    points = []
+    deltas = []
     with open(file_name) as in_file:
         for line in in_file:
             strs = line.split('\t')
             imgs_name.append([strs[0], strs[1]])
-            points.append([float(strs[i]) for i in range(2,10)])
+            deltas.append([float(strs[i]) for i in range(2,10)])
             
-    return imgs_name, points
+    return imgs_name, deltas
 
 #Read the image by pil rather than tensorflow queue, 
 #because tensorflow queue is much more complicated and
@@ -80,7 +80,7 @@ folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/imagenet_train_gray_50
 #folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/ms_coco_train_gray_10000/"
 
 input_shape = [None,128,128,2]
-imgs_name, points = read_imgs_info(folder + 'info.txt')
+imgs_name, deltas = read_imgs_info(folder + 'info.txt')
 
 features = tf.placeholder(tf.float32, input_shape, name = 'input')
 model = squeeze_net_model.create_model(features)
@@ -119,9 +119,9 @@ def train(batch_size, loss_record_step, total_steps):
             index = i*batch_size%img_size
             rng = slice(index, index+batch_size)
             train_imgs = read_imgs(imgs_name[rng], folder, input_shape)
-            real_points = points[rng]
+            real_delta = deltas[rng]
         
-            train_accuracy = loss.eval(feed_dict={features : train_imgs, x : real_points})
+            train_accuracy = loss.eval(feed_dict={features : train_imgs, x : real_delta})
             print(i, "batch acc", train_accuracy, learning_rate.eval())
             total_loss += train_accuracy
             if i % loss_record_step == 0 and i != 0:
@@ -134,7 +134,7 @@ def train(batch_size, loss_record_step, total_steps):
                 plot.update(i / loss_record_step, total_loss / loss_record_step)
                 total_loss = 0
             
-            trainer.run(feed_dict={features : train_imgs, x : real_points})
+            trainer.run(feed_dict={features : train_imgs, x : real_delta})
                     
         print("total loss at {}/{} step : {}\n".format(i, total_steps, total_loss/loss_record_step))
         out_file.write("total loss at {}/{} step : {}\n".format(i, total_steps, total_loss/loss_record_step))
@@ -149,7 +149,7 @@ def train(batch_size, loss_record_step, total_steps):
         tf.train.write_graph(sess.graph.as_graph_def(), "", 'graph_final.pb')
 
 start = timer()
-#train(64, 10000, 90000)
+train(64, 10000, 90000)
 #train(100, 100, 500)
 end = timer()
 print("elapsed time:", end - start)

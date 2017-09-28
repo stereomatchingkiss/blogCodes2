@@ -24,14 +24,14 @@ def read_imgs_info(file_name):
         file_name : name of the input file
     """
     imgs_name = []
-    points = []
+    deltas = []
     with open(file_name) as in_file:
         for line in in_file:
             strs = line.split('\t')
             imgs_name.append([strs[0], strs[1]])
-            points.append([float(strs[i]) for i in range(2,10)])
+            deltas.append([float(strs[i]) for i in range(2,10)])
             
-    return imgs_name, points
+    return imgs_name, deltas
 
 def read_imgs(imgs_name, folder, shape, debug = False):
     imgs = []    
@@ -51,7 +51,7 @@ def read_imgs(imgs_name, folder, shape, debug = False):
 
 #imgs_folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/imagenet_train_gray_500032/" #total loss: 57.39
 imgs_folder = "/home/ramsus/Qt/blogCodes2/deep_homography/data/ms_coco_train_gray_10000/" #total loss: 84.48
-imgs_names, points = read_imgs_info(imgs_folder + '/info.txt')
+imgs_names, deltas = read_imgs_info(imgs_folder + '/info.txt')
 
 def test():
     with tf.Session() as sess:        
@@ -77,14 +77,14 @@ def test():
     
         for i in range(iteration):
             rng = slice(i*batch_size, i*batch_size+batch_size)
-            real_points = points[rng]
+            real_delta = deltas[rng]
             name_list = imgs_names[rng]
             results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
             
-            delta_diff = np.sum(np.abs(results - real_points))
+            delta_diff = np.sum(np.abs(results - real_delta))
             total_delta_diff += delta_diff
             
-            l2_loss = np.sum((results-real_points) ** 2)/2
+            l2_loss = np.sum((results-real_delta) ** 2)/2
             sqrt_l2_loss = np.sqrt(l2_loss)        
             total_l2_loss += l2_loss
             total_sqrt_l2_loss += sqrt_l2_loss
@@ -108,14 +108,14 @@ def test_one_img(index):
         name_list = [imgs_names[index]]
         results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
         estimate_delta = np.asarray(results[0])
-        true_delta = np.asarray(points[index])
+        true_delta = np.asarray(deltas[index])
         
         delta_diff = np.abs(estimate_delta - true_delta)
         print('delta diff:', delta_diff)
         print('avg delta diff:', np.sum(delta_diff)/8.0)
         
         print('results:', results[0])
-        print('true delta:', points[index])
+        print('true delta:', deltas[index])
                 
 
 start = timer()
