@@ -73,23 +73,53 @@ def test():
         _features  = inference_graph.get_tensor_by_name('input:0')
         total_l2_loss = 0
         total_sqrt_l2_loss = 0
+        total_delta_diff = 0
     
         for i in range(iteration):
             rng = slice(i*batch_size, i*batch_size+batch_size)
-            real_poinst = points[rng]
+            real_points = points[rng]
             name_list = imgs_names[rng]
             results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
-            l2_loss = np.sum((results-real_poinst) ** 2)/2
+            
+            delta_diff = np.sum(np.abs(results - real_points))
+            total_delta_diff += delta_diff
+            
+            l2_loss = np.sum((results-real_points) ** 2)/2
             sqrt_l2_loss = np.sqrt(l2_loss)        
             total_l2_loss += l2_loss
             total_sqrt_l2_loss += sqrt_l2_loss
             print("{},sqrt_l2_loss:{}, l2_loss:{}".format(i, sqrt_l2_loss, l2_loss))
+            print("{},delta diff:{}".format(i, delta_diff))
         
         print('\ntotal l2 loss:{}, total sqrt l2 loss:{}'.format(total_l2_loss/iteration, total_sqrt_l2_loss/iteration))
-        print('avg total l2 loss:{}, avg total sqrt l2 loss:{}'.format(total_l2_loss/iteration/batch_size, total_sqrt_l2_loss/iteration/batch_size))            
+        print('avg total l2 loss:{}, avg total sqrt l2 loss:{}'.format(total_l2_loss/iteration/batch_size, total_sqrt_l2_loss/iteration/batch_size))
+        print("avg delta diff:{}".format(total_delta_diff/iteration/8.0/batch_size))
     
+def test_one_img(index):
+    with tf.Session() as sess:        
+        saver = tf.train.import_meta_graph('/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_final.ckpt.meta')
+        inference_graph = tf.get_default_graph()
+        #load as reshape_final.ckpt.data-00000-of-00001 will throw exception, I really do not know why 
+        #tensorflow always like to give their users surprise, is this fun?Or I am too stupid?
+        saver.restore(sess, '/home/ramsus/Qt/blogCodes2/deep_homography/cnn/tensorflow/sgd_gray_squeeze_net_500032/reshape_final.ckpt')
+        
+        _accuracy = inference_graph.get_tensor_by_name('regression_output/BiasAdd:0')
+        _features  = inference_graph.get_tensor_by_name('input:0')
+        name_list = [imgs_names[index]]
+        results = sess.run(_accuracy, feed_dict = {_features: read_imgs(name_list, imgs_folder, [None, 128, 128, 2])})
+        estimate_delta = np.asarray(results[0])
+        true_delta = np.asarray(points[index])
+        
+        delta_diff = np.abs(estimate_delta - true_delta)
+        print('delta diff:', delta_diff)
+        print('avg delta diff:', np.sum(delta_diff)/8.0)
+        
+        print('results:', results[0])
+        print('true delta:', points[index])
+                
 
 start = timer()
 test()
+#test_one_img(0)
 end = timer()
 print("elapsed time:", end - start)
