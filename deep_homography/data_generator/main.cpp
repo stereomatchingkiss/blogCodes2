@@ -19,6 +19,36 @@
 #include <fstream>
 #include <random>
 
+/**
+ * Collection of data parsed from command line
+ *
+ * @param debug_ true will print/show debug message/image and vice versa
+ * @param max_size_ maximum number of the image want to generate
+ * @param save_at_ where to save the generated images
+ * @param save_as_color_ true, save image as color image, false save as gray image
+ * @param out_file_ this file will save the corners points of associate image
+ * @param pertube_dist_ uniform int distribution to pretube the points of input
+ * @param rd_ random number generator of dist
+ */
+struct parsed_data
+{
+    parsed_data();
+
+    bool debug_ = false;
+    size_t max_size_ = 1000;
+    std::ofstream out_file_;
+    std::uniform_int_distribution<int> pertube_dist_;
+    std::random_device rd_;
+    bool save_as_color_ = false;
+    QString save_at_;
+};
+
+parsed_data::parsed_data() : pertube_dist_(-32, 32)
+{
+
+}
+
+
 void create_parser(QCommandLineParser &parser);
 
 /**
@@ -28,28 +58,20 @@ void create_parser(QCommandLineParser &parser);
  * generated image with format
  *
  * name of patch I\tname of patch I'\tdelta x1\tdelta y1\t
- * delta x2\tdelta y2\tdelta x3\tdelta y3\tdelta x4\tdelta y4\n
+ * delta x2\tdelta y2\tdelta x3\tdelta y3\tdelta x4\tdelta y4\t
+ * x1 of patch I\ty1 of patch I\tx2 of patch I\ty2 of patch I\t
+ * x3 of patch I\ty3 of patch I\tx4 of patch I\ty4 of patch I\n
  *
  * (x1,y1)~(x4,y4) are top left, top right, bottom left, bottom right
- * Too many parameters, since this is a small, easy
- * to maintain program, please spare with it.
  *
  * @param img_name name of the image
- * @param save_at where to save the generated images
- * @param save_as_color true, save image as color image, false save as gray image
- * @param out_file this file will save the corners points of associate image
- * @param dist uniform int distribution to pretube the points of input
- * @param rd random number generator of dist
- * @param debug true will print/show debug message/image and vice versa
+ * @param inout This struct save the settings
  * @return true if image pair can be generated and vice versa
  */
 bool generate_image_pair(QString const &img_name,
-                         QString const &save_at,
-                         bool save_as_color,
-                         std::ofstream &out_file,
-                         std::uniform_int_distribution<int> &dist,
-                         std::random_device &rd,
-                         bool debug);
+                         parsed_data &pd);
+
+void parse_command_line(QCommandLineParser const &parser, parsed_data &inout);
 
 int main(int argc, char *argv[])try
 {
@@ -75,31 +97,23 @@ int main(int argc, char *argv[])try
     qDebug()<<"folder is set:"<<parser.value("folder");
 
     QDirIterator dir(parser.value("folder"),
-                     QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg"<<"*.JPEG",
+                     QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg",
                      QDir::NoDotAndDotDot | QDir::Files, QDirIterator::Subdirectories);
     size_t i = 0;
-    constexpr int pertube = 32;
-    std::random_device rd;
-    std::uniform_int_distribution<int> dist(-pertube, pertube);
-    size_t const max_size = parser.value("max_size").toInt();
     size_t gen_image_size = 0;
-    std::ofstream out_file((parser.value("output") + "/info.txt").toStdString());
-    bool const save_as_color = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
-    bool const debug = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    parsed_data pd;
+    parse_command_line(parser, pd);
     while(dir.hasNext()){        
-        if(debug && i == 10){
+        if(pd.debug_ && i == 10){
             qDebug()<<"reach debug size";
             break;
         }
         QFileInfo const info(dir.next());
         qDebug()<<i++<<":"<<info.fileName();
-        bool const can_gen_image = generate_image_pair(info.absoluteFilePath(),
-                                                       parser.value("output"),
-                                                       save_as_color, out_file,
-                                                       dist, rd, debug);
+        bool const can_gen_image = generate_image_pair(info.absoluteFilePath(), pd);
         if(can_gen_image){
             ++gen_image_size;
-            if(gen_image_size >= max_size){
+            if(gen_image_size >= pd.max_size_){
                 qDebug()<<"reach max size";
                 break;
             }
@@ -112,6 +126,15 @@ int main(int argc, char *argv[])try
 }
 
 using point_type = std::array<cv::Point2f, 4>;
+
+void parse_command_line(QCommandLineParser const &parser, parsed_data &inout)
+{
+    inout.debug_ = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    inout.max_size_ = parser.value("max_size").toInt();
+    inout.save_at_ = parser.value("output");
+    inout.out_file_.open((parser.value("output") + "/info.txt").toStdString());
+    inout.save_as_color_ = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+}
 
 /**
  * Pertube the points
@@ -195,45 +218,39 @@ void draw_lines(point_type const &points, cv::Mat &inout)
  * @param ip_pts points of image after pretube
  * @param out_file the file which save the points
  */
-void write_h4pts(point_type const &i_pts, point_type const &ip_pts, std::ofstream &out_file)
+void write_points(point_type const &i_pts, point_type const &ip_pts, std::ofstream &out_file)
 {
     if(i_pts.size() != 4 || ip_pts.size() != 4){
         CV_Assert("i_pts.size() != 4 || ip_ptr.size() != 4");
     }
     for(size_t i = 0; i != 4; ++i){
-       out_file<<(ip_pts[i].x - i_pts[i].x)<<"\t"<<(ip_pts[i].y - i_pts[i].y);
-       if(i != 3){
-           out_file<<"\t";
-       }else{
-           out_file<<"\n";
-       }
+       out_file<<(ip_pts[i].x - i_pts[i].x)<<"\t"<<(ip_pts[i].y - i_pts[i].y)<<"\t";
+    }
+    for(size_t i = 0; i != 4; ++i){
+        out_file<<i_pts[i].x<<"\t"<<i_pts[i].y;
+        if(i != 3){
+            out_file<<"\t";
+        }else{
+            out_file<<"\n";
+        }
     }
 }
 
-bool generate_image_pair(QString const &img_name,
-                         QString const &save_at,
-                         bool save_as_color,
-                         std::ofstream &out_file,
-                         std::uniform_int_distribution<int> &dist,
-                         std::random_device &rd,
-                         bool debug)
+bool generate_image_pair(QString const &img_name, parsed_data &pd)
 {
     cv::Mat img_i = cv::imread(img_name.toStdString()); //image I mentioned by the paper
     if(!img_i.empty()){
-        if(img_i.rows < 240 || img_i.cols < 320){
-            return false;
-        }
         cv::resize(img_i, img_i, {320, 240});
-        auto const origin_pts = random_crop(img_i.size(), 128, dist, rd);
-        auto const pertube_pts = pertube_points(origin_pts, dist, rd);
+        auto const origin_pts = random_crop(img_i.size(), 128, pd.pertube_dist_, pd.rd_);
+        auto const pertube_pts = pertube_points(origin_pts, pd.pertube_dist_, pd.rd_);
         cv::Mat const hmat = cv::getPerspectiveTransform(origin_pts, pertube_pts).inv(cv::DECOMP_SVD);
         cv::Mat img_ip; //image I' mentioned by the paper
-        if(!save_as_color){
+        if(!pd.save_as_color_){
             cv::cvtColor(img_i, img_i, CV_BGR2GRAY);
         }
         cv::warpPerspective(img_i, img_ip, hmat, img_i.size());
 
-        if(debug){
+        if(pd.debug_){
             cv::Mat temp = img_i.clone();
             //check the bounding boxes looks reasonable or not
             draw_lines(origin_pts, temp);
@@ -245,14 +262,14 @@ bool generate_image_pair(QString const &img_name,
             cv::waitKey();
         }
 
-        if(!debug){
+        if(!pd.debug_){
             cv::Rect const rect(origin_pts[0], origin_pts[3]);
             std::string const base_name = QFileInfo(img_name).completeBaseName().toStdString();
-            std::string const file_prefix = save_at.toStdString() + "/" + base_name;
+            std::string const file_prefix = pd.save_at_.toStdString() + "/" + base_name;
             cv::imwrite(file_prefix + "_p.jpg", img_i(rect));
-            cv::imwrite(file_prefix + "_pp.jpg", img_ip(rect));
-            out_file<<(base_name + "_p.jpg")<<"\t"<<(base_name + "_pp.jpg")<<"\t";
-            write_h4pts(origin_pts, pertube_pts, out_file);
+            cv::imwrite(file_prefix + "_pp.jpg", img_ip(rect));            
+            pd.out_file_<<(base_name + "_p.jpg")<<"\t"<<(base_name + "_pp.jpg")<<"\t";
+            write_points(origin_pts, pertube_pts, pd.out_file_);
         }
 
         return true;
@@ -261,4 +278,3 @@ bool generate_image_pair(QString const &img_name,
         return false;
     }
 }
-
