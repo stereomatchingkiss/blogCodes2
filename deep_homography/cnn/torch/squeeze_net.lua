@@ -36,17 +36,17 @@ function create_model(input_channels, output_class)
     net:add(fire_module(128, 16, 64, 64))
     net:add(nn.SpatialMaxPooling(3,3,2,2))
     
-    fire_module(128, 32, 128, 128)
-    fire_module(256, 32, 128, 128)
-    nn.SpatialMaxPooling(3,3,2,2)
+    net:add(fire_module(128, 32, 128, 128))
+    net:add(fire_module(256, 32, 128, 128))
+    net:add(nn.SpatialMaxPooling(3,3,2,2))
     
-    fire_module(256, 48, 192, 192)
-    fire_module(192*2, 48, 192, 192)
-    fire_module(192*2, 64, 256, 256)
-    fire_module(512, 64, 256, 256)
+    net:add(fire_module(256, 48, 192, 192))
+    net:add(fire_module(192*2, 48, 192, 192))
+    net:add(fire_module(192*2, 64, 256, 256))
+    net:add(fire_module(512, 64, 256, 256))
     
-    nn.View(512 * 7 * 7)
-    nn.Linear(512 * 7 * 7, output_class)
+    net:add(nn.View(512 * 7 * 7))
+    net:add(nn.Linear(512 * 7 * 7, output_class))
     
     return net
     
