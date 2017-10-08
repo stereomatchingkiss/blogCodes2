@@ -1,9 +1,7 @@
 require 'cunn'
-require 'image'
 require 'nn'
 require 'optim'
 require 'torch'
-require 'paths'
 
 require 'squeeze_net'
 require 'utils'
@@ -14,10 +12,8 @@ cmd:option('-folder','../../data/ms_coco_train_gray_10000','Folder contain image
 cmd:option('-batch_size',100,'Batch size of training')
 cmd:option('-loss_record_step',100,'How many steps the program should record training results')
 cmd:option('-total_steps', 500, 'Total training steps')
-
-params = cmd:parse(arg)
-
-folder = params['folder']
+cmd:option('-save_as', 'squeeze_homo', 'Where are the models and loss record save at')
+local arg_params = cmd:parse(arg)
 
 local function deep_copy(tbl)
    -- creates a copy of a network with new modules and the same tensors
@@ -35,8 +31,8 @@ local function deep_copy(tbl)
    return copy
 end
 
-function train(batch_size, loss_record_step, total_steps)
-        
+function train(batch_size, loss_record_step, total_steps)            
+    local folder = arg_params['folder']
     local imgs_name, delta = read_imgs_info(folder .. '/info.txt')
     local net = create_model(2, 8)
     local img_len = #imgs_name
@@ -81,7 +77,7 @@ function train(batch_size, loss_record_step, total_steps)
             file:write(i .. ':total loss = ' .. total_loss/loss_record_step .. '\n')
             total_loss = 0
             local model = deep_copy(net):float():clearState()
-            torch.save('squeeze_homo_' .. i, model)
+            torch.save(arg_params['save_as'] .. i, model)
         end
         
         if i == 30000 then 
@@ -97,8 +93,8 @@ function train(batch_size, loss_record_step, total_steps)
     
     net:clearState()
     net = net:float()
-    torch.save('squeeze_homo', net)--]]    
+    torch.save(arg_params['save_as'], net)--]]    
     
 end    
 
-train(params['batch_size'], params['loss_record_step'], params['total_steps'])
+train(arg_params['batch_size'], arg_params['loss_record_step'], arg_params['total_steps'])
