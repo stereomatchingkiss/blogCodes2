@@ -51,7 +51,9 @@ local function test()
     --criterion = criterion:cuda()
     delta = delta:cuda()
                     
-    local total_loss = 0    
+    local total_loss = 0
+    local max_loss = 0
+    local min_loss = 99999999
     local start_time = os.time()
     for i = 1, total_step do
         local offset = ((i-1) * batch_size) % img_len        
@@ -62,12 +64,16 @@ local function test()
         local predict_output = net:forward(input_tensor)
         --local loss = criterion:forward(predict_output, labels)
         local loss = euclidean_distance(predict_output, labels)
+        if loss < min_loss then min_loss = loss end 
+        if loss > max_loss then max_loss = loss end
         
         total_loss = total_loss + loss
         print(i, ':loss = ', loss / batch_size)        
     end
     
-    print('total loss = ', total_loss / total_step / batch_size)
+    print('average loss = ', total_loss / total_step / batch_size)
+    print('max loss = ', max_loss)
+    print('min loss = ', min_loss)
     
     local end_time = os.time()
     local elapsed_time = os.difftime(end_time - start_time)
