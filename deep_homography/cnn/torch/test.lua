@@ -42,13 +42,8 @@ local function test()
     
     local net = torch.load(params['model'])    
     local total_step = img_len / batch_size        
-    local criterion = nn.AbsCriterion()    
-    
-    print('total setp:' .. total_step, type(total_step))
-    
-    ---[[
-    net = net:cuda()
-    --criterion = criterion:cuda()
+        
+    net = net:cuda()    
     delta = delta:cuda()
     net:evaluate()
                     
@@ -62,8 +57,7 @@ local function test()
         input_tensor = input_tensor / 255.0
         local labels = delta[{ {offset + 1, offset + batch_size}, {} }]
         
-        local predict_output = net:forward(input_tensor)
-        --local loss = criterion:forward(predict_output, labels)
+        local predict_output = net:forward(input_tensor)        
         local loss = euclidean_distance(predict_output, labels)
         if loss < min_loss then min_loss = loss end 
         if loss > max_loss then max_loss = loss end
@@ -78,8 +72,7 @@ local function test()
     
     local end_time = os.time()
     local elapsed_time = os.difftime(end_time - start_time)
-    print('spend ' .. elapsed_time .. 's to test')   
-    --]]
+    print('spend ' .. elapsed_time .. 's to test')
 end    
 
 test()
