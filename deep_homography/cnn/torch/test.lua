@@ -50,6 +50,7 @@ local function test()
     net = net:cuda()
     --criterion = criterion:cuda()
     delta = delta:cuda()
+    net:evaluate()
                     
     local total_loss = 0
     local max_loss = 0
