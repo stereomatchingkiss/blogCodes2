@@ -168,7 +168,10 @@ void generate_train_results(std::vector<file_info> const &info,
         Mat const pertube_cordi = inf.delta_ + inf.origin_cordi_;
 
         Mat resize_img = read_image(folder + "/" + inf.bp_img_, cv::IMREAD_COLOR);
-        Mat resize_img_pertube = read_image(folder + "/" + inf.bpp_img_, cv::IMREAD_COLOR);
+        Mat const hmat = getPerspectiveTransform(convert_to_pt<Point2f>(inf.origin_cordi_),
+                                                 convert_to_pt<Point2f>(pertube_cordi));
+        Mat resize_img_pertube;
+        warpPerspective(resize_img, resize_img_pertube, hmat, resize_img.size());
 
         polylines(resize_img, convert_to_pt<Point>(inf.origin_cordi_), true, {255, 0, 0}, 2);
         polylines(resize_img_pertube, convert_to_pt<Point>(pertube_cordi), true, {255, 0, 0}, 2);
