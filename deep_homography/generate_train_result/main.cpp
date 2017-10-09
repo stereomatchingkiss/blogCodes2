@@ -173,8 +173,9 @@ void generate_train_results(std::vector<file_info> const &info,
         polylines(resize_img, convert_to_pt<Point>(inf.origin_cordi_), true, {255, 0, 0}, 2);
         polylines(resize_img_pertube, convert_to_pt<Point>(pertube_cordi), true, {255, 0, 0}, 2);
         polylines(resize_img_pertube, convert_to_pt<Point>(predict_pertube_cordi), true, {0, 0, 255}, 2);
-        imwrite("origin_" + inf.bp_img_, resize_img);
-        imwrite("warp_" + inf.bp_img_, resize_img_pertube);
+        std::string const save_folder(parser.value("save_at").toStdString());
+        imwrite(save_folder + "/origin_" + inf.bp_img_, resize_img);
+        imwrite(save_folder + "/warp_" + inf.bp_img_, resize_img_pertube);
     }
 }
 
