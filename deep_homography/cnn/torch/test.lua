@@ -67,7 +67,7 @@ local function test()
         print(i, ':loss = ', loss / batch_size)        
     end
     
-    print('total loss = ', total_loss / total_step)
+    print('total loss = ', total_loss / total_step / batch_size)
     
     local end_time = os.time()
     local elapsed_time = os.difftime(end_time - start_time)
