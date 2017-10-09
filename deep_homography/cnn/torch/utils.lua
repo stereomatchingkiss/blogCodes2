@@ -57,11 +57,12 @@ Read images in the folder
 @return A pair of images
 --]]    
 function read_imgs(imgs_name, folder, start, finish)
-    local output_tensor = torch.Tensor(finish - start + 1, 2, 128, 128)
-    
+    local output_tensor = torch.Tensor(finish - start + 1, 2, 128, 128)    
+    local j = 1
     for i = start, finish do        
-        output_tensor[ { {i}, {1}, {}, {} } ] = image.load(folder .. '/' .. imgs_name[i][1], 1, 'byte')
-        output_tensor[ { {i}, {2}, {}, {} } ] = image.load(folder .. '/' .. imgs_name[i][2], 1, 'byte')
+        output_tensor[ { {j}, {1}, {}, {} } ] = image.load(folder .. '/' .. imgs_name[i][1], 1, 'byte')
+        output_tensor[ { {j}, {2}, {}, {} } ] = image.load(folder .. '/' .. imgs_name[i][2], 1, 'byte')
+        j = j + 1
     end    
     
     return output_tensor
