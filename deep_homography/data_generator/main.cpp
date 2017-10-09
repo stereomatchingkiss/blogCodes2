@@ -29,6 +29,7 @@
  * @param out_file_ this file will save the corners points of associate image
  * @param pertube_dist_ uniform int distribution to pretube the points of input
  * @param rd_ random number generator of dist
+ * @param save_warped_image_ save the image after resize and warped and vice versa
  */
 struct parsed_data
 {
@@ -40,6 +41,7 @@ struct parsed_data
     std::uniform_int_distribution<int> pertube_dist_;
     std::random_device rd_;
     bool save_as_color_ = false;
+    bool save_warped_image_ = false;
     QString save_at_;
 };
 
@@ -63,6 +65,9 @@ void create_parser(QCommandLineParser &parser);
  * x3 of patch I\ty3 of patch I\tx4 of patch I\ty4 of patch I\n
  *
  * (x1,y1)~(x4,y4) are top left, top right, bottom left, bottom right
+ *
+ * If you set save_warped_image as true, every line will add the
+ * image name before warped and wpared(ex : 01_bp.jpg\t01_bpp.jpg\n)
  *
  * @param img_name name of the image
  * @param inout This struct save the settings
@@ -134,6 +139,7 @@ void parse_command_line(QCommandLineParser const &parser, parsed_data &inout)
     inout.save_at_ = parser.value("output");
     inout.out_file_.open((parser.value("output") + "/info.txt").toStdString());
     inout.save_as_color_ = parser.value("debug").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
+    inout.save_warped_image_ = parser.value("save_warped_image").compare("false", Qt::CaseInsensitive) == 0 ? false : true;
 }
 
 /**
@@ -196,12 +202,16 @@ void create_parser(QCommandLineParser &parser)
                       "Where to save generated images and homography",
                       "output"});
     parser.addOption({{"d", "debug"},
-                      "true will print/show debug message/image, false will not. Default value is false",
+                      "True will print/show debug message/image, false will not. Default value is false",
                       "debug", "false"});
     parser.addOption({{"c", "color"},
-                      "true will save generated image as color image(b,g,r), false will be gray image.\n"
+                      "True will save generated image as color image(b,g,r), false will be gray image.\n"
                       "Default value is false",
                       "color", "false"});
+    parser.addOption({{"p", "save_warped_image"},
+                      "True will save the image after resize and warped and vice versa.\n"
+                      "Default value is false. Save image will have postfix bp.jpg bpp.jpg.",
+                      "save_warped_image", "false"});
 }
 
 void draw_lines(point_type const &points, cv::Mat &inout)
@@ -227,12 +237,7 @@ void write_points(point_type const &i_pts, point_type const &ip_pts, std::ofstre
        out_file<<(ip_pts[i].x - i_pts[i].x)<<"\t"<<(ip_pts[i].y - i_pts[i].y)<<"\t";
     }
     for(size_t i = 0; i != 4; ++i){
-        out_file<<i_pts[i].x<<"\t"<<i_pts[i].y;
-        if(i != 3){
-            out_file<<"\t";
-        }else{
-            out_file<<"\n";
-        }
+        out_file<<i_pts[i].x<<"\t"<<i_pts[i].y<<"\t";
     }
 }
 
@@ -243,8 +248,17 @@ bool generate_image_pair(QString const &img_name, parsed_data &pd)
         cv::resize(img_i, img_i, {320, 240});
         auto const origin_pts = random_crop(img_i.size(), 128, pd.pertube_dist_, pd.rd_);
         auto const pertube_pts = pertube_points(origin_pts, pd.pertube_dist_, pd.rd_);
-        cv::Mat const hmat = cv::getPerspectiveTransform(origin_pts, pertube_pts).inv(cv::DECOMP_SVD);
+        cv::Mat const hmat = cv::getPerspectiveTransform(origin_pts, pertube_pts).inv(cv::DECOMP_SVD);                
+
         cv::Mat img_ip; //image I' mentioned by the paper
+        if(pd.save_warped_image_){
+            std::string const base_name = QFileInfo(img_name).completeBaseName().toStdString();
+            std::string const file_prefix = pd.save_at_.toStdString() + "/" + base_name;
+            cv::imwrite(file_prefix + "_bp.jpg", img_i);
+            cv::warpPerspective(img_i, img_ip, hmat, img_i.size());
+            cv::imwrite(file_prefix + "_bpp.jpg", img_ip);
+        }
+
         if(!pd.save_as_color_){
             cv::cvtColor(img_i, img_i, CV_BGR2GRAY);
         }
@@ -270,6 +284,7 @@ bool generate_image_pair(QString const &img_name, parsed_data &pd)
             cv::imwrite(file_prefix + "_pp.jpg", img_ip(rect));            
             pd.out_file_<<(base_name + "_p.jpg")<<"\t"<<(base_name + "_pp.jpg")<<"\t";
             write_points(origin_pts, pertube_pts, pd.out_file_);
+            pd.out_file_<<(base_name + "_bp.jpg")<<"\t"<<(base_name + "_bpp.jpg")<<"\n";
         }
 
         return true;
