@@ -42,16 +42,14 @@ local function test()
     
     local net = torch.load(params['model'])    
     local total_step = img_len / batch_size        
-    local criterion = nn.AbsCriterion()    
-    
-    print('total setp:' .. total_step, type(total_step))
-    
-    ---[[
-    net = net:cuda()
-    --criterion = criterion:cuda()
+        
+    net = net:cuda()    
     delta = delta:cuda()
+    net:evaluate()
                     
-    local total_loss = 0    
+    local total_loss = 0
+    local max_loss = 0
+    local min_loss = 99999999
     local start_time = os.time()
     for i = 1, total_step do
         local offset = ((i-1) * batch_size) % img_len        
@@ -59,20 +57,22 @@ local function test()
         input_tensor = input_tensor / 255.0
         local labels = delta[{ {offset + 1, offset + batch_size}, {} }]
         
-        local predict_output = net:forward(input_tensor)
-        --local loss = criterion:forward(predict_output, labels)
+        local predict_output = net:forward(input_tensor)        
         local loss = euclidean_distance(predict_output, labels)
+        if loss < min_loss then min_loss = loss end 
+        if loss > max_loss then max_loss = loss end
         
         total_loss = total_loss + loss
         print(i, ':loss = ', loss / batch_size)        
     end
     
-    print('total loss = ', total_loss / total_step)
+    print('average loss = ', total_loss / total_step / batch_size)
+    print('max loss = ', max_loss)
+    print('min loss = ', min_loss)
     
     local end_time = os.time()
     local elapsed_time = os.difftime(end_time - start_time)
-    print('spend ' .. elapsed_time .. 's to test')   
-    --]]
+    print('spend ' .. elapsed_time .. 's to test')
 end    
 
 test()
