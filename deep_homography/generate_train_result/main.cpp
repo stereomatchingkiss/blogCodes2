@@ -137,7 +137,8 @@ vector<T> convert_to_pt(cv::Mat const &input)
 {
     vector<T> draw_points;
     for(size_t i = 0; i != 8; ){
-        T const pt(input.at<float>(0, i), input.at<float>(0, i + 1));
+        int const id = static_cast<int>(i);
+        T const pt(input.at<float>(0, id), input.at<float>(0, id + 1));
         i +=2;
         draw_points.emplace_back(pt);
     }
@@ -217,7 +218,7 @@ std::vector<file_info> parse_info_txt(QCommandLineParser const &parser)
             for(size_t i = 0; i != 8; ++i){
                 float val = 0;
                 stream>>val;
-                points.at<float>(0, i) = val;
+                points.at<float>(0, static_cast<int>(i)) = val;
             }
         };
         copy_points(info.delta_);
