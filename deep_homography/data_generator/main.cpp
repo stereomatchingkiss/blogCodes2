@@ -65,7 +65,7 @@ void create_parser(QCommandLineParser &parser);
  * x3 of patch I\ty3 of patch I\tx4 of patch I\ty4 of patch I\n
  *
  * delta (x1, y1) ~ delta (x4, y4) are the delta mentioned by
- * the paper. (x1,y1)~(x4,y4) are the pertube coordinate
+ * the paper. (x1,y1)~(x4,y4) are the original coordinate(coordinate without pertube)
  * All of them sort by the order top left, top right, bottom left, bottom right
  *
  * If you set save_warped_image as true, every line will add the
