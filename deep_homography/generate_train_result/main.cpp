@@ -215,10 +215,8 @@ std::vector<file_info> parse_info_txt(QCommandLineParser const &parser)
         auto copy_points = [&info, &stream](cv::Mat &points)
         {
             points.create(1, 8, CV_32F);
-            for(size_t i = 0; i != 8; ++i){
-                float val = 0;
-                stream>>val;
-                points.at<float>(0, static_cast<int>(i)) = val;
+            for(size_t i = 0; i != 8; ++i){                
+                stream>>points.at<float>(0, static_cast<int>(i));
             }
         };
         copy_points(info.delta_);
