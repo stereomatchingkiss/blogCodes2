@@ -201,7 +201,7 @@ void create_parser(QCommandLineParser &parser)
                       "Maximum size of generated data.Default value is 10000",
                       "max_size", "10000"});
     parser.addOption({{"o", "output"},
-                      "Where to save generated images and homography",
+                      "The place of saving generated images and information",
                       "output"});
     parser.addOption({{"d", "debug"},
                       "True will print/show debug message/image, false will not. Default value is false",
