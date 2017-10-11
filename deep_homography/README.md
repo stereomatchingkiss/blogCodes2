@@ -2,6 +2,7 @@
 
 This project implement the algorithm record in the paper [Deep Image Homography Estimation](https://arxiv.org/pdf/1606.03798.pdf).
 The network is trained and tested by torch, the other part are implemented by c++.
+If you want to know how to algorithm work, please check this [blog](http://qtandopencv.blogspot.my/2017/10/modern-way-to-estimate-homography.html)
 
 # Project layout
 
@@ -31,6 +32,8 @@ The model is trained by torch and able to load by the opencv dnn module, that me
 run the model on all of the major platforms(windows, mac, linux, android, ios).
 
 # Results
+
+<img src="https://4.bp.blogspot.com/-l8LxRg6n5c0/Wd2gYC7geaI/AAAAAAAABFE/JNew1x2akPsQkgy6oEgjWb96svAwdKkMwCLcBGAs/s1600/montage.jpg">
 
 Results of my implementation is outperform the paper(my average loss 2.58, paper is 9.2), 
 overall performance of my model is better than the paper more than 3 times(9.2/2.58 = 3.57).
