@@ -73,7 +73,8 @@ std::vector<std::vector<cv::Point>> get_text_contours(cv::Mat const &input)
 
 void extract_cow_number()
 {
-    Mat input = imread("../forum_quest/data/cow_02.jpg");
+    std::string const img_name = "cow_00";
+    Mat input = imread("../forum_quest/data/" + img_name + ".jpg");
     cout<<input.size()<<endl;
     if(input.empty()){
         cerr<<"cannot open image\n";
@@ -92,7 +93,7 @@ void extract_cow_number()
     RNG rng(12345);
     Mat text_mask(text_region.size(), CV_8UC3);
 
-    string const vocabulary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // must have the same order as the classifier output classes
+    string vocabulary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // must have the same order as the classifier output classes
     Ptr<text::OCRHMMDecoder::ClassifierCallback> ocr = text::loadOCRHMMClassifierCNN("OCRBeamSearch_CNN_model_data.xml.gz");
     vector<int> out_classes;
     vector<double> out_confidences;
@@ -107,6 +108,9 @@ void extract_cow_number()
                 << "\" with confidence "
                 << out_confidences[0] << std::endl;
         //ocv::print_contour_attribute(text_contours[i], 0.001, cout);
+        putText(crop_region, string(1, vocabulary[out_classes[0]]), Point(text_loc.x, text_loc.y - 5),
+                FONT_HERSHEY_SIMPLEX, 2, Scalar(255, 0, 0), 2);
+
         imshow("text_mask", text_mask);
         imshow("crop_region", crop_region(text_loc));
         waitKey();
@@ -115,5 +119,6 @@ void extract_cow_number()
     imshow("crop", crop_region);
     imshow("text_region", text_region);
     imshow("text mask", text_mask);
+    cv::imwrite(img_name + "_crop_region.jpg", crop_region);
     waitKey();
 }
