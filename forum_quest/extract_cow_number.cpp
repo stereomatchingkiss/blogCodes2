@@ -30,13 +30,16 @@ cv::Mat fore_ground_extract(cv::Mat const &input)
     //process on blue channel as andrew suggest, because it is
     //easier to get rid of vegetation
     Mat text_region = bgr[0];
-    blur(text_region, text_region, {3, 3});
-    threshold(text_region, text_region, 0, 255, cv::THRESH_OTSU);
     medianBlur(text_region, text_region, 5);
+    threshold(text_region, text_region, 0, 255, cv::THRESH_OTSU);
+
+    //further remove small noise, unwanted border
     Mat const erode_kernel = getStructuringElement(MORPH_ELLIPSE, {11, 11});
     erode(text_region, text_region, erode_kernel);
     Mat const dilate_kernel = getStructuringElement(MORPH_ELLIPSE, {7, 7});
     dilate(text_region, text_region, dilate_kernel);
+
+    //change the text from black to white, easier to extract as contours
     bitwise_not(text_region, text_region);
 
     return text_region;
@@ -44,21 +47,22 @@ cv::Mat fore_ground_extract(cv::Mat const &input)
 
 std::vector<std::vector<cv::Point>> get_text_contours(cv::Mat const &input)
 {
+    //Find the contours of candidate text, remove outlier with
+    //some contour properties
     //Try ERFilter of opencv if accuracy of this solution is low
     vector<cpoints> contours;
     findContours(input, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
     auto outlier = [](cpoints const &cp)
     {
-        auto const area = cv::boundingRect(cp).area();
+        auto const rect = cv::boundingRect(cp);
 
-        return area < 900 || area >= 10000;
+        return rect.width > rect.height && (rect.area() < 900 || rect.area() >= 10000);
     };
     auto it = std::remove_if(std::begin(contours), std::end(contours), outlier);
-    contours.erase(it, std::end(contours));//*/
+    contours.erase(it, std::end(contours));
 
     std::sort(std::begin(contours), std::end(contours), [](cpoints const &lhs, cpoints const &rhs)
     {
-
         return cv::boundingRect(lhs).x < cv::boundingRect(rhs).x;
     });
 
@@ -79,6 +83,7 @@ void extract_cow_number()
         cv::resize(input, input, {1000, (int)(1000.0/input.cols * input.rows)}, 0.25, 0.25);
     }
 
+    //Assume the text always lie on top 1/3 of the image
     Mat crop_region;
     input(Rect(0, 0, input.cols, input.rows/3)).copyTo(crop_region);
 
@@ -95,7 +100,7 @@ void extract_cow_number()
         Scalar const color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
         drawContours(text_mask, text_contours, static_cast<int>(i), color, 2);
         auto const text_loc = boundingRect(text_contours[i]);
-        //crop_region can gain highest accuracy
+        //crop_region can gain highest accuracy since it is trained on scene image
         rectangle(crop_region, text_loc, color, 2);
         ocr->eval(crop_region(text_loc), out_classes, out_confidences);
         cout << "OCR output = \"" << vocabulary[out_classes[0]]
