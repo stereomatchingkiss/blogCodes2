@@ -73,7 +73,7 @@ std::vector<std::vector<cv::Point>> get_text_contours(cv::Mat const &input)
 
 void extract_cow_number()
 {
-    std::string const img_name = "cow_00";
+    std::string const img_name = "cow_02";
     Mat input = imread("../forum_quest/data/" + img_name + ".jpg");
     cout<<input.size()<<endl;
     if(input.empty()){
@@ -89,6 +89,7 @@ void extract_cow_number()
     input(Rect(0, 0, input.cols, input.rows/3)).copyTo(crop_region);
 
     Mat const text_region = fore_ground_extract(crop_region);
+    cv::imwrite(img_name + "_foreground.jpg", text_region);
     vector<cpoints> const text_contours = get_text_contours(text_region);
     RNG rng(12345);
     Mat text_mask(text_region.size(), CV_8UC3);
