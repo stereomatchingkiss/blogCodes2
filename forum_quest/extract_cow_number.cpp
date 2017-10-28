@@ -93,7 +93,7 @@ void extract_cow_number()
     RNG rng(12345);
     Mat text_mask(text_region.size(), CV_8UC3);
 
-    string vocabulary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // must have the same order as the classifier output classes
+    string const vocabulary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // must have the same order as the classifier output classes
     Ptr<text::OCRHMMDecoder::ClassifierCallback> ocr = text::loadOCRHMMClassifierCNN("OCRBeamSearch_CNN_model_data.xml.gz");
     vector<int> out_classes;
     vector<double> out_confidences;
