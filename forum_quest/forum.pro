@@ -16,7 +16,9 @@ SOURCES += main.cpp \
     ../../ocv_libs/utility/hsv_range_observer.cpp \
     ../../ocv_libs/core/attribute.cpp \
     marble_slab.cpp \
-    extract_cow_number.cpp
+    extract_cow_number.cpp \
+    features_utility.cpp \
+    ../../ocv_libs/utility/hsv_range_observer.cpp
 
 HEADERS += \
     #cotton_ball.hpp \
@@ -24,4 +26,5 @@ HEADERS += \
     mapping_files.hpp \
     so_obj_detect_00.hpp \
     marble_slab.hpp \
-    extract_cow_number.hpp
+    extract_cow_number.hpp \
+    features_utility.hpp

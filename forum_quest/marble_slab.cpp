@@ -1,5 +1,7 @@
 #include "marble_slab.hpp"
 
+#include "features_utility.hpp"
+
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>
@@ -7,6 +9,13 @@
 #include <opencv2/imgproc.hpp>
 
 #include <iostream>
+
+/**
+ * This file solve the problem at
+ * https://stackoverflow.com/questions/46504836/find-contours-in-images-with-complex-background-and-rich-texture-in-opencv-3-3/46520615#46520615
+ *
+ * lzg@jimstudio.net
+ */
 
 namespace {
 
@@ -63,78 +72,14 @@ void marble_slab_top_right()
 using namespace std;
 using namespace cv;
 
-std::tuple<vector<KeyPoint>, vector<KeyPoint>, vector<DMatch>>
-find_good_points_to_draw(vector<KeyPoint> const &matches1,
-                         vector<KeyPoint> const &matches2,
-                         cv::Mat const &hmat)
+Mat read_image(std::string const &img_name)
 {
-    constexpr double inlier_threshold = 2.5;
-    vector<KeyPoint> inliers1, inliers2;
-    std::vector<cv::DMatch> good_matches;
-    //measure distance of feature points after mapping
-    //if their distance is small enough, we treat them
-    //as inliers and vice versa
-    for(size_t i = 0; i != matches1.size(); ++i){
-        cv::Mat col = cv::Mat::ones(3,1, CV_64F);
-        col.at<double>(0) = matches1[i].pt.x;
-        col.at<double>(1) = matches1[i].pt.y;
-        col = hmat * col;
-        col /= col.at<double>(2);
-        double const dist = std::sqrt(std::pow(col.at<double>(0) - matches2[i].pt.x, 2) +
-                                      std::pow(col.at<double>(1) - matches2[i].pt.y, 2));
-        if(dist < inlier_threshold){
-            int const new_i = static_cast<int>(inliers1.size());
-            inliers1.emplace_back(matches1[i]);
-            inliers2.emplace_back(matches2[i]);
-            good_matches.emplace_back(cv::DMatch(new_i, new_i, 0));
-        }
+    Mat mat = imread(img_name);
+    if(mat.empty()){
+        throw std::runtime_error("cannot read img:" + img_name);
     }
 
-    return std::make_tuple(std::move(inliers1), std::move(inliers2), std::move(good_matches));
-}
-
-Mat find_homography(Mat const &train, Mat const &query)
-{
-    Ptr<AKAZE> akaze = AKAZE::create();
-    vector<KeyPoint> query_kpts, train_kpts;
-    cv::Mat query_desc, train_desc;
-    akaze->detectAndCompute(train, cv::noArray(), query_kpts, query_desc);
-    akaze->detectAndCompute(query, cv::noArray(), train_kpts, train_desc);
-
-    BFMatcher matcher(NORM_HAMMING);
-    vector<vector<DMatch>> nn_matches;
-    //top 2 matches because we need to apply David Lowe's ratio test
-    matcher.knnMatch(train_desc, query_desc, nn_matches, 2);
-
-    vector<KeyPoint> matches1, matches2;
-    for(auto const &m : nn_matches){
-        float const dist1 = m[0].distance;
-        float const dist2 = m[1].distance;
-        if(dist1 < 0.7 * dist2){
-            matches1.emplace_back(train_kpts[m[0].queryIdx]);
-            matches2.emplace_back(query_kpts[m[0].trainIdx]);
-        }
-    }
-
-    if(matches1.size() > 4){
-        std::vector<cv::Point2f> points1, points2;
-        for(size_t i = 0; i != matches1.size(); ++i){
-            points1.emplace_back(matches1[i].pt);
-            points2.emplace_back(matches2[i].pt);
-        }
-        Mat hmat = cv::findHomography(points1, points2, cv::RANSAC, 5.0);
-        Mat match_img;
-        vector<KeyPoint> inliers_1, inliers_2;
-        vector<DMatch> good_matches;
-        std::tie(inliers_1, inliers_2, good_matches) = find_good_points_to_draw(matches1, matches2, hmat);
-        drawMatches(query, inliers_1, train, inliers_2, good_matches, match_img);
-        cv::resize(match_img, match_img, {}, 0.5, 0.5);
-        imwrite("match_img.jpg", match_img);
-
-        return hmat;
-    }
-
-    return {};
+    return mat;
 }
 
 pair<Mat, vector<Point2f>> get_target_marble(Mat const &input, vector<Point2f> const &src_pts)
@@ -163,56 +108,227 @@ pair<Mat, vector<Point2f>> get_target_marble(Mat const &input, vector<Point2f> c
     return std::make_pair(std::move(target), std::move(dst));
 }
 
+vector<Point2f> get_marble_points(std::string const &name, float ratio = 1)
+{
+    if(name == "marble_00_00"){
+        Point2f const tl = Point2f(50,18) * ratio;
+        Point2f const tr = Point2f(1230,78) * ratio;
+        Point2f const br = Point2f(1229,922) * ratio;
+        Point2f const bl = Point2f(51,884) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_01_00"){
+        Point2f const tl = Point2f(36,65) * ratio;
+        Point2f const tr = Point2f(990,69) * ratio;
+        Point2f const br = Point2f(979,523) * ratio;
+        Point2f const bl = Point2f(78,500) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_02_00"){
+        Point2f const tl = Point2f(46,80) * ratio;
+        Point2f const tr = Point2f(963,76) * ratio;
+        Point2f const br = Point2f(955,577) * ratio;
+        Point2f const bl = Point2f(65,574) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_03_00"){
+        Point2f const tl = Point2f(76,85) * ratio;
+        Point2f const tr = Point2f(1879,81) * ratio;
+        Point2f const br = Point2f(1852,945) * ratio;
+        Point2f const bl = Point2f(76,995) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_04_00"){
+        Point2f const tl = Point2f(36,173) * ratio;
+        Point2f const tr = Point2f(1249,167) * ratio;
+        Point2f const br = Point2f(1225,768) * ratio;
+        Point2f const bl = Point2f(14,826) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_05_00"){
+        Point2f const tl = Point2f(40,71) * ratio;
+        Point2f const tr = Point2f(1216,81) * ratio;
+        Point2f const br = Point2f(1223,847) * ratio;
+        Point2f const bl = Point2f(49,896) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_06_00"){
+        Point2f const tl = Point2f(60,11) * ratio;
+        Point2f const tr = Point2f(741,19) * ratio;
+        Point2f const br = Point2f(732,451) * ratio;
+        Point2f const bl = Point2f(44,445) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_07_00"){
+        Point2f const tl = Point2f(16,78) * ratio;
+        Point2f const tr = Point2f(929,81) * ratio;
+        Point2f const br = Point2f(930,577) * ratio;
+        Point2f const bl = Point2f(40,584) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_08_00"){
+        Point2f const tl = Point2f(55,33) * ratio;
+        Point2f const tr = Point2f(744,43) * ratio;
+        Point2f const br = Point2f(728,439) * ratio;
+        Point2f const bl = Point2f(58,419) * ratio;
+        return {tl, tr, br, bl};
+    }else if(name == "marble_09_00"){
+        Point2f const tl = Point2f(109,369) * ratio;
+        Point2f const tr = Point2f(3508,399) * ratio;
+        Point2f const br = Point2f(3340,2193) * ratio;
+        Point2f const bl = Point2f(117,2180) * ratio;
+        return {tl, tr, br, bl};
+    }
+
+    return {};
 }
 
-
-/**
- * This file solve the problem at
- * https://stackoverflow.com/questions/46504836/find-contours-in-images-with-complex-background-and-rich-texture-in-opencv-3-3/46520615#46520615
- */
-
-void marble_slab()
+Mat find_hs_hist(Mat const &input)
 {
-    using namespace cv;
-    using namespace std;
+    int hist_size[] = {180, 256};
+    int channels[] = {0, 1};
 
-    Mat input = imread("../forum_quest/data/complex_bg.jpg");
+    float hranges[] = {0, 180};
+    float sranges[] = {0, 256};
+
+    const float* ranges[] = {hranges, sranges};
+
+    Mat input_hist;
+    calcHist(&input, 1, channels, Mat(), input_hist, 2, hist_size, ranges);
+
+    return input_hist;
+}
+
+void histogram_backprojection()
+{
+    std::string const marble_name("marble_02_00");
+    Mat input = read_image("../forum_quest/data/" + marble_name + ".jpg");
+    //Mat target = read_image("../forum_quest/data/" + marble_name + "_crop.jpg");
+    Mat target = input(Rect(input.cols/2, input.rows/2, 200, 200)).clone();
+
+    Mat input_hsv;
+    Mat target_hsv;
+    cvtColor(input, input_hsv, CV_BGR2HSV);
+    cvtColor(target, target_hsv, CV_BGR2HSV);
+
+    Mat const target_hist = find_hs_hist(target_hsv);
+    int channels[] = {0, 1};
+    float hranges[] = {0, 180};
+    float sranges[] = {0, 256};
+    const float* ranges[] = {hranges, sranges};
+    Mat back_project;
+    calcBackProject(&input_hsv, 1, channels, target_hist, back_project, ranges);
+    /*cv::Mat const disc = cv::getStructuringElement(cv::MORPH_ELLIPSE,
+                   cv::Size(9, 9));
+    erode(back_project, back_project, disc);
+    dilate(back_project, back_project, disc);//*/
+    //cv::filter2D(back_project, back_project, -1, disc);
+    cv::normalize(back_project, back_project, 0, 255, CV_MINMAX);
+    back_project.convertTo(back_project, CV_8U);
+
+    cv::Mat mask;
+    cv::threshold(back_project, mask, 200, 255, cv::THRESH_BINARY);
+    cv::Mat result;
+    input.copyTo(result, mask);
+
+    imshow("back project", back_project);
+    imshow("result", result);
+    waitKey();
+}
+
+void feature_matches()
+{
+    std::string const marble_name("marble_00_00");
+    Mat input = imread("../forum_quest/data/" + marble_name + ".jpg");
     if(input.empty()){
         cerr<<"cannot open image\n";
         return;
     }
 
-    Point2f const tl = Point(50,18);
-    Point2f const tr = Point(1230,78);
-    Point2f const br = Point(1229,922);
-    Point2f const bl = Point(51,884);
-    vector<Point2f> const src{tl, tr, br, bl};
-    vector<Point2f> dst;
+    vector<Point2f> marble_crop_points;
     Mat target;
-    std::tie(target, dst) = get_target_marble(input, src);
-    Mat const hmat = find_homography(input, target);
+    std::tie(target, marble_crop_points) = get_target_marble(input, get_marble_points(marble_name));
+    imwrite(marble_name + "_crop.jpg", target);
+    //target = imread("../forum_quest/data/" + marble_name + "_crop.jpg");
+    /*target = imread("../forum_quest/data/marble_00_00_crop.jpg");
+    if(target.empty()){
+        cerr<<"target is empty\n";
+    }
+    marble_crop_points = vector<Point2f>{Point(0,0), Point(target.cols -1,0),
+            Point(target.cols-1,target.rows-1), Point(0,target.rows-1)};//*/
+
+    input = read_image("../forum_quest/data/marble_00_02.jpg");
+    features_utility fu;
+    features_utility::key_point_vec matches1, matches2;
+    Mat hmat;
+    std::tie(matches1, matches2, hmat) = fu.find_homography(input, target);
 
     if(!hmat.empty()){
 
+        Mat match_draw = fu.draw_match_points(input, target, matches1, matches2, hmat);
+        cv::resize(match_draw, match_draw, {}, 0.5, 0.5);
         vector<Point2f> query_points;
         vector<Point> qpts;
-        perspectiveTransform(dst, query_points, hmat);
+        perspectiveTransform(marble_crop_points, query_points, hmat);
         for(auto const &pt : query_points){
             cout<<pt<<endl;
             qpts.emplace_back(pt);
         }
 
-        polylines(input, qpts, true, {255,0,0}, 2);
+        rectangle(input, boundingRect(qpts), {255, 0, 0}, 2);
+        //polylines(input, qpts, true, {0,255,0}, 2);
 
         imshow("crop", target);
+        imshow("draw", match_draw);
         imshow("result", input);
         waitKey();
 
-        cv::resize(target, target, {}, 0.5, 0.5);
         cv::resize(input, input, {}, 0.5, 0.5);
-        imwrite("crop.jpg", target);
         imwrite("marble_result.jpg", input);
     }else{
         cerr<<"cannot find homography matrix";
     }
+}
+
+}
+
+
+void marble_slab()
+{
+    //feature_matches();
+    //histogram_backprojection();
+    //threshold_segment();
+
+    Mat src = read_image("../forum_quest/data/nova.jpg");
+    //resize(src, src, {}, 0.5, 0.5);
+    Mat edges = read_image("../forum_quest/data/sobel.png");
+    cvtColor(edges, edges, CV_BGR2GRAY);
+    //cvtColor(src, gray, CV_BGR2GRAY);
+    //cout<<"to gray:"<<gray.size()<<endl;
+    //medianBlur(gray, gray, 3);
+    // Reduce the noise so we avoid false circle detection
+    //GaussianBlur( gray, gray, Size(9, 9), 2, 2 );
+
+    //Mat edges;
+    //Sobel(gray, edges, CV_8U, 3, 3, 5);
+
+    //Mat mag, ori;
+    //magnitude(Sx, Sy, edges);
+
+    //adaptiveThreshold(gray, gray, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
+    //                  cv::THRESH_BINARY, 5, 2);
+    //threshold(input, input, 0, 255, CV_THRESH_OTSU);
+    //Canny(input, input, 30, 60);
+    vector<Vec3f> circles;
+    // Apply the Hough Transform to find the circles
+    cout<<"find circles"<<endl;
+    HoughCircles(edges, circles, CV_HOUGH_GRADIENT, 1, 30, 200, 100, 0, 150);
+    cout<<"circles found"<<endl;
+    // Draw the circles detected
+    for(size_t i = 0; i < circles.size(); ++i){
+        cout<<"draw circle:"<<i<<endl;
+        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radius = cvRound(circles[i][2]);
+        circle( src, center, 3, Scalar(0,255,0), -1, 8, 0 );// circle center
+        circle( src, center, radius, Scalar(0,0,255), 3, 8, 0 );// circle outline
+        cout << "center : " << center << "\nradius : " << radius << endl;
+    }//*/
+    cout<<"show src"<<endl;
+
+    imshow("src", src);
+    //imshow("gray", gray);
+    imshow("edges", edges);
+    waitKey();
 }
