@@ -13,9 +13,12 @@ public:
     features_utility();
 
     std::tuple<key_point_vec, key_point_vec, cv::Mat> find_homography(cv::Mat const &train, cv::Mat const &query);
+    std::tuple<std::vector<cv::KeyPoint>, std::vector<cv::KeyPoint>>
+    get_match_points(cv::Mat const &train, cv::Mat const &query);
     cv::Mat draw_match_points(cv::Mat const &train, cv::Mat const &query,
                               key_point_vec const &kpts_1, key_point_vec const &kpts_2,
                               cv::Mat const &homography);
+    cv::Mat draw_match_points(cv::Mat const &train, cv::Mat const &query);
 };
 
 #endif // FEATURES_UTILITY_HPP
