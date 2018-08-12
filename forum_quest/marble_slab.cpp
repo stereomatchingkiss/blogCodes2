@@ -289,46 +289,5 @@ void marble_slab()
 {
     //feature_matches();
     //histogram_backprojection();
-    //threshold_segment();
-
-    Mat src = read_image("../forum_quest/data/nova.jpg");
-    //resize(src, src, {}, 0.5, 0.5);
-    Mat edges = read_image("../forum_quest/data/sobel.png");
-    cvtColor(edges, edges, CV_BGR2GRAY);
-    //cvtColor(src, gray, CV_BGR2GRAY);
-    //cout<<"to gray:"<<gray.size()<<endl;
-    //medianBlur(gray, gray, 3);
-    // Reduce the noise so we avoid false circle detection
-    //GaussianBlur( gray, gray, Size(9, 9), 2, 2 );
-
-    //Mat edges;
-    //Sobel(gray, edges, CV_8U, 3, 3, 5);
-
-    //Mat mag, ori;
-    //magnitude(Sx, Sy, edges);
-
-    //adaptiveThreshold(gray, gray, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-    //                  cv::THRESH_BINARY, 5, 2);
-    //threshold(input, input, 0, 255, CV_THRESH_OTSU);
-    //Canny(input, input, 30, 60);
-    vector<Vec3f> circles;
-    // Apply the Hough Transform to find the circles
-    cout<<"find circles"<<endl;
-    HoughCircles(edges, circles, CV_HOUGH_GRADIENT, 1, 30, 200, 100, 0, 150);
-    cout<<"circles found"<<endl;
-    // Draw the circles detected
-    for(size_t i = 0; i < circles.size(); ++i){
-        cout<<"draw circle:"<<i<<endl;
-        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radius = cvRound(circles[i][2]);
-        circle( src, center, 3, Scalar(0,255,0), -1, 8, 0 );// circle center
-        circle( src, center, radius, Scalar(0,0,255), 3, 8, 0 );// circle outline
-        cout << "center : " << center << "\nradius : " << radius << endl;
-    }//*/
-    cout<<"show src"<<endl;
-
-    imshow("src", src);
-    //imshow("gray", gray);
-    imshow("edges", edges);
-    waitKey();
+    //threshold_segment();    
 }
