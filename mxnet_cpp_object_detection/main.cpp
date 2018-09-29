@@ -5,6 +5,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/videoio.hpp>
 
 #include <mxnet-cpp/ndarray.h>
 
@@ -26,24 +27,53 @@ std::pair<cv::Mat, cv::Mat> load_image(std::string const &location, cv::Size con
     return {image, resize_img};
 }
 
-int main()try
+int main(int argc, char *argv[])try
 {    
-    std::string const prefix("C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco");
-    object_detector obj_det(prefix + ".params", prefix + ".json", mxnet::cpp::Context::gpu(0));
+    if(argc < 2){
+        cout<<"Please specify the location of the json"<<endl;
 
-    cv::Mat image, resize_img;
-    std::string const path("C:/Users/yyyy/programs/Qt/computer_vision_dataset/phone_images/car/");
-    std::tie(image, resize_img) = load_image(path + "car_1.jpg");
-    obj_det.forward(resize_img);
+        return -1;
+    }
 
-    auto const coco_class_names = create_coco_obj_detection_labels();
+    cv::FileStorage fs(argv[1], cv::FileStorage::READ);
+    if(fs.isOpened()){
+        object_detector obj_det(fs["model_params"].string(), fs["model_symbols"].string(), mxnet::cpp::Context::gpu(0));
+        viz::plot_object_detector_bboxes plotter(create_coco_obj_detection_labels(),
+                                                 static_cast<float>(fs["detect_confidence"].real()));
+        plotter.set_normalize_size(cv::Size(320, 256));
+        if(fs["media_is_image"].real() == 1.0){
+            cv::Mat image, resize_img;
+            std::tie(image, resize_img) = load_image(fs["input_media"].string());
+            obj_det.forward(resize_img);
 
-    viz::plot_object_detector_bboxes plotter(coco_class_names);
-    plotter.set_normalize_size(cv::Size(320, 256));
-    plotter.plot(resize_img, obj_det.get_outputs());
+            plotter.plot(resize_img, obj_det.get_outputs());
 
-    cv::imshow("plot", resize_img);
-    cv::waitKey();
+            cv::imshow("plot", resize_img);
+            cv::waitKey();
+        }else{
+            cv::VideoCapture capture;
+            if(capture.open(fs["input_media"].string())){
+                cv::Mat frame;
+                while(1){
+                    capture>>frame;
+                    if(!frame.empty()){
+                        obj_det.forward(frame);
+                        plotter.plot(frame, obj_det.get_outputs(), true);
+
+                        cv::imshow("plot", frame);
+                        int const key = cv::waitKey(10);
+                        if(key == 'q'){
+                            break;
+                        }
+                    }else{
+                        break;
+                    }
+                }
+            }
+        }
+    }else{
+        cout<<"cannot open file:"<<argv[1]<<endl;
+    }
 
     return 0;
 }catch(std::exception const &ex){
