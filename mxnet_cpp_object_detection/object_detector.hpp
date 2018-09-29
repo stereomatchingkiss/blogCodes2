@@ -35,8 +35,6 @@ public:
     mxnet::cpp::NDArray get_scores() const;
 
 private:
-    void Load_check_point();
-
     std::unique_ptr<mxnet::cpp::Context> context_;
     std::unique_ptr<mxnet::cpp::Executor> executor_;
     cv::Size input_size_;
