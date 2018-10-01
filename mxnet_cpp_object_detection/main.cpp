@@ -10,6 +10,7 @@
 #include <mxnet-cpp/ndarray.h>
 
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -52,14 +53,33 @@ int main(int argc, char *argv[])try
             cv::waitKey();
         }else{
             cv::VideoCapture capture;
+            cv::VideoWriter vwriter;
+            //you need the dll "openh264-1.7.0-win64.dll"(for opencv3.4.2) in order to encode the
+            //video by h264 encoder
+            bool const can_open_video = vwriter.open("yolov3.mp4",
+                                                     cv::VideoWriter::fourcc('H','2','6','4'),
+                                                     24.0, cv::Size(640, 360));
+
+            int frame_count = 0;
+            double elapsed = 0.0;
             if(capture.open(fs["input_media"].string())){
                 cv::Mat frame;
                 while(1){
                     capture>>frame;
                     if(!frame.empty()){
+                        ++frame_count;
+                        auto const start = std::chrono::system_clock::now();
                         obj_det.forward(frame);
+                        //must call wait because forward api of mxnet is async, else
+                        //measurement of the speed of inference wouldn't be accurate
+                        mxnet::cpp::NDArray::WaitAll();
+                        auto const end = std::chrono::system_clock::now();
+                        std::chrono::duration<double> const elapsed_seconds = end-start;
+                        elapsed += elapsed_seconds.count();
                         plotter.plot(frame, obj_det.get_outputs(), true);
-
+                        if(can_open_video){
+                            vwriter<<frame;
+                        }
                         cv::imshow("plot", frame);
                         int const key = cv::waitKey(10);
                         if(key == 'q'){
@@ -69,6 +89,10 @@ int main(int argc, char *argv[])try
                         break;
                     }
                 }
+            }
+            cout<<"total elapsed:"<<elapsed<<", total frame:"<<frame_count<<endl;
+            if(elapsed != 0.0){
+                cout<<"fps:"<<frame_count/elapsed<<endl;
             }
         }
     }else{
