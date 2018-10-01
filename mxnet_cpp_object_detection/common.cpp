@@ -8,15 +8,10 @@
 using namespace mxnet::cpp;
 
 NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, Context const &ctx)
-{
-    // convert BGR image from OpenCV to RGB in MXNet.
+{    
     cv::Mat rgb_image;
-    cv::cvtColor(bgr_image, rgb_image, cv::COLOR_BGR2RGB);
-    // convert to float32 from uint8
+    cv::cvtColor(bgr_image, rgb_image, cv::COLOR_BGR2RGB); 
     rgb_image.convertTo(rgb_image, CV_32FC3);
-    // flatten to single channel, and single row.
-    // a vector of raw pixel values, no copy
-    // construct NDArray from data buffer
     return NDArray(rgb_image.ptr<float>(),
                    Shape(1, static_cast<unsigned>(rgb_image.rows), static_cast<unsigned>(rgb_image.cols), 3),
                    ctx);
