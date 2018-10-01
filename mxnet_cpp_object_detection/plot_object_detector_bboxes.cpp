@@ -93,14 +93,12 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
 
         size_t const cls_id = static_cast<size_t>(labels.At(0, 0, i));
         auto const color = colors_[cls_id];
-        cv::Point pt1(static_cast<int>(bboxes.At(0, i, 0)), static_cast<int>(bboxes.At(0, i, 1)));
-        cv::Point pt2(static_cast<int>(bboxes.At(0, i, 2)), static_cast<int>(bboxes.At(0, i, 3)));
+        cv::Point pt1, pt2;
         std::tie(pt1, pt2) = get_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
                                         bboxes.At(0, i, 2), bboxes.At(0, i, 3),
                                         normalize, cv::Size(inout.cols, inout.rows));
         cv::rectangle(inout, pt1, pt2, color, 2);
 
-        // put text
         std::string txt;
         if (labels_.size() > cls_id) {
             txt += labels_[cls_id];
