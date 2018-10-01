@@ -14,8 +14,7 @@ object_detector::object_detector(std::string const &model_params,
                                  cv::Size const &input_size) :
     context_(new Context(context.GetDeviceType(), context.GetDeviceId())),
     input_size_(input_size)
-{
-    // load symbol and parameters
+{    
     Symbol net;
     std::map<std::string, NDArray> args, auxs;
     load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
@@ -23,7 +22,7 @@ object_detector::object_detector(std::string const &model_params,
     args["data"] = NDArray(Shape(1, static_cast<unsigned>(input_size.height),
                                  static_cast<unsigned>(input_size.width), 3), context);
     executor_.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
-                                   std::map<std::string, OpReqType>(), auxs));//*/
+                                   std::map<std::string, OpReqType>(), auxs));
 }
 
 object_detector::~object_detector()
@@ -40,8 +39,7 @@ void object_detector::forward(const cv::Mat &input)
     }
 
     auto data = cvmat_to_ndarray(resize_img_, *context_);
-    data.CopyTo(&executor_->arg_dict()["data"]);
-    NDArray::WaitAll();
+    data.CopyTo(&executor_->arg_dict()["data"]);    
     executor_->Forward(false);
 }
 
