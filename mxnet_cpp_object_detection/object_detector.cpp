@@ -20,7 +20,8 @@ object_detector::object_detector(std::string const &model_params,
     std::map<std::string, NDArray> args, auxs;
     load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
 
-    args["data"] = NDArray(Shape(1, input_size.height, input_size.width, 3), context);
+    args["data"] = NDArray(Shape(1, static_cast<unsigned>(input_size.height),
+                                 static_cast<unsigned>(input_size.width), 3), context);
     executor_.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
                                    std::map<std::string, OpReqType>(), auxs));//*/
 }
