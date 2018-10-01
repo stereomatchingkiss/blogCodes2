@@ -7,7 +7,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 
-#include <mxnet-cpp/ndarray.h>
+#include <mxnet-cpp/MxNetCpp.h>
 
 #include <iostream>
 #include <chrono>
