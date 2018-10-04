@@ -19,6 +19,8 @@ object_detector::object_detector(std::string const &model_params,
     std::map<std::string, NDArray> args, auxs;
     load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
 
+    //The shape of the input data must be the same, if you need different size,
+    //you could rebind the Executor or create a pool of Executor
     args["data"] = NDArray(Shape(1, static_cast<unsigned>(input_size.height),
                                  static_cast<unsigned>(input_size.width), 3), context);
     executor_.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
