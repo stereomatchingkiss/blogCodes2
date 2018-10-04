@@ -79,9 +79,14 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
 {
     using namespace mxnet::cpp;
 
-    auto labels = predict_results[0].Copy(Context(kCPU, 0));;
-    auto scores = predict_results[1].Copy(Context(kCPU, 0));;
-    auto bboxes = predict_results[2].Copy(Context(kCPU, 0));;
+    //1. predict_results get from the output of Executor(executor_->outputs)
+    //2. Must Set Context as cpu because we need process data by cpu later
+    auto labels = predict_results[0].Copy(Context(kCPU, 0));
+    auto scores = predict_results[1].Copy(Context(kCPU, 0));
+    auto bboxes = predict_results[2].Copy(Context(kCPU, 0));
+    //1. Should call wait because Forward api of Executor is async
+    //2. scores and labels could treat as one dimension array
+    //3. BBoxes can treat as 2 dimensions array
     bboxes.WaitToRead();
     scores.WaitToRead();
     labels.WaitToRead();
@@ -93,10 +98,12 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
 
         size_t const cls_id = static_cast<size_t>(labels.At(0, 0, i));
         auto const color = colors_[cls_id];
+        //pt1 : top left; pt2 : bottom right
         cv::Point pt1, pt2;
-        std::tie(pt1, pt2) = get_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
-                                        bboxes.At(0, i, 2), bboxes.At(0, i, 3),
-                                        normalize, cv::Size(inout.cols, inout.rows));
+        //get_points perform normalization
+        std::tie(pt1, pt2) = normalize_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
+                                              bboxes.At(0, i, 2), bboxes.At(0, i, 3),
+                                              normalize, cv::Size(inout.cols, inout.rows));
         cv::rectangle(inout, pt1, pt2, color, 2);
 
         std::string txt;
@@ -127,7 +134,7 @@ void plot_object_detector_bboxes::set_thresh(float val) noexcept
 }
 
 std::pair<cv::Point, cv::Point> plot_object_detector_bboxes::
-get_points(float x1, float y1, float x2, float y2, bool normalize, cv::Size const &input_size) const noexcept
+normalize_points(float x1, float y1, float x2, float y2, bool normalize, cv::Size const &input_size) const noexcept
 {
     if(normalize && (normalize_size_.height != input_size.height || normalize_size_.width != input_size.width)){
         x1 = x1/normalize_size_.width * input_size.width;

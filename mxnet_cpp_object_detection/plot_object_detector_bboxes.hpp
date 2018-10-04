@@ -24,9 +24,9 @@ public:
     void set_thresh(float val) noexcept;
 
 private:
-    std::pair<cv::Point, cv::Point> get_points(float x1, float y1,
-                                               float x2, float y2,
-                                               bool normalize, cv::Size const &input_size) const noexcept;
+    std::pair<cv::Point, cv::Point> normalize_points(float x1, float y1,
+                                                     float x2, float y2,
+                                                     bool normalize, cv::Size const &input_size) const noexcept;
 
     std::vector<cv::Scalar> colors_;
     std::vector<std::string> labels_;
