@@ -25,19 +25,19 @@ cv::Scalar hsv_2_bgr(cv::Scalar hsv) {
     return cv::Scalar(b, g, r);
 }
 
-void put_label(cv::Mat &im, const std::string &label, const cv::Point &orig, cv::Scalar color) {
+void put_label(cv::Mat &im, std::string const &label, cv::Point const &orig, cv::Scalar const &color) {
     int constexpr fontface = cv::FONT_HERSHEY_DUPLEX;
     double constexpr scale = 0.5;
     int constexpr thickness = 1;
     int baseline = 0;
     double constexpr alpha = 0.6;
 
-    cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
+    cv::Size const text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
     // make sure roi inside image region
     cv::Rect blend_rect = cv::Rect(orig + cv::Point(0, baseline),
                                    orig + cv::Point(text.width, -text.height)) & cv::Rect(0, 0, im.cols, im.rows);
-    cv::Mat roi = im(blend_rect);
-    cv::Mat blend(roi.size(), CV_8UC3, color);
+    cv::Mat const roi = im(blend_rect);
+    cv::Mat const blend(roi.size(), CV_8UC3, color);
     cv::addWeighted(blend, alpha, roi, 1.0 - alpha, 0.0, roi);
     cv::putText(im, label, orig, fontface, scale, cv::Scalar(255, 255, 255), thickness, 8);
 }
