@@ -25,7 +25,7 @@ cv::Scalar hsv_2_bgr(cv::Scalar hsv) {
     return cv::Scalar(b, g, r);
 }
 
-void put_label(cv::Mat &im, const std::string label, const cv::Point &orig, cv::Scalar color) {
+void put_label(cv::Mat &im, const std::string &label, const cv::Point &orig, cv::Scalar color) {
     int constexpr fontface = cv::FONT_HERSHEY_DUPLEX;
     double constexpr scale = 0.5;
     int constexpr thickness = 1;
