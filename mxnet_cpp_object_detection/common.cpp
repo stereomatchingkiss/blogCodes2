@@ -40,9 +40,7 @@ void load_check_point(std::string const &model_params,
         if (type == "arg:")
             args[name] = iter.second.Copy(ctx);
         else if (type == "aux:")
-            auxs[name] = iter.second.Copy(ctx);
-        else
-            continue;
+            auxs[name] = iter.second.Copy(ctx);        
     }
 
     *symbol = new_symbol;
