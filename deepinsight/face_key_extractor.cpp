@@ -94,7 +94,7 @@ face_key face_key_extractor::forward(const NDArray &input)
     input.CopyTo(&executor_->arg_dict()["data"]);    
     executor_->Forward(false);
     if(!executor_->outputs.empty()){
-        auto const features = executor_->outputs[0].Copy(Context(kCPU, 0));
+        auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
         features.WaitToRead();
         cv::Mat temp(1, 512, CV_32F, const_cast<mx_float*>(features.GetData()), 0);
         cv::normalize(temp, temp, 1, 0, cv::NORM_L2);
