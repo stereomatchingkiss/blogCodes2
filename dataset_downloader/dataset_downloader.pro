@@ -10,6 +10,8 @@ CONFIG -= app_bundle
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 
+INCLUDEPATH += ../libs/cv_format_parser
+
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -18,8 +20,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
     data_downloader.cpp \
-    parser/json_utility.cpp \
-    parser/kaggle_face_detection_parser.cpp
+    ../libs/cv_format_parser/json_utility.cpp \
+    ../libs/cv_format_parser/kaggle_face_detection_parser.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -28,5 +30,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     data_downloader.hpp \
-    parser/json_utility.hpp \
-    parser/kaggle_face_detection_parser.hpp
+    ../libs/cv_format_parser/json_utility.hpp \
+    ../libs/cv_format_parser/kaggle_face_detection_parser.hpp

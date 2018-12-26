@@ -1,7 +1,8 @@
 #include <QApplication>
 
 #include "data_downloader.hpp"
-#include "parser/kaggle_face_detection_parser.hpp"
+
+#include <kaggle_face_detection_parser.hpp>
 
 #include <QDebug>
 #include <QDir>
