@@ -24,7 +24,7 @@ public:
     object_detector(std::string const &model_params,
                     std::string const &model_symbols,
                     mxnet::cpp::Context const &context,
-                    cv::Size const &input_size = cv::Size(320, 256));
+                    cv::Size const &process_size = cv::Size(320, 256));
     ~object_detector();
 
     void forward(cv::Mat const &input);
@@ -37,7 +37,7 @@ public:
 private:
     std::unique_ptr<mxnet::cpp::Context> context_;
     std::unique_ptr<mxnet::cpp::Executor> executor_;
-    cv::Size input_size_;
+    cv::Size process_size_;
     cv::Mat resize_img_;
 };
 

@@ -11,9 +11,9 @@ using namespace mxnet::cpp;
 object_detector::object_detector(std::string const &model_params,
                                  std::string const &model_symbols,
                                  Context const &context,
-                                 cv::Size const &input_size) :
+                                 cv::Size const &process_size) :
     context_(new Context(context.GetDeviceType(), context.GetDeviceId())),
-    input_size_(input_size)
+    process_size_(process_size)
 {    
     Symbol net;
     std::map<std::string, NDArray> args, auxs;
@@ -23,8 +23,8 @@ object_detector::object_detector(std::string const &model_params,
     //you could rebind the Executor or create a pool of Executor.
     //In order to create input layer of the Executor, I make a dummy NDArray.
     //The value of the "data" could be change later
-    args["data"] = NDArray(Shape(1, static_cast<unsigned>(input_size.height),
-                                 static_cast<unsigned>(input_size.width), 3), context);
+    args["data"] = NDArray(Shape(1, static_cast<unsigned>(process_size.height),
+                                 static_cast<unsigned>(process_size.width), 3), context);
     executor_.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
                                    std::map<std::string, OpReqType>(), auxs));
 }
@@ -38,8 +38,8 @@ void object_detector::forward(const cv::Mat &input)
 {
     //By default, input_size_.height equal to 256 input_size_.width equal to 320.
     //Yolo v3 has a limitation, width and height of the image must be divided by 32.
-    if(input.rows != input_size_.height || input.cols != input_size_.width){
-        cv::resize(input, resize_img_, input_size_);
+    if(input.rows != process_size_.height || input.cols != process_size_.width){
+        cv::resize(input, resize_img_, process_size_);
     }else{
         resize_img_ = input;
     }
