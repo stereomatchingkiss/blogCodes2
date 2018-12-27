@@ -18,9 +18,8 @@ NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, Context const &ctx)
 }
 
 NDArray cvmat_to_ndarray(std::string const &filename, Context const &ctx)
-{
-    cv::Mat bgr_image = cv::imread(filename, 1);
-    return cvmat_to_ndarray(bgr_image, ctx);
+{    
+    return cvmat_to_ndarray(cv::imread(filename, cv::IMREAD_COLOR), ctx);
 }
 
 void load_check_point(std::string const &model_params,
