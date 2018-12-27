@@ -16,10 +16,12 @@ SOURCES += \
         main.cpp \
     common.cpp \
     object_detector.cpp \
-    plot_object_detector_bboxes.cpp
+    plot_object_detector_bboxes.cpp \
+    object_detector_filter.cpp
 
 HEADERS += \
     common.hpp \
     object_detector.hpp \
-    plot_object_detector_bboxes.hpp
+    plot_object_detector_bboxes.hpp \
+    object_detector_filter.hpp
 
