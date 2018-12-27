@@ -117,14 +117,14 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
     }
 }
 
-void plot_object_detector_bboxes::set_normalize_size(const cv::Size &normalize_size) noexcept
+void plot_object_detector_bboxes::set_process_size_of_detector(const cv::Size &process_size) noexcept
 {
-    normalize_size_ = normalize_size;
-    if(normalize_size_.height == 0){
-        normalize_size_.height = 1;
+    process_size_ = process_size;
+    if(process_size_.height == 0){
+        process_size_.height = 1;
     }
-    if(normalize_size_.width == 0){
-        normalize_size_.width = 1;
+    if(process_size_.width == 0){
+        process_size_.width = 1;
     }
 }
 
@@ -136,11 +136,11 @@ void plot_object_detector_bboxes::set_thresh(float val) noexcept
 std::pair<cv::Point, cv::Point> plot_object_detector_bboxes::
 normalize_points(float x1, float y1, float x2, float y2, bool normalize, cv::Size const &input_size) const noexcept
 {
-    if(normalize && (normalize_size_.height != input_size.height || normalize_size_.width != input_size.width)){
-        x1 = x1/normalize_size_.width * input_size.width;
-        y1 = y1/normalize_size_.height * input_size.height;
-        x2 = x2/normalize_size_.width * input_size.width;
-        y2 = y2/normalize_size_.height * input_size.height;
+    if(normalize && (process_size_.height != input_size.height || process_size_.width != input_size.width)){
+        x1 = x1 / process_size_.width * input_size.width;
+        y1 = y1 / process_size_.height * input_size.height;
+        x2 = x2 / process_size_.width * input_size.width;
+        y2 = y2 / process_size_.height * input_size.height;
         return {cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
                     cv::Point(static_cast<int>(x2), static_cast<int>(y2))};
     }else{

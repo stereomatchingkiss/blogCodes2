@@ -20,7 +20,7 @@ public:
 
     void plot(cv::Mat &inout, std::vector<mxnet::cpp::NDArray> const &predict_results, bool normalize = false);
 
-    void set_normalize_size(cv::Size const &normalize_size) noexcept;
+    void set_process_size_of_detector(cv::Size const &process_size) noexcept;
     void set_thresh(float val) noexcept;
 
 private:
@@ -30,7 +30,7 @@ private:
 
     std::vector<cv::Scalar> colors_;
     std::vector<std::string> labels_;
-    cv::Size normalize_size_;
+    cv::Size process_size_;
     float thresh_ = 0.5;
 };
 

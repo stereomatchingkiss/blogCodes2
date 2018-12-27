@@ -41,7 +41,7 @@ int main(int argc, char *argv[])try
         object_detector obj_det(fs["model_params"].string(), fs["model_symbols"].string(), mxnet::cpp::Context::gpu(0));
         viz::plot_object_detector_bboxes plotter(create_coco_obj_detection_labels(),
                                                  static_cast<float>(fs["detect_confidence"].real()));
-        plotter.set_normalize_size(cv::Size(320, 256));
+        plotter.set_process_size_of_detector(cv::Size(320, 256));
         if(fs["media_is_image"].real() == 1.0){
             cv::Mat image, resize_img;
             std::tie(image, resize_img) = load_image(fs["input_media"].string());
