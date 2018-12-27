@@ -31,12 +31,12 @@ void load_check_point(std::string const &model_params,
                       Context const &ctx)
 {        
     Symbol new_symbol = Symbol::Load(model_symbol);
-    std::map<std::string, NDArray> params = NDArray::LoadToMap(model_params);
+    std::map<std::string, NDArray> const params = NDArray::LoadToMap(model_params);
     std::map<std::string, NDArray> args;
     std::map<std::string, NDArray> auxs;
-    for (auto iter : params) {
-        std::string type = iter.first.substr(0, 4);
-        std::string name = iter.first.substr(4);
+    for (auto const &iter : params) {
+        std::string const type = iter.first.substr(0, 4);
+        std::string const name = iter.first.substr(4);
         if (type == "arg:")
             args[name] = iter.second.Copy(ctx);
         else if (type == "aux:")
