@@ -1,0 +1,8 @@
+{
+  "model_params" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.params",
+  "model_symbols" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.json",    
+  "face_detection_json_of_kaggle" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_detection.json",
+  "folder_to_save_xml" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images/face_img_label",
+  "folder_of_kaggle_images" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images",
+  "detect_confidence" : 0.5
+}
