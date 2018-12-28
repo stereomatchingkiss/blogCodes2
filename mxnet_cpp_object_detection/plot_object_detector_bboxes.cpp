@@ -1,5 +1,7 @@
 #include "plot_object_detector_bboxes.hpp"
 
+#include "object_detector_filter.hpp"
+
 #include <mxnet-cpp/MxNetCpp.h>
 
 #include <opencv2/core.hpp>
@@ -73,47 +75,35 @@ plot_object_detector_bboxes::plot_object_detector_bboxes(std::vector<std::string
 
 }
 
+plot_object_detector_bboxes::~plot_object_detector_bboxes()
+{
+
+}
+
 void plot_object_detector_bboxes::plot(cv::Mat &inout,
-                                       std::vector<mxnet::cpp::NDArray> const &predict_results,
-                                       bool normalize)
+                                       std::vector<mxnet::cpp::NDArray> const &predict_results)
 {
     using namespace mxnet::cpp;
 
-    //1. predict_results get from the output of Executor(executor_->outputs)
-    //2. Must Set Context as cpu because we need process data by cpu later
-    auto labels = predict_results[0].Copy(Context(kCPU, 0));
-    auto scores = predict_results[1].Copy(Context(kCPU, 0));
-    auto bboxes = predict_results[2].Copy(Context(kCPU, 0));
-    //1. Should call wait because Forward api of Executor is async
-    //2. scores and labels could treat as one dimension array
-    //3. BBoxes can treat as 2 dimensions array
-    bboxes.WaitToRead();
-    scores.WaitToRead();
-    labels.WaitToRead();
+    std::vector<object_detector_filter::item_type> types_to_detect;
+    types_to_detect.emplace_back(object_detector_filter::item_type::person);
+    object_detector_filter filter(types_to_detect, process_size_, cv::Size(inout.cols, inout.rows), thresh_);
+    if(!obj_filter_){
+        obj_filter_ = std::make_unique<object_detector_filter>(types_to_detect, process_size_,
+                                                               cv::Size(inout.cols, inout.rows), thresh_);
+    }
 
-    size_t const num = bboxes.GetShape()[1];
-    for(size_t i = 0; i < num; ++i) {
-        float const score = scores.At(0, 0, i);
-        if (score < thresh_) break;
-
-        size_t const cls_id = static_cast<size_t>(labels.At(0, 0, i));
-        auto const color = colors_[cls_id];
-        //pt1 : top left; pt2 : bottom right
-        cv::Point pt1, pt2;
-        //get_points perform normalization
-        std::tie(pt1, pt2) = normalize_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
-                                              bboxes.At(0, i, 2), bboxes.At(0, i, 3),
-                                              normalize, cv::Size(inout.cols, inout.rows));
-        cv::rectangle(inout, pt1, pt2, color, 2);
+    auto const &results = obj_filter_->filter(predict_results);
+    for(auto const &res : results){
+        auto const label = static_cast<size_t>(res.item_);
+        cv::rectangle(inout, res.roi_, colors_[static_cast<size_t>(res.item_)], 2);
 
         std::string txt;
-        if (labels_.size() > cls_id) {
-            txt += labels_[cls_id];
-        }
+        txt += labels_[label];
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(3) << score;
+        ss << std::fixed << std::setprecision(3) << res.confidence_;
         txt += " " + ss.str();
-        put_label(inout, txt, pt1, color);
+        put_label(inout, txt, res.roi_.tl(), colors_[label]);
     }
 }
 
@@ -131,22 +121,6 @@ void plot_object_detector_bboxes::set_process_size_of_detector(const cv::Size &p
 void plot_object_detector_bboxes::set_thresh(float val) noexcept
 {
     thresh_ = val;
-}
-
-std::pair<cv::Point, cv::Point> plot_object_detector_bboxes::
-normalize_points(float x1, float y1, float x2, float y2, bool normalize, cv::Size const &input_size) const noexcept
-{
-    if(normalize && (process_size_.height != input_size.height || process_size_.width != input_size.width)){
-        x1 = x1 / process_size_.width * input_size.width;
-        y1 = y1 / process_size_.height * input_size.height;
-        x2 = x2 / process_size_.width * input_size.width;
-        y2 = y2 / process_size_.height * input_size.height;
-        return {cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
-                    cv::Point(static_cast<int>(x2), static_cast<int>(y2))};
-    }else{
-        return {cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
-                    cv::Point(static_cast<int>(x2), static_cast<int>(y2))};
-    }
 }
 
 }

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])try
                         auto const end = std::chrono::system_clock::now();
                         std::chrono::duration<double> const elapsed_seconds = end-start;
                         elapsed += elapsed_seconds.count();
-                        plotter.plot(frame, obj_det.get_outputs(), true);
+                        plotter.plot(frame, obj_det.get_outputs());
                         if(can_open_video){
                             vwriter<<frame;
                         }

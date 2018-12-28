@@ -1,12 +1,16 @@
 #ifndef PLOT_OBJECT_DETECTOR_BBOXES_HPP
 #define PLOT_OBJECT_DETECTOR_BBOXES_HPP
 
+#include "object_detector_filter.hpp"
+
 #include <mxnet-cpp/ndarray.h>
 
 #include <opencv2/core.hpp>
 
 #include <string>
 #include <vector>
+
+class object_detector_filter;
 
 namespace viz {
 
@@ -18,7 +22,9 @@ public:
     explicit plot_object_detector_bboxes(std::vector<std::string> labels, float thresh = 0.5f);
     plot_object_detector_bboxes(std::vector<std::string> labels, std::vector<cv::Scalar> colors, float thresh = 0.5f);
 
-    void plot(cv::Mat &inout, std::vector<mxnet::cpp::NDArray> const &predict_results, bool normalize = false);
+    ~plot_object_detector_bboxes();
+
+    void plot(cv::Mat &inout, std::vector<mxnet::cpp::NDArray> const &predict_results);
 
     void set_process_size_of_detector(cv::Size const &process_size) noexcept;
     void set_thresh(float val) noexcept;
@@ -30,6 +36,7 @@ private:
 
     std::vector<cv::Scalar> colors_;
     std::vector<std::string> labels_;
+    std::unique_ptr<object_detector_filter> obj_filter_;
     cv::Size process_size_;
     float thresh_ = 0.5;
 };
