@@ -33,10 +33,10 @@ void label_image_generator::append_objects()
         obj_elem.appendChild(create_child("difficult", QString::number(0)));
 
         auto bbox_elem = doc_.createElement("bndbox");
-        bbox_elem.appendChild(create_child("xmin", QString::number(obj.top_left_.x())));
-        bbox_elem.appendChild(create_child("ymin", QString::number(obj.top_left_.y())));
-        bbox_elem.appendChild(create_child("xmax", QString::number(obj.bottom_right_.x())));
-        bbox_elem.appendChild(create_child("ymax", QString::number(obj.bottom_right_.y())));
+        bbox_elem.appendChild(create_child("xmin", QString::number(static_cast<int>(obj.top_left_.x()))));
+        bbox_elem.appendChild(create_child("ymin", QString::number(static_cast<int>(obj.top_left_.y()))));
+        bbox_elem.appendChild(create_child("xmax", QString::number(static_cast<int>(obj.bottom_right_.x()))));
+        bbox_elem.appendChild(create_child("ymax", QString::number(static_cast<int>(obj.bottom_right_.y()))));
 
         obj_elem.appendChild(bbox_elem);
 
