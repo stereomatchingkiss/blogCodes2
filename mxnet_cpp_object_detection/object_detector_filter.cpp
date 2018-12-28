@@ -28,19 +28,20 @@ object_detector_filter::filter(const std::vector<mxnet::cpp::NDArray> &input) co
     //3. BBoxes can treat as 2 dimensions array
     bboxes.WaitToRead();
     scores.WaitToRead();
-    labels.WaitToRead();
+    labels.WaitToRead();    
 
     std::vector<result_type> result;
     size_t const num = bboxes.GetShape()[1];
     for(size_t i = 0; i < num; ++i) {
-        float const score = scores.At(0, 0, i);
-        auto const label = static_cast<size_t>(labels.At(0, 0, i));
-        if(score >= min_confidence_ && items_to_detect_[label]){
+        float const score = scores.At(0, 0, i);        
+        auto const label = static_cast<size_t>(labels.At(0, 0, i));        
+        if(score >= min_confidence_ && label < items_to_detect_.size() && items_to_detect_[label]){
             result_type rtype;
             rtype.confidence_ = score;
             rtype.item_ = static_cast<item_type>(label);
             rtype.roi_ = normalize_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
                                           bboxes.At(0, i, 2), bboxes.At(0, i, 3));
+            result.emplace_back(std::move(rtype));
         }
     }
 
@@ -60,7 +61,7 @@ void object_detector_filter::set_min_confidence(double input) noexcept
 void object_detector_filter::set_items_to_detect(const std::vector<object_detector_filter::item_type> &items_to_detect)
 {
     std::fill(std::begin(items_to_detect_), std::end(items_to_detect_), false);
-    for(size_t i = 0; i != items_to_detect_.size(); ++i){
+    for(size_t i = 0; i != items_to_detect.size(); ++i){
         items_to_detect_[static_cast<size_t>(items_to_detect[i])] = true;
     }
 }
