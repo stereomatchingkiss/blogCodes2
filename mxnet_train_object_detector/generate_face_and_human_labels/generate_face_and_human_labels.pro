@@ -11,7 +11,7 @@ CONFIG -= app_bundle
 DEFINES += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += ../../libs/
-INCLUDEPATH += ../../mxnet_cpp_object_detection
+INCLUDEPATH += ../../
 
 OPENCV_PATH = ../../../3rdLibs/opencv/opencv_3_4_2/opencv/build
 MXNET_PATH = ../../../3rdLibs/incubator-mxnet/build/install
@@ -35,8 +35,9 @@ SOURCES += \
     ../../libs/cv_format_parser/json_utility.cpp \
     ../../mxnet_cpp_object_detection/object_detector.cpp \
     ../../mxnet_cpp_object_detection/object_detector_filter.cpp \
-    ../../mxnet_cpp_object_detection/common.cpp \
-    ../../mxnet_cpp_object_detection/common.cpp
+    ../../mxnet_cpp_object_detection/common.cpp \    
+    generate_labels_from_kaggle_dataset.cpp \
+    general_settings_param_parser.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -50,4 +51,6 @@ HEADERS += \
     ../../libs/cv_format_parser/json_utility.hpp \
     ../../mxnet_cpp_object_detection/object_detector.hpp \
     ../../mxnet_cpp_object_detection/object_detector_filter.hpp \
-    ../../mxnet_cpp_object_detection/common.hpp
+    ../../mxnet_cpp_object_detection/common.hpp \
+    generate_labels_from_kaggle_dataset.hpp \
+    general_settings_param_parser.hpp
