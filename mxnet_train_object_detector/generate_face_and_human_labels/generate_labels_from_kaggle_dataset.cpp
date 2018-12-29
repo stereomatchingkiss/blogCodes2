@@ -1,6 +1,7 @@
 #include "generate_labels_from_kaggle_dataset.hpp"
 
 #include "general_settings_param_parser.hpp"
+#include "person_detector.hpp"
 
 #include <QDebug>
 #include <QDir>
@@ -50,15 +51,7 @@ void generate_labels_from_kaggle_dataset::apply()
         kaggle_face_detection_parser kaggle_face_parser;
         auto const kaggle_face_results = kaggle_face_parser.parse(face_detection_json);
 
-        object_detector_.reset(new object_detector(general_parser_->get_model_params().toStdString(),
-                                                   general_parser_->get_model_symbols().toStdString(),
-                                                   mxnet::cpp::Context::gpu(0),
-                                                   process_size_));
-
-        std::vector<object_detector_filter::item_type> types_to_detect;
-        types_to_detect.emplace_back(object_detector_filter::item_type::person);
-        filter_.reset(new object_detector_filter(types_to_detect, process_size_, cv::Size(1, 1),
-                                                 general_parser_->get_detect_confidence()));
+        person_detector_ = std::make_unique<person_detector>(setting_file_location_);
 
         folder_of_images_ = json_obj_["folder_of_kaggle_images"].toString();
         for(auto const &kaggle_block : kaggle_face_results.blocks_){
@@ -99,11 +92,7 @@ void generate_labels_from_kaggle_dataset::append_person_annotation(label_image_g
         throw std::runtime_error(QString("cannot open image:%1").arg(dg.abs_path_).toStdString());
     }
 
-    object_detector_->forward(img);
-    filter_->set_image_size(cv::Size(img.cols, img.rows));
-    auto const obj_det_results = filter_->filter(object_detector_->get_outputs());
-
-    for(auto const &obj_det_result : obj_det_results){
+    for(auto const &obj_det_result : person_detector_->detect(img)){
         dg.height_ = img.rows;
         dg.width_ = img.cols;
         label_image_generator::data_to_generate::object obj;

@@ -11,10 +11,11 @@
 
 #include <memory>
 
+class general_settings_param_parser;
+
 class object_detector;
 class object_detector_filter;
-
-class general_settings_param_parser;
+class person_detector;
 
 class generate_labels_from_kaggle_dataset
 {
@@ -29,12 +30,10 @@ private:
                                kaggle_face_detection_parser::parse_result::block const &kaggle_block) const;
     void append_person_annotation(label_image_generator::data_to_generate &dg);
 
-    std::unique_ptr<object_detector_filter> filter_;
     QString folder_of_images_;
     std::unique_ptr<general_settings_param_parser> general_parser_;
     QJsonObject json_obj_;
-    std::unique_ptr<object_detector> object_detector_;
-    cv::Size const process_size_ = cv::Size(608, 608);
+    std::unique_ptr<person_detector> person_detector_;
     QString setting_file_location_;
 };
 
