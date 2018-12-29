@@ -8,6 +8,7 @@ class QJsonObject;
 class general_settings_param_parser
 {
 public:
+    explicit general_settings_param_parser(QString const &setting_file_location);
     explicit general_settings_param_parser(QJsonObject const &input);
 
     double get_detect_confidence() const;
