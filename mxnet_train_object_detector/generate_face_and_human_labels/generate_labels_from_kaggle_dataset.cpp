@@ -41,7 +41,7 @@ void generate_labels_from_kaggle_dataset::apply()
     json_obj_ = doc.object();
     general_parser_ = std::make_unique<general_settings_param_parser>(json_obj_);
 
-    if(json_obj_["mode"] == "kaggle_data_to_label_image"){
+    if(json_obj_["mode"].toString() == "kaggle_data_to_label_image"){
 
         auto const face_detection_json = json_obj_["face_detection_json_of_kaggle"].toString();
         auto const folder_to_save_xml = json_obj_["folder_to_save_xml"].toString();
