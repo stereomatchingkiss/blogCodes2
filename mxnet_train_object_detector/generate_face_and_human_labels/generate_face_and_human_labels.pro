@@ -37,7 +37,8 @@ SOURCES += \
     ../../mxnet_cpp_object_detection/object_detector_filter.cpp \
     ../../mxnet_cpp_object_detection/common.cpp \    
     generate_labels_from_kaggle_dataset.cpp \
-    general_settings_param_parser.cpp
+    general_settings_param_parser.cpp \
+    person_detector.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -53,4 +54,5 @@ HEADERS += \
     ../../mxnet_cpp_object_detection/object_detector_filter.hpp \
     ../../mxnet_cpp_object_detection/common.hpp \
     generate_labels_from_kaggle_dataset.hpp \
-    general_settings_param_parser.hpp
+    general_settings_param_parser.hpp \
+    person_detector.hpp
