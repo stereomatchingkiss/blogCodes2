@@ -1,0 +1,7 @@
+{
+  "model_params" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.params",
+  "model_symbols" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.json",
+  "input_media" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/phone_images/car/car_1.jpg",
+  "media_is_image" : false,
+  "detect_confidence" : 0.6
+}
