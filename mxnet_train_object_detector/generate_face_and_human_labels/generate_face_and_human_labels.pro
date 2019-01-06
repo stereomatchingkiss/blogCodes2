@@ -38,7 +38,9 @@ SOURCES += \
     ../../mxnet_cpp_object_detection/common.cpp \    
     generate_labels_from_kaggle_dataset.cpp \
     general_settings_param_parser.cpp \
-    person_detector.cpp
+    person_detector.cpp \
+    ../../libs/cv_format_generator/mxnet_lst_generator.cpp \
+    ../../libs/cv_format_generator/generate_lst_from_label_image.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -55,4 +57,6 @@ HEADERS += \
     ../../mxnet_cpp_object_detection/common.hpp \
     generate_labels_from_kaggle_dataset.hpp \
     general_settings_param_parser.hpp \
-    person_detector.hpp
+    person_detector.hpp \
+    ../../libs/cv_format_generator/mxnet_lst_generator.hpp \
+    ../../libs/cv_format_generator/generate_lst_from_label_image.hpp
