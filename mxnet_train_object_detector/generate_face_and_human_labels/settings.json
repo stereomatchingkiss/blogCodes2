@@ -4,8 +4,11 @@
   "face_detection_json_of_kaggle" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_detection.json",
   "folder_to_save_xml" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images/face_img_label",
   "folder_of_kaggle_images" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images",
+  "folder_of_label_image" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images/face_img_label - Copy",
   "detect_confidence" : 0.5,
-  "mode" : "kaggle_data_to_label_image",
+  "mode" : "label_image_to_lst",
   "detector_process_width": 608,
-  "detector_process_height": 608
+  "detector_process_height": 608,
+  "save_lst_as" : "face_person.lst",
+  "save_lst_label_to_string_as" : "label_to_string.txt"
 }

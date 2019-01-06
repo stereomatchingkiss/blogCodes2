@@ -1,6 +1,10 @@
 #include "generate_labels_from_kaggle_dataset.hpp"
 
+#include <cv_format_generator/generate_lst_from_label_image.hpp>
+#include <cv_format_parser/json_utility.hpp>
+
 #include <QDebug>
+#include <QJsonDocument>
 
 int main(int argc, char *argv[])try
 {
@@ -9,7 +13,13 @@ int main(int argc, char *argv[])try
         return -1;
     }
 
-    generate_labels_from_kaggle_dataset(argv[1]).apply();
+    auto const json_obj = json_file_to_doc(argv[1]).object();
+
+    if(json_obj["mode"] == "kaggle_data_to_label_image"){
+        generate_labels_from_kaggle_dataset(argv[1]).apply();
+    }else if(json_obj["mode"] == "label_image_to_lst"){
+        generate_lst_from_label_image(argv[1]).apply();
+    }
 }catch(std::exception const &ex){
     qDebug()<<__func__<<ex.what();
 }
