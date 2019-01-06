@@ -15,7 +15,6 @@ label_image_parser::parse_result label_image_parser::parse(const QString &file_l
         return {};
     }
 
-    qDebug()<<"can open file";
     QDomElement component= doc.documentElement().firstChild().toElement();
     while(!component.isNull()){
         if(component.tagName() == "path"){
