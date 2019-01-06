@@ -55,7 +55,6 @@ void generate_lst_from_label_image::apply()
             auto it = label_index_map.find(val.name_);
             if(it != std::end(label_index_map)){
                 lst_label.id_ = it->second;
-                data_to_gen.labels_.emplace_back();
             }else{
                 lst_label.id_ = label_index;
                 label_index_map.insert(std::make_pair(val.name_, label_index++));
