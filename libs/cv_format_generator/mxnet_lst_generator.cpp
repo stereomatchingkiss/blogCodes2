@@ -6,6 +6,7 @@ mxnet_lst_generator::mxnet_lst_generator(const QString &save_as) :
 {
     if(file_.open(QIODevice::WriteOnly)){
         stream_.setDevice(&file_);
+        stream_.setRealNumberPrecision(16);
     }else{
         throw std::runtime_error(QString("cannot open file:%1").arg(save_as).toStdString());
     }
