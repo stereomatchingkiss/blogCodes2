@@ -50,8 +50,13 @@ void generate_lst_from_label_image::apply()
         data_to_gen.img_path_ = QFileInfo(parse_result.abs_path_).fileName();
         for(auto const &val : parse_result.objects_){
             mxnet_lst_generator::data_to_generate::label lst_label;
-            lst_label.bottom_right_ = normalize(val.bottom_right_, parse_result.width_, parse_result.height_);
-            lst_label.top_left_ = normalize(val.top_left_, parse_result.width_, parse_result.height_);
+            lst_label.bottom_right_.setX(std::min(parse_result.width_ - 1.0, val.bottom_right_.x()));
+            lst_label.bottom_right_.setY(std::min(parse_result.height_ - 1.0, val.bottom_right_.y()));
+            lst_label.top_left_.setX(std::max(0.0, val.top_left_.x()));
+            lst_label.top_left_.setY(std::max(0.0, val.top_left_.y()));
+
+            lst_label.bottom_right_ = normalize(lst_label.bottom_right_, parse_result.width_, parse_result.height_);
+            lst_label.top_left_ = normalize(lst_label.top_left_, parse_result.width_, parse_result.height_);
             auto it = label_index_map.find(val.name_);
             if(it != std::end(label_index_map)){
                 lst_label.id_ = it->second;
