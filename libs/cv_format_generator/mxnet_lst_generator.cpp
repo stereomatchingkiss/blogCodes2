@@ -25,12 +25,13 @@ void mxnet_lst_generator::apply()
 }
 
 void mxnet_lst_generator::apply(const mxnet_lst_generator::data_to_generate &input)
-{
-    stream_<<input.index_<<"\t"<<4<<"\t"<<5<<"\t"<<input.width_<<"\t"<<input.height_;
-    for(auto const &val : input.labels_){
-        stream_<<"\t"<<val.id_<<"\t"<<std::max(0.0, val.top_left_.x())<<"\t"<<std::max(0.0, val.top_left_.y())
-              <<"\t"<<std::min(input.width_ - 1.0, val.bottom_right_.x())
-             <<"\t"<<std::min(input.height_ - 1.0, val.bottom_right_.y());
+{        
+    if(!input.labels_.empty()){
+        stream_<<input.index_<<"\t"<<4<<"\t"<<5<<"\t"<<input.width_<<"\t"<<input.height_;
+        for(auto const &val : input.labels_){
+            stream_<<"\t"<<val.id_<<"\t"<<val.top_left_.x()<<"\t"<<val.top_left_.y()
+                  <<"\t"<<val.bottom_right_.x()<<"\t"<<val.bottom_right_.y();
+        }
+        stream_<<"\t"<<input.img_path_<<"\r\n";
     }
-    stream_<<"\t"<<input.img_path_<<"\r\n";
 }
