@@ -1,5 +1,4 @@
-QT -= gui
-QT += xml
+QT += xml gui
 
 CONFIG += c++11 console
 CONFIG -= app_bundle
@@ -40,7 +39,9 @@ SOURCES += \
     general_settings_param_parser.cpp \
     person_detector.cpp \
     ../../libs/cv_format_generator/mxnet_lst_generator.cpp \
-    ../../libs/cv_format_generator/generate_lst_from_label_image.cpp
+    ../../libs/cv_format_generator/generate_lst_from_label_image.cpp \
+    ../../libs/cv_format_parser/fddb_parser.cpp \
+    ../../libs/cv_format_generator/generate_lst_from_fddb.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -59,4 +60,6 @@ HEADERS += \
     general_settings_param_parser.hpp \
     person_detector.hpp \
     ../../libs/cv_format_generator/mxnet_lst_generator.hpp \
-    ../../libs/cv_format_generator/generate_lst_from_label_image.hpp
+    ../../libs/cv_format_generator/generate_lst_from_label_image.hpp \
+    ../../libs/cv_format_parser/fddb_parser.hpp \
+    ../../libs/cv_format_generator/generate_lst_from_fddb.hpp
