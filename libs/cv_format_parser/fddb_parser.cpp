@@ -12,9 +12,10 @@ fddb_parser::parse_result::block fddb_parser::parse_block(int &i,
                                                           QString const &folder_location) const
 {
     parse_result::block blk;
-    blk.img_path_ = folder_location + "/" + contents[i++] + ".jpg";
-    qDebug()<<"processing image:"<<blk.img_path_;
-    QImageReader const img_reader(blk.img_path_);
+    blk.relative_img_path_ = contents[i++] + ".jpg";
+    blk.abs_img_path_ = folder_location + "/" + blk.relative_img_path_;
+    qDebug()<<"processing image:"<<blk.abs_img_path_;
+    QImageReader const img_reader(blk.abs_img_path_);
     if(img_reader.canRead()){
         blk.height_ = img_reader.size().height();
         blk.width_ = img_reader.size().width();
@@ -37,7 +38,7 @@ fddb_parser::parse_result::block fddb_parser::parse_block(int &i,
             }
         }
     }else{
-        qDebug()<<QString("image %1 cannot read").arg(blk.img_path_);
+        qDebug()<<QString("image %1 cannot read").arg(blk.abs_img_path_);
     }
 
     return blk;

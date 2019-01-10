@@ -23,7 +23,8 @@ public:
             };
 
             std::vector<annotation> annos_;
-            QString img_path_;
+            QString abs_img_path_;
+            QString relative_img_path_;
             int width_ = 0;
             int height_ = 0;
         };
