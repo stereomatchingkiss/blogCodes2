@@ -11,6 +11,19 @@
 #include <QJsonDocument>
 #include <QTextStream>
 
+namespace{
+
+QPointF normalize(QPointF const &input, int width, int height)
+{
+    QPointF result;
+    result.setX(input.x() / width);
+    result.setY(input.y() / height);
+
+    return result;
+}
+
+}
+
 generate_lst_from_fddb::generate_lst_from_fddb(const QString &json_location)
 {
     json_obj_ = json_file_to_doc(json_location).object();
@@ -28,8 +41,8 @@ void generate_lst_from_fddb::apply()
         dtg.img_path_ = block.relative_img_path_;
         for(auto const &anno : block.annos_){
             mxnet_lst_generator::data_to_generate::label lb;
-            lb.bottom_right_ = anno.bottom_right_;
-            lb.top_left_ = anno.top_left_;
+            lb.bottom_right_ = normalize(anno.bottom_right_, dtg.width_, dtg.height_);
+            lb.top_left_ = normalize(anno.top_left_, dtg.width_, dtg.height_);
             lb.id_ = 0;
             dtg.labels_.emplace_back(std::move(lb));
         }
