@@ -13,7 +13,6 @@ from gluoncv.data.batchify import Tuple, Stack, Pad
 from gluoncv.data.transforms.presets.yolo import YOLO3DefaultValTransform
 from gluoncv.utils.metrics.voc_detection_2 import VOC07MApMetric
 
-from gluoncv.utils import download, viz
 from matplotlib import pyplot as plt
 
 def restricted_float(x):

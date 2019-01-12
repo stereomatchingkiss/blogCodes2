@@ -21,7 +21,6 @@ from gluoncv.utils.metrics.voc_detection_2 import VOC07MApMetric
 from gluoncv.utils.metrics.coco_detection import COCODetectionMetric
 from gluoncv.utils import LRScheduler
 
-from gluoncv.utils import download, viz
 from matplotlib import pyplot as plt
     
 def parse_args():
