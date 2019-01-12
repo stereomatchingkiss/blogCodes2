@@ -23,6 +23,12 @@ from gluoncv.utils import LRScheduler
 
 from gluoncv.utils import download, viz
 from matplotlib import pyplot as plt
+
+def restricted_float(x):
+    x = float(x)
+    if x < 0.0 or x > 1.0:
+        raise argparse.ArgumentTypeError("%r not in range [0.0, 1.0]"%(x,))
+    return x
     
 def parse_args():
     parser = argparse.ArgumentParser(description='Train YOLO networks with random input shape.')
@@ -41,6 +47,7 @@ def parse_args():
                         help='Location of the classes list, every line present one class')
     parser.add_argument('--validate_dataset', type=str, 
                         help='Location of validate dataset, must be rec format')
+    parser.add_argument('--iou', type=restricted_float, default="0.5", help='IOU overlap threshold of validate metric')
             
     args = parser.parse_args()
     return args
@@ -52,7 +59,7 @@ def read_classes(args):
 def get_dataset(args):     
     val_dataset = gcv.data.RecordFileDetection(args.validate_dataset)
     classes = read_classes(args)
-    val_metric = VOC07MApMetric(iou_thresh=0.5, class_names=classes)
+    val_metric = VOC07MApMetric(iou_thresh=args.iou, class_names=classes)
     
     return val_dataset, val_metric
 
