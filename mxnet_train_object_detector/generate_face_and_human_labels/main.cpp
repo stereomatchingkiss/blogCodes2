@@ -2,6 +2,7 @@
 
 #include <cv_format_generator/generate_lst_from_fddb.hpp>
 #include <cv_format_generator/generate_lst_from_label_image.hpp>
+#include <cv_format_generator/generate_lst_from_pascal_voc.hpp>
 #include <cv_format_parser/fddb_parser.hpp>
 #include <cv_format_parser/json_utility.hpp>
 
@@ -30,6 +31,8 @@ int main(int argc, char *argv[])try
         generate_lst_from_label_image(argv[1]).apply();
     }else if(json_obj["mode"] == "fddb_to_lst"){
         generate_lst_from_fddb(argv[1]).apply();
+    }else if(json_obj["mode"] == "pascal_voc_to_lst"){
+        generate_lst_from_pascal_voc(argv[1]).apply();
     }
 
 }catch(std::exception const &ex){

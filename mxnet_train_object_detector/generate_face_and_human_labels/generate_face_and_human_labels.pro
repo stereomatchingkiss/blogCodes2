@@ -41,7 +41,9 @@ SOURCES += \
     ../../libs/cv_format_generator/mxnet_lst_generator.cpp \
     ../../libs/cv_format_generator/generate_lst_from_label_image.cpp \
     ../../libs/cv_format_parser/fddb_parser.cpp \
-    ../../libs/cv_format_generator/generate_lst_from_fddb.cpp
+    ../../libs/cv_format_generator/generate_lst_from_fddb.cpp \
+    ../../libs/cv_format_parser/pascal_voc_parser.cpp \
+    ../../libs/cv_format_generator/generate_lst_from_pascal_voc.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -62,4 +64,6 @@ HEADERS += \
     ../../libs/cv_format_generator/mxnet_lst_generator.hpp \
     ../../libs/cv_format_generator/generate_lst_from_label_image.hpp \
     ../../libs/cv_format_parser/fddb_parser.hpp \
-    ../../libs/cv_format_generator/generate_lst_from_fddb.hpp
+    ../../libs/cv_format_generator/generate_lst_from_fddb.hpp \
+    ../../libs/cv_format_parser/pascal_voc_parser.hpp \
+    ../../libs/cv_format_generator/generate_lst_from_pascal_voc.hpp
