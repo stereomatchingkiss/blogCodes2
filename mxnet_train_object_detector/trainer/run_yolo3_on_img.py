@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # network
     net_name = args.net_params
 
-    net = get_model("yolo3_darknet53_custom", classes = read_classes(args), pretrained_base=True)     
+    net = get_model("yolo3_darknet53_custom", classes = read_classes(args))     
     net.load_parameters(net_name)	
     net.collect_params().reset_ctx(ctx)    
 	
@@ -55,7 +55,8 @@ if __name__ == '__main__':
         filename = os.fsdecode(file)
         print("filename abs:", os.path.join(args.inference_folder, filename))
         if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png") or filename.endswith(".bmp"): 
+            print(os.path.join(args.inference_folder, filename))
             x, image = gcv.data.transforms.presets.yolo.load_test(os.path.join(args.inference_folder, filename), args.data_shape)
             cid, score, bbox = net(x)
-            ax = viz.plot_bbox(image, bbox[0], score[0], cid[0], class_names=net.classes)
+            ax = viz.plot_bbox(image, bbox[0], score[0], cid[0], class_names=net.classes)                        
             plt.show()
