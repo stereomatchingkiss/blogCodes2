@@ -126,7 +126,7 @@ void generate_label_image_from_coco::apply()
     coco_instance_parser parser;
     auto const folder_of_coco_image = json_obj["folder_of_coco_image"].toString();
     auto const parse_result = parser.parse(json_obj["annotaion_of_coco"].toString(), folder_of_coco_image);
-    auto const save_xml_to = json_obj["save_label_image_xml_to"].toString();
+    auto const save_xml_to = json_obj["folder_of_label_image"].toString();
     QDir().mkpath(save_xml_to);
     create_category_to_detect(json_obj);
     for(auto const &vpair : parse_result.blocks_){
@@ -139,8 +139,10 @@ void generate_label_image_from_coco::apply()
             if(is_category_want_to_detect(inst.category_id_)){
                 label_image_generator::data_to_generate::object lobj;
                 lobj.name_ = id_to_category_[static_cast<size_t>(inst.category_id_ - 1)];
-                lobj.bottom_right_ = inst.bottom_right_;
-                lobj.top_left_ = inst.top_left_;
+                lobj.bottom_right_.setX(std::min(obj.width_ - 1.0, inst.bottom_right_.x()));
+                lobj.bottom_right_.setY(std::min(obj.height_ - 1.0, inst.bottom_right_.y()));
+                lobj.top_left_.setX(std::max(0.0, inst.top_left_.x()));
+                lobj.top_left_.setY(std::max(0.0, inst.top_left_.y()));
                 data_to_gen.objects_.emplace_back(std::move(lobj));
             }
         }
