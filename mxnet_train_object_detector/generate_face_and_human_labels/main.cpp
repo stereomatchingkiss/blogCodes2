@@ -1,9 +1,12 @@
 #include "generate_labels_from_kaggle_dataset.hpp"
 
+#include <cv_format_generator/generate_label_image_from_coco.hpp>
+#include <cv_format_generator/generate_lst_from_coco.hpp>
 #include <cv_format_generator/generate_lst_from_fddb.hpp>
 #include <cv_format_generator/generate_lst_from_label_image.hpp>
 #include <cv_format_generator/generate_lst_from_pascal_voc.hpp>
-#include <cv_format_parser/fddb_parser.hpp>
+
+#include <cv_format_parser/coco_instance_parser.hpp>
 #include <cv_format_parser/json_utility.hpp>
 
 #include <QDebug>
@@ -33,6 +36,8 @@ int main(int argc, char *argv[])try
         generate_lst_from_fddb(argv[1]).apply();
     }else if(json_obj["mode"] == "pascal_voc_to_lst"){
         generate_lst_from_pascal_voc(argv[1]).apply();
+    }else if(json_obj["mode"] == "coco_to_lst"){
+        generate_lst_from_coco(argv[1]).apply();
     }
 
 }catch(std::exception const &ex){
