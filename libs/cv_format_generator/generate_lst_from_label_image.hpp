@@ -5,6 +5,8 @@
 #include <QJsonObject>
 #include <QString>
 
+#include <map>
+
 class generate_lst_from_label_image
 {
 public:
@@ -15,6 +17,7 @@ public:
 private:
     void print_name_to_label_index(std::map<QString, size_t> const &input);
 
+    std::map<QString, size_t> category_to_id_;
     QJsonObject json_obj_;
     QString save_as_;
     QFileInfoList xml_info_;

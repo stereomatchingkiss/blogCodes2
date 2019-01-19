@@ -8,7 +8,9 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
+#include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QTextStream>
 
 #include <map>
@@ -30,8 +32,15 @@ generate_lst_from_label_image::generate_lst_from_label_image(const QString &json
 {
     json_obj_ = json_file_to_doc(json_location).object();
     save_as_ = json_obj_["save_lst_as"].toString();
-    QDir dir(json_obj_["folder_of_label_image"].toString());
+    QDir dir(json_obj_["folder_of_label_image_xml"].toString());
     xml_info_ = dir.entryInfoList(QStringList()<<"*.xml", QDir::NoDotAndDotDot | QDir::Files);
+
+    if(json_obj_["lst_category_to_id"].isArray()){
+        auto const arr = json_obj_["lst_category_to_id"].toArray();
+        for(auto const &val : arr){
+            category_to_id_.emplace(val["category"].toString(), static_cast<size_t>(val["id"].toInt()));
+        }
+    }
 }
 
 void generate_lst_from_label_image::apply()
@@ -57,19 +66,30 @@ void generate_lst_from_label_image::apply()
 
             lst_label.bottom_right_ = normalize(lst_label.bottom_right_, parse_result.width_, parse_result.height_);
             lst_label.top_left_ = normalize(lst_label.top_left_, parse_result.width_, parse_result.height_);
-            auto it = label_index_map.find(val.name_);
-            if(it != std::end(label_index_map)){
-                lst_label.id_ = it->second;
+            if(category_to_id_.empty()){
+                auto it = label_index_map.find(val.name_);
+                if(it != std::end(label_index_map)){
+                    lst_label.id_ = it->second;
+                }else{
+                    lst_label.id_ = label_index;
+                    label_index_map.insert(std::make_pair(val.name_, label_index++));
+                }
             }else{
-                lst_label.id_ = label_index;
-                label_index_map.insert(std::make_pair(val.name_, label_index++));
+                auto it = category_to_id_.find(val.name_);
+                if(it != std::end(category_to_id_)){
+                    lst_label.id_ = it->second;
+                }
             }
             data_to_gen.labels_.emplace_back(std::move(lst_label));
         }
         lst_gen.apply(data_to_gen);
     }
 
-    print_name_to_label_index(label_index_map);
+    if(!label_index_map.empty()){
+        print_name_to_label_index(label_index_map);
+    }else{
+        print_name_to_label_index(category_to_id_);
+    }
 }
 
 void generate_lst_from_label_image::print_name_to_label_index(const std::map<QString, size_t> &input)
@@ -83,7 +103,7 @@ void generate_lst_from_label_image::print_name_to_label_index(const std::map<QSt
 
         QTextStream stream(&file);
         for(auto const &vpair : result){
-           stream<<vpair.first<<"\t"<<vpair.second<<"\n";
+            stream<<vpair.first<<"\t"<<vpair.second<<"\n";
         }
     }else{
         qDebug()<<__func__<<"cannot write label to string to:"<<file.fileName();
