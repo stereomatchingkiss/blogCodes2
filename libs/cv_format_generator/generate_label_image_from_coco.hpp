@@ -13,7 +13,7 @@ class QJsonObject;
  * Fields need to specify in the json
  * @param coco_category_want_to_detect name of the category want to detect(ex : ["person", "bicycle", "car"])
  * @param folder_of_coco_image Folder contain image of coco
- * @param folder_of_label_image xml files of the label image will save at here
+ * @param folder_to_save_label_img_xml xml files of the label image will save at here
  */
 class generate_label_image_from_coco
 {

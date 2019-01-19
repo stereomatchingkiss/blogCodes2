@@ -126,7 +126,7 @@ void generate_label_image_from_coco::apply()
     coco_instance_parser parser;
     auto const folder_of_coco_image = json_obj["folder_of_coco_image"].toString();
     auto const parse_result = parser.parse(json_obj["annotaion_of_coco"].toString(), folder_of_coco_image);
-    auto const save_xml_to = json_obj["folder_of_label_image"].toString();
+    auto const save_xml_to = json_obj["folder_to_save_label_img_xml"].toString();
     QDir().mkpath(save_xml_to);
     create_category_to_detect(json_obj);
     for(auto const &vpair : parse_result.blocks_){
