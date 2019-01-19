@@ -1,0 +1,14 @@
+{
+  "annotaion_of_coco" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/annotations/instances_val2017.json",
+  "coco_category_want_to_detect" : ["person", "bicycle", "car", "motorcycle", "bus", "val", "truck"],
+  "lst_category_to_id" : [
+  {"category" : "person", "id" : 0}, {"category" : "bicycle", "id" : 1}, {"category" : "car", "id" : 2}, 
+  {"category" : "motorcycle", "id" : 3}, {"category" : "bus", "id" : 4}, {"category" : "train", "id" : 5}, 
+  {"category" : "truck", "id" : 6}],
+  "folder_of_coco_image" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/val2017",    
+  "folder_of_label_image_xml" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/val2017/label_image_xml",  
+  "folder_to_save_label_img_xml" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/val2017/label_image_xml",  
+  "mode" : "coco_to_lst",
+  "save_lst_as" : "coco_person_and_road_vehicle_val.lst",
+  "save_lst_label_to_string_as" : "coco_person_and_road_vehicle_val_label.txt"  
+}
