@@ -1,16 +1,19 @@
 {
+  "annotaion_of_coco" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/annotations/instances_train2017.json",
+  "coco_category_want_to_detect" : ["person", "bicycle", "car", "motorcycle", "bus", "train", "truck"],
   "model_params" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.params",
   "model_symbols" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.json",    
   "face_detection_json_of_kaggle" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_detection.json",  
+  "folder_of_coco_image" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/train2017",    
   "folder_of_fddb" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/fddb",
   "folder_of_kaggle_images" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images",
-  "folder_of_label_image" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images/face_img_label - Copy",
+  "folder_of_label_image_xml" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/train2017/label_image_xml",
   "folder_of_pascal" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/pascal_voc/VOCdevkit/VOC2012",
-  "folder_to_save_xml" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/face-detection-in-images/face_images/face_img_label",
+  "folder_to_save_label_img_xml" : "F:/home/ramsus/Qt/computer_vision_dataset/ms_coco/train2017/label_image_xml",
   "detect_confidence" : 0.5,
-  "mode" : "pascal_voc_to_lst",
+  "mode" : "coco_to_lst",
   "detector_process_width": 608,
-  "detector_process_height": 608,
-  "save_lst_as" : "pascal_person.lst",
-  "save_lst_label_to_string_as" : "label_to_string.txt"  
+  "detector_process_height": 608,  
+  "save_lst_as" : "coco_person_and_road_vehicle_train.lst",
+  "save_lst_label_to_string_as" : "coco_person_and_road_vehicle_label.txt"  
 }
