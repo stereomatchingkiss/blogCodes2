@@ -56,6 +56,9 @@ coco_instance_parser::parse_result coco_instance_parser::parse(QString const &fi
             result.blocks_.insert(std::make_pair(image_id, blk));
         }
     }
+    for(auto const &id : category_ids_){
+        qDebug()<<"id:"<<id;
+    }
 
     return result;
 }
