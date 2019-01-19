@@ -8,7 +8,7 @@
 class generate_lst_from_fddb
 {
 public:
-    generate_lst_from_fddb(QString const &json_location);
+    explicit generate_lst_from_fddb(QString const &json_location);
 
     void apply();
 
