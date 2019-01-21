@@ -49,11 +49,11 @@ coco_instance_parser::parse_result coco_instance_parser::parse(QString const &fi
             if(img_reader.canRead()){
                 blk.height_ = img_reader.size().height();
                 blk.width_ = img_reader.size().width();
+                blk.instances_.emplace_back(inst_info);
+                result.blocks_.insert(std::make_pair(image_id, blk));
             }else{
                 qDebug()<<__func__<<"cannot open image:" + img_reader.fileName();
             }
-            blk.instances_.emplace_back(inst_info);
-            result.blocks_.insert(std::make_pair(image_id, blk));
         }
     }
     for(auto const &id : category_ids_){
