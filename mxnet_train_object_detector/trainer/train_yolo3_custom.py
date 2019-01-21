@@ -316,16 +316,18 @@ if __name__ == '__main__':
     net = None
     if num_sync_bn_devices > 1:
         print("num_sync_bn_devices > 1")
-        if args.pretrained == 0:
+        if args.pretrained:
+            print("use pretrained weights of coco")
             net = get_model(net_name, pretrained=True, num_sync_bn_devices=num_sync_bn_devices)
         else:        
+            print("use pretrained weights of mxnet")
             net = get_model(net_name, pretrained_base=True, num_sync_bn_devices=num_sync_bn_devices)
 			
         net.reset_class(classes)            
         async_net = get_model(net_name, pretrained_base=False)  # used by cpu worker
     else:
         print("num_sync_bn_devices <= 1")        
-        if args.pretrained == 0:
+        if args.pretrained:
             net = get_model(net_name, pretrained=True)            
         else:
             net = get_model(net_name, pretrained_base=True)
