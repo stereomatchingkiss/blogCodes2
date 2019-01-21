@@ -43,10 +43,10 @@ coco_instance_parser::parse_result coco_instance_parser::parse(QString const &fi
         category_ids_.insert(inst_info.category_id_);
         if(it != std::end(result.blocks_)){
             it->second.instances_.emplace_back(inst_info);
-        }else{
-            parse_result::block blk;
+        }else{            
             QImageReader img_reader(image_location + "/" + image_id + ".jpg");
             if(img_reader.canRead()){
+                parse_result::block blk;
                 blk.height_ = img_reader.size().height();
                 blk.width_ = img_reader.size().width();
                 blk.instances_.emplace_back(inst_info);
