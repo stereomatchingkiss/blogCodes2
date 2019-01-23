@@ -8,6 +8,7 @@ import mxnet as mx
 from mxnet import nd
 from mxnet import gluon
 import gluoncv as gcv
+from gluoncv import model_zoo
 from gluoncv.model_zoo import get_model
 from gluoncv.data.batchify import Tuple, Stack, Pad
 from gluoncv.data.transforms.presets.yolo import YOLO3DefaultValTransform
@@ -47,9 +48,8 @@ def read_classes(args):
     with open(args.classes_list) as f:
         return f.readlines()
 		
-def get_dataset(args):     
-    val_dataset = gcv.data.RecordFileDetection(args.validate_dataset)
-    classes = read_classes(args)
+def get_dataset(args, classes):
+    val_dataset = gcv.data.RecordFileDetection(args.validate_dataset)    
     val_metric = VOC07MApMetric(iou_thresh=args.iou, class_names=classes)
     
     return val_dataset, val_metric
@@ -105,11 +105,15 @@ if __name__ == '__main__':
     # network
     net_name = args.net_params
 
-    net = get_model("yolo3_darknet53_custom", classes = read_classes(args), pretrained_base=True)     
-    net.load_parameters(net_name)	
-    net.collect_params().reset_ctx(ctx)
+    if net_name is not "":
+        net = get_model("yolo3_darknet53_custom", classes = read_classes(args), pretrained_base=True)     
+        net.load_parameters(net_name)
+        val_dataset, val_metric = get_dataset(args, read_classes(args))
+    else:
+        net = model_zoo.get_model('yolo3_darknet53_coco', pretrained=True)        
+        val_dataset, val_metric = get_dataset(args,net.classes)
 	
-    val_dataset, val_metric = get_dataset(args)
+    net.collect_params().reset_ctx(ctx)
     val_loader = get_dataloader(net, val_dataset, args.data_shape, args.batch_size, args.num_workers, args)
     map_name, mean_ap = validate(net, val_loader, ctx, val_metric)
     val_msg = '\n'.join(['{}={}'.format(k, v) for k, v in zip(map_name, mean_ap)])
