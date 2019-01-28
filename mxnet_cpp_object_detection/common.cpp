@@ -45,6 +45,9 @@ void load_check_point(std::string const &model_params,
     *symbol = new_symbol;
     *arg_params = args;
     *aux_params = auxs;
+
+    //WaitAll is need when we copy data between GPU and the main memory
+    NDArray::WaitAll();
 }
 
 std::vector<std::string> create_coco_obj_detection_labels()
