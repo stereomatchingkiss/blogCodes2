@@ -21,8 +21,6 @@ class Symbol;
 
 }
 
-std::vector<std::string> create_coco_obj_detection_labels();
-
 /**
  * @param input_shape batch, height, width, channels
  */

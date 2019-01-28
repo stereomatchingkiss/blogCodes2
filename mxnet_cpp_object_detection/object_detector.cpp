@@ -4,9 +4,10 @@
 
 #include <opencv2/imgproc.hpp>
 
-#include "common.hpp"
+#include <libs/mxnet/common.hpp>
 
 using namespace mxnet::cpp;
+using namespace mxnet_aux;
 
 object_detector::object_detector(std::string const &model_params,
                                  std::string const &model_symbols,

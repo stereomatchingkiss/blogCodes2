@@ -116,8 +116,8 @@ public:
 private:
     cv::Rect normalize_points(float x1, float y1, float x2, float y2) const noexcept;
 
-    double min_confidence_;
     cv::Size image_size_;
+    double min_confidence_;
     std::deque<bool> items_to_detect_;
     cv::Size obj_detector_process_size_;
 };
