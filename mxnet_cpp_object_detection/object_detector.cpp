@@ -15,18 +15,11 @@ object_detector::object_detector(std::string const &model_params,
     context_(new Context(context.GetDeviceType(), context.GetDeviceId())),
     process_size_(process_size)
 {    
-    Symbol net;
-    std::map<std::string, NDArray> args, auxs;
-    load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
-
-    //The shape of the input data must be the same, if you need different size,
-    //you could rebind the Executor or create a pool of Executor.
-    //In order to create input layer of the Executor, I make a dummy NDArray.
-    //The value of the "data" could be change later
-    args["data"] = NDArray(Shape(1, static_cast<unsigned>(process_size.height),
-                                 static_cast<unsigned>(process_size.width), 3), context);
-    executor_.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
-                                   std::map<std::string, OpReqType>(), auxs));
+    executor_ = create_executor(model_params,
+                                model_symbols,
+                                context,
+                                Shape(1, static_cast<unsigned>(process_size.height),
+                                      static_cast<unsigned>(process_size.width), 3));
 }
 
 object_detector::~object_detector()
@@ -46,7 +39,7 @@ void object_detector::forward(const cv::Mat &input)
 
     auto data = cvmat_to_ndarray(resize_img_, *context_);
     //Copy the data of the image to the "data"
-    data.CopyTo(&executor_->arg_dict()["data"]);    
+    data.CopyTo(&executor_->arg_dict()["data"]);
     //Forward is an async api.
     executor_->Forward(false);
 }
