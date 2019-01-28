@@ -5,14 +5,16 @@
 
 #include <opencv2/core.hpp>
 
-#include <string>
 #include <map>
+#include <memory>
+#include <string>
 
 namespace mxnet{
 
 namespace cpp{
 
 class Context;
+class Executor;
 class Symbol;
 
 }
@@ -20,6 +22,15 @@ class Symbol;
 }
 
 std::vector<std::string> create_coco_obj_detection_labels();
+
+/**
+ * @param input_shape batch, height, width, channels
+ */
+std::unique_ptr<mxnet::cpp::Executor>
+create_executor(std::string const &model_params,
+                std::string const &model_symbols,
+                mxnet::cpp::Context const &context,
+                mxnet::cpp::Shape const &input_shape);
 
 // Load data from CV BGR image
 mxnet::cpp::NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, mxnet::cpp::Context const &ctx);

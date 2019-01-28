@@ -10,7 +10,7 @@ using namespace mxnet::cpp;
 NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, Context const &ctx)
 {    
     cv::Mat rgb_image;
-    cv::cvtColor(bgr_image, rgb_image, cv::COLOR_BGR2RGB); 
+    cv::cvtColor(bgr_image, rgb_image, cv::COLOR_BGR2RGB);
     rgb_image.convertTo(rgb_image, CV_32FC3);
     return NDArray(rgb_image.ptr<float>(),
                    Shape(1, static_cast<unsigned>(rgb_image.rows), static_cast<unsigned>(rgb_image.cols), 3),
@@ -39,7 +39,7 @@ void load_check_point(std::string const &model_params,
         if (type == "arg:")
             args[name] = iter.second.Copy(ctx);
         else if (type == "aux:")
-            auxs[name] = iter.second.Copy(ctx);        
+            auxs[name] = iter.second.Copy(ctx);
     }
 
     *symbol = new_symbol;
@@ -67,4 +67,25 @@ std::vector<std::string> create_coco_obj_detection_labels()
         "oven", "toaster", "sink", "refrigerator", "book", "clock", "vase",
         "scissors", "teddy bear", "hair drier", "toothbrush"
     };
+}
+
+std::unique_ptr<Executor> create_executor(const std::string &model_params,
+                                          const std::string &model_symbols,
+                                          const Context &context,
+                                          const Shape &input_shape)
+{
+    std::unique_ptr<Executor> executor;
+    Symbol net;
+    std::map<std::string, NDArray> args, auxs;
+    load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
+
+    //The shape of the input data must be the same, if you need different size,
+    //you could rebind the Executor or create a pool of Executor.
+    //In order to create input layer of the Executor, I make a dummy NDArray.
+    //The value of the "data" could be change later
+    args["data"] = NDArray(input_shape, context);
+    executor.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
+                                  std::map<std::string, OpReqType>(), auxs));
+
+    return executor;
 }
