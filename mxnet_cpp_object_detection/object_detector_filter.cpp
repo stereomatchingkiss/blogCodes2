@@ -3,7 +3,7 @@
 object_detector_filter::object_detector_filter(const std::vector<object_detector_filter::item_type> &items_to_detect,
                                                cv::Size const &obj_detector_process_size,
                                                cv::Size const &image_size,
-                                               double min_confidence) :
+                                               float min_confidence) :
     image_size_(image_size),
     min_confidence_(min_confidence),
     obj_detector_process_size_(obj_detector_process_size)
@@ -33,7 +33,7 @@ object_detector_filter::filter(const std::vector<mxnet::cpp::NDArray> &input) co
     std::vector<result_type> result;
     size_t const num = bboxes.GetShape()[1];
     for(size_t i = 0; i < num; ++i) {
-        float const score = scores.At(0, 0, i);        
+        auto const score = scores.At(0, 0, i);
         auto const label = static_cast<size_t>(labels.At(0, 0, i));        
         if(score >= min_confidence_ && label < items_to_detect_.size() && items_to_detect_[label]){
             result_type rtype;
@@ -53,7 +53,7 @@ void object_detector_filter::set_image_size(const cv::Size &input) noexcept
     image_size_ = input;
 }
 
-void object_detector_filter::set_min_confidence(double input) noexcept
+void object_detector_filter::set_min_confidence(float input) noexcept
 {
     min_confidence_ = input;
 }
