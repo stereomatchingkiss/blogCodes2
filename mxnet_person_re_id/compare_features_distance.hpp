@@ -1,7 +1,17 @@
 #ifndef COMPARE_FEATURES_DISTANCE_HPP
 #define COMPARE_FEATURES_DISTANCE_HPP
 
-#include <mxnet-cpp/MxNetCpp.h>
+namespace mxnet
+{
+
+namespace cpp
+{
+
+class NDArray;
+
+}
+
+}
 
 class cosine_similarity
 {

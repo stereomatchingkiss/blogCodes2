@@ -1,5 +1,7 @@
 #include "compare_features_distance.hpp"
 
+#include <mxnet-cpp/MxNetCpp.h>
+
 using namespace mxnet::cpp;
 
 namespace{
