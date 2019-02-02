@@ -23,10 +23,10 @@ float element_wise_multiply_sum(mxnet::cpp::NDArray const &lhs, mxnet::cpp::NDAr
 float cosine_similarity::compare_feature(mxnet::cpp::NDArray const &lhs, mxnet::cpp::NDArray const &rhs) const
 {
     auto const numerator = element_wise_multiply_sum(lhs, rhs);
-    auto const denom_lhs = std::sqrt(element_wise_multiply_sum(lhs, lhs));
-    auto const denom_rhs = std::sqrt(element_wise_multiply_sum(rhs, rhs));
+    auto const denom_lhs = element_wise_multiply_sum(lhs, lhs);
+    auto const denom_rhs = element_wise_multiply_sum(rhs, rhs);
 
-    auto const denominator = denom_lhs * denom_rhs;
+    auto const denominator = std::sqrt(denom_lhs * denom_rhs);
 
     return denominator != 0.0f ? numerator / denominator : 0.0f;
 }
