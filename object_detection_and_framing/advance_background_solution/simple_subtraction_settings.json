@@ -1,0 +1,15 @@
+{
+    "input_media" : "C:/Users/yyyy/programs/Qt/jobs/freelance_jobs/object_detection_and_framing/simple_subtraction/videos/example_02.mp4",		
+	"history" : 60,
+	"var_threshold" : 32,
+    "detect_shadow" : 0,	
+	"dilate_kernal_width": 3,
+	"dilate_kernal_height": 3,
+	"gaussian_kernal_width": 21,
+	"gaussian_kernal_height": 21,
+	"min_contour_area" : 8000,
+	"resize_width_to": 0,
+    "wait_between_frame_ms" : 10,    
+	"threshold" : 30,
+	"save_output_as" : "predict_by_mog2.mp4"
+}
