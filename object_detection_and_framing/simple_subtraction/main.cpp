@@ -119,9 +119,9 @@ void process_first_frame(js_params &params, frame_pack &pack)
 void prepare_first_frame(int frame_count, js_params &params, frame_pack &pack)
 {
     if(pack.first_frame.empty()){
-        if(params.resize_to.area() == 0){
-            double const resize_scale = params.resize_width/static_cast<double>(pack.input_frame.cols);
+        if(params.resize_to.area() == 0){            
             if(params.resize_width != 0){
+                double const resize_scale = params.resize_width/static_cast<double>(pack.input_frame.cols);
                 params.resize_to = Size(params.resize_width,
                                         static_cast<int>(pack.input_frame.rows * resize_scale));
             }else{
