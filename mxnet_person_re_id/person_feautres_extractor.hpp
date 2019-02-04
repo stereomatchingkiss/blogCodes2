@@ -29,6 +29,7 @@ public:
     person_feautres_extractor(std::string const &model_params,
                               std::string const &model_symbols,
                               mxnet::cpp::Context const &context);
+    ~person_feautres_extractor();
 
     cv::Mat_<float> get_features(cv::Mat const &input);
 

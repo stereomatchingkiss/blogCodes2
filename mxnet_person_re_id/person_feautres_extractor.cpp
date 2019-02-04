@@ -26,6 +26,11 @@ person_feautres_extractor::person_feautres_extractor(const std::string &model_pa
     to_ndarray_ = std::make_unique<opencv_to_ndarray>(input_width, input_height, context, CV_32FC3, false);
 }
 
+person_feautres_extractor::~person_feautres_extractor()
+{
+
+}
+
 cv::Mat_<float> person_feautres_extractor::get_features(const cv::Mat &input)
 {
     auto data = to_ndarray_->convert(input);
