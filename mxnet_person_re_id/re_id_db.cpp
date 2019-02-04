@@ -2,8 +2,6 @@
 
 #include "compare_features_distance.hpp"
 
-using namespace mxnet_aux;
-
 re_id_db::re_id_db() :
     compare_(std::make_unique<cosine_similarity>())
 {    

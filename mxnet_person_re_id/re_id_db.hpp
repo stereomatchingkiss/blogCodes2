@@ -7,24 +7,6 @@
 #include <string>
 #include <vector>
 
-namespace mxnet{
-
-namespace cpp{
-
-class Context;
-class Executor;
-class NDArray;
-
-}
-
-}
-
-namespace mxnet_aux{
-
-class opencv_to_ndarray;
-
-}
-
 class cosine_similarity;
 
 class re_id_db
