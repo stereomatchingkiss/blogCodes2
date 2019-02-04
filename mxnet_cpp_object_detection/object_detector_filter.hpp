@@ -112,6 +112,7 @@ public:
     void set_obj_detector_process_size(cv::Size const &obj_detector_process_size) noexcept;
 
 private:
+    cv::Rect clip_points(float x1, float y1, float x2, float y2, cv::Size const &image_size) const noexcept;
     cv::Rect normalize_points(float x1, float y1, float x2, float y2, cv::Size const &image_size) const noexcept;
 
     float min_confidence_;

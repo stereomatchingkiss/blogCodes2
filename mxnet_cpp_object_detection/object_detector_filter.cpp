@@ -63,25 +63,31 @@ void object_detector_filter::set_obj_detector_process_size(const cv::Size &obj_d
 {
     obj_detector_process_size_ = obj_detector_process_size;
     if(obj_detector_process_size_.height == 0){
-        obj_detector_process_size_.height = 1;
+        obj_detector_process_size_.height = 224;
     }
     if(obj_detector_process_size_.width == 0){
-        obj_detector_process_size_.width = 1;
+        obj_detector_process_size_.width = 224;
     }
+}
+
+cv::Rect object_detector_filter::clip_points(float x1, float y1, float x2, float y2,
+                                             const cv::Size &image_size) const noexcept
+{
+    return cv::Rect(cv::Point(static_cast<int>(std::max(x1, 0.0f)), static_cast<int>(std::max(y1, 0.0f))),
+                    cv::Point(static_cast<int>(std::min(x2, image_size.width - 1.0f)),
+                              static_cast<int>(std::min(y2, image_size.height - 1.0f))));
 }
 
 cv::Rect object_detector_filter::
 normalize_points(float x1, float y1, float x2, float y2, cv::Size const &image_size) const noexcept
 {
     if(obj_detector_process_size_.height != image_size.height || obj_detector_process_size_.width != image_size.width){
-        x1 = std::max(x1 / obj_detector_process_size_.width * image_size.width, 0.0f);
-        y1 = std::max(y1 / obj_detector_process_size_.height * image_size.height, 0.0f);
-        x2 = std::min(x2 / obj_detector_process_size_.width * image_size.width, image_size.width - 1.0f);
-        y2 = std::min(y2 / obj_detector_process_size_.height * image_size.height, image_size.height - 1.0f);
-        return cv::Rect(cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
-                        cv::Point(static_cast<int>(x2), static_cast<int>(y2)));
+        x1 = x1 / obj_detector_process_size_.width * image_size.width;
+        y1 = y1 / obj_detector_process_size_.height * image_size.height;
+        x2 = x2 / obj_detector_process_size_.width * image_size.width;
+        y2 = y2 / obj_detector_process_size_.height * image_size.height;
+        return clip_points(x1, y1, x2, y2, image_size);
     }else{
-        return cv::Rect(cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
-                        cv::Point(static_cast<int>(x2), static_cast<int>(y2)));
+        return clip_points(x1, y1, x2, y2, image_size);
     }
 }
