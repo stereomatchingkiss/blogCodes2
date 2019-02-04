@@ -85,14 +85,11 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
 {
     using namespace mxnet::cpp;
 
-    std::vector<object_detector_filter::item_type> types_to_detect;
-    types_to_detect.emplace_back(object_detector_filter::item_type::person);
-    object_detector_filter filter(types_to_detect, process_size_, thresh_);
     if(!obj_filter_){
-        obj_filter_ = std::make_unique<object_detector_filter>(types_to_detect, process_size_,
-                                                               cv::Size(inout.cols, inout.rows), thresh_);
+        std::vector<object_detector_filter::item_type> types_to_detect;
+        types_to_detect.emplace_back(object_detector_filter::item_type::person);
+        obj_filter_ = std::make_unique<object_detector_filter>(types_to_detect, process_size_, thresh_);
     }
-
     auto const &results = obj_filter_->filter(predict_results, cv::Size(inout.cols, inout.rows));
     for(auto const &res : results){
         auto const label = static_cast<size_t>(res.item_);
