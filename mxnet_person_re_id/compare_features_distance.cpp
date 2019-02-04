@@ -33,7 +33,7 @@ float cosine_similarity::compare_feature(mxnet::cpp::NDArray const &lhs,
     return denominator != 0.0f ? numerator / denominator : 0.0f;
 }
 
-float cosine_similarity::compare_feature(const cv::Mat_<float> &lhs, const cv::Mat_<float> &rhs) const
+float cosine_similarity::compare_feature(const cv::Mat_<float> &lhs, const cv::Mat_<float> &rhs)
 {
     cv::multiply(lhs, rhs, numerator_);
     cv::pow(lhs, 2, lhs_pow_);
