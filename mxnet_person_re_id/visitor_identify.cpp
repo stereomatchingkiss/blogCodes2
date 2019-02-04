@@ -13,11 +13,11 @@ visitor_identify::visitor_identify(const std::string &person_re_id_params,
                                    const mxnet::cpp::Context &context) :
     db_(std::make_unique<re_id_db>()),
     feature_extract_(std::make_unique<person_feautres_extractor>(person_re_id_params, person_re_id_symbol, context)),
-    obj_det_(std::make_unique<object_detector>(obj_det_params, obj_det_symbols, context))
+    obj_det_(std::make_unique<object_detector>(obj_det_params, obj_det_symbols, context, cv::Size(320 ,256)))
 {
     std::vector<object_detector_filter::item_type> obj_to_detect;
     obj_to_detect.emplace_back(object_detector_filter::item_type::person);
-    obj_filter_.reset(new object_detector_filter(std::move(obj_to_detect), cv::Size(320 ,320)));
+    obj_filter_.reset(new object_detector_filter(std::move(obj_to_detect), cv::Size(320 ,256), 0.8f));
 }
 
 visitor_identify::~visitor_identify()
