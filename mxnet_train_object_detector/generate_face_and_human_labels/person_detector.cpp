@@ -17,9 +17,8 @@ person_detector::person_detector(const QString &setting_file_location)
     std::vector<object_detector_filter::item_type> types_to_detect;
     types_to_detect.emplace_back(object_detector_filter::item_type::person);
     filter_.reset(new object_detector_filter(types_to_detect,
-                                             parser.get_detector_process_size(),
-                                             cv::Size(1, 1),
-                                             parser.get_detect_confidence()));
+                                             parser.get_detector_process_size(),                                             
+                                             static_cast<float>(parser.get_detect_confidence())));
 }
 
 person_detector::~person_detector()
@@ -29,7 +28,6 @@ person_detector::~person_detector()
 
 std::vector<object_detector_filter::result_type> person_detector::detect(const cv::Mat &img)
 {
-    object_detector_->forward(img);
-    filter_->set_image_size(cv::Size(img.cols, img.rows));
-    return filter_->filter(object_detector_->get_outputs());
+    object_detector_->forward(img);    
+    return filter_->filter(object_detector_->get_outputs(), cv::Size(img.cols, img.rows));
 }

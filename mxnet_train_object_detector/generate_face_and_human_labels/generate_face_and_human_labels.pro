@@ -34,8 +34,7 @@ SOURCES += \
     ../../libs/cv_format_parser/kaggle_face_detection_parser.cpp \
     ../../libs/cv_format_parser/json_utility.cpp \
     ../../mxnet_cpp_object_detection/object_detector.cpp \
-    ../../mxnet_cpp_object_detection/object_detector_filter.cpp \
-    ../../mxnet_cpp_object_detection/common.cpp \    
+    ../../mxnet_cpp_object_detection/object_detector_filter.cpp \        
     generate_labels_from_kaggle_dataset.cpp \
     general_settings_param_parser.cpp \
     person_detector.cpp \
@@ -48,7 +47,8 @@ SOURCES += \
     ../../libs/cv_format_parser/coco_instance_parser.cpp \
     ../../libs/cv_format_parser/rapidjson_utility.cpp \
     ../../libs/cv_format_generator/generate_label_image_from_coco.cpp \
-    ../../libs/cv_format_generator/generate_lst_from_coco.cpp
+    ../../libs/cv_format_generator/generate_lst_from_coco.cpp \
+    ../../libs/mxnet/common.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -61,8 +61,7 @@ HEADERS += \
     ../../libs/cv_format_parser/kaggle_face_detection_parser.hpp \
     ../../libs/cv_format_parser/json_utility.hpp \
     ../../mxnet_cpp_object_detection/object_detector.hpp \
-    ../../mxnet_cpp_object_detection/object_detector_filter.hpp \
-    ../../mxnet_cpp_object_detection/common.hpp \
+    ../../mxnet_cpp_object_detection/object_detector_filter.hpp \    
     generate_labels_from_kaggle_dataset.hpp \
     general_settings_param_parser.hpp \
     person_detector.hpp \
@@ -75,4 +74,5 @@ HEADERS += \
     ../../libs/cv_format_parser/coco_instance_parser.hpp \
     ../../libs/cv_format_parser/rapidjson_utility.hpp \
     ../../libs/cv_format_generator/generate_label_image_from_coco.hpp \
-    ../../libs/cv_format_generator/generate_lst_from_coco.hpp
+    ../../libs/cv_format_generator/generate_lst_from_coco.hpp \
+    ../../libs/mxnet/common.hpp

@@ -102,21 +102,18 @@ public:
     };
 
     explicit object_detector_filter(std::vector<item_type> const &items_to_detect,
-                                    cv::Size const &obj_detector_process_size,
-                                    cv::Size const &image_size,
+                                    cv::Size const &obj_detector_process_size,                                    
                                     float min_confidence = 0.4f);
 
-    std::vector<result_type> filter(std::vector<mxnet::cpp::NDArray> const &input) const;
+    std::vector<result_type> filter(std::vector<mxnet::cpp::NDArray> const &input, cv::Size const &image_size) const;
 
-    void set_image_size(cv::Size const &input) noexcept;
     void set_min_confidence(float input) noexcept;
     void set_items_to_detect(std::vector<item_type> const &items_to_detect);
     void set_obj_detector_process_size(cv::Size const &obj_detector_process_size) noexcept;
 
 private:
-    cv::Rect normalize_points(float x1, float y1, float x2, float y2) const noexcept;
+    cv::Rect normalize_points(float x1, float y1, float x2, float y2, cv::Size const &image_size) const noexcept;
 
-    cv::Size image_size_;
     float min_confidence_;
     std::deque<bool> items_to_detect_;
     cv::Size obj_detector_process_size_;

@@ -1,10 +1,8 @@
 #include "object_detector_filter.hpp"
 
 object_detector_filter::object_detector_filter(const std::vector<object_detector_filter::item_type> &items_to_detect,
-                                               cv::Size const &obj_detector_process_size,
-                                               cv::Size const &image_size,
-                                               float min_confidence) :
-    image_size_(image_size),
+                                               cv::Size const &obj_detector_process_size,                                               
+                                               float min_confidence) :    
     min_confidence_(min_confidence),
     obj_detector_process_size_(obj_detector_process_size)
 {
@@ -13,7 +11,7 @@ object_detector_filter::object_detector_filter(const std::vector<object_detector
 }
 
 std::vector<object_detector_filter::result_type>
-object_detector_filter::filter(const std::vector<mxnet::cpp::NDArray> &input) const
+object_detector_filter::filter(const std::vector<mxnet::cpp::NDArray> &input, cv::Size const &image_size) const
 {
     using namespace mxnet::cpp;
 
@@ -40,17 +38,12 @@ object_detector_filter::filter(const std::vector<mxnet::cpp::NDArray> &input) co
             rtype.confidence_ = score;
             rtype.item_ = static_cast<item_type>(label);
             rtype.roi_ = normalize_points(bboxes.At(0, i, 0), bboxes.At(0, i, 1),
-                                          bboxes.At(0, i, 2), bboxes.At(0, i, 3));
+                                          bboxes.At(0, i, 2), bboxes.At(0, i, 3), image_size);
             result.emplace_back(std::move(rtype));
         }
     }
 
     return result;
-}
-
-void object_detector_filter::set_image_size(const cv::Size &input) noexcept
-{
-    image_size_ = input;
 }
 
 void object_detector_filter::set_min_confidence(float input) noexcept
@@ -78,13 +71,13 @@ void object_detector_filter::set_obj_detector_process_size(const cv::Size &obj_d
 }
 
 cv::Rect object_detector_filter::
-normalize_points(float x1, float y1, float x2, float y2) const noexcept
+normalize_points(float x1, float y1, float x2, float y2, cv::Size const &image_size) const noexcept
 {
-    if(obj_detector_process_size_.height != image_size_.height || obj_detector_process_size_.width != image_size_.width){
-        x1 = x1 / obj_detector_process_size_.width * image_size_.width;
-        y1 = y1 / obj_detector_process_size_.height * image_size_.height;
-        x2 = x2 / obj_detector_process_size_.width * image_size_.width;
-        y2 = y2 / obj_detector_process_size_.height * image_size_.height;
+    if(obj_detector_process_size_.height != image_size.height || obj_detector_process_size_.width != image_size.width){
+        x1 = x1 / obj_detector_process_size_.width * image_size.width;
+        y1 = y1 / obj_detector_process_size_.height * image_size.height;
+        x2 = x2 / obj_detector_process_size_.width * image_size.width;
+        y2 = y2 / obj_detector_process_size_.height * image_size.height;
         return cv::Rect(cv::Point(static_cast<int>(x1), static_cast<int>(y1)),
                         cv::Point(static_cast<int>(x2), static_cast<int>(y2)));
     }else{
