@@ -45,6 +45,14 @@ int main(int argc, char *argv[])try
                 capture>>frame;
                 if(!frame.empty()){
                     auto const visitor_info = viden.detect_and_identify_visitors(frame);
+                    for(auto const &vinfo : visitor_info){
+                        cv::rectangle(frame, vinfo.roi_, {255, 0, 0});
+                        auto const label = "id:" + to_string(vinfo.id_) + ", confident:" +
+                                std::to_string(vinfo.confidence_);
+                        cv::putText(frame, label,
+                                    vinfo.roi_.tl(), cv::FONT_HERSHEY_SIMPLEX,
+                                    1, {255,0,255}, 2);
+                    }
                     cv::imshow("frame", frame);
                     auto const key = cv::waitKey(10);
                     if(key == 'q' || key == 'Q'){
