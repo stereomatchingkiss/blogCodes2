@@ -1,0 +1,10 @@
+{  
+  "input_media" : "C:/Users/yyyy/programs/Qt/computer_vision_dataset/videos/Pedestrian overpass - original video (sample) - BriefCam Syndex.mp4",
+  "person_re_id_params" : "C:/Users/yyyy/programs/Qt/3rdLibs/gluon-cv/scripts/re-id/baseline/re_id.params-0000.params",
+  "person_re_id_symbol" : "C:/Users/yyyy/programs/Qt/3rdLibs/gluon-cv/scripts/re-id/baseline/re_id.params-symbol.json",
+  "obj_det_params" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.params",
+  "obj_det_symbols" : "C:/Users/yyyy/.mxnet/models/yolo3_darknet53_coco.json",
+  "person_detect_threshold" : 0.5,
+  "re_id_threshold" : 0.4,
+  "save_output_as" : "person_re_id_output.mp4"
+}
