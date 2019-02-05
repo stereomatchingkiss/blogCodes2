@@ -24,6 +24,20 @@ cv::VideoCapture create_video_capture(cv::FileStorage const &input)
     return cv::VideoCapture(input["input_media"].string());
 }
 
+void record_video(cv::Mat const &frame, std::string const &save_output_as, cv::VideoWriter &vwriter)
+{
+    if(!save_output_as.empty()){
+        if(!vwriter.isOpened()){
+            vwriter.open(save_output_as,
+                         cv::VideoWriter::fourcc('H','2','6','4'),
+                         24.0, cv::Size(frame.cols, frame.rows));
+        }
+        if(vwriter.isOpened()){
+            vwriter<<frame;
+        }
+    }
+}
+
 int main(int argc, char *argv[])try
 {
     if(argc < 2){
@@ -41,9 +55,11 @@ int main(int argc, char *argv[])try
             auto const obj_det_symbols = fs["obj_det_symbols"].string();
             auto const person_detect_threshold = static_cast<float>(fs["person_detect_threshold"].real());
             auto const re_id_threshold = static_cast<float>(fs["re_id_threshold"].real());
+            auto const save_output_as = fs["save_output_as"].string();
             visitor_identify viden(person_re_id_params, person_re_id_symbol, obj_det_params,
                                    obj_det_symbols, person_detect_threshold, re_id_threshold);
             cv::Mat frame;
+            cv::VideoWriter vwriter;
             while(1){
                 capture>>frame;
                 if(!frame.empty()){
@@ -57,6 +73,7 @@ int main(int argc, char *argv[])try
                                     1, {255,0,255}, 2);
                     }
                     cv::imshow("frame", frame);
+                    record_video(frame, save_output_as, vwriter);
                     auto const key = cv::waitKey(10);
                     if(key == 'q' || key == 'Q'){
                         break;
