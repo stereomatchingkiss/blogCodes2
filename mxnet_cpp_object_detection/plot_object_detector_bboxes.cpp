@@ -90,7 +90,7 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
         types_to_detect.emplace_back(object_detector_filter::item_type::person);
         obj_filter_ = std::make_unique<object_detector_filter>(types_to_detect, process_size_, thresh_);
     }
-    auto const &results = obj_filter_->filter(predict_results, cv::Size(inout.cols, inout.rows));
+    auto const &results = obj_filter_->filter(predict_results, cv::Size(inout.cols, inout.rows));    
     for(auto const &res : results){
         auto const label = static_cast<size_t>(res.item_);
         cv::rectangle(inout, res.roi_, colors_[static_cast<size_t>(res.item_)], 2);
@@ -102,6 +102,8 @@ void plot_object_detector_bboxes::plot(cv::Mat &inout,
         txt += " " + ss.str();
         put_label(inout, txt, res.roi_.tl(), colors_[label]);
     }
+    cv::putText(inout, std::to_string(results.size()) + " people",
+                cv::Point(0, 30), cv::FONT_HERSHEY_SIMPLEX, 1, {255,0,255}, 2);
 }
 
 void plot_object_detector_bboxes::set_process_size_of_detector(const cv::Size &process_size) noexcept

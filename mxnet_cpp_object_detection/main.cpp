@@ -58,10 +58,13 @@ int main(int argc, char *argv[])try
 
     cv::FileStorage fs(argv[1], cv::FileStorage::READ);
     if(fs.isOpened()){
-        object_detector obj_det(fs["model_params"].string(), fs["model_symbols"].string(), mxnet::cpp::Context::gpu(0));
+        cv::Size const process_size(static_cast<int>(fs["process_width"].real()),
+                static_cast<int>(fs["process_height"].real()));
+        object_detector obj_det(fs["model_params"].string(), fs["model_symbols"].string(),
+                mxnet::cpp::Context::gpu(0), process_size);
         viz::plot_object_detector_bboxes plotter(create_coco_obj_detection_labels(),
                                                  static_cast<float>(fs["detect_confidence"].real()));
-        plotter.set_process_size_of_detector(cv::Size(320, 256));
+        plotter.set_process_size_of_detector(process_size);
         if(fs["media_is_image"].real() == 1.0){
             cv::Mat image, resize_img;
             std::tie(image, resize_img) = load_image(fs["input_media"].string());
@@ -95,7 +98,7 @@ int main(int argc, char *argv[])try
                         mxnet::cpp::NDArray::WaitAll();
                         auto const end = std::chrono::system_clock::now();
                         std::chrono::duration<double> const elapsed_seconds = end-start;
-                        elapsed += elapsed_seconds.count();
+                        elapsed += elapsed_seconds.count();                        
                         plotter.plot(frame, obj_det.get_outputs());
                         if(can_open_video){
                             vwriter<<frame;
