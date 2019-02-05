@@ -28,6 +28,8 @@ public:
                      std::string const &person_re_id_symbol,
                      std::string const &obj_det_params,
                      std::string const &obj_det_symbols,
+                     float person_detect_threshold = 0.6f,
+                     float re_id_threshold = 0.3f,
                      mxnet::cpp::Context const &context = mxnet::cpp::Context(mxnet::cpp::kGPU, 0));
 
     ~visitor_identify();
@@ -39,6 +41,8 @@ private:
     std::unique_ptr<person_feautres_extractor> feature_extract_;
     std::unique_ptr<object_detector> obj_det_;
     std::unique_ptr<object_detector_filter> obj_filter_;
+    float person_detect_threshold_;
+    float re_id_threshold_;
 };
 
 #endif // VISITOR_IDENTIFY_HPP

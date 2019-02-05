@@ -39,7 +39,10 @@ int main(int argc, char *argv[])try
             auto const person_re_id_symbol = fs["person_re_id_symbol"].string();
             auto const obj_det_params = fs["obj_det_params"].string();
             auto const obj_det_symbols = fs["obj_det_symbols"].string();
-            visitor_identify viden(person_re_id_params, person_re_id_symbol, obj_det_params, obj_det_symbols);
+            auto const person_detect_threshold = static_cast<float>(fs["person_detect_threshold"].real());
+            auto const re_id_threshold = static_cast<float>(fs["re_id_threshold"].real());
+            visitor_identify viden(person_re_id_params, person_re_id_symbol, obj_det_params,
+                                   obj_det_symbols, person_detect_threshold, re_id_threshold);
             cv::Mat frame;
             while(1){
                 capture>>frame;

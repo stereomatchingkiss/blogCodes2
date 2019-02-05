@@ -10,14 +10,19 @@ visitor_identify::visitor_identify(const std::string &person_re_id_params,
                                    const std::string &person_re_id_symbol,
                                    const std::string &obj_det_params,
                                    const std::string &obj_det_symbols,
+                                   float person_detect_threshold,
+                                   float re_id_threshold,
                                    const mxnet::cpp::Context &context) :
     db_(std::make_unique<re_id_db>()),
     feature_extract_(std::make_unique<person_feautres_extractor>(person_re_id_params, person_re_id_symbol, context)),
-    obj_det_(std::make_unique<object_detector>(obj_det_params, obj_det_symbols, context, cv::Size(320 ,256)))
+    obj_det_(std::make_unique<object_detector>(obj_det_params, obj_det_symbols, context, cv::Size(320 ,256))),
+    person_detect_threshold_(person_detect_threshold),
+    re_id_threshold_(re_id_threshold)
 {
     std::vector<object_detector_filter::item_type> obj_to_detect;
     obj_to_detect.emplace_back(object_detector_filter::item_type::person);
-    obj_filter_.reset(new object_detector_filter(std::move(obj_to_detect), cv::Size(320 ,256), 0.8f));
+    obj_filter_.reset(new object_detector_filter(std::move(obj_to_detect), cv::Size(320 ,256),
+                                                 person_detect_threshold_));
 }
 
 visitor_identify::~visitor_identify()
@@ -36,7 +41,7 @@ std::vector<visitor_identify::visitor_info> visitor_identify::detect_and_identif
        auto const id_info = db_->find_most_similar_id(feature);
        visitor_info vinfo;
        vinfo.roi_ = det.roi_;
-       if(id_info.confident_ > 0.5f){
+       if(id_info.confident_ > re_id_threshold_){
            vinfo.id_ = id_info.id_;
            vinfo.confidence_ = id_info.confident_;
        }else{
