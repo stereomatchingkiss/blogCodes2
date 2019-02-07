@@ -61,7 +61,7 @@ class MultiOutputImageDataset(dataset.Dataset):
                 else:
                     labels = dir.split("_")
                     num_of_labels = []
-                    for i in range(labels):
+                    for i in range(len(labels)):
                         num_of_labels.append(self._label_dict[i][labels[i]])
                     self._image_list.append(root + "/" + dir + "/" + filename)
                     self._label_list.append(num_of_labels)
