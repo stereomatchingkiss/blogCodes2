@@ -22,9 +22,9 @@ double face_key::similarity(const face_key &input) const
 {
     CV_Assert(key_.GetData() != nullptr && input.key_.GetData() != nullptr);
 
-    cv::Mat const key1(1, 512, CV_32F, const_cast<float*>(input.key_.GetData()), 0);
-    cv::Mat const key2(1, 512, CV_32F, const_cast<float*>(key_.GetData()), 0);
-    return key2.dot(key1);
+    cv::Mat_<float> const key1(1, 512, const_cast<float*>(input.key_.GetData()), 0);
+    cv::Mat_<float> const key2(1, 512, const_cast<float*>(key_.GetData()), 0);
+    return key2.dot(key1) / (std::sqrt(key1.dot(key1) * key2.dot(key2)));
 }
 
 }
