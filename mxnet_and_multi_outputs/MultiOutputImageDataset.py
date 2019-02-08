@@ -68,7 +68,7 @@ class MultiOutputImageDataset(dataset.Dataset):
                     self._label_list.append(num_of_labels)
 	                                        
     def __getitem__(self, idx):
-        return self._image_list[i], self._label_list[i]
+        return self._image_list[idx], self._label_list[idx]
 
     def __len__(self):
         return len(self._image_list)
