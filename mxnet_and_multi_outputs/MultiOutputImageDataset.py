@@ -67,8 +67,11 @@ class MultiOutputImageDataset(dataset.Dataset):
                     self._image_list.append(root + "/" + dir + "/" + filename)
                     self._label_list.append(num_of_labels)
 	                                        
-    def __getitem__(self, idx):
-        return self._image_list[idx], self._label_list[idx]
+    def __getitem__(self, idx):        
+        base = mx.image.imread(self._image_list[idx])        
+        if self._transform is not None:
+            base = self._transform(base)        
+        return base, self._label_list[idx]
 
     def __len__(self):
         return len(self._image_list)
