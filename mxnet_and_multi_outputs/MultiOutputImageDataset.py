@@ -1,4 +1,5 @@
 import mxnet as mx
+from mxnet import ndarray as nd
 from mxnet.gluon.data import dataset
 import os
 
@@ -61,8 +62,8 @@ class MultiOutputImageDataset(dataset.Dataset):
                 else:
                     labels = dir.split("_")
                     num_of_labels = []
-                    for i in range(len(labels)):
-                        num_of_labels.append(self._label_dict[i][labels[i]])
+                    for i in range(len(labels)):                        
+                        num_of_labels.append(nd.one_hot(nd.array([self._label_dict[i][labels[i]]]), len(self._label_dict[i])))
                     self._image_list.append(root + "/" + dir + "/" + filename)
                     self._label_list.append(num_of_labels)
 	                                        
