@@ -28,12 +28,12 @@ class MultiOutputImageDataset(dataset.Dataset):
     MultiOutputImageDataset("./images", [{"red" : 0, "blue" : 1}, {"shirt" : 0, "jean" : 1}])
 
     The results returned by __getitem__ will be
-	path of image               number after mapping
+	path of image               number after mapping with one hot encoding
 	
-	root/red_shirt/img0.jpg     [0, 0]
-	root/red_jean/img1.jpg      [0, 1]
-	root/blue_shirt/img2.jpg    [1, 1]
-	root/blue_jean/img3.jpg     [1, 0]	
+	root/red_shirt/img0.jpg     [[1,0,0], [1,0,0]]
+	root/red_jean/img1.jpg      [[1,0,0], [0,1,0]]
+	root/blue_shirt/img2.jpg    [[0,1,0], [0,1,0]]
+	root/blue_jean/img3.jpg     [[0,1,0], [1,0,0]]	
 
     Parameters
     ----------
@@ -67,11 +67,11 @@ class MultiOutputImageDataset(dataset.Dataset):
                     self._image_list.append(root + "/" + dir + "/" + filename)
                     self._label_list.append(num_of_labels)
 	                                        
-    def __getitem__(self, idx):        
+    def __getitem__(self, idx):
         base = mx.image.imread(self._image_list[idx])        
         if self._transform is not None:
-            base = self._transform(base)        
-        return base, self._label_list[idx]
+            base = self._transform(base)
+        return base, self._label_list[idx][0], self._label_list[idx][1]
 
     def __len__(self):
         return len(self._image_list)
