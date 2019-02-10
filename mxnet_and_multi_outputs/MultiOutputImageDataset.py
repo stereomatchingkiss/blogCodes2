@@ -28,12 +28,12 @@ class MultiOutputImageDataset(dataset.Dataset):
     MultiOutputImageDataset("./images", [{"red" : 0, "blue" : 1}, {"shirt" : 0, "jean" : 1}])
 
     The results returned by __getitem__ will be
-	path of image               number after mapping with one hot encoding
+	path of image               number after mapping(elements in list are ndarray)
 	
-	root/red_shirt/img0.jpg     [[1,0,0], [1,0,0]]
-	root/red_jean/img1.jpg      [[1,0,0], [0,1,0]]
-	root/blue_shirt/img2.jpg    [[0,1,0], [0,1,0]]
-	root/blue_jean/img3.jpg     [[0,1,0], [1,0,0]]	
+	root/red_shirt/img0.jpg     [[0], [0]]
+	root/red_jean/img1.jpg      [[0], [1]]
+	root/blue_shirt/img2.jpg    [[1], [0]]
+	root/blue_jean/img3.jpg     [[1], [1]]	
 
     Parameters
     ----------
@@ -63,7 +63,8 @@ class MultiOutputImageDataset(dataset.Dataset):
                     labels = dir.split("_")
                     num_of_labels = []
                     for i in range(len(labels)):                        
-                        num_of_labels.append(nd.one_hot(nd.array([self._label_dict[i][labels[i]]]), len(self._label_dict[i])))
+                        num_of_labels.append(nd.array([self._label_dict[i][labels[i]]]))
+                    
                     self._image_list.append(root + "/" + dir + "/" + filename)
                     self._label_list.append(num_of_labels)
 	                                        
