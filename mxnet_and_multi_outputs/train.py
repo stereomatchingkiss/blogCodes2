@@ -1,5 +1,5 @@
 from gluoncv import model_zoo
-from gluoncv.utils import TrainingHistory
+from gluoncv.utils import TrainingHistory, LRScheduler
 
 from mxnet import autograd, gluon, image, init, nd
 from mxnet.gluon import nn
@@ -24,8 +24,16 @@ def parse_args():
     parser.add_argument('--epoch', type=int, default=3, help='Epoch')
     parser.add_argument('--input_size', type=int, default=96, help='Input width and height of image will resize to this value')    
     parser.add_argument('--lr', type=float, default=0.001, help="Learning rate")
+    parser.add_argument('--lr-decay', type=float, default=0.1,
+                        help='Decay rate of learning rate. default is 0.1.')
+    parser.add_argument('--lr-decay-epoch', type=str, default='10,20',
+                        help='Epochs at which learning rate decays. default is 10,20.')
     parser.add_argument('--num_workers', type=int, default=0, help="Number of workers")
     parser.add_argument('--save_as', type=str, default='fashion_net', help="Save model params as")
+    parser.add_argument('--start_epoch', type=int, default=0, help='Start training from epoch')
+    parser.add_argument('--resume', type=str, default='',
+                        help='Resume from previously saved parameters if not None. '
+                        'For example, you can resume from ./fashion_net.params')
 						
     return parser.parse_args()
 	
@@ -34,7 +42,12 @@ clothes_dict = {"jeans" : 0, "dress" : 1, "shirt" : 2}
 
 context = mx.gpu()
 
+args = parse_args()
+
 net = mnet.fashion_net_2_branches(len(clothes_dict), len(color_dict), context)
+if args.resume.strip():
+    net.load_parameters(args.resume.strip())
+
 net.hybridize()
 
 train_metric_clothes = mx.metric.Accuracy()
@@ -55,25 +68,25 @@ def validate(ctx, val_loader):
 	
     return clothes_acc, color_acc
 
-def train(train_loader, val_loader, batch_size, lr, save_as):    
+def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):    
     optimizer = 'adam'
     # Set parameters
-    optimizer_params = {'learning_rate': lr}
+    optimizer_params = {'lr_scheduler': lr_scheduler}
 
     # Define our trainer for net
     trainer = gluon.Trainer(net.collect_params(), optimizer, optimizer_params)
     criterion_clothes = gloss.SoftmaxCrossEntropyLoss()
     criterion_color = gloss.SoftmaxCrossEntropyLoss()
-    for epoch in range(args.epoch):
+    lr_decay_index = 0
+    for epoch in range(args.start_epoch, args.epoch):
         tic = time.time()
         train_metric_clothes.reset()
         train_metric_colors.reset()
-        train_loss_clothes = 0		
+        train_loss_clothes = 0
         train_loss_color = 0
-
+            
         # Loop through each batch of training data
-        for i, batch in enumerate(train_loader):
-            # AutoGrad
+        for i, batch in enumerate(train_loader):            
             #print("batch[0] shape:", batch[0].shape, "batch[1] shape:", batch[1].shape, "batch[2].shape", batch[2].shape)
             clothes_labels = batch[1].as_in_context(context)
             color_labels = batch[2].as_in_context(context)
@@ -111,10 +124,7 @@ def train(train_loader, val_loader, batch_size, lr, save_as):
     train_history.plot()
     net.save_parameters(save_as)
 	
-if __name__ == '__main__':
-
-    args = parse_args()
-
+if __name__ == '__main__':    
     batch_size = args.batch_size
 	
     train_augs = gdata.vision.transforms.Compose([
@@ -137,5 +147,13 @@ if __name__ == '__main__':
 	
     val_data = moi.MultiOutputImageDataset(args.val_root, [color_dict, clothes_dict], test_augs)           
     val_loader = gdata.DataLoader(val_data, batch_size=batch_size, shuffle=True, num_workers=args.num_workers, last_batch='discard')
-        
-    train(train_loader, val_loader, batch_size, args.lr, args.save_as)
+            
+    lr_scheduler = LRScheduler(mode='step',
+                               baselr=args.lr,
+                               niters=len(train_data) // args.batch_size,
+                               nepochs=args.epoch,
+                               step=args.lr_decay_epoch,
+                               step_factor=args.lr_decay, power=2,
+                               warmup_epochs=0)		
+    
+    train(train_loader, val_loader, batch_size, args.save_as, lr_scheduler)
