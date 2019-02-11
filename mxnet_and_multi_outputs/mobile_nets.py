@@ -12,34 +12,45 @@ class fashion_net_2_branches(HybridBlock):
             w.grad_req = 'null'
 			
         self._flatten = nn.Flatten()
+        self._relu = nn.Activation(activation='relu')
+        self._swish = nn.Swish()
         
-        self._clothes_conv = nn.Conv2D(channels=100, kernel_size=(1,1), activation='relu')
+        self._clothes_fc_1 = nn.Dense(100)
         self._clothes_bn = nn.BatchNorm(center=False, scale=True)        
-        self._clothes_out = nn.Conv2D(channels=num_clothes, kernel_size=(1,1), activation='relu')
+        self._clothes_out = nn.Dense(num_clothes)
         
-        self._clothes_conv.initialize(init=init.Normal(0.001), ctx=ctx)
+        self._clothes_fc_1.initialize(init=init.Xavier(), ctx=ctx)
         self._clothes_bn.initialize(init=init.Zero(), ctx=ctx)
-        self._clothes_out.initialize(init=init.Normal(0.001), ctx=ctx)
+        self._clothes_out.initialize(init=init.Xavier(), ctx=ctx)
 		
-        self._color_conv = nn.Conv2D(channels=100, kernel_size=(1,1), activation='relu')
-        self._color_bn = nn.BatchNorm(center=False, scale=True)
-        self._color_out = nn.Conv2D(channels=num_colors, kernel_size=(1,1), activation='relu')
+        self._color_fc_1 = nn.Dense(100)
+        self._color_bn_1 = nn.BatchNorm(center=False, scale=True)
+        self._color_fc_2 = nn.Dense(50)
+        self._color_bn_2 = nn.BatchNorm(center=False, scale=True)
+        self._color_out = nn.Dense(num_colors)
 		
-        self._color_conv.initialize(init=init.Normal(0.001), ctx=ctx)
-        self._color_bn.initialize(init=init.Zero(), ctx=ctx)
-        self._color_out.initialize(init=init.Normal(0.001), ctx=ctx)
+        self._color_fc_1.initialize(init=init.Xavier(), ctx=ctx)
+        self._color_bn_1.initialize(init=init.Zero(), ctx=ctx)
+        self._color_fc_2.initialize(init=init.Xavier(), ctx=ctx)
+        self._color_bn_2.initialize(init=init.Zero(), ctx=ctx)
+        self._color_out.initialize(init=init.Xavier(), ctx=ctx)
 		
     def hybrid_forward(self, F, x):
         x = self._features(x)
 		
-        clothes_result = self._clothes_conv(x)
+        clothes_result = self._flatten(x)
+        clothes_result = self._clothes_fc_1(clothes_result)
+        clothes_result = self._swish(clothes_result)
         clothes_result = self._clothes_bn(clothes_result)
-        clothes_result = self._clothes_out(clothes_result)
-        clothes_result = self._flatten(clothes_result)
+        clothes_result = self._clothes_out(clothes_result)        
 		
-        color_result = self._color_conv(x)
-        color_result = self._color_bn(color_result)
-        color_result = self._color_out(color_result)
-        color_result = self._flatten(color_result)
+        color_result = self._flatten(x)
+        color_result = self._color_fc_1(color_result)
+        color_result = self._swish(color_result)
+        color_result = self._color_bn_1(color_result)
+        color_result = self._color_fc_2(color_result)
+        color_result = self._swish(color_result)
+        color_result = self._color_bn_2(color_result)        
+        color_result = self._color_out(color_result)        
 		
         return clothes_result, color_result
