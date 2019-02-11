@@ -59,8 +59,8 @@ def validate(ctx, val_loader):
     clothes_metric = mx.metric.Accuracy()
     color_metric = mx.metric.Accuracy()
     for i, batch in enumerate(val_loader):        
-        label_clothes = batch[1].as_in_context(ctx)
-        label_color = batch[2].as_in_context(ctx)
+        label_clothes = batch[2].as_in_context(ctx)
+        label_color = batch[1].as_in_context(ctx)
         outputs = net(batch[0].as_in_context(ctx))
         clothes_metric.update(label_clothes, outputs[0])
         color_metric.update(label_color, outputs[1])
@@ -86,6 +86,7 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
     logger.addHandler(fh)
     logger.info(args)
     logger.info('Start training from [Epoch {}]'.format(args.start_epoch))
+    best_acc = -100
     
     for epoch in range(args.start_epoch, args.epoch):
         print('epoch:', epoch, ', learning rate:', trainer.learning_rate)
@@ -97,8 +98,8 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
             
         # Loop through each batch of training data
         for i, batch in enumerate(train_loader):                        
-            clothes_labels = batch[1].as_in_context(context)
-            color_labels = batch[2].as_in_context(context)
+            clothes_labels = batch[2].as_in_context(context)
+            color_labels = batch[1].as_in_context(context)
             with autograd.record():
                 outputs = net(batch[0].as_in_context(context))
                 loss_clothes = criterion_clothes(outputs[0], clothes_labels)
@@ -121,6 +122,9 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
         name, train_color_acc = train_metric_colors.get()
         # Evaluate on Validation data
         validate_clothes_acc, validate_color_acc = validate(context, val_loader)
+        if (validate_clothes_acc + validate_color_acc) > best_acc:
+            best_acc = validate_clothes_acc + validate_color_acc
+            net.save_parameters(save_as + "_best")
 
         # Update history and print metrics
         train_history.update([1-train_clothes_acc, 1-train_color_acc, (1-train_clothes_acc + 1-train_color_acc) / 2, 
@@ -133,7 +137,7 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
 
     # We can plot the metric scores with:
     train_history.plot()
-    net.save_parameters(save_as)
+    net.save_parameters(save_as + "_" + str(args.epoch) + "epoch")
 	
 if __name__ == '__main__':    
     batch_size = args.batch_size
