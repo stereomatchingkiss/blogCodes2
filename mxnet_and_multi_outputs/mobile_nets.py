@@ -7,7 +7,7 @@ import mxnet as mx
 class fashion_net_2_branches(HybridBlock):
     def __init__(self, num_clothes, num_colors, ctx):
         super(fashion_net_2_branches, self).__init__()
-        self._features = model_zoo.get_model('mobilenetv2_1.0', pretrained=True, ctx = mx.gpu()).features
+        self._features = model_zoo.get_model('mobilenetv2_1.0', pretrained=True, ctx = ctx).features
         for _, w in self._features.collect_params().items():
             w.grad_req = 'null'
 			
