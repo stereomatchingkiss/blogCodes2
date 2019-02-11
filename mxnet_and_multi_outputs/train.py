@@ -10,6 +10,7 @@ from mxnet.gluon.data.vision import transforms
 from matplotlib import pyplot as plt
 
 import argparse
+import logging
 import mobile_nets as mnet
 import mxnet as mx
 import MultiOutputImageDataset as moi
@@ -20,16 +21,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description='An example of training multi output classifier by gluoncv')
     parser.add_argument('--train_root', type=str, help='Folder of train')
     parser.add_argument('--val_root', type=str, help='Folder of validate')
-    parser.add_argument('--batch_size', type=int, default=16, help='Batch size')
-    parser.add_argument('--epoch', type=int, default=3, help='Epoch')
-    parser.add_argument('--input_size', type=int, default=96, help='Input width and height of image will resize to this value')    
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size')
+    parser.add_argument('--epoch', type=int, default=10, help='Epoch')
+    parser.add_argument('--input_size', type=int, default=128, help='Input width and height of image will resize to this value')    
     parser.add_argument('--lr', type=float, default=0.001, help="Learning rate")
     parser.add_argument('--lr-decay', type=float, default=0.1,
                         help='Decay rate of learning rate. default is 0.1.')
-    parser.add_argument('--lr-decay-epoch', type=str, default='10,20',
-                        help='Epochs at which learning rate decays. default is 10,20.')
+    parser.add_argument('--lr-decay-epoch', type=str, default='5,10',
+                        help='Epochs at which learning rate decays.')
     parser.add_argument('--num_workers', type=int, default=0, help="Number of workers")
-    parser.add_argument('--save_as', type=str, default='fashion_net', help="Save model params as")
+    parser.add_argument('--save_as', type=str, default='fashion_net.params', help="Save model params as")
     parser.add_argument('--start_epoch', type=int, default=0, help='Start training from epoch')
     parser.add_argument('--resume', type=str, default='',
                         help='Resume from previously saved parameters if not None. '
@@ -52,7 +53,7 @@ net.hybridize()
 
 train_metric_clothes = mx.metric.Accuracy()
 train_metric_colors = mx.metric.Accuracy()
-train_history = TrainingHistory(['train-clothes-error', 'train-color-error', 'test-clothes-error', 'test-color-error'])
+train_history = TrainingHistory(['train-clothes-error', 'train-color-error', 'train-error-avg', 'test-clothes-error', 'test-color-error', 'test-error-avg'])
 
 def validate(ctx, val_loader):
     clothes_metric = mx.metric.Accuracy()
@@ -77,8 +78,17 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
     trainer = gluon.Trainer(net.collect_params(), optimizer, optimizer_params)
     criterion_clothes = gloss.SoftmaxCrossEntropyLoss()
     criterion_color = gloss.SoftmaxCrossEntropyLoss()
-    lr_decay_index = 0
+    
+    logging.basicConfig()
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    fh = logging.FileHandler(args.save_as + "_train.log")
+    logger.addHandler(fh)
+    logger.info(args)
+    logger.info('Start training from [Epoch {}]'.format(args.start_epoch))
+    
     for epoch in range(args.start_epoch, args.epoch):
+        print('epoch:', epoch, ', learning rate:', trainer.learning_rate)
         tic = time.time()
         train_metric_clothes.reset()
         train_metric_colors.reset()
@@ -86,17 +96,15 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
         train_loss_color = 0
             
         # Loop through each batch of training data
-        for i, batch in enumerate(train_loader):            
-            #print("batch[0] shape:", batch[0].shape, "batch[1] shape:", batch[1].shape, "batch[2].shape", batch[2].shape)
+        for i, batch in enumerate(train_loader):                        
             clothes_labels = batch[1].as_in_context(context)
             color_labels = batch[2].as_in_context(context)
             with autograd.record():
                 outputs = net(batch[0].as_in_context(context))
-                #print("output[0] shape:", outputs[0].shape, ", clothes labels shape:", clothes_labels.shape, ", color_labels:", color_labels.shape)
-                #print("output[0] type:", type(outputs[0]), ", clothes type:", type(clothes_labels), ", color_labels type:", type(color_labels))
                 loss_clothes = criterion_clothes(outputs[0], clothes_labels)
                 loss_color = criterion_color(outputs[1], color_labels)                
-
+            
+            lr_scheduler.update(i, epoch)
             # Backpropagation
             autograd.backward([loss_clothes, loss_color])            
 
@@ -105,10 +113,9 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
 
             # Update metrics
             train_loss_clothes += loss_clothes.sum().asscalar()
-            train_loss_color += loss_color.sum().asscalar()
-            #print("lost of clothes:", train_loss_clothes, ", lost of color:", train_loss_color)            
+            train_loss_color += loss_color.sum().asscalar()            
             train_metric_clothes.update(clothes_labels, outputs[0])
-            train_metric_colors.update(color_labels, outputs[1])
+            train_metric_colors.update(color_labels, outputs[1])            
 
         name, train_clothes_acc = train_metric_clothes.get()
         name, train_color_acc = train_metric_colors.get()
@@ -116,9 +123,13 @@ def train(train_loader, val_loader, batch_size, save_as, lr_scheduler):
         validate_clothes_acc, validate_color_acc = validate(context, val_loader)
 
         # Update history and print metrics
-        train_history.update([1-train_clothes_acc, 1-train_color_acc, 1-validate_clothes_acc, 1-validate_color_acc])
-        print('[Epoch %d] train_clothes_acc=%f train_color_acc=%f train_clothes_loss=%f, train_color_loss=%f, validate_clothes_acc=%f, validate_color_acc==%f, time: %f' %
-             (epoch, train_clothes_acc, train_color_acc, train_loss_clothes, train_loss_color, validate_clothes_acc, validate_color_acc, time.time()-tic))
+        train_history.update([1-train_clothes_acc, 1-train_color_acc, (1-train_clothes_acc + 1-train_color_acc) / 2, 
+		                      1-validate_clothes_acc, 1-validate_color_acc, (1-validate_clothes_acc + 1-validate_color_acc) / 2])
+        logger.info('[Epoch {}] lr={:.2E} train_clothes_acc={:.3f} train_color_acc={:.3f} train_acc_avg={:.3f} train_clothes_loss={:.3f}, train_color_loss={:.3f}, '
+		      'validate_clothes_acc={:.3f}, validate_color_acc=={:.3f}, validate_acc_avg={:.3f} time: {}'.format
+             (epoch, trainer.learning_rate, train_clothes_acc, train_color_acc, (train_clothes_acc + train_color_acc)/2, 
+			 train_loss_clothes, train_loss_color, 
+			 validate_clothes_acc, validate_color_acc, (validate_clothes_acc+validate_color_acc)/2, time.time()-tic))
 
     # We can plot the metric scores with:
     train_history.plot()
@@ -148,12 +159,14 @@ if __name__ == '__main__':
     val_data = moi.MultiOutputImageDataset(args.val_root, [color_dict, clothes_dict], test_augs)           
     val_loader = gdata.DataLoader(val_data, batch_size=batch_size, shuffle=True, num_workers=args.num_workers, last_batch='discard')
             
+    lr_decay_epoch = [int(i) for i in args.lr_decay_epoch.split(',')]
     lr_scheduler = LRScheduler(mode='step',
                                baselr=args.lr,
                                niters=len(train_data) // args.batch_size,
                                nepochs=args.epoch,
-                               step=args.lr_decay_epoch,
-                               step_factor=args.lr_decay, power=2,
+                               step=lr_decay_epoch,
+                               step_factor=args.lr_decay, 
+							   power=2,
                                warmup_epochs=0)		
     
     train(train_loader, val_loader, batch_size, args.save_as, lr_scheduler)
