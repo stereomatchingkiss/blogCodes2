@@ -14,7 +14,7 @@ namespace dlib_tool
 face_detector::face_detector(const std::string &face_detect_model_location,
                              const std::string &shape_predict_model_location,
                              int face_detect_width,
-                             int face_aligned_size) :
+                             unsigned long face_aligned_size) :
     face_aligned_size_(face_aligned_size),
     face_detect_width_(face_detect_width)
 {

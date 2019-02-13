@@ -24,7 +24,7 @@ public:
     explicit face_detector(std::string const &face_detect_model_location,
                            std::string const &shape_predict_model_location,
                            int face_detect_width = 640,
-                           int face_aligned_size = 112);
+                           unsigned long face_aligned_size = 112);
 
     /**
      * Use this api if you want to aligned the face after forward,
@@ -46,7 +46,7 @@ public:
     std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input, bool invert_channel = true);
 
 private:
-    int face_aligned_size_;
+    unsigned long face_aligned_size_;
     int face_detect_width_;
     cv::Mat channel_swap_cache_;
     dlib_dnn_net::face_detect_net net_;
