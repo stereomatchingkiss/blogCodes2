@@ -1,6 +1,6 @@
 #include "face_key_extractor.hpp"
 
-#include "common.hpp"
+#include "../libs/mxnet/common.hpp"
 #include "face_key.hpp"
 
 #include <opencv2/imgproc.hpp>
@@ -15,11 +15,11 @@ namespace{
 
 NDArray dlib_matrix_to_ndarray(dlib::matrix<dlib::rgb_pixel> const &rgb_image, Context const &ctx)
 {
-    std::vector<float> buffer(rgb_image.nc() * rgb_image.nr() * 3);
+    std::vector<float> buffer(static_cast<size_t>(rgb_image.nc() * rgb_image.nr() * 3));
     size_t index = 0;
     for(size_t ch = 0; ch != 3; ++ch){
-        for(size_t row = 0; row != rgb_image.nr(); ++row){
-            for(size_t col = 0; col != rgb_image.nc(); ++col){
+        for(long row = 0; row != rgb_image.nr(); ++row){
+            for(long col = 0; col != rgb_image.nc(); ++col){
                 auto const &pix = rgb_image(row, col);
                 switch(ch){
                 case 0:
@@ -37,7 +37,9 @@ NDArray dlib_matrix_to_ndarray(dlib::matrix<dlib::rgb_pixel> const &rgb_image, C
             }
         }
     }
-    return NDArray(&buffer[0], Shape(1, 3, rgb_image.nr(), rgb_image.nc()), ctx);
+
+    auto const shape = Shape(1, 3, static_cast<unsigned>(rgb_image.nr()), static_cast<unsigned>(rgb_image.nc()));
+    return NDArray(&buffer[0], shape, ctx);
 }
 
 }
@@ -47,25 +49,13 @@ face_key_extractor::face_key_extractor(std::string const &model_params,
                                        mxnet::cpp::Context const &context) :
     context_(new Context(context.GetDeviceType(), context.GetDeviceId()))
 {
-    Symbol net;
-    std::map<std::string, NDArray> args, auxs;
-    load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
 
-    //The shape of the input data must be the same, if you need different size,
-    //you could rebind the Executor or create a pool of Executor.
-    //In order to create input layer of the Executor, I make a dummy NDArray.
-    //The value of the "data" could be change later
-    args["data"] = NDArray(Shape(1, 3, 112, 112), context);    
-    executor_.reset(net.SimpleBind(context,
-                                   args,
-                                   std::map<std::string, NDArray>(),
-                                   std::map<std::string, OpReqType>(),
-                                   auxs));
+    executor_ = mxnet_aux::create_executor(model_params, model_symbols, context, Shape(1, 3, 112, 112));
 }
 
 face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
 {
-    auto const data = dlib_matrix_to_ndarray(input, *context_);    
+    auto const data = dlib_matrix_to_ndarray(input, *context_);
     return forward(data);
 }
 
@@ -85,13 +75,14 @@ face_key face_key_extractor::forward(const cv::Mat &input)
         }
     }
 
-    auto const data = NDArray(flat_image.ptr<float>(), Shape(1, 3, flat_image.rows, flat_image.cols), *context_);
+    auto const shape = Shape(1, 3, static_cast<unsigned>(flat_image.rows), static_cast<unsigned>(flat_image.cols));
+    auto const data = NDArray(flat_image.ptr<float>(), shape, *context_);
     return forward(data);
 }
 
 face_key face_key_extractor::forward(const NDArray &input)
 {
-    input.CopyTo(&executor_->arg_dict()["data"]);    
+    input.CopyTo(&executor_->arg_dict()["data"]);
     executor_->Forward(false);
     if(!executor_->outputs.empty()){
         auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
