@@ -23,13 +23,12 @@ class NDArray;
 namespace mxnet_tool{
 
 class face_key;
+struct face_key_extractor_params;
 
 class face_key_extractor
 {
 public:
-    explicit face_key_extractor(std::string const &model_params,
-                                std::string const &model_symbols,
-                                mxnet::cpp::Context const &context);
+    explicit explicit face_key_extractor(face_key_extractor_params const &params);
     ~face_key_extractor() = default;
 
     face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);

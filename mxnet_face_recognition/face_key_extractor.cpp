@@ -2,6 +2,7 @@
 
 #include "../libs/mxnet/common.hpp"
 #include "face_key.hpp"
+#include "face_key_extractor_params.hpp"
 
 #include <opencv2/imgproc.hpp>
 
@@ -44,13 +45,12 @@ NDArray dlib_matrix_to_ndarray(dlib::matrix<dlib::rgb_pixel> const &rgb_image, C
 
 }
 
-face_key_extractor::face_key_extractor(std::string const &model_params,
-                                       std::string const &model_symbols,
-                                       mxnet::cpp::Context const &context) :
-    context_(new Context(context.GetDeviceType(), context.GetDeviceId()))
+face_key_extractor::face_key_extractor(face_key_extractor_params const &params) :
+    context_(new Context(params.context_.GetDeviceType(), params.context_.GetDeviceId()))
 {
 
-    executor_ = mxnet_aux::create_executor(model_params, model_symbols, context, Shape(1, 3, 112, 112));
+    executor_ = mxnet_aux::create_executor(params.model_params_, params.model_symbols_,
+                                           params.context_, Shape(1, 3, 112, 112));
 }
 
 face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
