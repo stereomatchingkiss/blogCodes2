@@ -28,7 +28,7 @@ struct face_key_extractor_params;
 class face_key_extractor
 {
 public:
-    explicit explicit face_key_extractor(face_key_extractor_params const &params);
+    explicit face_key_extractor(face_key_extractor_params const &params);
     ~face_key_extractor() = default;
 
     face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
