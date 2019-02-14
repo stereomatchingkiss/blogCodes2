@@ -87,8 +87,9 @@ face_key face_key_extractor::forward(const NDArray &input)
     if(!executor_->outputs.empty()){
         auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
         features.WaitToRead();
-        cv::Mat temp(1, 512, CV_32F, const_cast<mx_float*>(features.GetData()), 0);
-        cv::normalize(temp, temp, 1, 0, cv::NORM_L2);
+        //python scripts perform this step, but I don't find any difference even remove it
+        //cv::Mat temp(1, 512, CV_32F, const_cast<mx_float*>(features.GetData()), 0);
+        //cv::normalize(temp, temp, 1, 0, cv::NORM_L2);
         return face_key(features);
     }
 
