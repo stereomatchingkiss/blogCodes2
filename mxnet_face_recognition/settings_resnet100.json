@@ -1,10 +1,9 @@
 {
-  "deepinsight_model_params" : "C:/Users/yyyy/.mxnet/models/insight_face/model-r100-ii/model-0000.params",
-  "deepinsight_model_symbols" : "C:/Users/yyyy/.mxnet/models/insight_face/model-r100-ii/model-symbol.json",
+  "deepinsight_model_params" : "C:/Users/yyyy/.mxnet/models/insight_face/model-MobileFaceNet-arcface-ms1m-refine-v1/model-y1-test2/model-0000.params",
+  "deepinsight_model_symbols" : "C:/Users/yyyy/.mxnet/models/insight_face/model-MobileFaceNet-arcface-ms1m-refine-v1/model-y1-test2/model-symbol.json",
   "detect_confidence" : 0.6,
   "dlib_face_detect_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/mmod_human_face_detector.dat",  
   "dlib_shape_predictor_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/shape_predictor_5_face_landmarks.dat",
-  "key_face" : "they.jpg",
-  "video": "yolov3.mp4",
-  "aligned_face": false
+  "face_key_folder" : "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_face_recognition/faces",
+  "video": "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_face_recognition/yolov3.mp4"
 }
