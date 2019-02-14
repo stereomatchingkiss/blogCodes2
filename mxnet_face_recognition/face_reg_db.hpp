@@ -13,17 +13,23 @@ public:
     struct id_info
     {
         double confident_ = -1.0;
-        size_t id_ = 0;
+        std::string id_;
     };
 
     face_reg_db();
     ~face_reg_db();
 
-    size_t add_new_face(face_key const &input);
+    void add_new_face(face_key input, std::string id);
     id_info find_most_similar_face(face_key const &input) const;
 
 private:
-    std::vector<face_key> face_keys_;
+    struct face_info
+    {
+       face_key key_;
+       std::string id_;
+    };
+
+    std::vector<face_info> face_keys_;
 };
 
 }
