@@ -12,6 +12,8 @@
 namespace dlib_tool
 {
 
+struct face_detector_params;
+
 class face_detector
 {
 public:
@@ -21,10 +23,7 @@ public:
        dlib::mmod_rect rect_;
     };
 
-    explicit face_detector(std::string const &face_detect_model_location,
-                           std::string const &shape_predict_model_location,
-                           int face_detect_width = 640,
-                           unsigned long face_aligned_size = 112);
+    explicit face_detector(face_detector_params const &params);
 
     /**
      * Use this api if you want to aligned the face after forward,

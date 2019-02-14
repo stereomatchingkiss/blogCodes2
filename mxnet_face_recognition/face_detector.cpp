@@ -1,5 +1,7 @@
 #include "face_detector.hpp"
 
+#include "face_detector_params.hpp"
+
 #include <opencv2/imgproc.hpp>
 
 #include <dlib/opencv.h>
@@ -11,15 +13,12 @@ using namespace dlib;
 namespace dlib_tool
 {
 
-face_detector::face_detector(const std::string &face_detect_model_location,
-                             const std::string &shape_predict_model_location,
-                             int face_detect_width,
-                             unsigned long face_aligned_size) :
-    face_aligned_size_(face_aligned_size),
-    face_detect_width_(face_detect_width)
+face_detector::face_detector(face_detector_params const &params) :
+    face_aligned_size_(params.face_aligned_size_),
+    face_detect_width_(params.face_detect_width_)
 {
-    deserialize(face_detect_model_location)>>net_;
-    deserialize(shape_predict_model_location)>>pose_model_;
+    deserialize(params.face_detect_model_location_)>>net_;
+    deserialize(params.shape_predict_model_location_)>>pose_model_;
 }
 
 dlib::matrix<rgb_pixel> face_detector::get_aligned_face(const mmod_rect &rect)
