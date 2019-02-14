@@ -16,9 +16,6 @@ public:
         std::string id_;
     };
 
-    face_reg_db();
-    ~face_reg_db();
-
     void add_new_face(face_key input, std::string id);
     id_info find_most_similar_face(face_key const &input) const;
 
