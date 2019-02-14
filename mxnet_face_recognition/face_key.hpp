@@ -13,7 +13,8 @@ public:
     bool is_empty_key() const noexcept;
     /**
      * Compare similarity of face_key
-     * @return value within [0, 1], bigger value mean more similar
+     * @return value within [-1, 1], bigger value mean more similar(it use cosine similarity
+     * under the hood)
      */
     double similarity(face_key const &input) const;
 
