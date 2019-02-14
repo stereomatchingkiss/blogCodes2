@@ -1,0 +1,9 @@
+{
+  "deepinsight_model_params" : "C:/Users/yyyy/.mxnet/models/insight_face/model-r34-amf/model-0000.params",
+  "deepinsight_model_symbols" : "C:/Users/yyyy/.mxnet/models/insight_face/model-r34-amf/model-symbol.json",
+  "detect_confidence" : 0.6,
+  "dlib_face_detect_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/mmod_human_face_detector.dat",  
+  "dlib_shape_predictor_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/shape_predictor_5_face_landmarks.dat",
+  "face_key_folder" : "faces",
+  "video": ""
+}
