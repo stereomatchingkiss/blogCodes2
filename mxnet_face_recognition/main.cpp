@@ -89,7 +89,8 @@ int main(int argc, char *argv[])try
                     auto const results = fr.recognize_faces(frame);
                     for(auto const &fr_info : results){
                         rectangle(frame, fr_info.roi_, Scalar(0, 255, 0), 3);
-                        put_text(frame, std::to_string(fr_info.confident_), cv::Point(fr_info.roi_.x, fr_info.roi_.y));
+                        put_text(frame, fr_info.id_ + ":" + std::to_string(fr_info.confident_),
+                                 cv::Point(fr_info.roi_.x, fr_info.roi_.y));
                     }
                     cv::imshow("frame", frame);
                     int const key = std::tolower(cv::waitKey(30));
