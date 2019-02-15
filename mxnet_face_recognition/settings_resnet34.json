@@ -5,5 +5,5 @@
   "dlib_face_detect_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/mmod_human_face_detector.dat",  
   "dlib_shape_predictor_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/shape_predictor_5_face_landmarks.dat",
   "face_key_folder" : "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_face_recognition/faces",
-  "video": "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_face_recognition/yolov3.mp4"
+  "video": ""
 }
