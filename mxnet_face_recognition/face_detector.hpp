@@ -41,13 +41,20 @@ public:
      */
     dlib::matrix<dlib::rgb_pixel> get_aligned_face(dlib::mmod_rect const &rect);
 
-    std::vector<face_info> forward(cv::Mat const &input, bool invert_channel = true);
-    std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input, bool invert_channel = true);
+    /**
+     * @param input Should be bgr channels
+     * @return roi of faces and faces after aligned
+     */
+    std::vector<face_info> forward(cv::Mat const &input);
+    /**
+     * @param input Should be bgr channels
+     * @return roi of faces and faces after aligned
+     */
+    std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input);
 
 private:
     unsigned long face_aligned_size_;
-    int face_detect_width_;
-    cv::Mat channel_swap_cache_;
+    int face_detect_width_;    
     dlib_dnn_net::face_detect_net net_;
     dlib::matrix<dlib::rgb_pixel> img_;    
     dlib::shape_predictor pose_model_;

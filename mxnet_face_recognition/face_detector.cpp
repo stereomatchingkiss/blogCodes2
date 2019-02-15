@@ -29,9 +29,9 @@ dlib::matrix<rgb_pixel> face_detector::get_aligned_face(const mmod_rect &rect)
     return face_chip;
 }
 
-std::vector<face_detector::face_info> face_detector::forward(const cv::Mat &input, bool invert_channel)
+std::vector<face_detector::face_info> face_detector::forward(const cv::Mat &input)
 {
-    auto const rects = forward_lazy(input, invert_channel);
+    auto const rects = forward_lazy(input);
     std::vector<face_info> result;
     for(auto const &rect : rects){
         face_info info;
@@ -43,24 +43,19 @@ std::vector<face_detector::face_info> face_detector::forward(const cv::Mat &inpu
     return result;
 }
 
-std::vector<mmod_rect> face_detector::forward_lazy(const cv::Mat &input, bool invert_channel)
+std::vector<mmod_rect> face_detector::forward_lazy(const cv::Mat &input)
 {
     CV_Assert(input.channels() == 3);
 
-    if(invert_channel){
-        cv::cvtColor(input, channel_swap_cache_, CV_BGR2RGB);
+    if(input.cols < face_detect_width_){
+        double const ratio = face_detect_width_ / static_cast<double>(input.cols);
+        cv::resize(input, resize_cache_, {}, ratio, ratio);
     }else{
-        channel_swap_cache_ = input;
-    }
-    if(channel_swap_cache_.cols < face_detect_width_){
-        double const ratio = face_detect_width_ / static_cast<double>(channel_swap_cache_.cols);
-        cv::resize(channel_swap_cache_, resize_cache_, {}, ratio, ratio);
-    }else{
-        resize_cache_ = channel_swap_cache_;
+        resize_cache_ = input;
     }
 
     img_.set_size(resize_cache_.rows, resize_cache_.cols);
-    dlib::assign_image(img_, dlib::cv_image<rgb_pixel>(resize_cache_));
+    dlib::assign_image(img_, dlib::cv_image<bgr_pixel>(resize_cache_));
 
     return net_(img_);
 }
