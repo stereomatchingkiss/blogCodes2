@@ -59,44 +59,35 @@ face_key_extractor::face_key_extractor(face_key_extractor_params const &params) 
 face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
 {
     std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
-    faces.emplace_back(&input);
+    for(size_t i = 0; i != params_->shape_[0]; ++i){
+        faces.emplace_back(&input);
+    }
     auto const data = dlib_matrix_to_float_array(faces);
     return forward(data, 1)[0];
 }
 
 std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 {
-    if(input.size() <= params_->shape_[0]){
+    if(input.empty()){
+        return {};
+    }
+
+    auto const forward_count = static_cast<size_t>(std::ceil(input.size() / static_cast<float>(params_->shape_[0])));
+    std::vector<face_key> result;
+    for(size_t i = 0; i != forward_count; ++i){
         std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
         for(auto &face : input){
             faces.emplace_back(&face);
         }
-        std::cout<<"faces size:"<<faces.size()<<std::endl;
+        while(faces.size() < params_->shape_[0]){
+            faces.emplace_back(&input[0]);
+        }
         auto data = dlib_matrix_to_float_array(faces);
-        return forward(data, static_cast<size_t>(input.size()));
-    }else{
-        std::vector<face_key> result;
-        std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
-        for(size_t i = 0; i < input.size(); ++i){
-            if(i % params_->shape_[0] != 0){
-                faces.emplace_back(&input[i]);
-            }else{
-                if(!faces.empty()){
-                    auto data = dlib_matrix_to_float_array(faces);
-                    auto features = forward(data, static_cast<size_t>(faces.size()));
-                    std::move(std::begin(features), std::end(features), std::back_inserter(result));
-                    faces.clear();
-                }
-            }
-        }
-        if(!faces.empty()){
-            auto data = dlib_matrix_to_float_array(faces);
-            auto features = forward(data, static_cast<size_t>(faces.size()));
-            std::move(std::begin(features), std::end(features), std::back_inserter(result));
-        }
-
-        return result;
+        auto features = forward(data, static_cast<size_t>(faces.size()));
+        std::move(std::begin(features), std::end(features), std::back_inserter(result));
     }
+
+    return result;
 }
 
 std::vector<face_key> face_key_extractor::forward(const std::vector<float> &input, size_t batch_size)
@@ -107,19 +98,10 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<float> &inpu
     std::vector<face_key> result;
     if(!executor_->outputs.empty()){
         auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
-        for(size_t i = 0; i != features.GetShape().size(); ++i){
-            std::cout<<"shape:"<<features.GetShape()[i]<<",";
-        }
-        std::cout<<std::endl;
         Shape const shape(1, step_per_feature);
         features.WaitToRead();
         for(size_t i = 0; i != batch_size; ++i){
-            //NDArray feature(features.GetData() + i * step_per_feature, shape, Context(kCPU, 0));
-            std::vector<float> buffer(512);
-            for(size_t j = 0; j != 512; ++j){
-                buffer[j] = features.At(i, j);
-            }
-            NDArray feature(&buffer[0], shape, Context(kCPU, 0));//*/
+            NDArray feature(features.GetData() + i * step_per_feature, shape, Context(kCPU, 0));
             //python scripts perform this step, but I don't find any difference even remove it
             //cv::Mat temp(1, 512, CV_32F, const_cast<mx_float*>(features.GetData()), 0);
             //cv::normalize(temp, temp, 1, 0, cv::NORM_L2);
