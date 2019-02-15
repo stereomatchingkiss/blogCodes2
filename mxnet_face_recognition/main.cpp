@@ -63,16 +63,30 @@ void put_text(face_reg_info const &fr_info, Mat &inout)
              cv::Point(fr_info.roi_.x, fr_info.roi_.y + fr_info.roi_.height));
 }
 
+void record_video(cv::Mat const &frame, std::string const &save_output_as, cv::VideoWriter &vwriter)
+{
+    if(!save_output_as.empty()){
+        if(!vwriter.isOpened()){
+            vwriter.open(save_output_as,
+                         cv::VideoWriter::fourcc('H','2','6','4'),
+                         24.0, cv::Size(frame.cols, frame.rows));
+        }
+        if(vwriter.isOpened()){
+            vwriter<<frame;
+        }
+    }
+}
+
+using namespace dlib_tool;
+using namespace mxnet_tool;
+
 int main(int argc, char *argv[])try
 {
     if(argc < 2){
         cout<<"Please specify the location of the json"<<endl;
 
         return -1;
-    }
-
-    using namespace dlib_tool;
-    using namespace mxnet_tool;
+    }    
 
     cv::FileStorage fs;
     fs.open(argv[1], cv::FileStorage::READ);
@@ -90,7 +104,10 @@ int main(int argc, char *argv[])try
                     fs["deepinsight_model_symbols"],
                     mxnet::cpp::Context::gpu(0));
             face_recognition fr(std::move(face_det_params), std::move(face_key_ext_params));
+            auto const save_video_as = fs["save_video_as"].string();
+            cv::VideoWriter vwriter;
             add_faces_into_db(fs["face_key_folder"], fr);
+            std::ofstream ofile("log.txt");
             for(cv::Mat frame; ;cam>>frame){
                 cam>>frame;
                 if(!frame.empty()){
@@ -98,7 +115,9 @@ int main(int argc, char *argv[])try
                     for(auto const &fr_info : results){
                         rectangle(frame, fr_info.roi_, Scalar(0, 255, 0), 3);
                         put_text(fr_info, frame);
+                        ofile<<fr_info.id_<<":"<<fr_info.confident_<<"\n";
                     }
+                    record_video(frame, save_video_as, vwriter);
                     cv::imshow("frame", frame);
                     int const key = std::tolower(cv::waitKey(30));
                     if(key == 'q'){
