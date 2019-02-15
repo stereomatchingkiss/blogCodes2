@@ -29,15 +29,13 @@ dlib::matrix<rgb_pixel> face_detector::get_aligned_face(const mmod_rect &rect)
     return face_chip;
 }
 
-std::vector<face_detector::face_info> face_detector::forward(const cv::Mat &input)
+face_detector::face_info face_detector::forward(const cv::Mat &input)
 {
     auto const rects = forward_lazy(input);
-    std::vector<face_info> result;
+    face_info result;
     for(auto const &rect : rects){
-        face_info info;
-        info.rect_ = rect;
-        info.face_aligned_ = get_aligned_face(rect);
-        result.emplace_back(std::move(info));
+        result.rect_.emplace_back(rect);
+        result.face_aligned_.emplace_back(get_aligned_face(rect));
     }
 
     return result;

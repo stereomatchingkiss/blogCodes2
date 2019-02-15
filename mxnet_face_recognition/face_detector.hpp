@@ -19,8 +19,8 @@ class face_detector
 public:
     struct face_info
     {
-       dlib::matrix<dlib::rgb_pixel> face_aligned_;
-       dlib::mmod_rect rect_;
+       std::vector<dlib::matrix<dlib::rgb_pixel>> face_aligned_;
+       std::vector<dlib::mmod_rect> rect_;
     };
 
     explicit face_detector(face_detector_params const &params);
@@ -45,7 +45,7 @@ public:
      * @param input Should be bgr channels
      * @return roi of faces and faces after aligned
      */
-    std::vector<face_info> forward(cv::Mat const &input);
+    face_info forward(cv::Mat const &input);
     /**
      * @param input Should be bgr channels
      * @return roi of faces and faces after aligned

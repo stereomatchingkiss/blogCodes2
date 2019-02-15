@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace mxnet{
 
@@ -32,13 +33,13 @@ public:
     ~face_key_extractor() = default;
 
     face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
-    face_key forward(cv::Mat const &input);
+    std::vector<face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
-    face_key forward(mxnet::cpp::NDArray const &input);
+    std::vector<face_key> forward(std::vector<float> const &input, size_t batch_size);
 
-    std::unique_ptr<mxnet::cpp::Context> context_;
     std::unique_ptr<mxnet::cpp::Executor> executor_;
+    std::unique_ptr<face_key_extractor_params> params_;
 };
 
 }

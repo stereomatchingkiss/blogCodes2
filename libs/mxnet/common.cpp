@@ -67,6 +67,9 @@ std::unique_ptr<Executor> create_executor(const std::string &model_params,
     //In order to create input layer of the Executor, I make a dummy NDArray.
     //The value of the "data" could be change later
     args["data"] = NDArray(input_shape, context);
+    if(input_shape[0] > 1){
+        args["data1"] = NDArray(Shape(1), context, false);
+    }
     executor.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
                                   std::map<std::string, OpReqType>(), auxs));
 
