@@ -66,7 +66,7 @@ std::unique_ptr<Executor> create_executor(const std::string &model_params,
     //you could rebind the Executor or create a pool of Executor.
     //In order to create input layer of the Executor, I make a dummy NDArray.
     //The value of the "data" could be change later
-    args["data"] = NDArray(input_shape, context);
+    args["data"] = NDArray(input_shape, context, false);
     if(input_shape[0] > 1){
         args["data1"] = NDArray(Shape(1), context, false);
     }
