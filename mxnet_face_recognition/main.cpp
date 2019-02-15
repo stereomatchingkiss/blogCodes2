@@ -55,6 +55,14 @@ void add_faces_into_db(std::string const &folder, face_recognition &fr)
     }
 }
 
+void put_text(face_reg_info const &fr_info, Mat &inout)
+{
+    put_text(inout, fr_info.id_ + ":" + std::to_string(fr_info.confident_),
+             cv::Point(fr_info.roi_.x, fr_info.roi_.y));
+    put_text(inout, fr_info.id_ + ":" + std::to_string(fr_info.confident_),
+             cv::Point(fr_info.roi_.x, fr_info.roi_.y + fr_info.roi_.height));
+}
+
 int main(int argc, char *argv[])try
 {
     if(argc < 2){
@@ -89,8 +97,7 @@ int main(int argc, char *argv[])try
                     auto const results = fr.recognize_faces(frame);
                     for(auto const &fr_info : results){
                         rectangle(frame, fr_info.roi_, Scalar(0, 255, 0), 3);
-                        put_text(frame, fr_info.id_ + ":" + std::to_string(fr_info.confident_),
-                                 cv::Point(fr_info.roi_.x, fr_info.roi_.y));
+                        put_text(fr_info, frame);
                     }
                     cv::imshow("frame", frame);
                     int const key = std::tolower(cv::waitKey(30));
