@@ -36,6 +36,9 @@ public:
                      mxnet_tool::face_key_extractor_params face_key_params);
     ~face_recognition();
 
+    face_recognition(face_recognition &&) = default;
+    face_recognition& operator=(face_recognition &&) = default;
+
     bool add_new_face(cv::Mat const &input, std::string id);
     std::vector<face_reg_info> recognize_faces(cv::Mat const &input);
 
