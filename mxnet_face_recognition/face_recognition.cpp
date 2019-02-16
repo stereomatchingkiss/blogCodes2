@@ -41,22 +41,19 @@ std::vector<face_reg_info> face_recognition::recognize_faces(const cv::Mat &inpu
     std::vector<face_reg_info> result;
     auto const detected_faces = face_detector_->forward(input);
     if(!detected_faces.face_aligned_.empty()){
-        auto keys = key_extractor_->forward(detected_faces.face_aligned_);
-        //std::cout<<"keys size:"<<keys.size()<<", faces size:"<<detected_faces.face_aligned_.size()<<std::endl;
+        auto keys = key_extractor_->forward(detected_faces.face_aligned_);        
         for(size_t i = 0; i != detected_faces.face_aligned_.size(); ++i){
             auto id_info = face_reg_db_->find_most_similar_face(keys[i]);
             face_reg_info fri;
             fri.confident_ = id_info.confident_;
             fri.id_ = std::move(id_info.id_);
             auto const &rect = detected_faces.rect_[i].rect;
-            fri.roi_ = cv::Rect(rect.left(), rect.top(),
-                                static_cast<int>(rect.width()), static_cast<int>(rect.height()));
-            fri.roi_.x = std::max(0, fri.roi_.x);
-            fri.roi_.y = std::max(0, fri.roi_.y);
-            fri.roi_.height = std::min(input.rows, fri.roi_.height);
-            fri.roi_.width = std::min(input.cols, fri.roi_.width);
-            result.emplace_back(std::move(fri));//*/
-        }//*/
+            fri.roi_.x = std::max(0, static_cast<int>(rect.left()));
+            fri.roi_.y = std::max(0, static_cast<int>(rect.top()));
+            fri.roi_.height = std::min(input.rows, static_cast<int>(rect.height()));
+            fri.roi_.width = std::min(input.cols, static_cast<int>(rect.width()));
+            result.emplace_back(std::move(fri));
+        }
     }
 
     return result;
