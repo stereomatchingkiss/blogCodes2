@@ -36,9 +36,12 @@ public:
     std::vector<face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
+    using dlib_const_images_ptr = std::vector<dlib::matrix<dlib::rgb_pixel> const*>;
+    void dlib_matrix_to_float_array(dlib_const_images_ptr const &rgb_image);
     std::vector<face_key> forward(std::vector<float> const &input, size_t batch_size);
 
     std::unique_ptr<mxnet::cpp::Executor> executor_;
+    std::vector<float> image_vector_;
     std::unique_ptr<face_key_extractor_params> params_;
 };
 
