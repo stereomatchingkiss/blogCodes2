@@ -69,13 +69,11 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix
 
     auto const forward_count = static_cast<size_t>(std::ceil(input.size() / static_cast<float>(params_->shape_[0])));
     std::vector<face_key> result;
+    size_t index = 0;
     for(size_t i = 0; i != forward_count; ++i){
         dlib_const_images_ptr faces;
-        for(auto &face : input){
-            faces.emplace_back(&face);
-        }
-        while(faces.size() < params_->shape_[0]){
-            faces.emplace_back(&input[0]);
+        for(size_t j = 0; j != params_->shape_[0] && index < input.size(); ++j){
+            faces.emplace_back(&input[index++]);
         }
         dlib_matrix_to_float_array(faces);
         auto features = forward(image_vector_, static_cast<size_t>(faces.size()));
