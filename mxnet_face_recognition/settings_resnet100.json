@@ -6,5 +6,6 @@
   "dlib_shape_predictor_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/shape_predictor_5_face_landmarks.dat",
   "face_key_folder" : "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_face_recognition/faces",
   "video": "",
-  "save_video_as" : "deepinsight_resnet100.mp4"
+  "save_video_as" : "deepinsight_resnet100.mp4",
+  "save_video_fps" : 12
 }
