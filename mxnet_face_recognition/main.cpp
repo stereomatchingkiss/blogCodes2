@@ -80,6 +80,15 @@ void record_video(cv::Mat const &frame, std::string const &save_output_as, int f
 using namespace dlib_tool;
 using namespace mxnet_tool;
 
+face_recognition create_face_recognition(cv::FileStorage const &fs)
+{
+    face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
+    face_key_extractor_params face_key_ext_params(fs["deepinsight_model_params"],
+            fs["deepinsight_model_symbols"],
+            mxnet::cpp::Context::gpu(0));
+    return face_recognition(std::move(face_det_params), std::move(face_key_ext_params));
+}
+
 int main(int argc, char *argv[])try
 {
     if(argc < 2){
@@ -99,16 +108,15 @@ int main(int argc, char *argv[])try
         }
 
         if(cam.isOpened()){
-            face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
-            face_key_extractor_params face_key_ext_params(fs["deepinsight_model_params"],
-                    fs["deepinsight_model_symbols"],
-                    mxnet::cpp::Context::gpu(0));
-            face_recognition fr(std::move(face_det_params), std::move(face_key_ext_params));
+            face_recognition fr = create_face_recognition(fs);
             auto const save_video_as = fs["save_video_as"].string();
             auto const fps = static_cast<int>(fs["save_video_fps"].real());
             cv::VideoWriter vwriter;
             add_faces_into_db(fs["face_key_folder"], fr);
-            std::ofstream ofile("log.txt");
+            std::ofstream ofile(fs["save_log_as"].string());
+            if(!ofile.is_open()){
+                throw std::runtime_error("cannot open file:" + fs["save_log_as"].string());
+            }
             for(cv::Mat frame; ;cam>>frame){
                 cam>>frame;
                 if(!frame.empty()){
