@@ -17,9 +17,9 @@ train, tvmonitor.
   
 # Preview
 
-<img src="https://s26.postimg.org/po0jwg33d/Screenshot_2017-09-10-01-49-40.png" height="220px">
-<img src="https://s26.postimg.org/jcvcg11ux/Screenshot_2017-09-10-03-14-12.png" height="220px">
-<img src="https://s26.postimg.org/caxetty95/Screenshot_2017-09-10-03-14-17.png" height="220px">
+<img src="https://lh3.googleusercontent.com/f8oCku0TxADCHVHv1pZBo96Wf330tNpbMw_K0mTbnSUU_Jj-RoDxVggHxEfq5Ls81xI=w1920-h1005" height="220px">
+<img src="https://lh3.googleusercontent.com/5HxuQmrVlSsNnoSrXk38rEHEelukdS1XJ0BL9yZWVzvKXOsA2cyX16WaY-jvFUYKcQ=w1920-h1005" height="220px">
+<img src="https://lh3.googleusercontent.com/T-PvH6-a9pVQZx8jZ8iPRuPbZzY5mL8RHEDf2jPia9vbDmLrjGKO66CBCmLGxiap9S0=w1920-h1005" height="220px">
 
 # Support platforms
 
