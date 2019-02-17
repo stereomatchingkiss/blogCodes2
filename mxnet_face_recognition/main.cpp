@@ -117,8 +117,7 @@ int main(int argc, char *argv[])try
             if(!ofile.is_open()){
                 throw std::runtime_error("cannot open file:" + fs["save_log_as"].string());
             }
-            for(cv::Mat frame; ;cam>>frame){
-                cam>>frame;
+            for(cv::Mat frame; ;cam>>frame){                
                 if(!frame.empty()){
                     auto const results = fr.recognize_faces(frame);
                     for(auto const &fr_info : results){
