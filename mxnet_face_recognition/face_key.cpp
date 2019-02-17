@@ -24,7 +24,12 @@ double face_key::similarity(const face_key &input) const
 
     cv::Mat_<float> const key1(1, 512, const_cast<float*>(input.key_.GetData()), 0);
     cv::Mat_<float> const key2(1, 512, const_cast<float*>(key_.GetData()), 0);
-    return key2.dot(key1) / (std::sqrt(key1.dot(key1) * key2.dot(key2)));
+    auto const denominator = std::sqrt(key1.dot(key1) * key2.dot(key2));
+    if(denominator != 0.0){
+        return key2.dot(key1) / denominator;
+    }
+
+    return 0;
 }
 
 }
