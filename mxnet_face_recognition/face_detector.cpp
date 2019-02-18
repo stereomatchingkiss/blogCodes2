@@ -45,7 +45,7 @@ std::vector<mmod_rect> face_detector::forward_lazy(const cv::Mat &input)
 {
     CV_Assert(input.channels() == 3);
 
-    if(input.cols < face_detect_width_){
+    if(input.cols != face_detect_width_){
         double const ratio = face_detect_width_ / static_cast<double>(input.cols);
         cv::resize(input, resize_cache_, {}, ratio, ratio);
     }else{
