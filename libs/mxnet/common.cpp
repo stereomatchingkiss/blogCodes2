@@ -56,8 +56,7 @@ std::unique_ptr<Executor> create_executor(const std::string &model_params,
                                           const std::string &model_symbols,
                                           const Context &context,
                                           const Shape &input_shape)
-{
-    std::unique_ptr<Executor> executor;
+{    
     Symbol net;
     std::map<std::string, NDArray> args, auxs;
     load_check_point(model_params, model_symbols, &net, &args, &auxs, context);
@@ -70,6 +69,8 @@ std::unique_ptr<Executor> create_executor(const std::string &model_params,
     if(input_shape[0] > 1){
         args["data1"] = NDArray(Shape(1), context, false);
     }
+
+    std::unique_ptr<Executor> executor;
     executor.reset(net.SimpleBind(context, args, std::map<std::string, NDArray>(),
                                   std::map<std::string, OpReqType>(), auxs));
 
