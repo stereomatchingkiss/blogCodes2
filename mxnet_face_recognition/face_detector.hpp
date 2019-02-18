@@ -48,7 +48,7 @@ public:
     face_info forward(cv::Mat const &input);
     /**
      * @param input Should be bgr channels
-     * @return roi of faces and faces after aligned
+     * @return roi of faces
      */
     std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input);
 
