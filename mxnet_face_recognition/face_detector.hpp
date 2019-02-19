@@ -23,10 +23,23 @@ public:
        std::vector<dlib::mmod_rect> rect_;
     };
 
-    explicit face_detector(face_detector_params const &params);
+    explicit face_detector(face_detector_params const &params);    
 
     /**
-     * Use this api if you want to aligned the face after forward,
+     * Detect and align faces
+     * @param input Should be bgr channels
+     * @return roi of faces and faces after aligned
+     */
+    face_info forward(cv::Mat const &input);
+    /**
+     * Detect faces without alignment
+     * @param input Should be bgr channels
+     * @return roi of faces
+     */
+    std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input);
+
+    /**
+     * Use this api if you want to aligned the face after forward_lazy
      * @return Face after aligned
      * @warning forward or forward_lazy must be called before you call this api
      * @code
@@ -40,17 +53,6 @@ public:
      * @endcode
      */
     dlib::matrix<dlib::rgb_pixel> get_aligned_face(dlib::mmod_rect const &rect);
-
-    /**
-     * @param input Should be bgr channels
-     * @return roi of faces and faces after aligned
-     */
-    face_info forward(cv::Mat const &input);
-    /**
-     * @param input Should be bgr channels
-     * @return roi of faces
-     */
-    std::vector<dlib::mmod_rect> forward_lazy(cv::Mat const &input);
 
 private:
     unsigned long face_aligned_size_;
