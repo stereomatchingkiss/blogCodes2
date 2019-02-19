@@ -1,6 +1,7 @@
 #include "face_key_extractor.hpp"
 
 #include "../libs/mxnet/common.hpp"
+#include "../libs/image_format_convert/dlib_to_array.hpp"
 #include "face_key.hpp"
 #include "face_key_extractor_params.hpp"
 
@@ -26,38 +27,11 @@ face_key_extractor::face_key_extractor(face_key_extractor_params const &params) 
     image_vector_.resize(params_->shape_.Size());
 }
 
-void face_key_extractor::dlib_matrix_to_float_array(dlib_const_images_ptr const &rgb_image)
-{
-    size_t index = 0;
-    for(size_t i = 0; i != rgb_image.size(); ++i){
-        for(size_t ch = 0; ch != 3; ++ch){
-            for(long row = 0; row != rgb_image[i]->nr(); ++row){
-                for(long col = 0; col != rgb_image[i]->nc(); ++col){
-                    auto const &pix = (*rgb_image[i])(row, col);
-                    switch(ch){
-                    case 0:
-                        image_vector_[index++] = pix.red;
-                        break;
-                    case 1:
-                        image_vector_[index++] = pix.green;
-                        break;
-                    case 2:
-                        image_vector_[index++] = pix.blue;
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-    }
-}
-
 face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
 {
     std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
     faces.emplace_back(&input);
-    dlib_matrix_to_float_array(faces);
+    img_cvt::dlib_matrix_to_separate_rgb_plane(faces, image_vector_);
     return forward(image_vector_, 1)[0];
 }
 
@@ -74,7 +48,7 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix
         for(size_t j = 0; j != params_->shape_[0] && index < input.size(); ++j){
             faces.emplace_back(&input[index++]);
         }
-        dlib_matrix_to_float_array(faces);
+        img_cvt::dlib_matrix_to_separate_rgb_plane(faces, image_vector_);
         auto features = forward(image_vector_, static_cast<size_t>(faces.size()));
         std::move(std::begin(features), std::end(features), std::back_inserter(result));
     }
