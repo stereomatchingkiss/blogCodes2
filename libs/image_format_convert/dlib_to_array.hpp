@@ -2,6 +2,8 @@
 
 #include <vector>
 
+namespace ocv{
+
 namespace img_cvt{
 
 template<typename T, typename U>
@@ -70,6 +72,8 @@ void dlib_matrix_to_rgb_plane(std::vector<dlib::matrix<T> const*> inputs, U &out
     for(size_t i = 0; i != inputs.size(); ++i){
         dlib_matrix_to_rgb_plane(inputs[i], index, output);
     }
+}
+
 }
 
 }
