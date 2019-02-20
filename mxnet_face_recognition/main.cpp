@@ -1,5 +1,5 @@
-#include "face_detector_params.hpp"
-#include "face_key_extractor_params.hpp"
+#include "../libs/face_detect/face_detector_params.hpp"
+#include "../libs/face_key/face_key_extractor_params.hpp"
 #include "face_reg_info.hpp"
 #include "face_recognition.hpp"
 

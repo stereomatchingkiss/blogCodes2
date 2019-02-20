@@ -29,21 +29,22 @@ LIBS += $${OPENCV_PATH}/x64/vc14/lib/opencv_world342.lib
 
 SOURCES += \
         main.cpp \
-    face_detector.cpp \
-    face_key.cpp \
-    face_key_extractor.cpp \
     ../libs/mxnet/common.cpp \
     face_reg_db.cpp \
-    face_recognition.cpp
+    face_recognition.cpp \        
+    ../libs/face_detect/face_detector.cpp \
+    ../libs/face_key/face_key.cpp \
+    ../libs/face_key/face_key_extractor.cpp
 
 HEADERS += \
-    face_detector.hpp \
-    face_detector_net.hpp \
-    face_key.hpp \
-    face_key_extractor.hpp \
     ../libs/mxnet/common.hpp \
     face_reg_db.hpp \
-    face_recognition.hpp \
-    face_detector_params.hpp \
-    face_key_extractor_params.hpp \
-    face_reg_info.hpp
+    face_recognition.hpp \        
+    face_reg_info.hpp \
+    ../libs/image_format_convert/dlib_to_array.hpp \    
+    ../libs/face_detect/face_detector.hpp \
+    ../libs/face_detect/face_detector_net.hpp \
+    ../libs/face_detect/face_detector_params.hpp \
+    ../libs/face_key/face_key.hpp \
+    ../libs/face_key/face_key_extractor.hpp \
+    ../libs/face_key/face_key_extractor_params.hpp

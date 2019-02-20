@@ -38,4 +38,38 @@ void dlib_matrix_to_separate_rgb_plane(std::vector<dlib::matrix<T> const*> input
     }
 }
 
+template<typename T, typename U>
+void dlib_matrix_to_rgb_plane(dlib::matrix<T> const *input, size_t &offset, U &output)
+{
+    for(long row = 0; row != input->nr(); ++row){
+        for(long col = 0; col != input->nc(); ++col){
+            auto const &pix = (*input)(row, col);
+            for(size_t ch = 0; ch != 3; ++ch){
+                switch(ch){
+                case 0:
+                    output[offset++] = pix.red;
+                    break;
+                case 1:
+                    output[offset++] = pix.green;
+                    break;
+                case 2:
+                    output[offset++] = pix.blue;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+}
+
+template<typename T, typename U>
+void dlib_matrix_to_rgb_plane(std::vector<dlib::matrix<T> const*> inputs, U &output)
+{
+    size_t index = 0;
+    for(size_t i = 0; i != inputs.size(); ++i){
+        dlib_matrix_to_rgb_plane(inputs[i], index, output);
+    }
+}
+
 }
