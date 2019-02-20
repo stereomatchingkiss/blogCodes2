@@ -1,6 +1,6 @@
 #include "face_reg_db.hpp"
 
-namespace mxnet_tool{
+using namespace ocv::mxnet_aux;
 
 void face_reg_db::add_new_face(face_key input, std::string id)
 {
@@ -22,7 +22,4 @@ face_reg_db::id_info face_reg_db::find_most_similar_face(const face_key &input) 
     }
 
     return result;
-}
-
-
 }

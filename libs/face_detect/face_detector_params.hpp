@@ -3,8 +3,10 @@
 
 #include <string>
 
-namespace dlib_tool
+namespace ocv
 {
+
+namespace dlib_aux{
 
 struct face_detector_params
 {
@@ -19,6 +21,8 @@ struct face_detector_params
     int face_detect_width_ = 640;
     unsigned long face_aligned_size_ = 112;
 };
+
+}
 
 }
 

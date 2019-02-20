@@ -21,6 +21,8 @@ class Symbol;
 
 }
 
+namespace ocv{
+
 namespace mxnet_aux{
 
 /**
@@ -44,6 +46,8 @@ void load_check_point(std::string const &model_params,
                       std::map<std::string, mxnet::cpp::NDArray> *arg_params,
                       std::map<std::string, mxnet::cpp::NDArray> *aux_params,
                       mxnet::cpp::Context const &ctx);
+
+}
 
 }
 

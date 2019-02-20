@@ -21,7 +21,9 @@ class NDArray;
 
 }
 
-namespace mxnet_tool{
+namespace ocv{
+
+namespace mxnet_aux{
 
 class face_key;
 struct face_key_extractor_params;
@@ -43,6 +45,8 @@ private:
     std::vector<float> image_vector_;
     std::unique_ptr<face_key_extractor_params> params_;
 };
+
+}
 
 }
 

@@ -3,7 +3,9 @@
 
 #include <mxnet-cpp/ndarray.h>
 
-namespace mxnet_tool{
+namespace ocv{
+
+namespace mxnet_aux{
 
 class face_key
 {
@@ -21,6 +23,8 @@ public:
 private:
     mxnet::cpp::NDArray key_;
 };
+
+}
 
 }
 

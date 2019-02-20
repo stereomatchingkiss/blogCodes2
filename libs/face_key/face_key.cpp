@@ -5,7 +5,9 @@
 
 #include <mxnet-cpp/MxNetCpp.h>
 
-namespace mxnet_tool{
+namespace ocv{
+
+namespace mxnet_aux{
 
 face_key::face_key(mxnet::cpp::NDArray key) :
     key_(key)
@@ -30,6 +32,8 @@ double face_key::similarity(const face_key &input) const
     }
 
     return 0;
+}
+
 }
 
 }

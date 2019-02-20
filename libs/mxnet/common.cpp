@@ -7,6 +7,8 @@
 
 using namespace mxnet::cpp;
 
+namespace ocv{
+
 namespace mxnet_aux{
 
 NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, Context const &ctx)
@@ -75,6 +77,8 @@ std::unique_ptr<Executor> create_executor(const std::string &model_params,
                                   std::map<std::string, OpReqType>(), auxs));
 
     return executor;
+}
+
 }
 
 }

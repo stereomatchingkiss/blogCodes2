@@ -5,7 +5,9 @@
 
 #include <string>
 
-namespace mxnet_tool{
+namespace ocv{
+
+namespace mxnet_aux{
 
 struct face_key_extractor_params
 {
@@ -24,6 +26,8 @@ struct face_key_extractor_params
     std::string model_symbols_;    
     mxnet::cpp::Shape shape_;
 };
+
+}
 
 }
 

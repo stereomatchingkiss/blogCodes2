@@ -3,8 +3,10 @@
 
 #include <dlib/dnn.h>
 
-namespace dlib_dnn_net
+namespace ocv
 {
+
+namespace dlib_net{
 
 using namespace dlib;
 
@@ -18,6 +20,8 @@ template <typename SUBNET> using rcon5  = relu<affine<con5<45,SUBNET>>>;
 
 using face_detect_net =
 loss_mmod<con<1,9,9,1,1,rcon5<rcon5<rcon5<downsampler<input_rgb_image_pyramid<pyramid_down<6>>>>>>>>;
+
+}
 
 }
 

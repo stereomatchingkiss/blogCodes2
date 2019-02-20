@@ -11,7 +11,9 @@
 
 using namespace mxnet::cpp;
 
-namespace mxnet_tool{
+namespace ocv{
+
+namespace mxnet_aux{
 
 namespace{
 
@@ -22,8 +24,8 @@ size_t constexpr step_per_feature = 512;
 face_key_extractor::face_key_extractor(face_key_extractor_params const &params) :    
     params_(std::make_unique<face_key_extractor_params>(params))
 {
-    executor_ = mxnet_aux::create_executor(params.model_params_, params.model_symbols_,
-                                           params.context_, params.shape_);
+    executor_ = create_executor(params.model_params_, params.model_symbols_,
+                                params.context_, params.shape_);
     image_vector_.resize(params_->shape_.Size());
 }
 
@@ -42,7 +44,7 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix
     }
 
     auto const forward_count = static_cast<size_t>(std::ceil(input.size() / static_cast<float>(params_->shape_[0])));
-    std::vector<face_key> result;    
+    std::vector<face_key> result;
     for(size_t i = 0, index = 0; i != forward_count; ++i){
         dlib_const_images_ptr faces;
         for(size_t j = 0; j != params_->shape_[0] && index < input.size(); ++j){
@@ -77,6 +79,8 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<float> &inpu
     }
 
     return result;
+}
+
 }
 
 }

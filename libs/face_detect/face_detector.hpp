@@ -9,12 +9,14 @@
 
 #include <vector>
 
-namespace dlib_tool
+namespace ocv
 {
+
+namespace dlib_aux{
 
 struct face_detector_params;
 
-class face_detector
+class cnn_face_detector
 {
 public:
     struct face_info
@@ -23,7 +25,7 @@ public:
        std::vector<dlib::mmod_rect> rect_;
     };
 
-    explicit face_detector(face_detector_params const &params);    
+    explicit cnn_face_detector(face_detector_params const &params);
 
     /**
      * Detect and align faces
@@ -57,11 +59,13 @@ public:
 private:
     unsigned long face_aligned_size_;
     int face_detect_width_;    
-    dlib_dnn_net::face_detect_net net_;
+    ocv::dlib_net::face_detect_net net_;
     dlib::matrix<dlib::rgb_pixel> img_;    
     dlib::shape_predictor pose_model_;
     cv::Mat resize_cache_;
 };
+
+}
 
 }
 
