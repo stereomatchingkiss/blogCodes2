@@ -31,10 +31,10 @@ SOURCES += \
         main.cpp \
     ../libs/mxnet/common.cpp \
     face_reg_db.cpp \
-    face_recognition.cpp \        
-    ../libs/face_detect/face_detector.cpp \
-    ../libs/face_key/face_key.cpp \
-    ../libs/face_key/face_key_extractor.cpp
+    face_recognition.cpp \            
+    ../libs/face_detect/dlib_cnn_face_detector.cpp \
+    ../libs/face_key/insight_face_key.cpp \
+    ../libs/face_key/insight_face_key_extractor.cpp
 
 HEADERS += \
     ../libs/mxnet/common.hpp \
@@ -42,9 +42,9 @@ HEADERS += \
     face_recognition.hpp \        
     face_reg_info.hpp \
     ../libs/image_format_convert/dlib_to_array.hpp \    
-    ../libs/face_detect/face_detector.hpp \
-    ../libs/face_detect/face_detector_net.hpp \
-    ../libs/face_detect/face_detector_params.hpp \
-    ../libs/face_key/face_key.hpp \
-    ../libs/face_key/face_key_extractor.hpp \
-    ../libs/face_key/face_key_extractor_params.hpp
+    ../libs/face_detect/dlib_cnn_face_detector.hpp \
+    ../libs/face_detect/dlib_cnn_face_detector_params.hpp \
+    ../libs/face_detect/dlib_face_detector_net.hpp \
+    ../libs/face_key/insight_face_key.hpp \
+    ../libs/face_key/insight_face_key_extractor.hpp \
+    ../libs/face_key/insight_face_key_extractor_params.hpp

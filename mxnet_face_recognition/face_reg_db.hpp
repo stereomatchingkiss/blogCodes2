@@ -1,7 +1,7 @@
 #ifndef FACE_REG_DB_HPP
 #define FACE_REG_DB_HPP
 
-#include "../libs/face_key/face_key.hpp"
+#include "../libs/face_key/insight_face_key.hpp"
 
 #include <vector>
 

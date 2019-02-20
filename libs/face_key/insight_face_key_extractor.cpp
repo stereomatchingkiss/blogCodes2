@@ -1,9 +1,9 @@
-#include "face_key_extractor.hpp"
+#include "insight_face_key_extractor.hpp"
 
 #include "../libs/mxnet/common.hpp"
 #include "../libs/image_format_convert/dlib_to_array.hpp"
-#include "face_key.hpp"
-#include "face_key_extractor_params.hpp"
+#include "insight_face_key.hpp"
+#include "insight_face_key_extractor_params.hpp"
 
 #include <opencv2/imgproc.hpp>
 

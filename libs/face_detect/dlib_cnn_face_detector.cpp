@@ -1,6 +1,6 @@
-#include "face_detector.hpp"
+#include "dlib_cnn_face_detector.hpp"
 
-#include "face_detector_params.hpp"
+#include "dlib_cnn_face_detector_params.hpp"
 
 #include <opencv2/imgproc.hpp>
 

@@ -1,7 +1,7 @@
 #ifndef OCV_FACE_DLIB_CNN_FACE_DETECTOR_HPP
 #define OCV_FACE_DLIB_CNN_FACE_DETECTOR_HPP
 
-#include "face_detector_net.hpp"
+#include "dlib_face_detector_net.hpp"
 
 #include <dlib/image_processing.h>
 
