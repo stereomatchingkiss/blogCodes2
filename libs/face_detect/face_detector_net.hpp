@@ -1,5 +1,5 @@
-#ifndef FACE_DETECTOR_NET_HPP
-#define FACE_DETECTOR_NET_HPP
+#ifndef OCV_FACE_FACE_DETECTOR_NET_HPP
+#define OCV_FACE_FACE_DETECTOR_NET_HPP
 
 #include <dlib/dnn.h>
 
@@ -29,4 +29,4 @@ loss_mmod<con<1,9,9,1,1,rcon5<rcon5<rcon5<downsampler<input_rgb_image_pyramid<py
 
 }
 
-#endif // FACE_DETECTOR_NET_HPP
+#endif // OCV_FACE_FACE_DETECTOR_NET_HPP

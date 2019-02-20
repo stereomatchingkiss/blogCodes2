@@ -2,7 +2,7 @@
 
 using namespace ocv::face;
 
-void face_reg_db::add_new_face(face_key input, std::string id)
+void face_reg_db::add_new_face(insight_face_key input, std::string id)
 {
     face_info info;
     info.id_.swap(id);
@@ -10,7 +10,7 @@ void face_reg_db::add_new_face(face_key input, std::string id)
     face_keys_.emplace_back(std::move(info));
 }
 
-face_reg_db::id_info face_reg_db::find_most_similar_face(const face_key &input) const
+face_reg_db::id_info face_reg_db::find_most_similar_face(const insight_face_key &input) const
 {
     id_info result;
     for(size_t i = 0; i != face_keys_.size(); ++i){

@@ -1,5 +1,5 @@
-#ifndef FACE_DETECTOR_HPP
-#define FACE_DETECTOR_HPP
+#ifndef OCV_FACE_DLIB_CNN_FACE_DETECTOR_HPP
+#define OCV_FACE_DLIB_CNN_FACE_DETECTOR_HPP
 
 #include "face_detector_net.hpp"
 
@@ -14,9 +14,9 @@ namespace ocv
 
 namespace face{
 
-struct face_detector_params;
+struct dlib_cnn_face_detector_params;
 
-class cnn_face_detector
+class dlib_cnn_face_detector
 {
 public:
     struct face_info
@@ -25,7 +25,7 @@ public:
        std::vector<dlib::mmod_rect> rect_;
     };
 
-    explicit cnn_face_detector(face_detector_params const &params);
+    explicit dlib_cnn_face_detector(dlib_cnn_face_detector_params const &params);
 
     /**
      * Detect and align faces
@@ -69,4 +69,4 @@ private:
 
 }
 
-#endif // FACE_DETECTOR_HPP
+#endif // OCV_FACE_DLIB_CNN_FACE_DETECTOR_HPP

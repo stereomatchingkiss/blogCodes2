@@ -14,13 +14,13 @@ public:
         std::string id_;
     };
 
-    void add_new_face(ocv::face::face_key input, std::string id);
-    id_info find_most_similar_face(ocv::face::face_key const &input) const;
+    void add_new_face(ocv::face::insight_face_key input, std::string id);
+    id_info find_most_similar_face(ocv::face::insight_face_key const &input) const;
 
 private:
     struct face_info
     {
-       ocv::face::face_key key_;
+       ocv::face::insight_face_key key_;
        std::string id_;
     };
 

@@ -21,15 +21,15 @@ size_t constexpr step_per_feature = 512;
 
 }
 
-face_key_extractor::face_key_extractor(face_key_extractor_params const &params) :    
-    params_(std::make_unique<face_key_extractor_params>(params))
+insight_face_key_extractor::insight_face_key_extractor(insight_face_key_extractor_params const &params) :
+    params_(std::make_unique<insight_face_key_extractor_params>(params))
 {
     executor_ = create_executor(params.model_params_, params.model_symbols_,
                                 params.context_, params.shape_);
     image_vector_.resize(params_->shape_.Size());
 }
 
-face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
+insight_face_key insight_face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
 {
     std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
     faces.emplace_back(&input);
@@ -37,14 +37,14 @@ face_key face_key_extractor::forward(const dlib::matrix<dlib::rgb_pixel> &input)
     return forward(image_vector_, 1)[0];
 }
 
-std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
+std::vector<insight_face_key> insight_face_key_extractor::forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 {
     if(input.empty()){
         return {};
     }
 
     auto const forward_count = static_cast<size_t>(std::ceil(input.size() / static_cast<float>(params_->shape_[0])));
-    std::vector<face_key> result;
+    std::vector<insight_face_key> result;
     for(size_t i = 0, index = 0; i != forward_count; ++i){
         dlib_const_images_ptr faces;
         for(size_t j = 0; j != params_->shape_[0] && index < input.size(); ++j){
@@ -58,12 +58,12 @@ std::vector<face_key> face_key_extractor::forward(const std::vector<dlib::matrix
     return result;
 }
 
-std::vector<face_key> face_key_extractor::forward(const std::vector<float> &input, size_t batch_size)
+std::vector<insight_face_key> insight_face_key_extractor::forward(const std::vector<float> &input, size_t batch_size)
 {
     executor_->arg_dict()["data"].SyncCopyFromCPU(input.data(), input.size());
     executor_->arg_dict()["data1"] = batch_size;
     executor_->Forward(false);
-    std::vector<face_key> result;
+    std::vector<insight_face_key> result;
     if(!executor_->outputs.empty()){
         auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
         Shape const shape(1, step_per_feature);

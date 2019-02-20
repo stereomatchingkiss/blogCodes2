@@ -9,18 +9,18 @@ namespace ocv{
 
 namespace face{
 
-face_key::face_key(mxnet::cpp::NDArray key) :
+insight_face_key::insight_face_key(mxnet::cpp::NDArray key) :
     key_(key)
 {
 
 }
 
-bool face_key::is_empty_key() const noexcept
+bool insight_face_key::is_empty_key() const noexcept
 {
     return key_.GetData() == nullptr;
 }
 
-double face_key::similarity(const face_key &input) const
+double insight_face_key::similarity(const insight_face_key &input) const
 {
     CV_Assert(key_.GetData() != nullptr && input.key_.GetData() != nullptr);
 

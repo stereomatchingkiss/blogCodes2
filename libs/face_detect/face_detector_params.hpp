@@ -1,5 +1,5 @@
-#ifndef FACE_DETECTOR_PARAMS_HPP
-#define FACE_DETECTOR_PARAMS_HPP
+#ifndef OCV_FACE_DLIB_CNN_FACE_DETECTOR_PARAMS_HPP
+#define OCV_FACE_DLIB_CNN_FACE_DETECTOR_PARAMS_HPP
 
 #include <string>
 
@@ -8,10 +8,10 @@ namespace ocv
 
 namespace face{
 
-struct face_detector_params
+struct dlib_cnn_face_detector_params
 {
-    face_detector_params(std::string face_detect_model_location,
-                         std::string shape_predict_model_location) :
+    dlib_cnn_face_detector_params(std::string face_detect_model_location,
+                                  std::string shape_predict_model_location) :
         face_detect_model_location_(std::move(face_detect_model_location)),
         shape_predict_model_location_(std::move(shape_predict_model_location))
     {}
@@ -26,4 +26,4 @@ struct face_detector_params
 
 }
 
-#endif // FACE_DETECTOR_PARAMS_HPP
+#endif // OCV_FACE_DLIB_CNN_FACE_DETECTOR_PARAMS_HPP

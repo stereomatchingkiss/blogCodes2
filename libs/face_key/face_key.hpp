@@ -1,5 +1,5 @@
-#ifndef FACE_KEY_HPP
-#define FACE_KEY_HPP
+#ifndef OCV_FACE_INSIGHT_FACE_KEY_HPP
+#define OCV_FACE_INSIGHT_FACE_KEY_HPP
 
 #include <mxnet-cpp/ndarray.h>
 
@@ -7,10 +7,10 @@ namespace ocv{
 
 namespace face{
 
-class face_key
+class insight_face_key
 {
 public:    
-    explicit face_key(mxnet::cpp::NDArray key = mxnet::cpp::NDArray());
+    explicit insight_face_key(mxnet::cpp::NDArray key = mxnet::cpp::NDArray());
 
     bool is_empty_key() const noexcept;
     /**
@@ -18,7 +18,7 @@ public:
      * @return value within [-1, 1], bigger value mean more similar(it use cosine similarity
      * under the hood)
      */
-    double similarity(face_key const &input) const;
+    double similarity(insight_face_key const &input) const;
 
 private:
     mxnet::cpp::NDArray key_;
@@ -28,4 +28,4 @@ private:
 
 }
 
-#endif // FACE_KEY_HPP
+#endif // OCV_FACE_INSIGHT_FACE_KEY_HPP

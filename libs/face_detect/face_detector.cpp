@@ -15,7 +15,7 @@ namespace ocv
 
 namespace face{
 
-cnn_face_detector::cnn_face_detector(face_detector_params const &params) :
+dlib_cnn_face_detector::dlib_cnn_face_detector(dlib_cnn_face_detector_params const &params) :
     face_aligned_size_(params.face_aligned_size_),
     face_detect_width_(params.face_detect_width_)
 {
@@ -23,7 +23,7 @@ cnn_face_detector::cnn_face_detector(face_detector_params const &params) :
     deserialize(params.shape_predict_model_location_)>>pose_model_;
 }
 
-dlib::matrix<rgb_pixel> cnn_face_detector::get_aligned_face(const mmod_rect &rect)
+dlib::matrix<rgb_pixel> dlib_cnn_face_detector::get_aligned_face(const mmod_rect &rect)
 {
     auto shape = pose_model_(img_, rect);
     matrix<rgb_pixel> face_chip;
@@ -31,7 +31,7 @@ dlib::matrix<rgb_pixel> cnn_face_detector::get_aligned_face(const mmod_rect &rec
     return face_chip;
 }
 
-cnn_face_detector::face_info cnn_face_detector::forward(const cv::Mat &input)
+dlib_cnn_face_detector::face_info dlib_cnn_face_detector::forward(const cv::Mat &input)
 {
     auto const rects = forward_lazy(input);
     face_info result;
@@ -43,7 +43,7 @@ cnn_face_detector::face_info cnn_face_detector::forward(const cv::Mat &input)
     return result;
 }
 
-std::vector<mmod_rect> cnn_face_detector::forward_lazy(const cv::Mat &input)
+std::vector<mmod_rect> dlib_cnn_face_detector::forward_lazy(const cv::Mat &input)
 {
     CV_Assert(input.channels() == 3);
 

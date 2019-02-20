@@ -1,5 +1,5 @@
-#ifndef FACE_KEY_EXTRACTOR_HPP
-#define FACE_KEY_EXTRACTOR_HPP
+#ifndef OCV_FACE_INSIGHT_FACE_KEY_EXTRACTOR_HPP
+#define OCV_FACE_INSIGHT_FACE_KEY_EXTRACTOR_HPP
 
 #include <opencv2/core.hpp>
 
@@ -25,29 +25,29 @@ namespace ocv{
 
 namespace face{
 
-class face_key;
-struct face_key_extractor_params;
+class insight_face_key;
+struct insight_face_key_extractor_params;
 
-class face_key_extractor
+class insight_face_key_extractor
 {
 public:
-    explicit face_key_extractor(face_key_extractor_params const &params);
-    ~face_key_extractor() = default;
+    explicit insight_face_key_extractor(insight_face_key_extractor_params const &params);
+    ~insight_face_key_extractor() = default;
 
-    face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
-    std::vector<face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
+    insight_face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
+    std::vector<insight_face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
     using dlib_const_images_ptr = std::vector<dlib::matrix<dlib::rgb_pixel> const*>;    
-    std::vector<face_key> forward(std::vector<float> const &input, size_t batch_size);
+    std::vector<insight_face_key> forward(std::vector<float> const &input, size_t batch_size);
 
     std::unique_ptr<mxnet::cpp::Executor> executor_;
     std::vector<float> image_vector_;
-    std::unique_ptr<face_key_extractor_params> params_;
+    std::unique_ptr<insight_face_key_extractor_params> params_;
 };
 
 }
 
 }
 
-#endif // FACE_KEY_EXTRACTOR_HPP
+#endif // OCV_FACE_INSIGHT_FACE_KEY_EXTRACTOR_HPP

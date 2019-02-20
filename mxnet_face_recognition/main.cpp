@@ -82,8 +82,8 @@ using namespace ocv::face;
 
 face_recognition create_face_recognition(cv::FileStorage const &fs)
 {
-    face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
-    face_key_extractor_params face_key_ext_params(fs["deepinsight_model_params"],
+    dlib_cnn_face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
+    insight_face_key_extractor_params face_key_ext_params(fs["deepinsight_model_params"],
             fs["deepinsight_model_symbols"],
             mxnet::cpp::Context::gpu(0));
     return face_recognition(std::move(face_det_params), std::move(face_key_ext_params));
