@@ -7,7 +7,7 @@
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 face_key::face_key(mxnet::cpp::NDArray key) :
     key_(key)

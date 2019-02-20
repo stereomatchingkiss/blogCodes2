@@ -13,7 +13,7 @@ using namespace dlib;
 namespace ocv
 {
 
-namespace dlib_aux{
+namespace face{
 
 cnn_face_detector::cnn_face_detector(face_detector_params const &params) :
     face_aligned_size_(params.face_aligned_size_),

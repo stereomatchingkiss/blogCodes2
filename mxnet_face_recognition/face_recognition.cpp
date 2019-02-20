@@ -6,8 +6,8 @@
 #include "../libs/face_key/face_key_extractor_params.hpp"
 #include "face_reg_db.hpp"
 
-using namespace ocv::dlib_aux;
-using namespace ocv::mxnet_aux;
+using namespace ocv::face;
+using namespace ocv::face;
 
 face_recognition::face_recognition(face_detector_params face_det_params,
                                    face_key_extractor_params face_key_params) :

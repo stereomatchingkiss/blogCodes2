@@ -13,7 +13,7 @@ using namespace mxnet::cpp;
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 namespace{
 

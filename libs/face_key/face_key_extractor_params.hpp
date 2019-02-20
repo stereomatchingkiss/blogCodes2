@@ -7,7 +7,7 @@
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 struct face_key_extractor_params
 {

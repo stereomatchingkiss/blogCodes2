@@ -12,7 +12,7 @@
 namespace ocv
 {
 
-namespace dlib_aux{
+namespace face{
 
 struct face_detector_params;
 
@@ -59,7 +59,7 @@ public:
 private:
     unsigned long face_aligned_size_;
     int face_detect_width_;    
-    ocv::dlib_net::face_detect_net net_;
+    ocv::face::dlib_net::face_detect_net net_;
     dlib::matrix<dlib::rgb_pixel> img_;    
     dlib::shape_predictor pose_model_;
     cv::Mat resize_cache_;

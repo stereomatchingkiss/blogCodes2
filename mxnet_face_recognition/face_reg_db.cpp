@@ -1,6 +1,6 @@
 #include "face_reg_db.hpp"
 
-using namespace ocv::mxnet_aux;
+using namespace ocv::face;
 
 void face_reg_db::add_new_face(face_key input, std::string id)
 {

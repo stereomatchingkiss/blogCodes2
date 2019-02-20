@@ -23,7 +23,7 @@ class Symbol;
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 /**
  * @param input_shape batch, height, width, channels

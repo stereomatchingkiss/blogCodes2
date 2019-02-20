@@ -5,7 +5,7 @@
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 class face_key
 {

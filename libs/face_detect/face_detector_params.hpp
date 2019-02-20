@@ -6,7 +6,7 @@
 namespace ocv
 {
 
-namespace dlib_aux{
+namespace face{
 
 struct face_detector_params
 {

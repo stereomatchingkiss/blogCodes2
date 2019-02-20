@@ -77,8 +77,8 @@ void record_video(cv::Mat const &frame, std::string const &save_output_as, int f
     }
 }
 
-using namespace ocv::dlib_aux;
-using namespace ocv::mxnet_aux;
+using namespace ocv::face;
+using namespace ocv::face;
 
 face_recognition create_face_recognition(cv::FileStorage const &fs)
 {

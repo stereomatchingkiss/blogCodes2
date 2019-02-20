@@ -23,7 +23,7 @@ class NDArray;
 
 namespace ocv{
 
-namespace mxnet_aux{
+namespace face{
 
 class face_key;
 struct face_key_extractor_params;
