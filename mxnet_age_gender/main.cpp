@@ -12,7 +12,6 @@
 
 #include <mxnet-cpp/MxNetCpp.h>
 
-#include <fstream>
 #include <iostream>
 
 using namespace cv;
@@ -107,11 +106,6 @@ int main(int argc, char *argv[])try
         }
 
         if(cam.isOpened()){
-            std::ofstream ofile(fs["save_log_as"].string());
-            if(!ofile.is_open()){
-                throw std::runtime_error("cannot open file:" + fs["save_log_as"].string());
-            }
-
             auto fdet = create_face_detector(fs);
             auto age_gender_predict = create_age_gender_predict(fs);
             auto const save_video_as = fs["save_video_as"].string();
