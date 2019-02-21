@@ -62,7 +62,9 @@ forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 std::vector<insight_face_key> insight_face_key_extractor::forward(const std::vector<float> &input, size_t batch_size)
 {
     executor_->arg_dict()["data"].SyncCopyFromCPU(input.data(), input.size());
-    executor_->arg_dict()["data1"] = batch_size;
+    if(params_->shape_[0] > 1){
+        executor_->arg_dict()["data1"] = batch_size;
+    }
     executor_->Forward(false);
     std::vector<insight_face_key> result;
     if(!executor_->outputs.empty()){
