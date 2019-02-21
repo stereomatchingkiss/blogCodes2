@@ -1,9 +1,9 @@
 #include "face_recognition.hpp"
 
-#include "../libs/face_detect/dlib_cnn_face_detector.hpp"
-#include "../libs/face_detect/dlib_cnn_face_detector_params.hpp"
-#include "../libs/face_key/insight_face_key_extractor.hpp"
-#include "../libs/face_key/insight_face_key_extractor_params.hpp"
+#include "../libs/face/detect/dlib_cnn_face_detector.hpp"
+#include "../libs/face/detect/dlib_cnn_face_detector_params.hpp"
+#include "../libs/face/key/insight_face_key_extractor.hpp"
+#include "../libs/face/key/insight_face_key_extractor_params.hpp"
 #include "face_reg_db.hpp"
 
 using namespace ocv::face;
