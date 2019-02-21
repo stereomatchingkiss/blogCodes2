@@ -47,4 +47,7 @@ HEADERS += \
     ../libs/face/detect/dlib_face_detector_net.hpp \
     ../libs/face/key/insight_face_key.hpp \
     ../libs/face/key/insight_face_key_extractor.hpp \
-    ../libs/face/key/insight_face_key_extractor_params.hpp
+    ../libs/face/key/insight_face_key_extractor_params.hpp \
+    ../libs/face/age_gender/insight_age_gender_params.hpp \
+    ../libs/face/age_gender/insight_age_gender_info.hpp \
+    ../libs/face/age_gender/gender_info.hpp
