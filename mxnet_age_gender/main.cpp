@@ -128,6 +128,7 @@ int main(int argc, char *argv[])try
                         rectangle(frame, rect, Scalar(0, 255, 0), 3);
                         put_text(ag_info[i], rect, frame);
                     }
+                    record_video(frame, save_video_as, fps, vwriter);
 
                     cv::imshow("frame", frame);
                     int const key = std::tolower(cv::waitKey(30));
