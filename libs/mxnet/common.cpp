@@ -9,7 +9,7 @@ using namespace mxnet::cpp;
 
 namespace ocv{
 
-namespace face{
+namespace mxnet_aux{
 
 NDArray cvmat_to_ndarray(cv::Mat const &bgr_image, Context const &ctx)
 {    

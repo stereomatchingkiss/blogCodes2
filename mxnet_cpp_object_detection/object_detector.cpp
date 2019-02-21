@@ -7,7 +7,7 @@
 #include <libs/mxnet/common.hpp>
 
 using namespace mxnet::cpp;
-using namespace ocv::face;
+using namespace ocv::mxnet_aux;
 
 object_detector::object_detector(std::string const &model_params,
                                  std::string const &model_symbols,

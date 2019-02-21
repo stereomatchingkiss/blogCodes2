@@ -24,8 +24,8 @@ size_t constexpr step_per_feature = 512;
 insight_face_key_extractor::insight_face_key_extractor(insight_face_key_extractor_params const &params) :
     params_(std::make_unique<insight_face_key_extractor_params>(params))
 {
-    executor_ = create_executor(params.model_params_, params.model_symbols_,
-                                params.context_, params.shape_);
+    executor_ = mxnet_aux::create_executor(params.model_params_, params.model_symbols_,
+                                           params.context_, params.shape_);
     image_vector_.resize(params_->shape_.Size());
 }
 
