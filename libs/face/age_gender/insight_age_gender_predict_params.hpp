@@ -12,9 +12,9 @@ namespace face{
 struct insight_age_gender_predict_params
 {
     insight_age_gender_predict_params(std::string model_params,
-                              std::string model_symbols,
-                              mxnet::cpp::Context const &context,
-                              mxnet::cpp::Shape const &shape = mxnet::cpp::Shape(4, 3, 112, 112)) :
+                                      std::string model_symbols,
+                                      mxnet::cpp::Context const &context,
+                                      mxnet::cpp::Shape const &shape = mxnet::cpp::Shape(4, 3, 112, 112)) :
         context_(context),
         model_params_(std::move(model_params)),
         model_symbols_(std::move(model_symbols)),
