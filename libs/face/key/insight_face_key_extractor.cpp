@@ -37,7 +37,8 @@ insight_face_key insight_face_key_extractor::forward(const dlib::matrix<dlib::rg
     return forward(image_vector_, 1)[0];
 }
 
-std::vector<insight_face_key> insight_face_key_extractor::forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
+std::vector<insight_face_key> insight_face_key_extractor::
+forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 {
     if(input.empty()){
         return {};
