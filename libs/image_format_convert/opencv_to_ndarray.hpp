@@ -1,5 +1,5 @@
-#ifndef OPENCV_TO_NDARRAY_HPP
-#define OPENCV_TO_NDARRAY_HPP
+#ifndef OCV_IMG_CVT_OPENCV_TO_NDARRAY_HPP
+#define OCV_IMG_CVT_OPENCV_TO_NDARRAY_HPP
 
 #include <mxnet-cpp/MxNetCpp.h>
 
@@ -7,7 +7,9 @@
 
 #include <memory>
 
-namespace mxnet_aux{
+namespace ocv{
+
+namespace img_cvt{
 
 /**
  * A more efficient way to convert Mat to NDArray since it will reuse allocated memory
@@ -40,4 +42,6 @@ private:
 
 }
 
-#endif // OPENCV_TO_NDARRAY_HPP
+}
+
+#endif // OCV_IMG_CVT_OPENCV_TO_NDARRAY_HPP

@@ -6,7 +6,10 @@
 
 using namespace mxnet::cpp;
 
-namespace mxnet_aux {
+namespace ocv{
+
+namespace img_cvt{
+
 
 opencv_to_ndarray::opencv_to_ndarray(int width,
                                      int height,
@@ -34,6 +37,6 @@ mxnet::cpp::NDArray opencv_to_ndarray::convert(cv::Mat const &input)
                    context_);
 }
 
-
+}
 
 }

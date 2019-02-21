@@ -17,9 +17,13 @@ class Executor;
 
 }
 
-namespace mxnet_aux{
+namespace ocv{
+
+namespace img_cvt{
 
 class opencv_to_ndarray;
+
+}
 
 }
 
@@ -35,7 +39,7 @@ public:
 
 private:
     std::unique_ptr<mxnet::cpp::Executor> executor_;    
-    std::unique_ptr<mxnet_aux::opencv_to_ndarray> to_ndarray_;
+    std::unique_ptr<ocv::img_cvt::opencv_to_ndarray> to_ndarray_;
 };
 
 #endif // PERSON_FEAUTRES_EXTRACTOR_HPP

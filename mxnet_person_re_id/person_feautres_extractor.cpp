@@ -5,10 +5,11 @@
 #include <opencv2/imgproc.hpp>
 
 #include <libs/mxnet/common.hpp>
-#include <libs/mxnet/opencv_to_ndarray.hpp>
+#include <libs/image_format_convert/opencv_to_ndarray.hpp>
 
 using namespace mxnet::cpp;
 using namespace ocv::mxnet_aux;
+using namespace ocv::img_cvt;
 
 namespace{
 
@@ -23,7 +24,7 @@ person_feautres_extractor::person_feautres_extractor(const std::string &model_pa
 {
     executor_ = create_executor(model_params, model_symbols, context,
                                 Shape(1, input_height, input_width, 3));
-    to_ndarray_ = std::make_unique<::mxnet_aux::opencv_to_ndarray>(input_width, input_height, context, CV_32FC3, true);
+    to_ndarray_ = std::make_unique<opencv_to_ndarray>(input_width, input_height, context, CV_32FC3, true);
 }
 
 person_feautres_extractor::~person_feautres_extractor()

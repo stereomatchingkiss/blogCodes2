@@ -18,19 +18,19 @@ SOURCES += \
         main.cpp \    
     ../libs/mxnet/common.cpp \
     ../mxnet_cpp_object_detection/object_detector.cpp \
-    ../mxnet_cpp_object_detection/object_detector_filter.cpp \
-    ../libs/mxnet/opencv_to_ndarray.cpp \
+    ../mxnet_cpp_object_detection/object_detector_filter.cpp \    
     compare_features_distance.cpp \
     re_id_db.cpp \
     visitor_identify.cpp \
-    person_feautres_extractor.cpp
+    person_feautres_extractor.cpp \
+    ../libs/image_format_convert/opencv_to_ndarray.cpp
 
 HEADERS += \    
     ../libs/mxnet/common.hpp \
     ../mxnet_cpp_object_detection/object_detector.hpp \
-    ../mxnet_cpp_object_detection/object_detector_filter.hpp \
-    ../libs/mxnet/opencv_to_ndarray.hpp \
+    ../mxnet_cpp_object_detection/object_detector_filter.hpp \    
     compare_features_distance.hpp \
     re_id_db.hpp \
     visitor_identify.hpp \
-    person_feautres_extractor.hpp
+    person_feautres_extractor.hpp \
+    ../libs/image_format_convert/opencv_to_ndarray.hpp
