@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-using namespace mxnet_aux;
+using namespace ocv::mxnet_aux;
 using namespace std;
 
 cv::VideoCapture create_video_capture(cv::FileStorage const &input)
