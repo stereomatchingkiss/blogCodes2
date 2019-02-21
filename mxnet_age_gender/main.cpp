@@ -122,11 +122,11 @@ int main(int argc, char *argv[])try
                 cam>>frame;
                 if(!frame.empty()){
                     auto const face_det_info = fdet.forward(frame);
-                    for(size_t i = 0; i != face_det_info.face_aligned_.size(); ++i){
-                        auto const ag_info = age_gender_predict.forward(face_det_info.face_aligned_[i]);
+                    auto const ag_info = age_gender_predict.forward(face_det_info.face_aligned_);
+                    for(size_t i = 0; i != ag_info.size(); ++i){
                         Rect const rect = mmod_to_rect(frame, face_det_info.rect_[i]);
                         rectangle(frame, rect, Scalar(0, 255, 0), 3);
-                        put_text(ag_info, rect, frame);
+                        put_text(ag_info[i], rect, frame);
                     }
 
                     cv::imshow("frame", frame);
