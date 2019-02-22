@@ -72,7 +72,7 @@ insight_age_gender_predict create_age_gender_predict(FileStorage const &fs)
 {
     insight_age_gender_predict_params params(fs["deepinsight_model_params"], fs["deepinsight_model_symbols"],
             mxnet::cpp::Context::gpu(0));
-    return insight_age_gender_predict(std::move(params));
+    return insight_age_gender_predict(params.model_params_, params.model_symbols_, params.context_, params.shape_);
 }
 
 Rect mmod_to_rect(cv::Mat const &frame, dlib::mmod_rect const &mmod)

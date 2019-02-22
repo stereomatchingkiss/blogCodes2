@@ -1,55 +1,21 @@
 #ifndef OCV_FACE_INSIGHT_FACE_KEY_EXTRACTOR_HPP
 #define OCV_FACE_INSIGHT_FACE_KEY_EXTRACTOR_HPP
 
-#include <opencv2/core.hpp>
+#include "../../mxnet/generic_predictor.hpp"
 
-#include <dlib/image_processing.h>
-
-#include <memory>
-#include <string>
-#include <vector>
-
-namespace mxnet{
-
-namespace cpp{
-
-class Context;
-class Executor;
-class NDArray;
-
-}
-
-}
+#include "insight_face_key.hpp"
 
 namespace ocv{
 
-namespace mxnet_aux{
-
-class generic_predictor;
-
-}
-
 namespace face{
 
-class insight_face_key;
-struct insight_face_key_extractor_params;
-
-class insight_face_key_extractor
+struct extract_face_key_functor
 {
-public:
-    explicit insight_face_key_extractor(insight_face_key_extractor_params const &params);
-    ~insight_face_key_extractor();
-
-    insight_face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
-    std::vector<insight_face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
-
-private:
-    using dlib_const_images_ptr = std::vector<dlib::matrix<dlib::rgb_pixel> const*>;
-
-    std::vector<insight_face_key> extract_key(mxnet::cpp::NDArray const &features, size_t batch_size) const;
-
-    std::unique_ptr<ocv::mxnet_aux::generic_predictor> predictor_;
+    std::vector<insight_face_key>
+    operator()(const mxnet::cpp::NDArray &features, size_t batch_size) const;
 };
+
+using insight_face_key_extractor = mxnet_aux::generic_predictor<insight_face_key, extract_face_key_functor>;
 
 }
 

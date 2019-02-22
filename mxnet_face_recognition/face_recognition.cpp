@@ -2,7 +2,6 @@
 
 #include "../libs/face/detect/dlib_cnn_face_detector.hpp"
 #include "../libs/face/detect/dlib_cnn_face_detector_params.hpp"
-#include "../libs/face/key/insight_face_key_extractor.hpp"
 #include "../libs/face/key/insight_face_key_extractor_params.hpp"
 #include "face_reg_db.hpp"
 
@@ -12,10 +11,12 @@ using namespace ocv::face;
 face_recognition::face_recognition(dlib_cnn_face_detector_params face_det_params,
                                    insight_face_key_extractor_params face_key_params) :
     face_detector_(std::make_unique<dlib_cnn_face_detector>(std::move(face_det_params))),
-    face_reg_db_(std::make_unique<face_reg_db>()),
-    key_extractor_(std::make_unique<insight_face_key_extractor>(std::move(face_key_params)))
+    face_reg_db_(std::make_unique<face_reg_db>())
 {
-
+    key_extractor_ = std::make_unique<insight_face_key_extractor>(face_key_params.model_params_,
+                                                                  face_key_params.model_symbols_,
+                                                                  face_key_params.context_,
+                                                                  face_key_params.shape_);
 }
 
 face_recognition::~face_recognition()

@@ -1,6 +1,7 @@
 #ifndef FACE_RECOGNITION_HPP
 #define FACE_RECOGNITION_HPP
 
+#include "../libs/face/key/insight_face_key_extractor.hpp"
 #include "face_reg_info.hpp"
 
 #include <opencv2/core.hpp>
@@ -27,7 +28,6 @@ namespace ocv
 
 namespace face{
 
-class insight_face_key_extractor;
 struct insight_face_key_extractor_params;
 
 }
