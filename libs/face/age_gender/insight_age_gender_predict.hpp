@@ -50,7 +50,8 @@ public:
     std::vector<insight_age_gender_info> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
-    std::vector<insight_age_gender_info> predict_age_gender(mxnet::cpp::NDArray const &features, size_t batch_size);
+    std::vector<insight_age_gender_info> predict_age_gender(mxnet::cpp::NDArray const &features,
+                                                            size_t batch_size) const;
 
     std::unique_ptr<ocv::mxnet_aux::generic_predictor> predictor_;
 };

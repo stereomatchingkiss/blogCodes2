@@ -48,7 +48,7 @@ forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 }
 
 std::vector<insight_age_gender_info> insight_age_gender_predict::predict_age_gender(const NDArray &features,
-                                                                                    size_t batch_size)
+                                                                                    size_t batch_size) const
 {
     std::vector<insight_age_gender_info> result;
     int constexpr features_size = 202;
