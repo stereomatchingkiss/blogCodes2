@@ -23,6 +23,12 @@ class NDArray;
 
 namespace ocv{
 
+namespace mxnet_aux{
+
+class generic_predictor;
+
+}
+
 namespace face{
 
 class insight_face_key;
@@ -32,18 +38,17 @@ class insight_face_key_extractor
 {
 public:
     explicit insight_face_key_extractor(insight_face_key_extractor_params const &params);
-    ~insight_face_key_extractor() = default;
+    ~insight_face_key_extractor();
 
     insight_face_key forward(dlib::matrix<dlib::rgb_pixel> const &input);
     std::vector<insight_face_key> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
-    using dlib_const_images_ptr = std::vector<dlib::matrix<dlib::rgb_pixel> const*>;    
-    std::vector<insight_face_key> forward(std::vector<float> const &input, size_t batch_size);
+    using dlib_const_images_ptr = std::vector<dlib::matrix<dlib::rgb_pixel> const*>;
 
-    std::unique_ptr<mxnet::cpp::Executor> executor_;
-    std::vector<float> image_vector_;
-    std::unique_ptr<insight_face_key_extractor_params> params_;
+    std::vector<insight_face_key> extract_key(mxnet::cpp::NDArray const &features, size_t batch_size) const;
+
+    std::unique_ptr<ocv::mxnet_aux::generic_predictor> predictor_;
 };
 
 }
