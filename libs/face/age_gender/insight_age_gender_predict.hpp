@@ -25,6 +25,12 @@ class NDArray;
 
 namespace ocv{
 
+namespace mxnet_aux{
+
+class generic_predictor;
+
+}
+
 namespace face{
 
 struct insight_age_gender_info;
@@ -32,8 +38,6 @@ struct insight_age_gender_predict_params;
 
 /**
  * Predict age and gender by the model of insight face
- * @todo Reduce duplicate codes since the codes are almost same
- * as the "insight_face_key_extractor"
  */
 class insight_age_gender_predict
 {
@@ -48,11 +52,9 @@ public:
     std::vector<insight_age_gender_info> forward(std::vector<dlib::matrix<dlib::rgb_pixel>> const &input);
 
 private:
-    std::vector<insight_age_gender_info> forward(std::vector<float> const &input, size_t batch_size);
+    std::vector<insight_age_gender_info> predict_age_gender(mxnet::cpp::NDArray const &features, size_t batch_size);
 
-    std::unique_ptr<mxnet::cpp::Executor> executor_;
-    std::vector<float> image_vector_;
-    std::unique_ptr<insight_age_gender_predict_params> params_;
+    std::unique_ptr<ocv::mxnet_aux::generic_predictor> predictor_;
 };
 
 }

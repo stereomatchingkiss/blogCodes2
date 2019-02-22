@@ -30,7 +30,8 @@ SOURCES += \
         main.cpp \
     ../libs/face/detect/dlib_cnn_face_detector.cpp \
     ../libs/mxnet/common.cpp \
-    ../libs/face/age_gender/insight_age_gender_predict.cpp
+    ../libs/face/age_gender/insight_age_gender_predict.cpp \
+    ../libs/mxnet/generic_predictor.cpp
 
 HEADERS += \
     ../libs/face/detect/dlib_cnn_face_detector.hpp \
@@ -40,4 +41,5 @@ HEADERS += \
     ../libs/face/age_gender/insight_age_gender_info.hpp \
     ../libs/face/age_gender/gender_info.hpp \
     ../libs/face/age_gender/insight_age_gender_predict_params.hpp \
-    ../libs/face/age_gender/insight_age_gender_predict.hpp
+    ../libs/face/age_gender/insight_age_gender_predict.hpp \
+    ../libs/mxnet/generic_predictor.hpp
