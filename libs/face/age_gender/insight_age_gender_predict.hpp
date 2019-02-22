@@ -15,8 +15,6 @@ namespace mxnet{
 
 namespace cpp{
 
-class Context;
-class Executor;
 class NDArray;
 
 }
