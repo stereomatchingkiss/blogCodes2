@@ -75,6 +75,7 @@ private:
         executor_->Forward(false);
         if(!executor_->outputs.empty()){
             auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
+            features.WaitToRead();
             return func(features, batch_size);
         }
 
