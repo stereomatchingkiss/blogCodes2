@@ -1,5 +1,5 @@
-#ifndef DLIB_MAT_TO_SEPARATE_RGB_HPP
-#define DLIB_MAT_TO_SEPARATE_RGB_HPP
+#ifndef OCV_MXNET_AUX_DLIB_MAT_TO_SEPARATE_RGB_HPP
+#define OCV_MXNET_AUX_DLIB_MAT_TO_SEPARATE_RGB_HPP
 
 #include "../../image_format_convert/dlib_to_array.hpp"
 
@@ -15,7 +15,7 @@ public:
     {
         size_t index = 0;
         for(size_t i = 0; i != inputs.size(); ++i){
-            dlib_matrix_to_separate_rgb_plane(inputs[i], index, output);
+            img_cvt::dlib_matrix_to_separate_rgb_plane(inputs[i], index, output);
         }
     }
 };
@@ -24,4 +24,4 @@ public:
 
 }
 
-#endif // DLIB_MAT_TO_SEPARATE_RGB_HPP
+#endif // OCV_MXNET_AUX_DLIB_MAT_TO_SEPARATE_RGB_HPP
