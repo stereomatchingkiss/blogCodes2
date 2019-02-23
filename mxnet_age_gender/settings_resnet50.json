@@ -1,0 +1,13 @@
+{
+  "deepinsight_model_params" : "C:/Users/yyyy/programs/Qt/computer_vision_model/mxnet/age_gender/gamodel-r50/model-0000.params",
+  "deepinsight_model_symbols" : "C:/Users/yyyy/programs/Qt/computer_vision_model/mxnet/age_gender/gamodel-r50/model-symbol.json",
+  "face_detect_confidence" : 0.6,
+  "dlib_face_detect_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/mmod_human_face_detector.dat",  
+  "dlib_shape_predictor_model" : "C:/Users/yyyy/programs/Qt/computer_vision_model/dlib/shape_predictor_5_face_landmarks.dat", 
+  "image_folder" : "C:/Users/yyyy/programs/Qt/blogCodes2/mxnet_age_gender/images",
+  "video": "C:/Users/yyyy/programs/Qt/computer_vision_dataset/videos/diss_en_low_res.mp4",
+  "save_images_at" : "resnet_50_images",
+  "save_log_as" : "age_gender.log",
+  "save_video_as" : "age_gender_resnet50.mp4",
+  "save_video_fps" : 30
+}
