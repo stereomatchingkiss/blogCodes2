@@ -10,8 +10,8 @@ namespace mxnet_aux{
 class dlib_mat_to_separate_rgb
 {
 public:
-    template<typename T, typename U>
-    void operator()(std::vector<dlib::matrix<T> const*> inputs, U &output) const
+    template<typename U>
+    void operator()(std::vector<dlib::matrix<dlib::rgb_pixel> const*> inputs, U &output) const
     {
         size_t index = 0;
         for(size_t i = 0; i != inputs.size(); ++i){
