@@ -2,7 +2,7 @@
 #define GENERIC_PREDICT_FUNCTIONS_HPP
 
 #include "common.hpp"
-#include "../image_format_convert/dlib_to_array.hpp"
+#include "image_converter_functor/dlib_mat_to_separate_rgb.hpp"
 
 #include <mxnet-cpp/MxNetCpp.h>
 #include <vector>
@@ -11,7 +11,7 @@ namespace ocv{
 
 namespace mxnet_aux{
 
-template<typename Return, typename Functor>
+template<typename Return, typename ProcessFeature, typename ImageConvert = dlib_mat_to_separate_rgb>
 class generic_predictor
 {
 public:
@@ -33,36 +33,37 @@ private:
     std::vector<Return> forward(size_t batch_size);
 
     std::unique_ptr<mxnet::cpp::Executor> executor_;
-    Functor func_;
     std::vector<float> image_vector_;
+    ImageConvert img_convert_func_;
     size_t max_batch_size_;
+    ProcessFeature process_func_;
 };
 
-template<typename Return, typename Functor>
-generic_predictor<Return, Functor>::generic_predictor(const std::string &model_params,
-                                                      const std::string &model_symbol,
-                                                      const mxnet::cpp::Context &context,
-                                                      const mxnet::cpp::Shape &shape)
+template<typename Return, typename ProcessFeature, typename ImageConvert>
+generic_predictor<Return, ProcessFeature, ImageConvert>::generic_predictor(const std::string &model_params,
+                                                                           const std::string &model_symbol,
+                                                                           const mxnet::cpp::Context &context,
+                                                                           const mxnet::cpp::Shape &shape)
 {
     executor_ = create_executor(model_params, model_symbol, context, shape);
     image_vector_.resize(shape.Size());
     max_batch_size_ = shape[0];
 }
 
-template<typename Return, typename Functor>
-generic_predictor<Return, Functor>::~generic_predictor(){}
+template<typename Return, typename ProcessFeature, typename ImageConvert>
+generic_predictor<Return, ProcessFeature, ImageConvert>::~generic_predictor(){}
 
-template<typename Return, typename Functor>
-Return generic_predictor<Return, Functor>::forward(const dlib::matrix<dlib::rgb_pixel> &input)
+template<typename Return, typename ProcessFeature, typename ImageConvert>
+Return generic_predictor<Return, ProcessFeature, ImageConvert>::forward(const dlib::matrix<dlib::rgb_pixel> &input)
 {
     std::vector<dlib::matrix<dlib::rgb_pixel> const*> faces;
     faces.emplace_back(&input);
-    img_cvt::dlib_matrix_to_separate_rgb_plane(faces, image_vector_);
+    img_convert_func_(faces, image_vector_);
     return forward(1)[0];
 }
 
-template<typename Return, typename Functor>
-std::vector<Return> generic_predictor<Return, Functor>::
+template<typename Return, typename ProcessFeature, typename ImageConvert>
+std::vector<Return> generic_predictor<Return, ProcessFeature, ImageConvert>::
 forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
 {
     if(input.empty()){
@@ -77,7 +78,7 @@ forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
         for(size_t j = 0; j != max_batch_size_ && index < input.size(); ++j){
             faces.emplace_back(&input[index++]);
         }
-        img_cvt::dlib_matrix_to_separate_rgb_plane(faces, image_vector_);
+        img_convert_func_(faces, image_vector_);
 
         auto features = forward(static_cast<size_t>(faces.size()));
         std::move(std::begin(features), std::end(features), std::back_inserter(result));
@@ -86,8 +87,8 @@ forward(const std::vector<dlib::matrix<dlib::rgb_pixel> > &input)
     return result;
 }
 
-template<typename Return, typename Functor>
-std::vector<Return> generic_predictor<Return, Functor>::forward(size_t batch_size)
+template<typename Return, typename ProcessFeature, typename ImageConvert>
+std::vector<Return> generic_predictor<Return, ProcessFeature, ImageConvert>::forward(size_t batch_size)
 {
     using namespace mxnet::cpp;
     executor_->arg_dict()["data"].SyncCopyFromCPU(image_vector_.data(), image_vector_.size());
@@ -98,7 +99,7 @@ std::vector<Return> generic_predictor<Return, Functor>::forward(size_t batch_siz
     if(!executor_->outputs.empty()){
         auto features = executor_->outputs[0].Copy(Context(kCPU, 0));
         features.WaitToRead();
-        return func_(features, batch_size);
+        return process_func_(features, batch_size);
     }
 
     return {};
