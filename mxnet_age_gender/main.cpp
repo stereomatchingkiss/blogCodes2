@@ -116,7 +116,7 @@ void process_images_in_folder(FileStorage const &fs)
             auto img = cv::imread(finfo.absoluteFilePath().toStdString());
             if(!img.empty()){
                 process_image(fdet, age_gender_predict, img);
-                imwrite(save_images_at + "/" + finfo.fileName().toStdString(), img);
+                imwrite(save_images_at + "/" + finfo.completeBaseName().toStdString() + ".png", img);
             }
         }
     }
