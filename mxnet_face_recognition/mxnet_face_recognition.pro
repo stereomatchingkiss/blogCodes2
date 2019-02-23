@@ -34,8 +34,7 @@ SOURCES += \
     face_recognition.cpp \            
     ../libs/face/detect/dlib_cnn_face_detector.cpp \
     ../libs/face/key/insight_face_key.cpp \
-    ../libs/face/key/insight_face_key_extractor.cpp \
-    ../libs/mxnet/generic_predictor.cpp
+    ../libs/face/key/insight_face_key_extractor.cpp
 
 HEADERS += \
     ../libs/mxnet/common.hpp \
