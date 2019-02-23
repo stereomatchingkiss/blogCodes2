@@ -33,9 +33,15 @@ dlib::matrix<rgb_pixel> dlib_cnn_face_detector::get_aligned_face(const mmod_rect
 
 dlib_cnn_face_detector::face_info dlib_cnn_face_detector::forward(const cv::Mat &input)
 {
-    auto const rects = forward_lazy(input);
+    auto rects = forward_lazy(input);
     face_info result;
-    for(auto const &rect : rects){
+    for(auto &rect : rects){
+        if(ratio_ != 1.0){
+            rect.rect.set_left(static_cast<long>(rect.rect.left() / ratio_));
+            rect.rect.set_top(static_cast<long>(rect.rect.top() / ratio_));
+            rect.rect.set_bottom(static_cast<long>(rect.rect.bottom() / ratio_));
+            rect.rect.set_right(static_cast<long>(rect.rect.right() / ratio_));
+        }
         result.rect_.emplace_back(rect);
         result.face_aligned_.emplace_back(get_aligned_face(rect));
     }
@@ -48,9 +54,10 @@ std::vector<mmod_rect> dlib_cnn_face_detector::forward_lazy(const cv::Mat &input
     CV_Assert(input.channels() == 3);
 
     if(input.cols != face_detect_width_){
-        double const ratio = face_detect_width_ / static_cast<double>(input.cols);
-        cv::resize(input, resize_cache_, {}, ratio, ratio);
+        ratio_ = face_detect_width_ / static_cast<double>(input.cols);
+        cv::resize(input, resize_cache_, {}, ratio_, ratio_);
     }else{
+        ratio_ = 1.0;
         resize_cache_ = input;
     }
 
