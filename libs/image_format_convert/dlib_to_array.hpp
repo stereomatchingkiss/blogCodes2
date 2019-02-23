@@ -1,3 +1,7 @@
+#ifndef OCV_IMG_CVT_DLIB_MAT_TO_SEPARATE_RGB_HPP
+#define OCV_IMG_CVT_DLIB_MAT_TO_SEPARATE_RGB_HPP
+
+
 #include <dlib/image_processing.h>
 
 #include <vector>
@@ -77,3 +81,5 @@ void dlib_matrix_to_rgb_plane(std::vector<dlib::matrix<T> const*> inputs, U &out
 }
 
 }
+
+#endif // OCV_IMG_CVT_DLIB_MAT_TO_SEPARATE_RGB_HPP
