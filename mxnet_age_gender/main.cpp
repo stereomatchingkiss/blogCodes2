@@ -66,7 +66,9 @@ void record_video(cv::Mat const &frame, std::string const &save_output_as, int f
 
 dlib_cnn_face_detector create_face_detector(FileStorage const &fs)
 {
-    dlib_cnn_face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
+    dlib_cnn_face_detector_params face_det_params(fs["dlib_face_detect_model"],
+            fs["dlib_shape_predictor_model"],
+            fs["face_detect_confidence"].real());
     face_det_params.face_detect_width_ = 800;
     return dlib_cnn_face_detector(face_det_params);
 }
