@@ -1,7 +1,8 @@
 TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
-CONFIG -= qt
+
+QT += core
 
 DLIB_PATH = ../../3rdLibs/dlib/dlib/build/install
 MXNET_PATH = ../../3rdLibs/incubator-mxnet/build/install

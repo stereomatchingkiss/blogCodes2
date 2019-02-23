@@ -12,6 +12,8 @@
 
 #include <mxnet-cpp/MxNetCpp.h>
 
+#include <QDir>
+
 #include <iostream>
 
 using namespace cv;
@@ -64,7 +66,8 @@ void record_video(cv::Mat const &frame, std::string const &save_output_as, int f
 
 dlib_cnn_face_detector create_face_detector(FileStorage const &fs)
 {
-    dlib_cnn_face_detector_params const face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
+    dlib_cnn_face_detector_params face_det_params(fs["dlib_face_detect_model"], fs["dlib_shape_predictor_model"]);
+    face_det_params.face_detect_width_ = 800;
     return dlib_cnn_face_detector(face_det_params);
 }
 
@@ -87,55 +90,85 @@ Rect mmod_to_rect(cv::Mat const &frame, dlib::mmod_rect const &mmod)
     return rect;
 }
 
+void process_image(dlib_cnn_face_detector &fdet, insight_age_gender_predict &age_gender_predict, cv::Mat &inout)
+{
+    auto const face_det_info = fdet.forward(inout);
+    auto const ag_info = age_gender_predict.forward(face_det_info.face_aligned_);
+    for(size_t i = 0; i != ag_info.size(); ++i){
+        Rect const rect = mmod_to_rect(inout, face_det_info.rect_[i]);
+        rectangle(inout, rect, Scalar(0, 255, 0), 3);
+        put_text(ag_info[i], rect, inout);
+    }
+}
+
+void process_images_in_folder(FileStorage const &fs)
+{
+    auto const image_folder = fs["image_folder"].string();
+    if(!image_folder.empty()){
+        auto fdet = create_face_detector(fs);
+        auto age_gender_predict = create_age_gender_predict(fs);
+        auto dir = QDir(image_folder.c_str());
+        auto const imgs_path = QDir(image_folder.c_str()).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+        QDir().mkpath("processed_images");
+        for(auto const &finfo : imgs_path){
+            cout<<"process image:"<<finfo.fileName().toStdString()<<endl;
+            auto img = cv::imread(finfo.absoluteFilePath().toStdString());
+            if(!img.empty()){
+                process_image(fdet, age_gender_predict, img);
+                imwrite("processed_images/" + finfo.fileName().toStdString(), img);
+            }
+        }
+    }
+}
+
+void process_video(FileStorage const &fs)
+{
+    cv::VideoCapture cam;
+    if(fs["video"].string().empty()){
+        cam.open(0);
+    }else{
+        cam.open(fs["video"].string());
+    }
+
+    if(cam.isOpened()){
+        auto fdet = create_face_detector(fs);
+        auto age_gender_predict = create_age_gender_predict(fs);
+        auto const save_video_as = fs["save_video_as"].string();
+        auto const fps = static_cast<int>(fs["save_video_fps"].real());
+        cv::VideoWriter vwriter;
+
+        for(cv::Mat frame; ;){
+            cam>>frame;
+            if(!frame.empty()){
+                process_image(fdet, age_gender_predict, frame);
+                record_video(frame, save_video_as, fps, vwriter);
+
+                cv::imshow("frame", frame);
+                int const key = std::tolower(cv::waitKey(30));
+                if(key == 'q'){
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
+    }else{
+        cerr<<"Cannot open camera"<<endl;
+    }
+}
+
 int main(int argc, char *argv[])try
 {
     if(argc < 2){
-        cout<<"Please specify the location of the json"<<endl;
-
+        cerr<<"Please specify the location of the json"<<endl;
         return -1;
     }
 
     cv::FileStorage fs;
     fs.open(argv[1], cv::FileStorage::READ);
     if(fs.isOpened()){
-        cv::VideoCapture cam;
-        if(fs["video"].string().empty()){
-            cam.open(0);
-        }else{
-            cam.open(fs["video"].string());
-        }
-
-        if(cam.isOpened()){
-            auto fdet = create_face_detector(fs);
-            auto age_gender_predict = create_age_gender_predict(fs);
-            auto const save_video_as = fs["save_video_as"].string();
-            auto const fps = static_cast<int>(fs["save_video_fps"].real());
-            cv::VideoWriter vwriter;
-
-            for(cv::Mat frame; ;){
-                cam>>frame;
-                if(!frame.empty()){
-                    auto const face_det_info = fdet.forward(frame);
-                    auto const ag_info = age_gender_predict.forward(face_det_info.face_aligned_);
-                    for(size_t i = 0; i != ag_info.size(); ++i){
-                        Rect const rect = mmod_to_rect(frame, face_det_info.rect_[i]);
-                        rectangle(frame, rect, Scalar(0, 255, 0), 3);
-                        put_text(ag_info[i], rect, frame);
-                    }
-                    record_video(frame, save_video_as, fps, vwriter);
-
-                    cv::imshow("frame", frame);
-                    int const key = std::tolower(cv::waitKey(30));
-                    if(key == 'q'){
-                        break;
-                    }
-                }else{
-                    break;
-                }
-            }
-        }else{
-            cerr<<"Cannot open camera"<<endl;
-        }
+       process_images_in_folder(fs);
+       process_video(fs);
     }
     return 0;
 }catch(std::exception const &ex){
