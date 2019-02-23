@@ -16,6 +16,7 @@ namespace ocv
 namespace face{
 
 dlib_cnn_face_detector::dlib_cnn_face_detector(dlib_cnn_face_detector_params const &params) :
+    detect_confidence_(params.detect_confidence_),
     face_aligned_size_(params.face_aligned_size_),
     face_detect_width_(params.face_detect_width_)
 {
@@ -36,14 +37,16 @@ dlib_cnn_face_detector::face_info dlib_cnn_face_detector::forward(const cv::Mat 
     auto rects = forward_lazy(input);
     face_info result;
     for(auto &rect : rects){
-        result.face_aligned_.emplace_back(get_aligned_face(rect));
-        if(ratio_ != 1.0){
-            rect.rect.set_left(static_cast<long>(rect.rect.left() / ratio_));
-            rect.rect.set_top(static_cast<long>(rect.rect.top() / ratio_));
-            rect.rect.set_bottom(static_cast<long>(rect.rect.bottom() / ratio_));
-            rect.rect.set_right(static_cast<long>(rect.rect.right() / ratio_));
+        if(rect.detection_confidence >= detect_confidence_){
+            result.face_aligned_.emplace_back(get_aligned_face(rect));
+            if(ratio_ != 1.0){
+                rect.rect.set_left(static_cast<long>(rect.rect.left() / ratio_));
+                rect.rect.set_top(static_cast<long>(rect.rect.top() / ratio_));
+                rect.rect.set_bottom(static_cast<long>(rect.rect.bottom() / ratio_));
+                rect.rect.set_right(static_cast<long>(rect.rect.right() / ratio_));
+            }
+            result.rect_.emplace_back(rect);
         }
-        result.rect_.emplace_back(rect);
     }
 
     return result;

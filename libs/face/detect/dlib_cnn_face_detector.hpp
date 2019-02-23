@@ -57,8 +57,9 @@ public:
     dlib::matrix<dlib::rgb_pixel> get_aligned_face(dlib::mmod_rect const &rect);
 
 private:
+    double detect_confidence_;
     unsigned long face_aligned_size_;
-    int face_detect_width_;    
+    int face_detect_width_;
     ocv::face::dlib_net::face_detect_net net_;
     dlib::matrix<dlib::rgb_pixel> img_;    
     dlib::shape_predictor pose_model_;
