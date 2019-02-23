@@ -109,13 +109,14 @@ void process_images_in_folder(FileStorage const &fs)
         auto age_gender_predict = create_age_gender_predict(fs);
         auto dir = QDir(image_folder.c_str());
         auto const imgs_path = QDir(image_folder.c_str()).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
-        QDir().mkpath("processed_images");
+        std::string const save_images_at(fs["save_images_at"].string());
+        QDir().mkpath(save_images_at.c_str());
         for(auto const &finfo : imgs_path){
             cout<<"process image:"<<finfo.fileName().toStdString()<<endl;
             auto img = cv::imread(finfo.absoluteFilePath().toStdString());
             if(!img.empty()){
                 process_image(fdet, age_gender_predict, img);
-                imwrite("processed_images/" + finfo.fileName().toStdString(), img);
+                imwrite(save_images_at + "/" + finfo.fileName().toStdString(), img);
             }
         }
     }
