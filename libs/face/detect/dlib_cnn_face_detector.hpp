@@ -26,6 +26,9 @@ public:
     };
 
     explicit dlib_cnn_face_detector(dlib_cnn_face_detector_params const &params);
+    ~dlib_cnn_face_detector();
+    dlib_cnn_face_detector(dlib_cnn_face_detector&&) = default;
+    dlib_cnn_face_detector& operator=(dlib_cnn_face_detector&&) = default;
 
     /**
      * Detect and align faces

@@ -2,6 +2,11 @@
 
 using namespace ocv::face;
 
+face_reg_db::~face_reg_db()
+{
+
+}
+
 void face_reg_db::add_new_face(insight_face_key input, std::string id)
 {
     face_info info;

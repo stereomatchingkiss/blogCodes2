@@ -14,6 +14,11 @@ public:
         std::string id_;
     };
 
+    face_reg_db() = default;
+    ~face_reg_db();
+    face_reg_db(face_reg_db&&) = default;
+    face_reg_db& operator=(face_reg_db&&) = default;
+
     void add_new_face(ocv::face::insight_face_key input, std::string id);
     id_info find_most_similar_face(ocv::face::insight_face_key const &input) const;
 

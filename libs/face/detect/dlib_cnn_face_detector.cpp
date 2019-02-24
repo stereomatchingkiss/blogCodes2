@@ -24,6 +24,11 @@ dlib_cnn_face_detector::dlib_cnn_face_detector(dlib_cnn_face_detector_params con
     deserialize(params.shape_predict_model_location_)>>pose_model_;
 }
 
+dlib_cnn_face_detector::~dlib_cnn_face_detector()
+{
+
+}
+
 dlib::matrix<rgb_pixel> dlib_cnn_face_detector::get_aligned_face(const mmod_rect &rect)
 {
     auto shape = pose_model_(img_, rect);
