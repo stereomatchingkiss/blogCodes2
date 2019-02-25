@@ -20,6 +20,7 @@ struct insight_face_key_extractor_params
         model_symbols_(std::move(model_symbols)),
         shape_(shape)
     {}
+    ~insight_face_key_extractor_params(){}
 
     mxnet::cpp::Context context_;
     std::string model_params_;
