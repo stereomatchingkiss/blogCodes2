@@ -1,5 +1,5 @@
-#ifndef GENERIC_PREDICT_FUNCTIONS_HPP
-#define GENERIC_PREDICT_FUNCTIONS_HPP
+#ifndef OCV_MXNET_AUX_GENERIC_PREDICT_FUNCTIONS_HPP
+#define OCV_MXNET_AUX_GENERIC_PREDICT_FUNCTIONS_HPP
 
 #include "common.hpp"
 #include "image_converter_functor/dlib_mat_to_separate_rgb.hpp"
@@ -146,4 +146,4 @@ forward_and_process_feature(size_t batch_size)
 
 }
 
-#endif // GENERIC_PREDICT_FUNCTIONS_HPP
+#endif // OCV_MXNET_AUX_GENERIC_PREDICT_FUNCTIONS_HPP

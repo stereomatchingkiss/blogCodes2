@@ -1,5 +1,5 @@
-#ifndef COMMON_HPP
-#define COMMON_HPP
+#ifndef OCV_MXNET_AUX_COMMON_HPP
+#define OCV_MXNET_AUX_COMMON_HPP
 
 #include <mxnet-cpp/ndarray.h>
 
@@ -51,4 +51,4 @@ void load_check_point(std::string const &model_params,
 
 }
 
-#endif // COMMON_HPP
+#endif // OCV_MXNET_AUX_COMMON_HPP
