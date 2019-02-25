@@ -2,6 +2,11 @@
 
 using namespace ocv::face;
 
+face_reg_db::face_reg_db()
+{
+
+}
+
 face_reg_db::~face_reg_db()
 {
 

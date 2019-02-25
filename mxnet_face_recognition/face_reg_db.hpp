@@ -14,7 +14,7 @@ public:
         std::string id_;
     };
 
-    face_reg_db() = default;
+    face_reg_db();
     ~face_reg_db();
     face_reg_db(face_reg_db&&) = default;
     face_reg_db& operator=(face_reg_db&&) = default;
