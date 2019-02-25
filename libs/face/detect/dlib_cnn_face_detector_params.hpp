@@ -17,6 +17,7 @@ struct dlib_cnn_face_detector_params
         face_detect_model_location_(std::move(face_detect_model_location)),
         shape_predict_model_location_(std::move(shape_predict_model_location))
     {}
+    ~dlib_cnn_face_detector_params(){}
 
     double detect_confidence_;
     std::string face_detect_model_location_;
