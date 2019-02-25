@@ -9,7 +9,6 @@ MXNET_PATH = ../../3rdLibs/incubator-mxnet/build/install
 OPENCV_PATH = ../../3rdLibs/opencv/opencv_3_4_2/opencv/build
 
 INCLUDEPATH += ../..
-INCLUDEPATH += $${BOOST_PATH}
 INCLUDEPATH += $${DLIB_PATH}/include
 INCLUDEPATH += $${MXNET_PATH}/include
 INCLUDEPATH += $${OPENCV_PATH}/include
