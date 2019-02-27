@@ -23,6 +23,7 @@ public:
     {
        std::vector<dlib::matrix<dlib::rgb_pixel>> face_aligned_;
        std::vector<dlib::mmod_rect> rect_;
+       std::vector<dlib::full_object_detection> shapes_;
     };
 
     explicit dlib_cnn_face_detector(dlib_cnn_face_detector_params const &params);
@@ -58,6 +59,8 @@ public:
      * @endcode
      */
     dlib::matrix<dlib::rgb_pixel> get_aligned_face(dlib::mmod_rect const &rect);
+    std::pair<dlib::matrix<dlib::rgb_pixel>, dlib::full_object_detection>
+    get_aligned_face_and_shape(dlib::mmod_rect const &rect);
 
 private:
     double detect_confidence_;

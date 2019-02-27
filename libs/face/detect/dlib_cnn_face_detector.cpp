@@ -31,10 +31,16 @@ dlib_cnn_face_detector::~dlib_cnn_face_detector()
 
 dlib::matrix<rgb_pixel> dlib_cnn_face_detector::get_aligned_face(const mmod_rect &rect)
 {
+    return get_aligned_face_and_shape(rect).first;
+}
+
+std::pair<dlib::matrix<rgb_pixel>, full_object_detection> dlib_cnn_face_detector::
+get_aligned_face_and_shape(const mmod_rect &rect)
+{
     auto shape = pose_model_(img_, rect);
     matrix<rgb_pixel> face_chip;
     extract_image_chip(img_, get_face_chip_details(shape, face_aligned_size_, 0.25), face_chip);
-    return face_chip;
+    return std::make_pair(std::move(face_chip), std::move(shape));
 }
 
 dlib_cnn_face_detector::face_info dlib_cnn_face_detector::forward(const cv::Mat &input)
