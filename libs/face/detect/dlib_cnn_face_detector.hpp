@@ -63,6 +63,7 @@ public:
     get_aligned_face_and_shape(dlib::mmod_rect const &rect);
 
 private:
+    cv::Mat input_cache_;
     double detect_confidence_;
     unsigned long face_aligned_size_;
     int face_detect_size_;
