@@ -37,6 +37,8 @@ private:
     void create_2d_image_points(dlib::full_object_detection const &shape);
     std::vector<cv::Point3d> create_3d_model_points() const;
     cv::Mat create_camera_matrix(double focal_length, cv::Point2d const &center) const;
+    cv::Mat create_camera_matrix(cv::Size const &img_size) const;
+    quaterniond create_quaterniond(cv::Mat const &rotation_vector) const;
 
     head_pose_info quaterniond_to_euler_angle(quaterniond const &q) const;
 
