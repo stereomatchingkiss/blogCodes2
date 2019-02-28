@@ -31,14 +31,14 @@ public:
 private:
     struct quaterniond
     {
-        double w,x,y,z;
+        double w_,x_,y_,z_;
     };
 
     void create_2d_image_points(dlib::full_object_detection const &shape);
     std::vector<cv::Point3d> create_3d_model_points() const;
     cv::Mat create_camera_matrix(double focal_length, cv::Point2d const &center) const;
 
-    void quaterniond_to_euler_angle(quaterniond& q, double& roll, double& yaw, double& pitch) const;
+    head_pose_info quaterniond_to_euler_angle(quaterniond const &q) const;
 
     double radian_to_degrees(double input) const;
 

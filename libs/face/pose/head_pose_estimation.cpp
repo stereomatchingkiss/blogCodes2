@@ -35,15 +35,12 @@ head_pose_info head_pose_estimation::estimate(const dlib::full_object_detection 
 
     //transformed to quaterniond
     quaterniond q;
-    q.w = cos(theta / 2);
-    q.x = sin(theta / 2)*rotation_vector.at<double>(0, 0) / theta;
-    q.y = sin(theta / 2)*rotation_vector.at<double>(0, 1) / theta;
-    q.z = sin(theta / 2)*rotation_vector.at<double>(0, 2) / theta;
+    q.w_ = cos(theta / 2);
+    q.x_ = sin(theta / 2)*rotation_vector.at<double>(0, 0) / theta;
+    q.y_ = sin(theta / 2)*rotation_vector.at<double>(0, 1) / theta;
+    q.z_ = sin(theta / 2)*rotation_vector.at<double>(0, 2) / theta;
 
-    head_pose_info result;
-    quaterniond_to_euler_angle(q, result.roll_, result.yaw_, result.pitch_);
-
-    return result;
+    return quaterniond_to_euler_angle(q);
 }
 
 void head_pose_estimation::create_2d_image_points(const dlib::full_object_detection &shape)
@@ -78,26 +75,27 @@ cv::Mat head_pose_estimation::create_camera_matrix(double focal_length, const cv
             0,            0,            1;
 }
 
-void head_pose_estimation::
-quaterniond_to_euler_angle(head_pose_estimation::quaterniond &q, double &roll, double &yaw, double &pitch) const
+head_pose_info head_pose_estimation::quaterniond_to_euler_angle(head_pose_estimation::quaterniond const &q) const
 {
-    double const ysqr = q.y * q.y;
-
+    double const ysqr = q.y_ * q.y_;
+    head_pose_info result;
     // pitch (x-axis rotation)
-    double const t0 = +2.0 * (q.w * q.x + q.y * q.z);
-    double const t1 = +1.0 - 2.0 * (q.x * q.x + ysqr);
-    pitch = radian_to_degrees(std::atan2(t0, t1));
+    double const t0 = +2.0 * (q.w_ * q.x_ + q.y_ * q.z_);
+    double const t1 = +1.0 - 2.0 * (q.x_ * q.x_ + ysqr);
+    result.pitch_ = radian_to_degrees(std::atan2(t0, t1));
 
     // yaw (y-axis rotation)
-    double t2 = +2.0 * (q.w * q.y - q.z * q.x);
+    double t2 = +2.0 * (q.w_ * q.y_ - q.z_ * q.x_);
     t2 = t2 > 1.0 ? 1.0 : t2;
     t2 = t2 < -1.0 ? -1.0 : t2;
-    yaw = radian_to_degrees(std::asin(t2));
+    result.yaw_ = radian_to_degrees(std::asin(t2));
 
     // roll (z-axis rotation)
-    double const t3 = +2.0 * (q.w * q.z + q.x * q.y);
-    double const t4 = +1.0 - 2.0 * (ysqr + q.z * q.z);
-    roll = radian_to_degrees(std::atan2(t3, t4));
+    double const t3 = +2.0 * (q.w_ * q.z_ + q.x_ * q.y_);
+    double const t4 = +1.0 - 2.0 * (ysqr + q.z_ * q.z_);
+    result.roll_ = radian_to_degrees(std::atan2(t3, t4));
+
+    return result;
 }
 
 double head_pose_estimation::radian_to_degrees(double input) const
