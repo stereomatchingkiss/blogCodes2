@@ -16,8 +16,7 @@ INCLUDEPATH += ../../3rdLibs/boost/boost_1_69_0/
 INCLUDEPATH += ../../
 
 SOURCES += \
-        main.cpp \
-    ../../ocv_libs/camera/async_opencv_video_capture.cpp
+        main.cpp
 
 HEADERS += \
     ../../ocv_libs/camera/async_opencv_video_capture.hpp

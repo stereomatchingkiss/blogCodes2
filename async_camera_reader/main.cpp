@@ -16,11 +16,12 @@ int main(int argc, char *argv[])
     //create the functor to handle the exception when cv::VideoCapture fail
     //to capture the frame and wait 30 msec between each frame
     long long constexpr wait_msec = 30;
-    ocv::camera::async_opencv_video_capture cl([&](std::exception const &ex)
+    ocv::camera::async_opencv_video_capture<> cl([&](std::exception const &ex)
     {
         //cerr of c++ is not a thread safe class, so we need to lock the mutex
         std::unique_lock<std::mutex> lock(emutex);
         std::cerr<<"camera exception:"<<ex.what()<<std::endl;
+
         return true;
     }, wait_msec);
     cl.open_url(argv[1]);
@@ -48,5 +49,5 @@ int main(int argc, char *argv[])
         if(!img.empty()){
             cv::imshow("frame", img);
         }
-    }    
+    }
 }
