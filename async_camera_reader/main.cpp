@@ -26,10 +26,13 @@ int main(int argc, char *argv[])
     cl.open_url(argv[1]);
 
     //add listener to process captured frame
+    //the listener could process the task in another thread too,
+    //to make things easier to explain, I prefer to process it in
+    //the same thread of videoCapture
     cv::Mat img;
     cl.add_listener([&](cv::Mat input)
     {
-        std::unique_lock<std::mutex> lock(emutex);        
+        std::unique_lock<std::mutex> lock(emutex);
         img = input;
     }, &emutex);
 
