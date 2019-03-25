@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     ocv::camera::async_opencv_video_capture<> cl([&](std::exception const &ex)
     {
         //cerr of c++ is not a thread safe class, so we need to lock the mutex
-        std::unique_lock<std::mutex> lock(emutex);
+        std::lock_guard<std::mutex> lock(emutex);
         std::cerr<<"camera exception:"<<ex.what()<<std::endl;
 
         return true;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     cv::Mat img;
     cl.add_listener([&](cv::Mat input)
     {
-        std::unique_lock<std::mutex> lock(emutex);
+        std::lock_guard<std::mutex> lock(emutex);
         img = input;
     }, &emutex);
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     //must perform in the main thread(it also called gui thread)
     for(int finished = false; finished != 'q';){
         finished = std::tolower(cv::waitKey(30));
-        std::unique_lock<std::mutex> lock(emutex);
+        std::lock_guard<std::mutex> lock(emutex);
         if(!img.empty()){
             cv::imshow("frame", img);
         }
