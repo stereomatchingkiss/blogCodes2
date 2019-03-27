@@ -17,9 +17,9 @@ from gluoncv.data.batchify import Tuple, Stack, Pad
 from gluoncv.data.transforms.presets.yolo import YOLO3DefaultTrainTransform
 from gluoncv.data.transforms.presets.yolo import YOLO3DefaultValTransform
 from gluoncv.data.dataloader import RandomTransformDataLoader
-from gluoncv.utils.metrics.voc_detection_2 import VOC07MApMetric
+from gluoncv.utils.metrics.voc_detection import VOC07MApMetric
 from gluoncv.utils.metrics.coco_detection import COCODetectionMetric
-from gluoncv.utils import LRScheduler
+from gluoncv.utils import LRScheduler, LRSequential
 
 from matplotlib import pyplot as plt
     
@@ -92,7 +92,7 @@ def parse_args():
                         help='Location of validate dataset, must be rec format')
     parser.add_argument('--classes_list', type=str, 
                         help='Location of the classes list, every line present one class')
-    parser.add_argument('--pretrained', action='store_true',
+    parser.add_argument('--pretrained', action='store_false',
 	                    help='Use pretrained weights')
     
     parser.add_argument('--label-smooth', action='store_true', help='Use label smoothing.')
@@ -192,13 +192,16 @@ def train(net, train_data, val_data, eval_metric, ctx, args):
         lr_decay_epoch = list(range(args.lr_decay_period, args.epochs, args.lr_decay_period))
     else:
         lr_decay_epoch = [int(i) for i in args.lr_decay_epoch.split(',')]
-    lr_scheduler = LRScheduler(mode=args.lr_mode,
-                               baselr=args.lr,
-                               niters=args.num_samples // args.batch_size,
-                               nepochs=args.epochs,
-                               step=lr_decay_epoch,
-                               step_factor=args.lr_decay, power=2,
-                               warmup_epochs=args.warmup_epochs)
+    
+    lr_scheduler = LRSequential([
+        LRScheduler('linear', base_lr=0, target_lr=args.lr,
+                    nepochs=args.warmup_epochs, iters_per_epoch=args.batch_size),
+        LRScheduler(args.lr_mode, base_lr=args.lr,
+                    nepochs=args.epochs - args.warmup_epochs,
+                    iters_per_epoch=args.batch_size,
+                    step_epoch=lr_decay_epoch,
+                    step_factor=args.lr_decay, power=2),
+    ])
 
     trainer = gluon.Trainer(
         net.collect_params(), 'sgd',
@@ -265,8 +268,7 @@ def train(net, train_data, val_data, eval_metric, ctx, args):
                     center_losses.append(center_loss)
                     scale_losses.append(scale_loss)
                     cls_losses.append(cls_loss)
-                autograd.backward(sum_losses)
-            lr_scheduler.update(i, epoch)
+                autograd.backward(sum_losses)            
             trainer.step(batch_size)
             obj_metrics.update(0, obj_losses)
             center_metrics.update(0, center_losses)
