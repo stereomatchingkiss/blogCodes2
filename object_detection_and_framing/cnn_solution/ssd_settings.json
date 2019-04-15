@@ -1,0 +1,27 @@
+{
+    "input_media" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/videos/example_02.mp4",
+    "wait_between_frame_ms" : 1,
+	"mode" : "mobile_net_ssd",
+	"save_output_as" : "predict_by_ssd_results.mp4",
+	"use_bg_subtractor" : 1.0,
+	
+	"bg_subtract":{	    
+        "detect_shadow" : 0,
+	    "dilate_kernal_width": 3,
+	    "dilate_kernal_height": 3,
+	    "gaussian_kernal_width": 21,
+	    "gaussian_kernal_height": 21,
+		"history" : 60,
+	    "min_contour_area" : 8000,
+	    "resize_width_to": 0,
+		"threshold_binary" : 30,
+		"threshold_var" : 32,
+        "wait_between_frame_ms" : 10
+    },
+	
+	"detector":{
+	    "min_confident" : 0.3,
+	    "model_params" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/models/mobile_net_ssd/MobileNetSSD_deploy.caffemodel",
+	    "model_arch" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/models/mobile_net_ssd/MobilNet_SSD_opencv.prototxt"        
+	}
+}
