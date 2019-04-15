@@ -109,16 +109,17 @@ yolov3_detector::result_type yolov3_detector::nonmaxima_suppress(yolov3_detector
     NMSBoxes(input.boxes_, input.confidences_, confidence_, nms_threshold_, indices);
     yolov3_detector::result_type results;
     for (size_t i = 0; i < indices.size(); ++i){
-        auto const id = static_cast<coco_item_type>(class_ids[i]);
+        auto const index = static_cast<size_t>(indices[i]);
+        auto const id = static_cast<coco_item_type>(class_ids[index]);
         auto it = results.find(id);
         if(it != std::end(results)){
-            it->second.boxes_.emplace_back(input.boxes_[i]);
-            it->second.confidences_.emplace_back(input.confidences_[i]);
+            it->second.boxes_.emplace_back(input.boxes_[index]);
+            it->second.confidences_.emplace_back(input.confidences_[index]);
         }else{
             predict_resutls presults;
-            presults.boxes_.emplace_back(input.boxes_[i]);
-            presults.confidences_.emplace_back(input.confidences_[i]);
-            results.insert({static_cast<coco_item_type>(class_ids[i]), std::move(presults)});
+            presults.boxes_.emplace_back(input.boxes_[index]);
+            presults.confidences_.emplace_back(input.confidences_[index]);
+            results.insert({static_cast<coco_item_type>(class_ids[index]), std::move(presults)});
         }
     }
 
