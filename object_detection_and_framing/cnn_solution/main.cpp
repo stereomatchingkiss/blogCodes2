@@ -1,3 +1,6 @@
+#include "bg_subtractor.hpp"
+#include "bg_subtractor_config.hpp"
+#include "config_parser.hpp"
 #include "ssd_detector.hpp"
 #include "yolov3_detector.hpp"
 
@@ -22,7 +25,7 @@ cv::VideoCapture create_video_capture(cv::FileStorage const &input)
 }
 
 template<typename Detector, typename Item>
-void count_object(cv::FileStorage const &fs, Item id, Detector &detector)
+void count_object(cv::FileStorage const &fs, Item id, bg_subtractor *bsub, Detector &detector)
 {
     auto capture = create_video_capture(fs);
     int const wait_between_frame_ms = static_cast<int>(fs["wait_between_frame_ms"].real());
@@ -35,10 +38,14 @@ void count_object(cv::FileStorage const &fs, Item id, Detector &detector)
         if(!frame.empty()){
             if(!vwriter.isOpened()){
                 vwriter.open(fs["save_output_as"].string(),
-                             cv::VideoWriter::fourcc('H','2','6','4'),
+                             cv::VideoWriter::fourcc('M','J','P','G'),
                              24.0, cv::Size(frame.cols, frame.rows));
             }
             int people_count = 0;
+            if(bsub){
+                 auto results = bsub->apply(frame);
+                 frame = results.foreground_;
+            }
             auto const results = detector.detect(frame);
             for(auto const &vpair : results){
                 if(vpair.first == id){
@@ -56,7 +63,7 @@ void count_object(cv::FileStorage const &fs, Item id, Detector &detector)
                 vwriter<<frame;
             }
             cv::imshow("frame", frame);
-            auto const key = cv::waitKey(wait_between_frame_ms);
+            auto const key = std::tolower(cv::waitKey(wait_between_frame_ms));
             if(key == 'q'){
                 break;
             }
@@ -77,18 +84,23 @@ int main(int argc, char *argv[])try
 
     cv::FileStorage fs(argv[1], cv::FileStorage::READ);
     if(fs.isOpened()){
-        auto const model_params = fs["model_params"].string();
-        auto const model_prototxt = fs["model_arch"].string();
-        auto const confident = static_cast<float>(fs["min_confident"].real());
+        auto dnode = fs["detector"];
+        auto const model_params = dnode["model_params"].string();
+        auto const model_prototxt = dnode["model_arch"].string();
+        auto const confident = static_cast<float>(dnode["min_confident"].real());
+        std::unique_ptr<bg_subtractor> bsub;
+        if(fs["use_bg_subtractor"].real() > 0.0){
+            bsub = std::make_unique<bg_subtractor>(parse_bg_subtractor_config(argv[1]));
+        }
         if(fs["mode"].string() == "mobile_net_ssd"){
             ssd_detector detector(model_params, model_prototxt, confident);
-            count_object(fs, voc_item_type::person, detector);
-        }else if(fs["mode"].string() == "yolov3_coco"){
-            auto const non_max_threshold = static_cast<float>(fs["non_maxima_threshold"].real());
-            cv::Size const process_size(static_cast<int>(fs["process_width"].real()),
-                    static_cast<int>(fs["process_height"].real()));
-            yolov3_detector detector(model_params, model_prototxt, confident, process_size, non_max_threshold);
-            count_object(fs, coco_item_type::person, detector);
+            count_object(fs, voc_item_type::person, bsub.get(), detector);
+        }else if(fs["mode"].string() == "yolov3_coco"){                        
+            auto const non_max_threshold = static_cast<float>(dnode["non_maxima_threshold"].real());
+            cv::Size const process_size(static_cast<int>(dnode["process_width"].real()),
+                    static_cast<int>(dnode["process_height"].real()));
+            yolov3_detector detector(model_params, model_prototxt, confident, process_size, non_max_threshold);        
+            count_object(fs, coco_item_type::person, bsub.get(), detector);
         }
     }else{
         cerr<<"cannot open file:"<<argv[1]<<endl;
