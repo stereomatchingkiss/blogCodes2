@@ -3,20 +3,30 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-OPENCV_PATH = ../../../3rdLibs/opencv/dev/vc2015_64/
+OPENCV_PATH = ../opencv
 
-INCLUDEPATH += $${OPENCV_PATH}/install/include
-LIBS += $${OPENCV_PATH}/install/x64/vc14/lib/opencv_world401.lib
+INCLUDEPATH += $${OPENCV_PATH}/include
+LIBS += $${OPENCV_PATH}/lib/opencv_world400.lib
+
+#OPENCV_PATH = ../../../3rdLibs/opencv/opencv_4_0_0/opencv/build
+
+#INCLUDEPATH += $${OPENCV_PATH}/include
+#LIBS += $${OPENCV_PATH}/x64/vc15/lib/opencv_world400.lib
 
 SOURCES += \
         main.cpp \    
     ssd_detector.cpp \
     ../fps_estimator.cpp \
-    yolov3_detector.cpp
+    yolov3_detector.cpp \
+    bg_subtractor.cpp \
+    config_parser.cpp
 
 HEADERS += \    
     ssd_detector.hpp \
     ../fps_estimator.hpp \
     yolov3_detector.hpp \
     coco_item_type.hpp \
-    voc_item_type.hpp
+    voc_item_type.hpp \
+    bg_subtractor.hpp \
+    config_parser.hpp \
+    bg_subtractor_config.hpp
