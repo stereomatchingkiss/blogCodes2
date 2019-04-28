@@ -14,14 +14,18 @@ LIBS += $${OPENCV_PATH}/lib/opencv_world400.lib
 #LIBS += $${OPENCV_PATH}/x64/vc15/lib/opencv_world400.lib
 
 SOURCES += \
-        main.cpp \    
+        main.cpp \
+    names_creator.cpp \
+    rcnn_instance_segment.cpp \
     ssd_detector.cpp \
     ../fps_estimator.cpp \
     yolov3_detector.cpp \
     bg_subtractor.cpp \
     config_parser.cpp
 
-HEADERS += \    
+HEADERS += \
+    names_creator.hpp \
+    rcnn_instance_segment.hpp \
     ssd_detector.hpp \
     ../fps_estimator.hpp \
     yolov3_detector.hpp \
