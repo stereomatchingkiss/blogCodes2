@@ -1,6 +1,7 @@
 #include "bg_subtractor.hpp"
 #include "bg_subtractor_config.hpp"
 #include "config_parser.hpp"
+#include "rcnn_instance_segment.hpp"
 #include "ssd_detector.hpp"
 #include "yolov3_detector.hpp"
 
@@ -75,6 +76,40 @@ void count_object(cv::FileStorage const &fs, Item id, bg_subtractor *bsub, Detec
     }
 }
 
+void segment_object(cv::FileStorage const &fs, int width_reize_to, rcnn_instance_segment &segmenter)
+{
+    auto capture = create_video_capture(fs);
+    int const wait_between_frame_ms = static_cast<int>(fs["wait_between_frame_ms"].real());
+    Mat frame;
+    fps_estimator fps_est_;
+    cv::VideoWriter vwriter;
+    while(1){
+        fps_est_.start();
+        capture>>frame;
+        if(!frame.empty()){
+            if(!vwriter.isOpened()){
+                vwriter.open(fs["save_output_as"].string(),
+                             cv::VideoWriter::fourcc('M','J','P','G'),
+                             24.0, cv::Size(frame.cols, frame.rows));
+            }
+            double const ratio = width_reize_to/static_cast<double>(frame.cols);
+            auto const psize = cv::Size(static_cast<int>(frame.cols * ratio),
+                                        static_cast<int>(frame.rows * ratio));
+            cout<<"psize:"<<psize<<std::endl;
+            cv::resize(frame, frame, psize);
+            segmenter.detect(frame);
+            if(vwriter.isOpened()){
+                vwriter<<frame;
+            }
+            cv::imshow("frame", frame);
+            auto const key = std::tolower(cv::waitKey(wait_between_frame_ms));
+            if(key == 'q'){
+                break;
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[])try
 {
     if(argc != 2){
@@ -101,6 +136,11 @@ int main(int argc, char *argv[])try
                     static_cast<int>(dnode["process_height"].real()));
             yolov3_detector detector(model_params, model_prototxt, confident, process_size, non_max_threshold);        
             count_object(fs, coco_item_type::person, bsub.get(), detector);
+        }else if(fs["mode"].string() == "rcnn"){
+            auto const mask_threshold = static_cast<float>(dnode["mask_threshold"].real());
+            auto const width_reize_to = static_cast<int>(dnode["width_reize_to"].real());
+            rcnn_instance_segment ris(model_params, model_prototxt, confident, mask_threshold);
+            segment_object(fs, width_reize_to, ris);
         }
     }else{
         cerr<<"cannot open file:"<<argv[1]<<endl;
