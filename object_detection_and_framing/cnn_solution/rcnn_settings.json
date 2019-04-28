@@ -1,0 +1,14 @@
+{
+    "input_media" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/videos/ice_video_20181002-000025.webm",		
+    "wait_between_frame_ms" : 1,  
+	"mode" : "rcnn",
+	"save_output_as" : "predict_by_rcnn.mp4",	
+
+    "detector":{	
+	    "min_confident" : 0.5,
+		"mask_threshold": 0.5,
+	    "model_params" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/models/mask_rcnn_inception_v2_coco/frozen_inference_graph.pb",
+	    "model_arch" : "C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/models/mask_rcnn_inception_v2_coco/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt",		    
+	    "width_reize_to" : 320	    
+	}
+}
