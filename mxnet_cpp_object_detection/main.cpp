@@ -1,5 +1,7 @@
 #include <libs/mxnet/common.hpp>
 
+#include <object_detection_and_framing/fps_estimator.hpp>
+
 #include "object_detector.hpp"
 #include "plot_object_detector_bboxes.hpp"
 
@@ -11,8 +13,8 @@
 #include <mxnet-cpp/MxNetCpp.h>
 
 #include <iostream>
-#include <chrono>
 
+using namespace cv;
 using namespace std;
 
 std::vector<std::string> create_coco_obj_detection_labels()
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])try
         cv::Size const process_size(static_cast<int>(fs["process_width"].real()),
                 static_cast<int>(fs["process_height"].real()));
         object_detector obj_det(fs["model_params"].string(), fs["model_symbols"].string(),
-                mxnet::cpp::Context::gpu(0), process_size);
+                mxnet::cpp::Context::cpu(0), process_size);
         viz::plot_object_detector_bboxes plotter(create_coco_obj_detection_labels(),
                                                  static_cast<float>(fs["detect_confidence"].real()));
         plotter.set_process_size_of_detector(process_size);
@@ -80,40 +82,40 @@ int main(int argc, char *argv[])try
             //you need the dll "openh264-1.7.0-win64.dll"(for opencv3.4.2) in order to encode the
             //video by h264 encoder
             bool const can_open_video = vwriter.open("yolov3.mp4",
-                                                     cv::VideoWriter::fourcc('H','2','6','4'),
+                                                     cv::VideoWriter::fourcc('A','V','I','1'),
                                                      24.0, cv::Size(640, 360));
 
             int frame_count = 0;
             double elapsed = 0.0;
             if(capture.open(fs["input_media"].string())){
                 cv::Mat frame;
+                fps_estimator fps_est;
                 while(1){
+                    fps_est.start();
                     capture>>frame;
                     if(!frame.empty()){
-                        ++frame_count;
-                        auto const start = std::chrono::system_clock::now();
+                        ++frame_count;                        
                         obj_det.forward(frame);
                         //must call wait because forward api of mxnet is async, else
                         //measurement of the speed of inference wouldn't be accurate
-                        mxnet::cpp::NDArray::WaitAll();
-                        auto const end = std::chrono::system_clock::now();
-                        std::chrono::duration<double> const elapsed_seconds = end-start;
-                        elapsed += elapsed_seconds.count();                        
+                        mxnet::cpp::NDArray::WaitAll();                                                                                            
                         plotter.plot(frame, obj_det.get_outputs());
                         if(can_open_video){
                             vwriter<<frame;
                         }
+                        cv::putText(frame, "fps: " + std::to_string(fps_est.get_fps()),
+                                    cv::Point(0, frame.rows - 40), cv::FONT_HERSHEY_SIMPLEX, 1, {255,0,255}, 2);
                         cv::imshow("plot", frame);
                         int const key = cv::waitKey(10);
                         if(key == 'q'){
                             break;
                         }
+                        fps_est.end();
                     }else{
                         break;
                     }
                 }
-            }
-            cout<<"total elapsed:"<<elapsed<<", total frame:"<<frame_count<<endl;
+            }            
             if(elapsed != 0.0){
                 cout<<"fps:"<<frame_count/elapsed<<endl;
             }
