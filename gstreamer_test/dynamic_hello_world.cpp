@@ -15,8 +15,10 @@ struct CustomData
 {
     unique_gst_elem pipeline;
     GstElement *source;
-    GstElement *convert;
-    GstElement *sink;
+    GstElement *audio_convert;
+    GstElement *audio_sink;
+    GstElement *video_convert;
+    GstElement *video_sink;
 };
 
 // Handler for the pad-added signal
@@ -29,7 +31,7 @@ void pad_added_handler(GstElement *src, GstPad *new_pad, CustomData *data)
     GstStructure *new_pad_struct = gst_caps_get_structure (new_pad_caps.get(), 0);
     const gchar *new_pad_type = gst_structure_get_name (new_pad_struct);
     if(g_str_has_prefix (new_pad_type, "audio/x-raw")) {
-        unique_gst_pad sink_pad(gst_element_get_static_pad (data->convert, "sink"));
+        unique_gst_pad sink_pad(gst_element_get_static_pad (data->audio_convert, "sink"));
         cout<<"If our converter is already linked, we have nothing to do here"<<endl;
         if(gst_pad_is_linked(sink_pad.get())){
             g_print ("We are already linked. Ignoring.\n");
@@ -45,7 +47,25 @@ void pad_added_handler(GstElement *src, GstPad *new_pad, CustomData *data)
         }
 
         return;
-    }    
+    }
+    if(g_str_has_prefix (new_pad_type, "video/x-raw")) {
+        unique_gst_pad sink_pad(gst_element_get_static_pad (data->video_convert, "sink"));
+        cout<<"If our converter is already linked, we have nothing to do here"<<endl;
+        if(gst_pad_is_linked(sink_pad.get())){
+            g_print ("We are already linked. Ignoring.\n");
+            return;
+        }
+
+        cout<<"Attempt the link"<<endl;
+        GstPadLinkReturn ret = gst_pad_link (new_pad, sink_pad.get());
+        if (GST_PAD_LINK_FAILED (ret)) {
+            g_print ("Type is '%s' but link failed.\n", new_pad_type);
+        } else {
+            g_print ("Link succeeded (type '%s').\n", new_pad_type);
+        }
+
+        return;
+    }
 }
 
 }
@@ -58,23 +78,30 @@ int dynamic_hello_world(int argc, char *argv[])
     cout<<"Create the elements"<<endl;
     CustomData data;
     data.source = gst_element_factory_make ("uridecodebin", "source");
-    data.convert = gst_element_factory_make ("audioconvert", "convert");
-    data.sink = gst_element_factory_make ("autoaudiosink", "sink");
+    data.audio_convert = gst_element_factory_make ("audioconvert", "audio_convert");
+    data.audio_sink = gst_element_factory_make ("autoaudiosink", "audio_sink");
+    data.video_convert = gst_element_factory_make ("videoconvert", "video_convert");
+    data.video_sink = gst_element_factory_make ("autovideosink", "video_sink");
 
-    cout<<"Create the empty pipeline"<<endl;
-    //data.pipeline = gst_pipeline_new ("test-pipeline");
+    cout<<"Create the empty pipeline"<<endl;    
     data.pipeline.reset(gst_pipeline_new("test-pipeline"));
 
-    if(!data.pipeline || !data.source || !data.convert || !data.sink) {
+    if(!data.pipeline || !data.source || !data.audio_convert || !data.audio_sink ||
+            !data.video_convert || !data.video_sink) {
         g_printerr ("Not all elements could be created.\n");
         return -1;
     }
 
     cout<<"Build the pipeline. Note that we are NOT linking the source at this "
           "point. We will do it later."<<endl;
-    gst_bin_add_many(GST_BIN (data.pipeline.get()), data.source, data.convert , data.sink, nullptr);
-    if(!gst_element_link (data.convert, data.sink)) {
-        g_printerr ("Elements could not be linked.\n");
+    gst_bin_add_many(GST_BIN (data.pipeline.get()), data.source, data.audio_convert , data.audio_sink,
+                     data.video_convert, data.video_sink, nullptr);
+    if(!gst_element_link (data.audio_convert, data.audio_sink)) {
+        g_printerr ("Audio elements could not be linked.\n");
+        return -1;
+    }
+    if(!gst_element_link (data.video_convert, data.video_sink)) {
+        g_printerr ("Video elements could not be linked.\n");
         return -1;
     }
 
