@@ -1,6 +1,12 @@
 #include "gstreamer_memory.hpp"
 
+extern "C"
+{
+
 #include <gst/gst.h>
+
+}
+
 
 void gst_bus_deleter::operator()(GstBus *ptr) const
 {

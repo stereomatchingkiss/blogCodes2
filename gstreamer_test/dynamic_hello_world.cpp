@@ -2,7 +2,13 @@
 
 #include "gstreamer_memory.hpp"
 
+extern "C"
+{
+
 #include <gst/gst.h>
+
+}
+
 
 #include <iostream>
 

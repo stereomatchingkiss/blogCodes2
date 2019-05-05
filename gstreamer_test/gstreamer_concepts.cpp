@@ -1,6 +1,12 @@
 #include "gstreamer_concepts.hpp"
 
+extern "C"
+{
+
 #include <gst/gst.h>
+
+}
+
 
 #include <iostream>
 using namespace std;
