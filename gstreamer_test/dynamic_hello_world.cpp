@@ -24,28 +24,28 @@ void pad_added_handler(GstElement *src, GstPad *new_pad, CustomData *data)
 {
     g_print ("Received new pad '%s' from '%s':\n", GST_PAD_NAME (new_pad), GST_ELEMENT_NAME (src));
 
-    unique_gst_pad sink_pad(gst_element_get_static_pad (data->convert, "sink"));
-    cout<<"If our converter is already linked, we have nothing to do here"<<endl;
-    if(gst_pad_is_linked(sink_pad.get())){
-        g_print ("We are already linked. Ignoring.\n");
-        return;
-    }
-
     cout<<"Check the new pad's type"<<endl;
     unique_gst_caps new_pad_caps(gst_pad_get_current_caps(new_pad));
     GstStructure *new_pad_struct = gst_caps_get_structure (new_pad_caps.get(), 0);
     const gchar *new_pad_type = gst_structure_get_name (new_pad_struct);
-    if(!g_str_has_prefix (new_pad_type, "audio/x-raw")) {
-        g_print ("It has type '%s' which is not raw audio. Ignoring.\n", new_pad_type);
-    }
+    if(g_str_has_prefix (new_pad_type, "audio/x-raw")) {
+        unique_gst_pad sink_pad(gst_element_get_static_pad (data->convert, "sink"));
+        cout<<"If our converter is already linked, we have nothing to do here"<<endl;
+        if(gst_pad_is_linked(sink_pad.get())){
+            g_print ("We are already linked. Ignoring.\n");
+            return;
+        }
 
-    cout<<"Attempt the link"<<endl;
-    GstPadLinkReturn ret = gst_pad_link (new_pad, sink_pad.get());
-    if (GST_PAD_LINK_FAILED (ret)) {
-        g_print ("Type is '%s' but link failed.\n", new_pad_type);
-    } else {
-        g_print ("Link succeeded (type '%s').\n", new_pad_type);
-    }
+        cout<<"Attempt the link"<<endl;
+        GstPadLinkReturn ret = gst_pad_link (new_pad, sink_pad.get());
+        if (GST_PAD_LINK_FAILED (ret)) {
+            g_print ("Type is '%s' but link failed.\n", new_pad_type);
+        } else {
+            g_print ("Link succeeded (type '%s').\n", new_pad_type);
+        }
+
+        return;
+    }    
 }
 
 }
@@ -72,7 +72,7 @@ int dynamic_hello_world(int argc, char *argv[])
 
     cout<<"Build the pipeline. Note that we are NOT linking the source at this "
           "point. We will do it later."<<endl;
-    gst_bin_add_many(GST_BIN (data.pipeline.get()), data.source, data.convert , data.sink, NULL);
+    gst_bin_add_many(GST_BIN (data.pipeline.get()), data.source, data.convert , data.sink, nullptr);
     if(!gst_element_link (data.convert, data.sink)) {
         g_printerr ("Elements could not be linked.\n");
         return -1;
