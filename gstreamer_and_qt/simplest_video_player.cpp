@@ -49,6 +49,7 @@ simplest_video_player::~simplest_video_player()
 
 void simplest_video_player::play(const QString &command)
 {
+    impl_->clear();
     impl_->pipeline_ = gst_parse_launch(command.toLatin1().data(), nullptr);
     impl_->sink_ = gst_bin_get_by_interface(GST_BIN(impl_->pipeline_), GST_TYPE_VIDEO_OVERLAY);
     if(impl_->sink_ == nullptr){
