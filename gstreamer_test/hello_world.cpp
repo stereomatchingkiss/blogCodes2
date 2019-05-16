@@ -17,8 +17,7 @@ void hello_world(int argc, char *argv[])
 
     gst_init(&argc, &argv);
 
-    cout<<"Build the pipeline"<<endl;
-    GError *err;
+    cout<<"Build the pipeline"<<endl;    
     //C:/Users/yyyy/programs/Qt/blogCodes2/object_detection_and_framing/videos/ice_video_20181002-000025.webm
     GstElement *pipeline =
             gst_parse_launch
