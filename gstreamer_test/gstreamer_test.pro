@@ -22,10 +22,12 @@ SOURCES += \
         gstreamer_concepts.cpp \
         gstreamer_memory.cpp \
         hello_world.cpp \
-        main.cpp
+        main.cpp \
+        time_management.cpp
 
 HEADERS += \
     dynamic_hello_world.hpp \
     gstreamer_concepts.hpp \
     gstreamer_memory.hpp \
-    hello_world.hpp
+    hello_world.hpp \
+    time_management.hpp
