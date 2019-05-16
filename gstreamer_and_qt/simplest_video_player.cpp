@@ -61,8 +61,7 @@ void simplest_video_player::play(const QString &command)
 
     GstStateChangeReturn const sret = gst_element_set_state (impl_->pipeline_, GST_STATE_PLAYING);
     if(sret == GST_STATE_CHANGE_FAILURE){
-        gst_element_set_state (impl_->pipeline_, GST_STATE_NULL);
-        gst_object_unref (impl_->pipeline_);
+        impl_->clear();
         // Exit application
         QTimer::singleShot(0, QApplication::activeWindow(), SLOT(quit()));
     }else{
