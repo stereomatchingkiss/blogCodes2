@@ -24,7 +24,13 @@ public:
 struct gst_element_deleter
 {
 public:
+    explicit gst_element_deleter(int operation_when_delete = 1);
+    ~gst_element_deleter() = default;
+
     void operator()(struct _GstElement *ptr) const;
+
+private:
+    int operation_; //GST_STATE_NULL
 };
 
 struct gst_message_deleter

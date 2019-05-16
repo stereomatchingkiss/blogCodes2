@@ -22,10 +22,18 @@ void gst_caps_deleter::operator()(GstCaps *ptr) const
     }
 }
 
+gst_element_deleter::gst_element_deleter(int operation_when_delete) :
+    operation_(operation_when_delete)
+{
+
+}
+
 void gst_element_deleter::operator()(GstElement *ptr) const
 {
     if(ptr){
-        gst_element_set_state (ptr, GST_STATE_NULL);
+        if(operation_ >= 0){
+            gst_element_set_state (ptr, static_cast<GstState>(operation_));
+        }
         gst_object_unref(ptr);
     }
 }
