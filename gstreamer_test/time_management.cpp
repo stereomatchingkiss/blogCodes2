@@ -127,7 +127,6 @@ int time_management(int argc, char *argv[])
         msg = gst_bus_timed_pop_filtered (bus, 100 * GST_MSECOND,
                                           GstMessageType(GST_MESSAGE_STATE_CHANGED | GST_MESSAGE_ERROR | GST_MESSAGE_EOS | GST_MESSAGE_DURATION));
 
-        cout<<"Parse message"<<endl;
         if (msg != NULL) {
             handle_message (&data, msg);
         } else {
