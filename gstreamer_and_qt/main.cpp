@@ -1,5 +1,12 @@
 #include "simplest_video_player.hpp"
 
+extern "C"
+{
+
+#include <gst/gst.h>
+
+}
+
 #include <QApplication>
 
 int main(int argc, char *argv[])
