@@ -248,9 +248,9 @@ void test_video(std::string const &mpath)
             mt->clear();
         }
         std::cout<<"hed elapsed time = "<<hed.elapsed()<<", frame count = "<<frame_count
-                <<", fps = "<<hed.elapsed()/frame_count<<std::endl;
+                <<", fps = "<<1000.0f/hed.elapsed()/frame_count<<std::endl;
         std::cout<<"dexi elapsed time = "<<dexi.elapsed()<<", frame count = "<<frame_count
-                <<", fps = "<<dexi.elapsed()/frame_count<<std::endl;
+                <<", fps = "<<1000.0f/dexi.elapsed()/frame_count<<std::endl;
     }else{
         std::cerr<<"cannot open video pedestrian.mp4"<<std::endl;
     }
