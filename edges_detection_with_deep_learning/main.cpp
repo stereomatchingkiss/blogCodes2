@@ -179,6 +179,7 @@ void test_image(std::string const &mpath)
     mt.add_image(dexi_out);
 
     cv::imshow("results", mt.get_montage());
+    cv::imwrite("results.jpg", mt.get_montage());
     cv::waitKey();
 }
 
@@ -240,8 +241,8 @@ int main(int argc, char* argv[])try
     CV_DNN_REGISTER_LAYER_CLASS(Crop, CropLayer);
     std::string const mpath(argv[1]);
 
-    //test_image(mpath);
-    test_video(mpath);
+    test_image(mpath);
+    //test_video(mpath);
 
     return 0;
 }catch(std::exception const &ex){
