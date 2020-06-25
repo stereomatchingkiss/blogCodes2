@@ -2,6 +2,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/dnn.hpp>
+#include <opencv2/dnn/layer.details.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/video.hpp>
@@ -9,6 +10,11 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+
+/**
+ * This tutorial intend to share on the pyimagesearch, most of the readers
+ * at there are more familiar with python, so I would add more comments
+ */
 
 void switch_to_cuda(cv::dnn::Net &net)
 {
@@ -32,17 +38,22 @@ void switch_to_cuda(cv::dnn::Net &net)
 std::tuple<cv::Mat, long long> forward_utils(cv::dnn::Net &net, cv::Mat const &input, cv::Size const &blob_size)
 {
     using namespace std::chrono;
+
+    //measure duration
     auto const start = high_resolution_clock::now();
     cv::Mat blob = cv::dnn::blobFromImage(input, 1.0, blob_size,
                                           cv::Scalar(104.00698793, 116.66876762, 122.67891434), false, false);
     net.setInput(blob);
     cv::Mat out = net.forward();
     cv::resize(out.reshape(1, blob_size.height), out, input.size());
+    //the data type of out is CV_32F(single channel, floating point) so we need to upscale the value and convert
+    //it to CV_8U(single channel, uchar)
     out *= 255;
     out.convertTo(out, CV_8U);
-    cv::cvtColor(out, out, cv::COLOR_GRAY2BGR);
+    //convert gray to bgr because we need to create montage(1 row, 3 column of images in our case)
     auto const finish = high_resolution_clock::now();
     auto const elapsed = duration_cast<milliseconds>(finish - start).count();
+    cv::cvtColor(out, out, cv::COLOR_GRAY2BGR);
 
     return {out, elapsed};
 }
@@ -99,8 +110,6 @@ private:
     cv::dnn::Net net_;
 };
 
-#include <opencv2/dnn/layer.details.hpp>
-
 //you need this class to obtain correct results
 class CropLayer : public cv::dnn::Layer
 {
@@ -133,7 +142,7 @@ public:
                          cv::OutputArrayOfArrays outputs_arr,
                          cv::OutputArrayOfArrays internals_arr) CV_OVERRIDE
     {
-
+        CV_UNUSED(internals_arr);
         std::vector<cv::Mat> inputs, outputs;
         inputs_arr.getMatVector(inputs);
         outputs_arr.getMatVector(outputs);
@@ -166,20 +175,23 @@ public:
 
 void test_image(std::string const &mpath)
 {
-    cv::Mat img = cv::imread("fashion_02082017_basquait_alexis_adler_3-1.jpg");
+    cv::Mat img = cv::imread("2007_000129.jpg");
     hed_edges_detector hed(mpath + "hed_pretrained_bsds.caffemodel", mpath + "deploy.prototxt");
     auto hed_out = hed.forward(img);
 
     dexi_edges_detector dexi(mpath + "24_model.onnx");
     auto dexi_out = dexi.forward(img);
 
-    ocv::montage mt({img.cols,img.rows}, 3, 1);
+    cv::Size const frame_size(img.cols, img.rows);
+    int constexpr grid_x = 3;
+    int constexpr grid_y = 1;
+    ocv::montage mt(frame_size, grid_x, grid_y);
     mt.add_image(img);
     mt.add_image(hed_out);
     mt.add_image(dexi_out);
 
     cv::imshow("results", mt.get_montage());
-    cv::imwrite("results.jpg", mt.get_montage());
+    cv::imwrite("results2.jpg", mt.get_montage());
     cv::waitKey();
 }
 
@@ -190,6 +202,12 @@ void test_video(std::string const &mpath)
         hed_edges_detector hed(mpath + "hed_pretrained_bsds.caffemodel", mpath + "deploy.prototxt");
         dexi_edges_detector dexi(mpath + "24_model.onnx");
 
+        //unique_ptr is a resource manager class(smart pointer) of c++,
+        //we allocate memory by the reset(or make_unique) api,
+        //after leaving the scope(scope is surrounded by {}), the memory will be released. In c++, the
+        //best way of manage the resource is avoid explicit memory allocation, if you really need to do it,
+        //guard your memory by smart pointer. I use unique_ptr at here because I cannot
+        //initialize the objects before I know the frame size of the video.
         std::unique_ptr<ocv::montage> mt;
         std::unique_ptr<cv::VideoWriter> vwriter;
 
@@ -206,11 +224,18 @@ void test_video(std::string const &mpath)
             auto const hed_out = hed.forward(frame);
             auto const dexi_out = dexi.forward(frame);
             if(!mt){
-                mt.reset(new ocv::montage({frame.cols, frame.rows}, 3, 1));
+                //initialize the class to create montage
+                //First arguments tell the class the size of each frame
+                cv::Size const frame_size(frame.cols, frame.rows);
+                int constexpr grid_x = 3;
+                int constexpr grid_y = 1;
+                mt.reset(new ocv::montage(frame_size, grid_x, grid_y));
             }
             if(!vwriter){
                 auto const fourcc = cv::VideoWriter::fourcc('F', 'M', 'P', '4');
-                vwriter.reset(new cv::VideoWriter("out.avi", fourcc, 30, {frame.cols * 3, frame.rows}));
+                int constexpr fps = 30;
+                //because the montage is 3 columns and 1 row, so the cols need to multiply by 3
+                vwriter.reset(new cv::VideoWriter("out.avi", fourcc, fps, {frame.cols * 3, frame.rows}));
             }
             mt->add_image(frame);
             mt->add_image(hed_out);
@@ -241,8 +266,8 @@ int main(int argc, char* argv[])try
     CV_DNN_REGISTER_LAYER_CLASS(Crop, CropLayer);
     std::string const mpath(argv[1]);
 
-    test_image(mpath);
-    //test_video(mpath);
+    //test_image(mpath);
+    test_video(mpath);
 
     return 0;
 }catch(std::exception const &ex){
