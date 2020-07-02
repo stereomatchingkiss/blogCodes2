@@ -21,7 +21,7 @@ namespace{
 
 struct dist_compare
 {
-    using value_type = std::pair<QString, cv::Mat>;
+    using value_type = std::tuple<QString, cv::Mat, int>;
     using algo_type = cv::Ptr<cv::img_hash::ImgHashBase>;
 
     explicit dist_compare(algo_type algo) :
@@ -29,7 +29,7 @@ struct dist_compare
 
     double operator()(value_type const &lhs, value_type const &rhs) const
     {
-        return algo_->compare(lhs.second, rhs.second);
+        return algo_->compare(std::get<1>(lhs), std::get<1>(rhs));
     }
 
 private:
@@ -54,9 +54,19 @@ size_t remove_duplicate(vp_tree<dist_compare::value_type, dist_compare> &tree,
                 qDebug()<<"closest_hash:"<<closest_hash.size();
             }
             if(closest_hash.size() > 1){
+                std::vector<std::pair<QString, int>> similar_url;
                 for(size_t j = 0; j != closest_hash.size(); ++j){
-                    if(QFile(closest_hash[j].first).exists() && tree.get_items()[i].first != closest_hash[j].first){
-                        QFile::remove(closest_hash[j].first);
+                    similar_url.emplace_back(std::get<0>(tree.get_items()[j]), std::get<2>(tree.get_items()[j]));
+                }
+                //keep image with biggest size
+                auto max_it = std::max_element(std::begin(similar_url), std::end(similar_url),
+                                               [](auto const &lhs, auto const &rhs)
+                {
+                    return std::get<1>(lhs) < std::get<1>(rhs);
+                });
+                for(auto it = std::begin(similar_url); it != std::end(similar_url); ++it){
+                    if(it != max_it && QFile(std::get<0>(*it)).exists()){
+                        QFile::remove(std::get<0>(*it));
                         ++removed_file;
                     }
                 }
@@ -106,7 +116,7 @@ void remove_duplicate_images::on_pushButtonRemove_clicked()
             if(!img.empty()){
                 cv::Mat hash;
                 phash->compute(img, hash);
-                hash_arr.emplace_back(image_urls_[i], hash);
+                hash_arr.emplace_back(image_urls_[i], hash, img.cols * img.rows);
             }
         }
 
