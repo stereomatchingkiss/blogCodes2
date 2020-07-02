@@ -149,17 +149,17 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="checkBoxRecursive">
-       <property name="text">
-        <string>Recursive</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="3">
+     <item row="1" column="0" colspan="2">
       <widget class="QPushButton" name="pushButtonLoadImages">
        <property name="text">
         <string>Load images</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QCheckBox" name="checkBoxRecursive">
+       <property name="text">
+        <string>load image recursive</string>
        </property>
       </widget>
      </item>

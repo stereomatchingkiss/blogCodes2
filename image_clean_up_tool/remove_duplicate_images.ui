@@ -62,7 +62,7 @@
    <item>
     <widget class="QCheckBox" name="checkBoxRecursive">
      <property name="text">
-      <string>Recursive</string>
+      <string>remove  image recursive</string>
      </property>
     </widget>
    </item>
