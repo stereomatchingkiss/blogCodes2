@@ -40,6 +40,7 @@ private slots:
 private:
     void keyPressEvent(QKeyEvent *event) override;
 
+    void load_images(size_t image_index);
     void move_file(QString const &target_dir);
     void select_folder(QLineEdit *editor);
     void set_number();

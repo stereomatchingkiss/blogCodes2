@@ -26,6 +26,7 @@ QString const state_button_3("state_button_3");
 QString const state_button_4("state_button_4");
 QString const state_button_5("state_button_5");
 QString const state_image_folder("state_image_folder");
+QString const state_index("state_index");
 
 }
 
@@ -56,6 +57,10 @@ image_mover::image_mover(QWidget *parent) :
     if(settings.contains(state_image_folder)){
         ui->lineEditImageFolder->setText(settings.value(state_image_folder).toString());
     }
+    if(settings.contains(state_index) && !ui->lineEditImageFolder->text().isEmpty()){
+        image_index_ = settings.value(state_index).toUInt();
+        load_images(image_index_);
+    }
 }
 
 image_mover::~image_mover()
@@ -67,6 +72,7 @@ image_mover::~image_mover()
     settings.setValue(state_button_4, ui->lineEdit_4->text());
     settings.setValue(state_button_5, ui->lineEdit_5->text());
     settings.setValue(state_image_folder, ui->lineEditImageFolder->text());
+    settings.setValue(state_index, image_index_);
 
     delete ui;
 }
@@ -108,24 +114,7 @@ void image_mover::set_number()
 
 void image_mover::on_pushButtonLoadImages_clicked()
 {
-    if(!QDir(ui->lineEditImageFolder->text()).exists()){
-        QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Image folder do not exist"));
-        return;
-    }
-
-    auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
-                QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditImageFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff",
-                        QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
-
-    images_urls_.clear();
-    while(dir_it.hasNext()){
-        images_urls_.emplace_back(QFileInfo(dir_it.next()).absoluteFilePath());
-    }
-    qDebug()<<__func__<<": image size = "<<images_urls_.size();
-    image_index_ = 0;
-    set_number();
-    show_image();
+    load_images(0);
 }
 
 void image_mover::show_image()
@@ -190,6 +179,28 @@ void image_mover::keyPressEvent(QKeyEvent *event)
     }else{
         QWidget::keyPressEvent(event);
     }
+}
+
+void image_mover::load_images(size_t image_index)
+{
+    if(!QDir(ui->lineEditImageFolder->text()).exists()){
+        QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Image folder do not exist"));
+        return;
+    }
+
+    auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
+                QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
+    QDirIterator dir_it(ui->lineEditImageFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff",
+                        QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
+
+    images_urls_.clear();
+    while(dir_it.hasNext()){
+        images_urls_.emplace_back(QFileInfo(dir_it.next()).absoluteFilePath());
+    }
+    qDebug()<<__func__<<": image size = "<<images_urls_.size();
+    image_index_ = (image_index + 1) <= images_urls_.size() ? image_index : 0;
+    set_number();
+    show_image();
 }
 
 void image_mover::move_file(const QString &target_dir)
