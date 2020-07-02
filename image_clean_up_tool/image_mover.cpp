@@ -126,8 +126,14 @@ void image_mover::show_image()
             auto buffer = file.readAll();
             auto cimg = cv::imdecode(cv::Mat(1, buffer.size(), CV_8U, buffer.data()), cv::IMREAD_COLOR);
             if(!cimg.empty()){
-                if(cimg.cols > 640){
-                    cv::resize(cimg, cimg, cv::Size(640, static_cast<int>(640.0/cimg.cols * cimg.rows)));
+                if(cimg.cols > cimg.rows){
+                    if(cimg.cols > 640){
+                        cv::resize(cimg, cimg, cv::Size(640, static_cast<int>(640.0/cimg.cols * cimg.rows)));
+                    }
+                }else{
+                    if(cimg.rows > 480){
+                        cv::resize(cimg, cimg, cv::Size(static_cast<int>(480.0/cimg.rows * cimg.cols), 480));
+                    }
                 }
                 cv::cvtColor(cimg, cimg, cv::COLOR_BGR2RGB);
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
