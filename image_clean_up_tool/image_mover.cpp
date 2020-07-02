@@ -12,6 +12,10 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include <execution>
 
 namespace{
@@ -128,9 +132,21 @@ void image_mover::show_image()
 {
     if((image_index_ + 1) <= images_urls_.size()){
         auto const url = images_urls_[image_index_];
-        QImage img(url, QImageReader(url).format());
-        if(!img.isNull()){
-            ui->labelImage->setPixmap(QPixmap::fromImage(img.width() > 640 ? img.scaledToWidth(640) : img));
+        QFile file(url);
+        if(file.open(QIODevice::ReadOnly)){
+            auto buffer = file.readAll();
+            auto cimg = cv::imdecode(cv::Mat(1, buffer.size(), CV_8U, buffer.data()), cv::IMREAD_COLOR);
+            if(!cimg.empty()){
+                if(cimg.cols > 640){
+                    cv::resize(cimg, cimg, cv::Size(640, static_cast<int>(640.0/cimg.cols * cimg.rows)));
+                }
+                cv::cvtColor(cimg, cimg, cv::COLOR_BGR2RGB);
+                ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
+                                                                    static_cast<int>(cimg.step[0]),
+                                                             QImage::Format_RGB888).copy()));
+            }else{
+                QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
+            }
         }else{
             QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
         }
@@ -182,8 +198,8 @@ void image_mover::move_file(const QString &target_dir)
     auto const success = dir.rename(images_urls_[image_index_],
                                     target_dir + "/" + QFileInfo(images_urls_[image_index_]).fileName());
     if(success){
-       images_urls_.erase(images_urls_.begin() + static_cast<int>(image_index_));
-       show_image();
+        images_urls_.erase(images_urls_.begin() + static_cast<int>(image_index_));
+        show_image();
     }else{
         QMessageBox::warning(this, tr("image_clean_up_tool"),
                              tr("Cannot show image %1").arg(images_urls_[image_index_]));
