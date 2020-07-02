@@ -126,6 +126,7 @@ void remove_duplicate_images::on_pushButtonRemove_clicked()
 
         auto const remove_size = remove_duplicate(tree, image_urls_, ui->spinBoxThreshold->value());
         ui->labelImageSize->setText(tr("Image size = %1").arg(image_urls_.size() - remove_size));
+        QMessageBox::information(this, tr("image_clean_up_tool"), tr("Remove %1 file(s)").arg(remove_size));
     }
 }
 
