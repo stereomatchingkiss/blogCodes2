@@ -159,7 +159,7 @@ void image_mover::on_pushButtonPrev_clicked()
 
 void image_mover::on_pushButtonNext_clicked()
 {
-    if(image_index_ < images_urls_.size()){
+    if((image_index_ + 1) < images_urls_.size()){
         ++image_index_;
         show_image();
     }
