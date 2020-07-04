@@ -26,17 +26,20 @@ SOURCES += \
     image_mover.cpp \
     main.cpp \
     mainwindow.cpp \
-    remove_duplicate_images.cpp
+    remove_duplicate_images.cpp \
+    split_data.cpp
 
 HEADERS += \
     image_mover.hpp \
     mainwindow.hpp \
-    remove_duplicate_images.hpp
+    remove_duplicate_images.hpp \
+    split_data.hpp
 
 FORMS += \
     image_mover.ui \
     mainwindow.ui \
-    remove_duplicate_images.ui
+    remove_duplicate_images.ui \
+    split_data.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

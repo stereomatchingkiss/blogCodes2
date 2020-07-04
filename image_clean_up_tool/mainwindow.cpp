@@ -3,6 +3,7 @@
 
 #include "image_mover.hpp"
 #include "remove_duplicate_images.hpp"
+#include "split_data.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->addTab(new image_mover, tr("move image"));
     ui->tabWidget->addTab(new remove_duplicate_images, tr("Remove duplicate images"));
+    ui->tabWidget->addTab(new split_data, tr("Split data"));
 }
 
 MainWindow::~MainWindow()
