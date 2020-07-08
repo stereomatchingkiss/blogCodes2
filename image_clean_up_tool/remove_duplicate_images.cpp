@@ -53,7 +53,8 @@ size_t remove_duplicate(cv::img_hash::ImgHashBase *hash,
             for(size_t j = i + 1; j < hash_arr.size(); ++j){
                 if(QFile(std::get<0>(hash_arr[j])).exists()){
                     auto const cmp_value = hash->compare(std::get<1>(hash_arr[i]), std::get<1>(hash_arr[j]));
-                    if(cmp_value > threshold){
+                    qDebug()<<__func__<<" threshold = "<<cmp_value<<", "<<threshold;
+                    if(cmp_value < threshold){
                         similar_url.emplace_back(std::get<0>(hash_arr[j]), std::get<2>(hash_arr[j]));
                     }
                 }
