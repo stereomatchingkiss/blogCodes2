@@ -139,7 +139,7 @@ void image_mover::show_image()
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
                                                                     static_cast<int>(cimg.step[0]),
                                                              QImage::Format_RGB888).copy()));
-                ui->labelImageName->setText(url);
+                ui->labelImageName->setText(url);                
 
             }else{
                 QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
@@ -156,6 +156,7 @@ void image_mover::on_pushButtonPrev_clicked()
     if(image_index_ > 0){
         --image_index_;
         show_image();
+        ui->spinBoxIndex->setValue(static_cast<int>(image_index_ + 1));
     }
 }
 
@@ -164,6 +165,7 @@ void image_mover::on_pushButtonNext_clicked()
     if((image_index_ + 1) < images_urls_.size()){
         ++image_index_;
         show_image();
+        ui->spinBoxIndex->setValue(static_cast<int>(image_index_ + 1));
     }
 }
 
@@ -207,6 +209,8 @@ void image_mover::load_images(size_t image_index)
     }
     qDebug()<<__func__<<": image size = "<<images_urls_.size();
     image_index_ = (image_index + 1) <= images_urls_.size() ? image_index : 0;
+    ui->spinBoxIndex->setRange(1, static_cast<int>(images_urls_.size()));
+    qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxIndex->minimum()<<", "<<ui->spinBoxIndex->maximum();
     set_number();
     show_image();
 }
@@ -230,4 +234,10 @@ void image_mover::select_folder(QLineEdit *editor)
     auto const dir =
             QFileDialog::getExistingDirectory(this, tr("Select folder to move the file"), editor->text());
     editor->setText(dir);
+}
+
+void image_mover::on_spinBoxIndex_valueChanged(int arg1)
+{
+    image_index_ = static_cast<size_t>(arg1 - 1);
+    show_image();
 }

@@ -35,7 +35,9 @@ private slots:
 
     void on_pushButtonPrev_clicked();
 
-    void on_pushButtonNext_clicked();
+    void on_pushButtonNext_clicked();    
+
+    void on_spinBoxIndex_valueChanged(int arg1);
 
 private:
     void keyPressEvent(QKeyEvent *event) override;
@@ -44,12 +46,12 @@ private:
     void move_file(QString const &target_dir);
     void select_folder(QLineEdit *editor);
     void set_number();
+    void show_image();
 
     Ui::image_mover *ui;
 
     size_t image_index_ = 0;
-    std::vector<QString> images_urls_;
-    void show_image();
+    std::vector<QString> images_urls_;    
 };
 
 #endif // IMAGE_MOVER_HPP
