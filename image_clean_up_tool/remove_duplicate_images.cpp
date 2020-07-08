@@ -40,8 +40,6 @@ size_t remove_duplicate(cv::img_hash::ImgHashBase *hash,
                         std::vector<dist_compare::value_type> const &hash_arr,
                         double threshold)
 {
-    std::vector<dist_compare::value_type> closest_hash;
-    std::vector<double> distance;
     size_t removed_file = 0;
     for(size_t i = 0; i < hash_arr.size(); ++i){
         auto const &url = std::get<0>(hash_arr[i]);
