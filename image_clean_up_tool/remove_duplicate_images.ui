@@ -60,11 +60,22 @@
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBoxRecursive">
-     <property name="text">
-      <string>remove  image recursive</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QCheckBox" name="checkBoxRecursive">
+       <property name="text">
+        <string>remove  image recursive</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxFast">
+       <property name="text">
+        <string>Fast but less accurate</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QLabel" name="labelImageSize">
