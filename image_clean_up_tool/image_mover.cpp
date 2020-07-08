@@ -139,6 +139,8 @@ void image_mover::show_image()
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
                                                                     static_cast<int>(cimg.step[0]),
                                                              QImage::Format_RGB888).copy()));
+                ui->labelImageName->setText(url);
+
             }else{
                 QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
             }
