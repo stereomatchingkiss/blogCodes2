@@ -40,6 +40,20 @@ void to_alexeyab_yolo_format(std::vector<parser_label_img::parse_data> const &in
     }
 }
 
+void generate_img_list(std::vector<parser_label_img::parse_data> const &input_vec,
+                       QString const &save_img_list_as)
+{
+    QFile file(save_img_list_as);
+    if(file.open(QFile::WriteOnly)){
+        QTextStream stream(&file);
+        for(auto const &val: input_vec){
+            stream<<val.abs_file_path_<<"\n";
+        }
+    }else{
+        qDebug()<<__func__<<": cannot save img_list as = "<<save_img_list_as;
+    }
+}
+
 }
 
 convert_label_img_labels::convert_label_img_labels(QWidget *parent) :
@@ -95,4 +109,5 @@ void convert_label_img_labels::on_pushButtonConvert_clicked()
         parse_data_vec.emplace_back(std::move(parse_result));
     }
     to_alexeyab_yolo_format(parse_data_vec, labels_to_int);
+    generate_img_list(parse_data_vec, ui->lineEditSaveImgListAs->text());
 }
