@@ -26,21 +26,26 @@ LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_world430.lib
 SOURCES += \
     convert_label_img_labels.cpp \
     image_mover.cpp \
+    labels_check.cpp \
     main.cpp \
     mainwindow.cpp \
+    parser_label_img.cpp \
     remove_duplicate_images.cpp \
     split_data.cpp
 
 HEADERS += \
     convert_label_img_labels.hpp \
     image_mover.hpp \
+    labels_check.hpp \
     mainwindow.hpp \
+    parser_label_img.hpp \
     remove_duplicate_images.hpp \
     split_data.hpp
 
 FORMS += \
     convert_label_img_labels.ui \
     image_mover.ui \
+    labels_check.ui \
     mainwindow.ui \
     remove_duplicate_images.ui \
     split_data.ui
