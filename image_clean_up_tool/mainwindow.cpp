@@ -3,6 +3,7 @@
 
 #include "convert_label_img_labels.hpp"
 #include "image_mover.hpp"
+#include "labels_check.hpp"
 #include "remove_duplicate_images.hpp"
 #include "split_data.hpp"
 
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->addTab(new remove_duplicate_images, tr("Remove duplicate images"));
     ui->tabWidget->addTab(new split_data, tr("Split data"));
     ui->tabWidget->addTab(new convert_label_img_labels, tr("Convert label img"));
+    ui->tabWidget->addTab(new labels_check, tr("Check labels"));
 }
 
 MainWindow::~MainWindow()
