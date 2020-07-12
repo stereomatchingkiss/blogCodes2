@@ -200,7 +200,7 @@ void image_mover::load_images(size_t image_index)
 
     auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
                 QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditImageFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff",
+    QDirIterator dir_it(ui->lineEditImageFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg",
                         QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
 
     images_urls_.clear();

@@ -2,6 +2,8 @@
 #include "ui_remove_duplicate_images.h"
 
 #include <vp_tree.hpp>
+#include <annoy/src/kissrandom.h>
+#include <annoy/src/annoylib.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -228,7 +230,7 @@ void remove_duplicate_images::load_image_urls()
 
     auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
                 QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff",
+    QDirIterator dir_it(ui->lineEditFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg",
                         QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
 
     image_urls_.clear();

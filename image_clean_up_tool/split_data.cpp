@@ -60,7 +60,7 @@ std::vector<QString> split_data::get_sources()
     }
 
     auto const iterate_flag = QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditSource->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff",
+    QDirIterator dir_it(ui->lineEditSource->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg",
                         QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
     std::vector<QString> paths;
     while(dir_it.hasNext()){
