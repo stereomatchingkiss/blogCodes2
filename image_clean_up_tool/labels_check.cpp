@@ -36,6 +36,8 @@ void insert_item_if_sec_set_do_not_has_first_set_item(std::set<QString> const &f
             table->setItem(row, 0, new QTableWidgetItem(*it));
         }
     }
+    table->resizeColumnsToContents();
+    table->resizeRowsToContents();
 }
 
 }
