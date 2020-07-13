@@ -25,6 +25,7 @@ LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_world430.lib
 
 SOURCES += \
     convert_label_img_labels.cpp \
+    convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
     image_mover.cpp \
     labels_check.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 
 HEADERS += \
     convert_label_img_labels.hpp \
+    convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
     image_mover.hpp \
     labels_check.hpp \
@@ -48,6 +50,7 @@ HEADERS += \
 
 FORMS += \
     convert_label_img_labels.ui \
+    convert_yolo_detect_results.ui \
     generate_image_list.ui \
     image_mover.ui \
     labels_check.ui \
