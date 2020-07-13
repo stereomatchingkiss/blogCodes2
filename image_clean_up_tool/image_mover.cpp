@@ -1,6 +1,8 @@
 #include "image_mover.hpp"
 #include "ui_image_mover.h"
 
+#include "utils/iterator_create.hpp"
+
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -200,9 +202,7 @@ void image_mover::load_images(size_t image_index)
 
     auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
                 QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditImageFolder->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg",
-                        QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
-
+    auto dir_it = create_image_iterator(ui->lineEditImageFolder->text(), iterate_flag);
     images_urls_.clear();
     while(dir_it.hasNext()){
         images_urls_.emplace_back(QFileInfo(dir_it.next()).absoluteFilePath());

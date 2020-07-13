@@ -1,6 +1,8 @@
 #include "split_data.hpp"
 #include "ui_split_data.h"
 
+#include "utils/iterator_create.hpp"
+
 #include <QDebug>
 #include <QDir>
 #include <QDirIterator>
@@ -60,8 +62,7 @@ std::vector<QString> split_data::get_sources()
     }
 
     auto const iterate_flag = QDirIterator::NoIteratorFlags;
-    QDirIterator dir_it(ui->lineEditSource->text(), QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg",
-                        QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs, iterate_flag);
+    auto dir_it = create_image_iterator(ui->lineEditSource->text(), iterate_flag);
     std::vector<QString> paths;
     while(dir_it.hasNext()){
         paths.emplace_back(QFileInfo(dir_it.next()).absoluteFilePath());
