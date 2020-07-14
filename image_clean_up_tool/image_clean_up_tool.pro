@@ -34,7 +34,8 @@ SOURCES += \
     parser_label_img.cpp \
     remove_images.cpp \
     split_data.cpp \
-    utils/iterator_create.cpp
+    utils/iterator_create.cpp \
+    utils/utility.cpp
 
 HEADERS += \
     convert_label_img_labels.hpp \
@@ -46,7 +47,8 @@ HEADERS += \
     parser_label_img.hpp \
     remove_images.hpp \
     split_data.hpp \
-    utils/iterator_create.hpp
+    utils/iterator_create.hpp \
+    utils/utility.hpp
 
 FORMS += \
     convert_label_img_labels.ui \
