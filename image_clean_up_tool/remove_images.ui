@@ -6,81 +6,180 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>569</width>
-    <height>237</height>
+    <width>724</width>
+    <height>510</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Folder</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEditFolder"/>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="pushButtonSelectFolder">
-       <property name="text">
-        <string>Select folder</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Threshold</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSlider" name="horizontalSliderThreshold">
-       <property name="value">
-        <number>5</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QSpinBox" name="spinBoxThreshold">
-       <property name="value">
-        <number>5</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QCheckBox" name="checkBoxRecursive">
-       <property name="text">
-        <string>remove  image recursive</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="groupBoxRemoveDuplicateImages">
+         <property name="title">
+          <string>Remove duplicate images</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Threshold</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSlider" name="horizontalSliderThreshold">
+              <property name="value">
+               <number>5</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QSpinBox" name="spinBoxThreshold">
+              <property name="value">
+               <number>5</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QCheckBox" name="checkBoxRecursive">
+              <property name="text">
+               <string>remove  image recursive</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxMultiThread">
+              <property name="text">
+               <string>multi threads</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxRemoveImageLessThanSize">
+         <property name="title">
+          <string>Remove image less than size</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="horizontalSliderImageWidth">
+            <property name="maximum">
+             <number>5000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSpinBox" name="spinBoxImageWidth">
+            <property name="maximum">
+             <number>5000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Heigth</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="horizontalSliderImageHeight">
+            <property name="maximum">
+             <number>5000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QSpinBox" name="spinBoxImageHeight">
+            <property name="maximum">
+             <number>5000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBoxFast">
-       <property name="text">
-        <string>Fast but less accurate</string>
-       </property>
-      </widget>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QTableWidget" name="tableWidget">
+         <column>
+          <property name="text">
+           <string>Folder</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Could delete</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pushButtonAddFolder">
+           <property name="text">
+            <string>Add</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonFolder">
+           <property name="text">
+            <string>Delete</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
    <item>
     <widget class="QLabel" name="labelImageSize">
      <property name="text">
-      <string/>
+      <string>Image size</string>
      </property>
     </widget>
    </item>
@@ -109,34 +208,98 @@
  <resources/>
  <connections>
   <connection>
-   <sender>horizontalSliderThreshold</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>spinBoxThreshold</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>449</x>
-     <y>43</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>505</x>
-     <y>46</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>spinBoxThreshold</sender>
    <signal>valueChanged(int)</signal>
    <receiver>horizontalSliderThreshold</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>517</x>
-     <y>55</y>
+     <x>346</x>
+     <y>60</y>
     </hint>
     <hint type="destinationlabel">
-     <x>470</x>
-     <y>55</y>
+     <x>301</x>
+     <y>61</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderThreshold</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBoxThreshold</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>61</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>346</x>
+     <y>60</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderImageWidth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBoxImageWidth</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>horizontalSliderImageHeight</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>spinBoxImageHeight</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>271</x>
+     <y>204</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>202</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBoxImageHeight</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSliderImageHeight</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>282</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinBoxImageWidth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>horizontalSliderImageWidth</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>161</y>
     </hint>
    </hints>
   </connection>
