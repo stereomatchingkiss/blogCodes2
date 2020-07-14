@@ -32,7 +32,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     parser_label_img.cpp \
-    remove_duplicate_images.cpp \
+    remove_images.cpp \
     split_data.cpp \
     utils/iterator_create.cpp
 
@@ -44,7 +44,7 @@ HEADERS += \
     labels_check.hpp \
     mainwindow.hpp \
     parser_label_img.hpp \
-    remove_duplicate_images.hpp \
+    remove_images.hpp \
     split_data.hpp \
     utils/iterator_create.hpp
 
@@ -55,7 +55,7 @@ FORMS += \
     image_mover.ui \
     labels_check.ui \
     mainwindow.ui \
-    remove_duplicate_images.ui \
+    remove_images.ui \
     split_data.ui
 
 # Default rules for deployment.

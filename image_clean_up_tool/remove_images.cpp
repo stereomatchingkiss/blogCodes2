@@ -1,5 +1,5 @@
-#include "remove_duplicate_images.hpp"
-#include "ui_remove_duplicate_images.h"
+#include "remove_images.hpp"
+#include "ui_remove_images.h"
 
 #include "utils/iterator_create.hpp"
 
@@ -170,28 +170,28 @@ size_t remove_duplicate(vp_tree<dist_compare::value_type, dist_compare> &tree,
 
 }
 
-remove_duplicate_images::remove_duplicate_images(QWidget *parent) :
+remove_images::remove_images(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::remove_duplicate_images)
+    ui(new Ui::remove_images)
 {
     ui->setupUi(this);
 
     cv::ocl::setUseOpenCL(false);
 }
 
-remove_duplicate_images::~remove_duplicate_images()
+remove_images::~remove_images()
 {
     delete ui;
 }
 
-void remove_duplicate_images::on_pushButtonSelectFolder_clicked()
+void remove_images::on_pushButtonSelectFolder_clicked()
 {
     auto const dir =
             QFileDialog::getExistingDirectory(this, tr("Select folder to move the file"), ui->lineEditFolder->text());
     ui->lineEditFolder->setText(dir);
 }
 
-void remove_duplicate_images::on_pushButtonRemove_clicked()
+void remove_images::on_pushButtonRemove_clicked()
 {
     load_image_urls();
     if(!image_urls_.empty()){
@@ -223,7 +223,7 @@ void remove_duplicate_images::on_pushButtonRemove_clicked()
     }
 }
 
-void remove_duplicate_images::load_image_urls()
+void remove_images::load_image_urls()
 {
     if(!QDir(ui->lineEditFolder->text()).exists()){
         QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Image folder do not exist"));
