@@ -155,13 +155,19 @@ size_t remove_images::remove_img_size_less_than()
     if(ui->groupBoxRemoveImageLessThanSize->isChecked()){
         for(size_t i = 0; i != image_urls_.size();){
             if(image_urls_can_remove_[i]){
-                QImageReader reader(image_urls_[i]);
-                reader.setDecideFormatFromContent(true);
-                if(reader.canRead()){
-                    auto const size = reader.size();
+                bool can_read = false;
+                QSize size;
+                {
+                    QImageReader reader(image_urls_[i]);
+                    reader.setDecideFormatFromContent(true);
+                    can_read = reader.canRead();
+                    size = reader.size();
+                }
+                if(can_read){
                     if(size.width() < ui->spinBoxImageWidth->value() ||
                             size.height() < ui->spinBoxImageHeight->value()){
                         remove_size += QFile::remove(image_urls_[i]);
+                        //qDebug()<<__func__<<": "<<image_urls_[i]<<", size = "<<size<<", can remove = "<<can_remove;
                         image_urls_.erase(image_urls_.begin() + i);
                         image_urls_can_remove_.erase(image_urls_can_remove_.begin() + i);
                     }else{

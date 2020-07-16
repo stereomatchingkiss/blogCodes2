@@ -39,6 +39,8 @@ private slots:
 
     void on_spinBoxIndex_valueChanged(int arg1);
 
+    void on_pushButtonRestore_clicked();
+
 private:
     void keyPressEvent(QKeyEvent *event) override;
 
@@ -51,7 +53,8 @@ private:
     Ui::image_mover *ui;
 
     size_t image_index_ = 0;
-    std::vector<QString> images_urls_;    
+    std::vector<QString> images_urls_;
+    std::vector<std::tuple<QString, QString>> steps_record_;
 };
 
 #endif // IMAGE_MOVER_HPP

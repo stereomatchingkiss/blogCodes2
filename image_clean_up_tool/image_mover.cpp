@@ -203,6 +203,7 @@ void image_mover::load_images(size_t image_index)
     auto const iterate_flag = ui->checkBoxRecursive->isChecked() ?
                 QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags;
     auto dir_it = create_image_iterator(ui->lineEditImageFolder->text(), iterate_flag);
+    steps_record_.clear();
     images_urls_.clear();
     while(dir_it.hasNext()){
         images_urls_.emplace_back(QFileInfo(dir_it.next()).absoluteFilePath());
@@ -216,11 +217,12 @@ void image_mover::load_images(size_t image_index)
 }
 
 void image_mover::move_file(const QString &target_dir)
-{
-    QDir dir;
-    auto const success = dir.rename(images_urls_[image_index_],
-                                    target_dir + "/" + QFileInfo(images_urls_[image_index_]).fileName());
+{    
+    auto const from = images_urls_[image_index_];
+    auto const to = target_dir + "/" + QFileInfo(images_urls_[image_index_]).fileName();
+    auto const success = QDir().rename(from, to);
     if(success){
+        steps_record_.emplace_back(from, to);
         images_urls_.erase(images_urls_.begin() + static_cast<int>(image_index_));
         show_image();
     }else{
@@ -240,4 +242,13 @@ void image_mover::on_spinBoxIndex_valueChanged(int arg1)
 {
     image_index_ = static_cast<size_t>(arg1 - 1);
     show_image();
+}
+
+void image_mover::on_pushButtonRestore_clicked()
+{
+    if(!steps_record_.empty()){
+        auto const &back = steps_record_.back();
+        QDir().rename(std::get<1>(back), std::get<0>(back));
+        steps_record_.pop_back();
+    }
 }

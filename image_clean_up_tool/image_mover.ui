@@ -191,6 +191,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QPushButton" name="pushButtonRestore">
+     <property name="text">
+      <string>Restore</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="labelImageName">
      <property name="text">
       <string/>
