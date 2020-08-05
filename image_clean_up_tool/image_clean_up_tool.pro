@@ -30,6 +30,7 @@ SOURCES += \
     generate_image_list.cpp \
     image_mover.cpp \
     labels_check.cpp \
+    labels_update.cpp \
     main.cpp \
     mainwindow.cpp \
     parser_label_img.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     generate_image_list.hpp \
     image_mover.hpp \
     labels_check.hpp \
+    labels_update.hpp \
     mainwindow.hpp \
     parser_label_img.hpp \
     remove_images.hpp \
