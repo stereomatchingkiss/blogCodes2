@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include <set>
+
 namespace Ui {
 class labels_check;
 }
@@ -18,7 +20,11 @@ public:
 private slots:
     void on_pushButtonCheck_clicked();
 
+    void on_pushButtonDeleteUselessLabels_clicked();
+
 private:
+    std::set<QString> get_im_path_set() const;
+
     Ui::labels_check *ui;
 };
 
