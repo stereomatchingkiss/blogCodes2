@@ -24,6 +24,7 @@ LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_world430.lib
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    change_wrong_image_suffix.cpp \
     convert_label_img_labels.cpp \
     convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
     utils/utility.cpp
 
 HEADERS += \
+    change_wrong_image_suffix.hpp \
     convert_label_img_labels.hpp \
     convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
@@ -51,6 +53,7 @@ HEADERS += \
     utils/utility.hpp
 
 FORMS += \
+    change_wrong_image_suffix.ui \
     convert_label_img_labels.ui \
     convert_yolo_detect_results.ui \
     generate_image_list.ui \
