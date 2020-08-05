@@ -4,9 +4,6 @@
 #include "utils/iterator_create.hpp"
 #include "utils/utility.hpp"
 
-#include <annoy/src/kissrandom.h>
-#include <annoy/src/annoylib.h>
-
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/img_hash.hpp>
