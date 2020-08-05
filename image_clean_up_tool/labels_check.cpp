@@ -29,11 +29,12 @@ void insert_item_if_sec_set_do_not_has_first_set_item(std::set<QString> const &f
                                                       std::set<QString> const &sec_set,
                                                       QTableWidget *table)
 {
+    int row = 0;
     for(auto it = first_set.begin(); it != first_set.end(); ++it){
         if(auto it2 = sec_set.find(*it); it2 == sec_set.end()){
-            auto const row = table->rowCount();
             table->insertRow(row);
             table->setItem(row, 0, new QTableWidgetItem(*it));
+            ++row;
         }
     }
     table->resizeColumnsToContents();
@@ -60,12 +61,16 @@ void labels_check::on_pushButtonCheck_clicked()
                                       QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg");
     auto labels_path = get_files_path(ui->lineEditLabelFolder->text(),
                                       QStringList()<<"*.xml");
+
     std::set<QString> im_path_in_label;
-    parser_label_img parser;
     for(auto const &lpath : labels_path){
-        im_path_in_label.insert(parser.parse(lpath).abs_file_path_);
+        im_path_in_label.insert(QFileInfo(parser_label_img().parse(lpath).abs_file_path_).fileName());
     }
-    std::set<QString> im_path_set(std::begin(images_path), std::end(images_path));
+
+    std::set<QString> im_path_set;
+    for(auto const &im_path : images_path){
+        im_path_set.insert(QFileInfo(im_path).fileName());
+    }
 
     ui->tableWidgetMissImg->setRowCount(0);
     ui->tableWidgetMissLabel->setRowCount(0);
