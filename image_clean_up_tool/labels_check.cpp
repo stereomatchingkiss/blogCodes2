@@ -65,10 +65,19 @@ void labels_check::on_pushButtonCheck_clicked()
     for(auto const &lpath : labels_path){
         auto const abs_file_path = parser_label_img().parse(lpath).abs_file_path_;
         auto const fname = QFileInfo(abs_file_path).fileName();
+        if(QFileInfo(lpath).completeBaseName() != QFileInfo(fname).completeBaseName()){
+            qDebug()<<": remove file "<<lpath<<" success = "<<QFile(lpath).remove();
+            continue;
+        }
         labels_update lu(lpath);
         lu.update_path(ui->lineEditImageFolder->text() + "/" + fname);
-        im_path_in_label.insert(fname);
+        if(!im_path_in_label.insert(fname).second){
+            qDebug()<<__func__<<": fname cannot insert = "<<fname;
+        }
     }
+
+    qDebug()<<__func__<<": size of im_path_in_label = "<<im_path_in_label.size()<<", labels path = "<<labels_path.size();
+    qDebug()<<__func__<<": size of im_path_set = "<<im_path_set.size();
 
     ui->tableWidgetMissImg->setRowCount(0);
     ui->tableWidgetMissLabel->setRowCount(0);
