@@ -1,6 +1,7 @@
 #include "parser_label_img.hpp"
 
 #include <QDebug>
+#include <QDir>
 #include <QDomDocument>
 #include <QFile>
 #include <QFileInfo>
@@ -37,7 +38,7 @@ parser_label_img::parse_data parse_xml(const QString &fname)
         auto dom_elem = doc.firstChild().toElement().firstChild().toElement();
         while(!dom_elem.isNull()){
             if(dom_elem.tagName() == "path"){
-                result.abs_file_path_ = dom_elem.firstChild().toText().data();
+                result.abs_file_path_ = QDir::toNativeSeparators(dom_elem.firstChild().toText().data());
             }else if(dom_elem.tagName() == "object"){
                 parser_label_img::parse_data::object obj;
                 auto child = dom_elem.firstChild().toElement();
