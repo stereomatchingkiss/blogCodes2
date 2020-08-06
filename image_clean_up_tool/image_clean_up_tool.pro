@@ -25,6 +25,7 @@ LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_world430.lib
 
 SOURCES += \
     change_wrong_image_suffix.cpp \
+    check_images_state.cpp \
     convert_label_img_labels.cpp \
     convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
 
 HEADERS += \
     change_wrong_image_suffix.hpp \
+    check_images_state.hpp \
     convert_label_img_labels.hpp \
     convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
@@ -56,6 +58,7 @@ HEADERS += \
 
 FORMS += \
     change_wrong_image_suffix.ui \
+    check_images_state.ui \
     convert_label_img_labels.ui \
     convert_yolo_detect_results.ui \
     generate_image_list.ui \
