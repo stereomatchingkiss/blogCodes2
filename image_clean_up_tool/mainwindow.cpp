@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "change_wrong_image_suffix.hpp"
+#include "check_images_state.hpp"
 #include "convert_label_img_labels.hpp"
 #include "convert_yolo_detect_results.hpp"
 #include "generate_image_list.hpp"
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->addTab(new generate_image_list, tr("Generate image list"));
     ui->tabWidget->addTab(new convert_yolo_detect_results, tr("Convert yolo detect results"));
     ui->tabWidget->addTab(new change_wrong_image_suffix, tr("Change wrong image suffix"));
+    ui->tabWidget->addTab(new check_images_state, tr("Check image state"));
 }
 
 MainWindow::~MainWindow()
