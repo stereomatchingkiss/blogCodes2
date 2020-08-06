@@ -89,7 +89,7 @@ void labels_check::on_pushButtonCheck_clicked()
 std::set<QString> labels_check::get_im_path_set() const
 {
     auto images_path = get_files_path(ui->lineEditImageFolder->text(),
-                                      QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg");
+                                      QStringList()<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.tiff"<<"*.jpeg"<<"*webp"<<"*gif");
     std::set<QString> im_path_set;
     for(auto const &im_path : images_path){
         im_path_set.insert(QFileInfo(im_path).fileName());
