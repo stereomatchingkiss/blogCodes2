@@ -20,7 +20,7 @@ void to_alexeyab_yolo_format(std::vector<parser_label_img::parse_data> const &in
 {
     for(auto const &input: input_vec){
         QFileInfo finfo(input.abs_file_path_);
-        QFile file(finfo.absolutePath() + "/" +  finfo.baseName() +  ".txt");
+        QFile file(finfo.absolutePath() + "/" +  finfo.completeBaseName() +  ".txt");
         if(file.open(QIODevice::WriteOnly)){
             QImageReader im_reader(input.abs_file_path_);
             if(im_reader.canRead()){
