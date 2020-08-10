@@ -14,8 +14,12 @@
 #include <QJsonValue>
 
 #include <QMessageBox>
+#include <QSettings>
 
 namespace{
+
+QString const state_alexey_ab_yolo_result("convert_yolo_det_result/state_alexey_ab_yolo_result");
+QString const state_save_convert_result_at("convert_yolo_det_result/state_save_convert_result_at");
 
 void add_folder_to_xml(QDomDocument &dom, QDomElement &root, QString const &fname)
 {
@@ -105,21 +109,33 @@ convert_yolo_detect_results::convert_yolo_detect_results(QWidget *parent) :
     ui(new Ui::convert_yolo_detect_results)
 {
     ui->setupUi(this);
+
+    QSettings settings("image_clean_up_tool", "convert_yolo_detect_results");
+    if(settings.contains(state_alexey_ab_yolo_result)){
+        ui->lineEditYoloDetectResult->setText(settings.value(state_alexey_ab_yolo_result).toString());
+    }
+    if(settings.contains(state_save_convert_result_at)){
+        ui->lineEditSaveResultsAt->setText(settings.value(state_save_convert_result_at).toString());
+    }
 }
 
 convert_yolo_detect_results::~convert_yolo_detect_results()
 {
+    QSettings settings("image_clean_up_tool", "convert_yolo_detect_results");
+    settings.setValue(state_alexey_ab_yolo_result, ui->lineEditYoloDetectResult->text());
+    settings.setValue(state_save_convert_result_at, ui->lineEditSaveResultsAt->text());
+
     delete ui;
 }
 
 void convert_yolo_detect_results::on_pushButtonConvert_clicked()
-{
-    QFile file(ui->lineEditYoloDetectResult->text());
-    if(file.open(QIODevice::ReadOnly)){
+{    
+    if(QFile file(ui->lineEditYoloDetectResult->text()); file.open(QIODevice::ReadOnly)){
         auto doc = QJsonDocument::fromJson(file.readAll());
         auto const img_arrays = doc.array();
         qDebug()<<__func__<<": array size = "<<img_arrays.size();
         for(auto const &arr : img_arrays){
+            qDebug()<<arr;
             QDomDocument dom;
             auto root = dom.createElement("annotation");
             dom.appendChild(root);
@@ -139,8 +155,8 @@ void convert_yolo_detect_results::on_pushButtonConvert_clicked()
                 add_object_to_xml(dom, root, obj.toObject(), img_size);
             }
 
-            QFile out_file(ui->lineEditSaveResultsAt->text() + "/" + finfo.baseName() + ".xml");
-            if(out_file.open(QIODevice::WriteOnly)){
+            if(QFile out_file(ui->lineEditSaveResultsAt->text() + "/" + finfo.baseName() + ".xml");
+                    out_file.open(QIODevice::WriteOnly)){
                 QTextStream stream(&out_file);
                 stream<<dom.toString();
             }
