@@ -13,6 +13,7 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QSettings>
+#include <QUuid>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -29,6 +30,16 @@ QString const state_button_4("state_button_4");
 QString const state_button_5("state_button_5");
 QString const state_image_folder("state_image_folder");
 QString const state_index("state_index");
+
+QString create_unique_name_to_move(QString const &target_dir, QString const &img_url)
+{
+    auto to = target_dir + "/" + QFileInfo(img_url).fileName();
+    if(!QFile::exists(to)){
+        return to;
+    }
+
+    return target_dir + "/" + QUuid::createUuid().toString() + "." + QFileInfo(img_url).suffix();
+}
 
 }
 
@@ -144,10 +155,12 @@ void image_mover::show_image()
                 ui->labelImageName->setText(url);                
 
             }else{
-                QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
+                qDebug()<<QString("Cannot read image %1").arg(url);
+                on_pushButtonNext_clicked();
             }
         }else{
-            QMessageBox::warning(this, tr("image_clean_up_tool"), tr("Cannot read image %1").arg(url));
+            qDebug()<<QString("Cannot read image %1").arg(url);
+            on_pushButtonNext_clicked();
         }
     }
     set_number();
@@ -219,15 +232,14 @@ void image_mover::load_images(size_t image_index)
 void image_mover::move_file(const QString &target_dir)
 {    
     auto const from = images_urls_[image_index_];
-    auto const to = target_dir + "/" + QFileInfo(images_urls_[image_index_]).fileName();
-    auto const success = QDir().rename(from, to);
-    if(success){
+    auto const to = create_unique_name_to_move(target_dir, images_urls_[image_index_]);
+    if(auto const success = QDir().rename(from, to); success){
         steps_record_.emplace_back(from, to);
         images_urls_.erase(images_urls_.begin() + static_cast<int>(image_index_));
         show_image();
     }else{
-        QMessageBox::warning(this, tr("image_clean_up_tool"),
-                             tr("Cannot show image %1").arg(images_urls_[image_index_]));
+        qDebug()<<QString("Cannot show image %1").arg(images_urls_[image_index_]);
+        on_pushButtonNext_clicked();
     }
 }
 
