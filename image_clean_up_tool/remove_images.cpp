@@ -194,7 +194,8 @@ size_t remove_images::remove_duplicate_images()
             if(i % 100 == 0){
                 qDebug()<<"compute hash of:"<<image_urls_[i];
             }
-            cv::Mat const img = cv::imread(image_urls_[i].toStdString());
+            //cv::Mat const img = cv::imread(image_urls_[i].toStdString());
+            auto const img = read_image_by_fstream(image_urls_[i].toStdWString());
             if(!img.empty()){
                 cv::Mat hash;
                 phash->compute(img, hash);
