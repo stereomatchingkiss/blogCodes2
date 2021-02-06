@@ -146,7 +146,7 @@ remove_images::~remove_images()
     delete ui;
 }
 
-size_t remove_images::remove_img_size_less_than()
+size_t remove_images::remove_img_size_less_than(std::function<bool(QSize const&)> func)
 {
     size_t remove_size = 0;
     if(ui->groupBoxRemoveImageLessThanSize->isChecked()){
@@ -161,12 +161,47 @@ size_t remove_images::remove_img_size_less_than()
                     size = reader.size();
                 }
                 if(can_read){
-                    if(size.width() < ui->spinBoxImageWidth->value() ||
-                            size.height() < ui->spinBoxImageHeight->value()){
+                    if(func(std::cref(size))){
                         remove_size += QFile::remove(image_urls_[i]);
                         //qDebug()<<__func__<<": "<<image_urls_[i]<<", size = "<<size<<", can remove = "<<can_remove;
-                        image_urls_.erase(image_urls_.begin() + i);
-                        image_urls_can_remove_.erase(image_urls_can_remove_.begin() + i);
+                        image_urls_.erase(image_urls_.begin() + static_cast<int>(i));
+                        image_urls_can_remove_.erase(image_urls_can_remove_.begin() + static_cast<int>(i));
+                    }else{
+                        ++i;
+                    }
+                }else{
+                    qDebug()<<__func__<<": cannot read image:"<<image_urls_[i];
+                    ++i;
+                }
+            }else{
+                ++i;
+            }
+        }
+    }
+
+    return remove_size;
+}
+
+size_t remove_images::remove_img_less_than_width_x_height(std::function<bool(QSize const&)> func)
+{
+    size_t remove_size = 0;
+    if(ui->groupBoxRemoveImageLessThanWdithXHeight->isChecked()){
+        for(size_t i = 0; i != image_urls_.size();){
+            if(image_urls_can_remove_[i]){
+                bool can_read = false;
+                QSize size;
+                {
+                    QImageReader reader(image_urls_[i]);
+                    reader.setDecideFormatFromContent(true);
+                    can_read = reader.canRead();
+                    size = reader.size();
+                }
+                if(can_read){
+                    if(func(std::cref(size))){
+                        remove_size += QFile::remove(image_urls_[i]);
+                        //qDebug()<<__func__<<": "<<image_urls_[i]<<", size = "<<size<<", can remove = "<<can_remove;
+                        image_urls_.erase(image_urls_.begin() + static_cast<int>(i));
+                        image_urls_can_remove_.erase(image_urls_can_remove_.begin() + static_cast<int>(i));
                     }else{
                         ++i;
                     }
@@ -193,7 +228,7 @@ size_t remove_images::remove_duplicate_images()
         for(size_t i = 0; i != image_urls_.size(); ++i){
             if(i % 100 == 0){
                 qDebug()<<"compute hash of:"<<image_urls_[i];
-            }                        
+            }
             if(auto const img = read_image_by_fstream(image_urls_[i].toStdWString()); !img.empty()){
                 cv::Mat hash;
                 phash->compute(img, hash);
@@ -222,7 +257,15 @@ void remove_images::on_pushButtonRemove_clicked()
 {
     load_image_urls();
     if(!image_urls_.empty()){
-        size_t remove_size = remove_img_size_less_than();
+        size_t remove_size = remove_img_size_less_than([this](auto const &size)
+        {
+            return size.width() < ui->spinBoxImageWidth->value() ||
+                    size.height() < ui->spinBoxImageHeight->value();
+        });
+        remove_size += remove_img_less_than_width_x_height([this](auto const &size)
+        {
+            return size.height() * size.width() < ui->spinBoxRemoveImageLessThanWdithXHeight->value();
+        });
         remove_size += remove_duplicate_images();
 
         ui->labelImageSize->setText(tr("Image size = %1").arg(image_urls_.size() - remove_size));

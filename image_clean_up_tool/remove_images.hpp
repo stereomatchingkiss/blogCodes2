@@ -29,7 +29,8 @@ private:
     bool get_checkbox_state(int row, int column) const;
     void load_image_urls();
     size_t remove_duplicate_images();
-    size_t remove_img_size_less_than();
+    size_t remove_img_size_less_than(std::function<bool(QSize const&)> func);
+    size_t remove_img_less_than_width_x_height(std::function<bool(QSize const&)> func);
 
     Ui::remove_images *ui;
 
