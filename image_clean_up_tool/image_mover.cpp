@@ -120,9 +120,10 @@ void image_mover::on_pushButtonSelectImageFolder_clicked()
     select_folder(ui->lineEditImageFolder);
 }
 
-void image_mover::set_number()
+void image_mover::set_number(QSize const &img_size)
 {
-    ui->labelImageNumber->setText(QString("%1/%2").arg(image_index_ + 1).arg(images_urls_.size()));
+    ui->labelImageNumber->setText(QString("%1/%2, wxh=%3x%4").arg(image_index_ + 1).arg(images_urls_.size()).
+                                  arg(img_size.width()).arg(img_size.height()));
 }
 
 void image_mover::on_pushButtonLoadImages_clicked()
@@ -139,6 +140,7 @@ void image_mover::show_image()
             auto buffer = file.readAll();
             auto cimg = cv::imdecode(cv::Mat(1, buffer.size(), CV_8U, buffer.data()), cv::IMREAD_COLOR);
             if(!cimg.empty()){
+                set_number(QSize(cimg.cols, cimg.rows));
                 if(cimg.cols > cimg.rows){
                     if(cimg.cols > 640){
                         cv::resize(cimg, cimg, cv::Size(640, static_cast<int>(640.0/cimg.cols * cimg.rows)));
@@ -152,8 +154,7 @@ void image_mover::show_image()
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
                                                                     static_cast<int>(cimg.step[0]),
                                                              QImage::Format_RGB888).copy()));
-                ui->labelImageName->setText(url);                
-
+                ui->labelImageName->setText(url);                                
             }else{
                 qDebug()<<QString("Cannot read image %1").arg(url);
                 on_pushButtonNext_clicked();
@@ -162,8 +163,7 @@ void image_mover::show_image()
             qDebug()<<QString("Cannot read image %1").arg(url);
             on_pushButtonNext_clicked();
         }
-    }
-    set_number();
+    }    
 }
 
 void image_mover::on_pushButtonPrev_clicked()
@@ -224,8 +224,7 @@ void image_mover::load_images(size_t image_index)
     qDebug()<<__func__<<": image size = "<<images_urls_.size();
     image_index_ = (image_index + 1) <= images_urls_.size() ? image_index : 0;
     ui->spinBoxIndex->setRange(1, static_cast<int>(images_urls_.size()));
-    qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxIndex->minimum()<<", "<<ui->spinBoxIndex->maximum();
-    set_number();
+    qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxIndex->minimum()<<", "<<ui->spinBoxIndex->maximum();    
     show_image();
 }
 

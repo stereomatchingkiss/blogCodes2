@@ -47,7 +47,7 @@ private:
     void load_images(size_t image_index);
     void move_file(QString const &target_dir);
     void select_folder(QLineEdit *editor);
-    void set_number();
+    void set_number(QSize const &img_size);
     void show_image();
 
     Ui::image_mover *ui;
