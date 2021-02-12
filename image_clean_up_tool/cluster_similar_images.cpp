@@ -46,11 +46,12 @@ void cluster_similar_images::on_pushButtonCluster_clicked()
                 edges.emplace_back(i, j, val);
             }
         }
+        dlib::remove_duplicate_edges(edges);
 
         std::vector<unsigned long> labels;
         const auto num_clusters = ui->comboBoxGraphBasedMethod->currentIndex() == 0 ?
                     chinese_whispers(edges, labels) : newman_cluster(edges, labels);
-        qDebug()<<__func__<<": num clusters = "<<num_clusters;
+        qDebug()<<__func__<<": num clusters = "<<num_clusters<<", num of labels = "<<labels.size();
         clustered_url_.clear();
         for(size_t cluster_id = 0; cluster_id != num_clusters; ++cluster_id){
             std::vector<QString> urls;
