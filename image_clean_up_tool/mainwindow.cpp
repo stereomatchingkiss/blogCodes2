@@ -3,6 +3,7 @@
 
 #include "change_wrong_image_suffix.hpp"
 #include "check_images_state.hpp"
+#include "cluster_similar_images.hpp"
 #include "convert_label_img_labels.hpp"
 #include "convert_yolo_detect_results.hpp"
 #include "generate_image_list.hpp"
@@ -26,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->addTab(new convert_yolo_detect_results, tr("Convert yolo detect results"));
     ui->tabWidget->addTab(new change_wrong_image_suffix, tr("Change wrong image suffix"));
     ui->tabWidget->addTab(new check_images_state, tr("Check image state"));
+    ui->tabWidget->addTab(new cluster_similar_images, tr("Cluster similar images"));
 }
 
 MainWindow::~MainWindow()
