@@ -10,6 +10,7 @@
 #include <QImage>
 #include <QMessageBox>
 #include <QSettings>
+#include <QUuid>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -41,16 +42,26 @@ void split_data::on_pushButtonStart_clicked()
     QDir().mkpath(ui->lineEditTest->text());
     QDir().mkpath(ui->lineEditTrain->text());
 
-    auto const train_size = static_cast<size_t>(paths.size() * ui->doubleSpinBoxTrain->value());
+    auto create_fname = [](QString const &folder, QString const &path)
+    {
+        auto fname = folder + "/" + QFileInfo(path).fileName();
+        if(QFile::exists(fname)){
+            fname = folder + "/" + QUuid::createUuid().toString() + "." + QFileInfo(path).suffix();
+        }
+
+        return fname;
+    };
+
+    auto const train_size = static_cast<size_t>(static_cast<int>(paths.size()) * ui->doubleSpinBoxTrain->value());
     for(size_t i = 0; i != train_size; ++i){
         qDebug()<<__func__<<" copy "<<paths[i]<<" to "<<QFileInfo(paths[i]).fileName();
         QFile file(paths[i]);
-        file.copy(ui->lineEditTrain->text() + "/" + QFileInfo(paths[i]).fileName());
+        file.copy(create_fname(ui->lineEditTrain->text(), paths[i]));
     }
     for(size_t i = train_size; i != paths.size(); ++i){
         qDebug()<<__func__<<" copy "<<paths[i]<<" to "<<QFileInfo(paths[i]).fileName();
         QFile file(paths[i]);
-        file.copy(ui->lineEditTest->text() + "/" + QFileInfo(paths[i]).fileName());
+        file.copy(create_fname(ui->lineEditTest->text(), paths[i]));
     }
 }
 
