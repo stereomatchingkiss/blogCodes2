@@ -54,16 +54,18 @@ void split_data::on_pushButtonStart_clicked()
 
     auto const train_size = static_cast<size_t>(static_cast<int>(paths.size()) * ui->doubleSpinBoxTrain->value());
     for(size_t i = 0; i != train_size; ++i){
-        qDebug()<<__func__<<" copy "<<paths[i]<<" to "<<QFileInfo(paths[i]).fileName();
         QFile(paths[i]).copy(create_fname(ui->lineEditTrain->text(), paths[i]));
     }
     if(train_size < paths.size()){
         auto const test_size = static_cast<size_t>(static_cast<int>(paths.size()) * ui->doubleSpinBoxTest->value());
         auto const end_size = std::min(paths.size(), static_cast<size_t>(test_size + train_size));
         for(size_t i = train_size; i != end_size; ++i){
-            qDebug()<<__func__<<" copy "<<paths[i]<<" to "<<QFileInfo(paths[i]).fileName();
             QFile(paths[i]).copy(create_fname(ui->lineEditTest->text(), paths[i]));
         }
+        QMessageBox::information(this, tr("Split data"), tr("Train size = %1, test size = %2").
+                                 arg(train_size).arg(test_size));
+    }else{
+        QMessageBox::information(this, tr("Split data"), tr("Train size = %1").arg(train_size));
     }
 }
 
@@ -74,7 +76,8 @@ std::vector<QString> split_data::get_sources()
         return {};
     }
 
-    auto const iterate_flag = QDirIterator::NoIteratorFlags;
+    auto const iterate_flag = ui->checkBoxIterateSource->isChecked() ?  QDirIterator::Subdirectories :
+                                                                        QDirIterator::NoIteratorFlags;
     auto dir_it = create_image_iterator(ui->lineEditSource->text(), iterate_flag);
     std::vector<QString> paths;
     while(dir_it.hasNext()){
