@@ -4,15 +4,7 @@
 #include <QFile>
 #include <QFontDatabase>
 
-int get_font_id()
-{
-    static auto const font_id = QFontDatabase::addApplicationFont(":/assets/OPPOSans-H.ttf");
-    qDebug()<<__func__<<"font id:"<<font_id;
-    return font_id;
-}
-
-font_manager::font_manager() :
-    QObject()
+font_manager::font_manager()
 {
     QFile ifile(":/assets/OPPOSans-H.zip");
     if(ifile.open(QIODevice::ReadOnly)){

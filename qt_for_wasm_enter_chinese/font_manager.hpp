@@ -1,12 +1,11 @@
 #ifndef FONT_MANAGER_HPP
 #define FONT_MANAGER_HPP
 
-#include <QObject>
+#include <QFont>
 #include <QString>
 
-class font_manager : public QObject
-{
-    Q_OBJECT
+class font_manager
+{    
 public:
     font_manager();
 
