@@ -15,7 +15,6 @@ signals:
     void mouse_pressed();
 
 protected:
-    void keyPressEvent(QKeyEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
 
 private:

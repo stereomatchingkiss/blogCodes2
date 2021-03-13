@@ -10,16 +10,16 @@
 namespace{
 
 EM_JS(char*, global_text_process_result_is_valid, (), {
-      return globalTextProcessResultIsValid();
-})
+          return globalTextProcessResultIsValid();
+      })
 
 EM_JS(char*, get_global_text_process_result, (), {
-      return getGlobalTextProcessResult();
-})
+          return getGlobalTextProcessResult();
+      })
 
 EM_JS(void, multi_lines_prompt, (char const *input_strings, char const *input_mode, char const *title), {
-      multiLinesPrompt(UTF8ToString(input_strings), UTF8ToString(input_mode), UTF8ToString(title));
-})
+          multiLinesPrompt(UTF8ToString(input_strings), UTF8ToString(input_mode), UTF8ToString(title));
+      })
 
 }
 
@@ -44,18 +44,15 @@ custom_qplain_text_edit::custom_qplain_text_edit(QWidget *parent) :
 #endif
 }
 
-void custom_qplain_text_edit::keyPressEvent(QKeyEvent *e)
-{
-#ifndef Q_OS_WASM
-    QPlainTextEdit::keyPressEvent(e);
-#endif
-}
-
 void custom_qplain_text_edit::mousePressEvent(QMouseEvent *e)
 {
 #ifdef Q_OS_WASM
-    multi_lines_prompt(toPlainText().toUtf8().data(), "textarea", "Input plain text");
-    timer_->start();
+    if(e->button() == Qt::RightButton){
+        QPlainTextEdit::mousePressEvent(e);
+    }else{
+        multi_lines_prompt(toPlainText().toUtf8().data(), "textarea", "Input plain text");
+        timer_->start();
+    }
 #else
     QPlainTextEdit::mousePressEvent(e);
 #endif
