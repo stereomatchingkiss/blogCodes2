@@ -30,6 +30,8 @@ private slots:
 
     void on_pushButtonSave_clicked();
 
+    void on_spinBoxToImage_valueChanged(int arg1);
+
 private:
     void load_images(size_t image_index);
     void reload_image();

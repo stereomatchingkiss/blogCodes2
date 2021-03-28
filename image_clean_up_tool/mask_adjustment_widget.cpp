@@ -67,10 +67,16 @@ mask_adjustment_widget::~mask_adjustment_widget()
 void mask_adjustment_widget::keyPressEvent(QKeyEvent *event)
 {
     qDebug()<<__func__<<ui->widgetMask->size();
-    ui->widgetMask->set_qimage(QImage(cscene_.data, cscene_.cols, cscene_.rows,
-                                      static_cast<int>(cscene_.step[0]),
-                               QImage::Format_RGB888).copy());
-    QWidget::keyPressEvent(event);
+    qDebug()<<__func__<<": key == "<<event->key();
+    if(event->key() == Qt::Key_D){
+        on_pushButtonToZero_clicked();
+    }else if(event->key() == Qt::Key_S){
+        on_pushButtonSave_clicked();
+    }else if(event->key() == Qt::Key_Space){
+        on_pushButtonNext_clicked();
+    }else{
+        QWidget::keyPressEvent(event);
+    }
 }
 
 void mask_adjustment_widget::on_pushButtonLoadImages_clicked()
@@ -159,6 +165,7 @@ void mask_adjustment_widget::show_image()
         cscene_origin_ = cscene_.clone();
         qDebug()<<__LINE__<<","<<cscene_.cols<<", "<<cscene_.rows;
         cimg_origin_ = cimg.clone();
+        ui->spinBoxToImage->setValue(static_cast<int>(image_index_));
 
         reload_image();
     }
@@ -186,6 +193,7 @@ void mask_adjustment_widget::on_pushButtonPrev_clicked()
     if(image_index_ > 0){
         --image_index_;
     }
+
     qDebug()<<__func__<<" im index = "<<image_index_;
     show_image();
 }
@@ -205,4 +213,10 @@ void mask_adjustment_widget::on_pushButtonSave_clicked()
     auto const url = (ui->lineEditSaveAt->text() + "/" + finfo.fileName());
     auto const saved = cv::imwrite((url).toStdString(), cmask_);
     qDebug()<<__func__<<":"<<url<<", saved success = "<<saved;
+}
+
+void mask_adjustment_widget::on_spinBoxToImage_valueChanged(int arg1)
+{
+    image_index_ = static_cast<size_t>(arg1);
+    show_image();
 }
