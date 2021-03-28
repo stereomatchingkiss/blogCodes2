@@ -16,6 +16,7 @@ OPENCV_PATH = $${3RDLIBS_PATH}/opencv/dev/opencv/build_cpu
 INCLUDEPATH += $${3RDLIBS_PATH}
 INCLUDEPATH += $${OPENCV_PATH}/install/include
 INCLUDEPATH += $${3RDLIBS_PATH}/dlib/dlib/build_cpu/install/include
+INCLUDEPATH += roi
 
 LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_img_hash430.lib
 LIBS += $${OPENCV_PATH}/install/x64/vc15/lib/opencv_world430.lib
@@ -31,6 +32,7 @@ SOURCES += \
     check_images_state.cpp \
     cluster_image_viewer.cpp \
     cluster_similar_images.cpp \
+    config/config_utils.cpp \
     convert_label_img_labels.cpp \
     convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
@@ -39,10 +41,19 @@ SOURCES += \
     labels_update.cpp \
     main.cpp \
     mainwindow.cpp \
+    mask_adjustment_widget.cpp \
     parser_label_img.cpp \
     remove_images.cpp \
+    roi/custom_graphics_view_pixmap.cpp \
+    roi/roi_configure.cpp \
+    roi/roi_configure_data_creator.cpp \
+    roi/roi_view.cpp \
+    roi/rubber_band_base.cpp \
+    roi/rubber_band_points.cpp \
+    roi/rubber_band_rect.cpp \
     split_data.cpp \
     utils/iterator_create.cpp \
+    utils/montage.cpp \
     utils/utility.cpp
 
 HEADERS += \
@@ -50,6 +61,7 @@ HEADERS += \
     check_images_state.hpp \
     cluster_image_viewer.hpp \
     cluster_similar_images.hpp \
+    config/config_utils.hpp \
     convert_label_img_labels.hpp \
     convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
@@ -57,10 +69,20 @@ HEADERS += \
     labels_check.hpp \
     labels_update.hpp \
     mainwindow.hpp \
+    mask_adjustment_widget.hpp \
     parser_label_img.hpp \
     remove_images.hpp \
+    roi/custom_graphics_view_pixmap.hpp \
+    roi/roi_configure.hpp \
+    roi/roi_configure_data_creator.hpp \
+    roi/roi_shape.hpp \
+    roi/roi_view.hpp \
+    roi/rubber_band_base.hpp \
+    roi/rubber_band_points.hpp \
+    roi/rubber_band_rect.hpp \
     split_data.hpp \
     utils/iterator_create.hpp \
+    utils/montage.hpp \
     utils/utility.hpp
 
 FORMS += \
@@ -74,7 +96,9 @@ FORMS += \
     image_mover.ui \
     labels_check.ui \
     mainwindow.ui \
+    mask_adjustment_widget.ui \
     remove_images.ui \
+    roi/roi_configure.ui \
     split_data.ui
 
 # Default rules for deployment.
