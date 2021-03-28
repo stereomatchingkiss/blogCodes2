@@ -8,6 +8,7 @@
 
 #include <opencv2/imgcodecs.hpp>
 
+#include <algorithm>
 #include <fstream>
 
 QWidget *place_to_center_widget(QWidget *target)
@@ -80,4 +81,14 @@ cv::Mat read_cv_img(const QString &url, int interpolate, const cv::Size &resize_
         qDebug()<<QString("Cannot read image %1").arg(url);
         return cv::Mat();
     }
+}
+
+cv::Rect scale_coordinate(cv::Rect const &bbox, int width, int height)
+{
+    auto const x1 = static_cast<int>(std::clamp((bbox.tl().x), 0, width - 1));
+    auto const y1 = static_cast<int>(std::clamp((bbox.tl().y), 0, height - 1));
+    auto const x2 = static_cast<int>(std::clamp((bbox.br().x), 0, width - 1));
+    auto const y2 = static_cast<int>(std::clamp((bbox.br().y), 0, height - 1));
+
+    return cv::Rect(cv::Point(x1, y1), cv::Point(x2, y2));
 }

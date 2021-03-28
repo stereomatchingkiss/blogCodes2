@@ -16,4 +16,6 @@ cv::Mat read_cv_img(QString const &url,
 
 cv::Mat read_image_by_fstream(std::wstring const &fpath);
 
+cv::Rect scale_coordinate(cv::Rect const &bbox, int width, int height);
+
 #endif // UTILITY_HPP
