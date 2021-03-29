@@ -74,6 +74,10 @@ void mask_adjustment_widget::keyPressEvent(QKeyEvent *event)
         on_pushButtonSave_clicked();
     }else if(event->key() == Qt::Key_Space){
         on_pushButtonNext_clicked();
+    }else if(event->key() == Qt::Key_A){
+        on_pushButtonPrev_clicked();
+    }else if(event->key() == Qt::Key_E){
+        on_pushButtonAdjustMaskByAlgo_clicked();
     }else{
         QWidget::keyPressEvent(event);
     }
@@ -126,11 +130,12 @@ void mask_adjustment_widget::reload_image()
     cv::cvtColor(cscene_, cscene_, cv::COLOR_BGR2RGB);
 
     cv::Mat mask_rgb;
-    cv::cvtColor(cmask_, mask_rgb, cv::COLOR_BGR2RGB);
+    cv::cvtColor(cmask_, mask_rgb, cv::COLOR_GRAY2RGB);
     ui->widgetMask->set_qimage(QImage(cscene_.data, cscene_.cols, cscene_.rows,
                                       static_cast<int>(cscene_.step[0]),
                                QImage::Format_RGB888).copy());
 
+    cimg_copy.setTo(0, cmask_ != 127);
     ui->labelImg->setPixmap(QPixmap::fromImage(QImage(cimg_copy.data, cimg_copy.cols, cimg_copy.rows,
                                                       static_cast<int>(cimg_copy.step[0]),
                                                QImage::Format_RGB888).copy()));
@@ -219,4 +224,15 @@ void mask_adjustment_widget::on_spinBoxToImage_valueChanged(int arg1)
 {
     image_index_ = static_cast<size_t>(arg1);
     show_image();
+}
+
+void mask_adjustment_widget::on_pushButtonAdjustMaskByAlgo_clicked()
+{
+    int constexpr erosion_type = cv::MORPH_RECT;
+    int constexpr erosion_size = 1;
+    auto const element = cv::getStructuringElement(erosion_type,
+                                                   cv::Size(2*erosion_size + 1, 2*erosion_size+1),
+                                                   cv::Point(erosion_size, erosion_size));
+    cv::erode(cmask_, cmask_, element);
+    reload_image();
 }

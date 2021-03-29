@@ -32,6 +32,8 @@ private slots:
 
     void on_spinBoxToImage_valueChanged(int arg1);
 
+    void on_pushButtonAdjustMaskByAlgo_clicked();
+
 private:
     void load_images(size_t image_index);
     void reload_image();

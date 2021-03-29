@@ -69,7 +69,9 @@ cv::Mat read_cv_img(const QString &url, int interpolate, const cv::Size &resize_
                     }
                 }
             }else{
-                cv::resize(cimg, cimg, resize_to, 0, 0, interpolate);
+                if(cimg.size() != resize_to){
+                    cv::resize(cimg, cimg, resize_to, 0, 0, interpolate);
+                }
             }
 
             return cimg;
