@@ -76,7 +76,7 @@ void mask_adjustment_widget::keyPressEvent(QKeyEvent *event)
         on_pushButtonNext_clicked();
     }else if(event->key() == Qt::Key_A){
         on_pushButtonPrev_clicked();
-    }else if(event->key() == Qt::Key_E){
+    }else if(event->key() == Qt::Key_F){
         on_pushButtonAdjustMaskByAlgo_clicked();
     }else{
         QWidget::keyPressEvent(event);
