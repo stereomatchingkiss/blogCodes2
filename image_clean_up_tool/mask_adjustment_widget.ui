@@ -56,15 +56,31 @@
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Save at</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Move image to</string>
+       </property>
+      </widget>
+     </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="lineEditMaskFolder"/>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Mask folder</string>
-       </property>
-      </widget>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="lineEditMoveImageTo"/>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="lineEditSaveAt"/>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="lineEditScenePath"/>
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
@@ -73,47 +89,44 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="lineEditScenePath"/>
-     </item>
-     <item row="5" column="1">
+     <item row="7" column="1">
       <widget class="QSpinBox" name="spinBoxToImage"/>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelImageInfo">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEditImageFolder"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Image info</string>
+        <string>Mask folder</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Scene path</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="lineEditSaveAt"/>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="lineEditImageFolder"/>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="7" column="0">
+      <widget class="QLabel" name="labelImageInfo">
        <property name="text">
-        <string>Save at</string>
+        <string>Image info</string>
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Move mask to</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="lineEditMoveMaskTo"/>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="pushButtonAdjustMaskByAlgo">
-     <property name="text">
-      <string>Adjust mask by algo</string>
-     </property>
-    </widget>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">

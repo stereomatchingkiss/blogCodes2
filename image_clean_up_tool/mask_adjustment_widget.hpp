@@ -30,12 +30,13 @@ private slots:
 
     void on_pushButtonSave_clicked();
 
-    void on_spinBoxToImage_valueChanged(int arg1);
-
-    void on_pushButtonAdjustMaskByAlgo_clicked();
+    void on_spinBoxToImage_valueChanged(int arg1);    
 
 private:
+    void dilation();
+    void erosion();
     void load_images(size_t image_index);
+    void move_file();
     void reload_image();
     void set_number();
     void show_image();

@@ -27,6 +27,8 @@ namespace{
 
 QString const state_image_folder_img("state_image_folder_img");
 QString const state_image_folder_mask("state_image_folder_mask");
+QString const state_move_image_to("state_move_image_to");
+QString const state_move_mask_to("state_move_mask_to");
 QString const state_save_at("state_save_at");
 QString const state_scene_path("state_scene_path");
 
@@ -45,6 +47,12 @@ mask_adjustment_widget::mask_adjustment_widget(QWidget *parent) :
     if(settings.contains(state_image_folder_mask)){
         ui->lineEditMaskFolder->setText(settings.value(state_image_folder_mask).toString());
     }
+    if(settings.contains(state_move_image_to)){
+        ui->lineEditMoveImageTo->setText(settings.value(state_move_image_to).toString());
+    }
+    if(settings.contains(state_move_mask_to)){
+        ui->lineEditMoveMaskTo->setText(settings.value(state_move_mask_to).toString());
+    }
     if(settings.contains(state_save_at)){
         ui->lineEditSaveAt->setText(settings.value(state_save_at).toString());
     }
@@ -58,6 +66,8 @@ mask_adjustment_widget::~mask_adjustment_widget()
     QSettings settings("image_clean_up_tool", "mask_adjustment");
     settings.setValue(state_image_folder_img, ui->lineEditImageFolder->text());
     settings.setValue(state_image_folder_mask, ui->lineEditMaskFolder->text());
+    settings.setValue(state_move_image_to, ui->lineEditMoveImageTo->text());
+    settings.setValue(state_move_mask_to, ui->lineEditMoveMaskTo->text());
     settings.setValue(state_save_at, ui->lineEditSaveAt->text());
     settings.setValue(state_scene_path, ui->lineEditScenePath->text());
 
@@ -76,8 +86,14 @@ void mask_adjustment_widget::keyPressEvent(QKeyEvent *event)
         on_pushButtonNext_clicked();
     }else if(event->key() == Qt::Key_A){
         on_pushButtonPrev_clicked();
+    }else if(event->key() == Qt::Key_M){
+        move_file();
     }else if(event->key() == Qt::Key_F){
-        on_pushButtonAdjustMaskByAlgo_clicked();
+        erosion();
+        reload_image();
+    }else if(event->key() == Qt::Key_G){
+        dilation();
+        reload_image();
     }else{
         QWidget::keyPressEvent(event);
     }
@@ -118,6 +134,17 @@ void mask_adjustment_widget::load_images(size_t image_index)
     qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxToImage->minimum()<<", "<<ui->spinBoxToImage->maximum();
 }
 
+void mask_adjustment_widget::move_file()
+{
+    QDir().rename(images_urls_img_[image_index_],
+                  ui->lineEditMoveImageTo->text() + "/" + QFileInfo(images_urls_img_[image_index_]).fileName());
+    QDir().rename(images_urls_mask_[image_index_],
+                  ui->lineEditMoveMaskTo->text() + "/" + QFileInfo(images_urls_mask_[image_index_]).fileName());
+    images_urls_img_.erase(std::begin(images_urls_img_) + static_cast<int>(image_index_));
+    images_urls_mask_.erase(std::begin(images_urls_mask_) + static_cast<int>(image_index_));
+    show_image();
+}
+
 void mask_adjustment_widget::reload_image()
 {
     cscene_origin_.copyTo(cscene_);
@@ -154,18 +181,13 @@ void mask_adjustment_widget::show_image()
 {    
     auto const url = images_urls_img_[image_index_];
     cv::Size const size(256, 256);
-    auto cimg = read_cv_img(images_urls_img_[image_index_], cv::INTER_LINEAR_EXACT, size);
-    auto cmask = read_cv_img(images_urls_mask_[image_index_], cv::INTER_LINEAR_EXACT, size);
-    cscene_ = read_cv_img(ui->lineEditScenePath->text(), cv::INTER_LINEAR_EXACT, size);
-    if(!cimg.empty() && !cmask.empty() && !cscene_.empty()){
-        int constexpr erosion_type = cv::MORPH_RECT;
-        int constexpr erosion_size = 1;
-        auto const element = cv::getStructuringElement(erosion_type,
-                                                       cv::Size(2*erosion_size + 1, 2*erosion_size+1),
-                                                       cv::Point(erosion_size, erosion_size));
-        cv::erode(cmask, cmask, element);
+    auto cimg = read_cv_img(images_urls_img_[image_index_], cv::INTER_NEAREST, size);
+    auto cmask = read_cv_img(images_urls_mask_[image_index_], cv::INTER_NEAREST, size);
+    cscene_ = read_cv_img(ui->lineEditScenePath->text(), cv::INTER_NEAREST, size);
+    if(!cimg.empty() && !cmask.empty() && !cscene_.empty()){        
         cmask.setTo(127, cmask);
         cmask_ = cmask.clone();
+        erosion();
 
         cscene_origin_ = cscene_.clone();
         qDebug()<<__LINE__<<","<<cscene_.cols<<", "<<cscene_.rows;
@@ -226,7 +248,17 @@ void mask_adjustment_widget::on_spinBoxToImage_valueChanged(int arg1)
     show_image();
 }
 
-void mask_adjustment_widget::on_pushButtonAdjustMaskByAlgo_clicked()
+void mask_adjustment_widget::dilation()
+{
+    int constexpr erosion_type = cv::MORPH_RECT;
+    int constexpr erosion_size = 1;
+    auto const element = cv::getStructuringElement(erosion_type,
+                                                   cv::Size(2*erosion_size + 1, 2*erosion_size+1),
+                                                   cv::Point(erosion_size, erosion_size));
+    cv::dilate(cmask_, cmask_, element);
+}
+
+void mask_adjustment_widget::erosion()
 {
     int constexpr erosion_type = cv::MORPH_RECT;
     int constexpr erosion_size = 1;
@@ -234,5 +266,4 @@ void mask_adjustment_widget::on_pushButtonAdjustMaskByAlgo_clicked()
                                                    cv::Size(2*erosion_size + 1, 2*erosion_size+1),
                                                    cv::Point(erosion_size, erosion_size));
     cv::erode(cmask_, cmask_, element);
-    reload_image();
 }
