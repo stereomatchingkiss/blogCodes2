@@ -29,6 +29,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="checkBoxRecursive">
+     <property name="text">
+      <string>Recursive</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>States to check</string>
@@ -62,6 +69,13 @@
     <widget class="QPushButton" name="pushButtonOK">
      <property name="text">
       <string>OK</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButtonRemoveImages">
+     <property name="text">
+      <string>Remove images</string>
      </property>
     </widget>
    </item>
