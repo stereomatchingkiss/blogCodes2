@@ -59,6 +59,8 @@ mask_adjustment_widget::mask_adjustment_widget(QWidget *parent) :
     if(settings.contains(state_scene_path)){
         ui->lineEditScenePath->setText(settings.value(state_scene_path).toString());
     }
+
+    ui->widgetMask->setVisible(false);
 }
 
 mask_adjustment_widget::~mask_adjustment_widget()
@@ -162,7 +164,7 @@ void mask_adjustment_widget::reload_image()
                                       static_cast<int>(cscene_.step[0]),
                                QImage::Format_RGB888).copy());
 
-    cimg_copy.setTo(0, cmask_ != 127);
+    //cimg_copy.setTo(0, cmask_ != 127);
     ui->labelImg->setPixmap(QPixmap::fromImage(QImage(cimg_copy.data, cimg_copy.cols, cimg_copy.rows,
                                                       static_cast<int>(cimg_copy.step[0]),
                                                QImage::Format_RGB888).copy()));
@@ -193,6 +195,8 @@ void mask_adjustment_widget::show_image()
         qDebug()<<__LINE__<<","<<cscene_.cols<<", "<<cscene_.rows;
         cimg_origin_ = cimg.clone();
         ui->spinBoxToImage->setValue(static_cast<int>(image_index_));
+        ui->labelImageName->setText(QFileInfo(images_urls_img_[image_index_]).baseName());
+        ui->labelComposeImgName->setText(QFileInfo(images_urls_mask_[image_index_]).baseName());
 
         reload_image();
     }

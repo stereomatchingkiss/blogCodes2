@@ -129,6 +129,20 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="labelImageName">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="labelComposeImgName">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="2" column="0">
       <widget class="QPushButton" name="pushButtonPrev">

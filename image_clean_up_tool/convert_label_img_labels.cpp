@@ -16,25 +16,21 @@
 namespace{
 
 void to_alexeyab_yolo_format(std::vector<parser_label_img::parse_data> const &input_vec,
-                             std::map<QString, int> const &labels_to_int)
+                             std::map<QString, int> const &labels_to_int,
+                             QString const &save_at)
 {
     for(auto const &input: input_vec){
-        QFileInfo finfo(input.abs_file_path_);
-        QFile file(finfo.absolutePath() + "/" +  finfo.completeBaseName() +  ".txt");
-        if(file.open(QIODevice::WriteOnly)){
-            QImageReader im_reader(input.abs_file_path_);
-            if(im_reader.canRead()){
-                auto const im_size = im_reader.size();
-                QTextStream stream(&file);
-                for(auto const &data : input.objects_){
-                    if(auto it = labels_to_int.find(data.label_); it != std::end(labels_to_int)){
-                        auto const center = data.rect_.center();
-                        stream<<it->second<<" "<<center.x()/im_size.width()<<" "<<center.y()/im_size.height()<<" ";
-                        stream<<data.rect_.width()/im_size.width()<<" "<<data.rect_.height()/im_size.height()<<"\n";
-                    }
+        QFileInfo finfo(input.abs_file_path_);        
+        if(QFile file(save_at + "/" +  finfo.completeBaseName() +  ".txt"); file.open(QIODevice::WriteOnly)){
+            QTextStream stream(&file);
+            qDebug()<<__func__<<input.objects_.size();
+            for(auto const &data : input.objects_){
+                if(auto it = labels_to_int.find(data.label_); it != std::end(labels_to_int)){
+                    auto const im_size = input.sizes_;
+                    auto const center = data.rect_.center();
+                    stream<<it->second<<" "<<center.x()/im_size.width()<<" "<<center.y()/im_size.height()<<" ";
+                    stream<<data.rect_.width()/im_size.width()<<" "<<data.rect_.height()/im_size.height()<<"\n";
                 }
-            }else{
-                qDebug()<<__func__<<": cannot read image = "<<input.abs_file_path_;
             }
         }
     }
@@ -99,7 +95,7 @@ void convert_label_img_labels::on_pushButtonConvert_clicked()
     parser_label_img parser;
     int index = 0;
     for(auto const &fname : file_paths_){
-        qDebug()<<__func__<<" parse fname = "<<fname;
+        //qDebug()<<__func__<<" parse fname = "<<fname;
         auto parse_result = parser.parse(fname);
         for(auto const &val : parse_result.objects_){
             if(auto it = labels_to_int.find(val.label_); it == std::end(labels_to_int)){
@@ -108,6 +104,6 @@ void convert_label_img_labels::on_pushButtonConvert_clicked()
         }
         parse_data_vec.emplace_back(std::move(parse_result));
     }
-    to_alexeyab_yolo_format(parse_data_vec, labels_to_int);
+    to_alexeyab_yolo_format(parse_data_vec, labels_to_int, ui->lineEditSaveLabelsAt->text());
     generate_img_list(parse_data_vec, ui->lineEditSaveImgListAs->text());
 }

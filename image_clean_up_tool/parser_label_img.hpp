@@ -2,6 +2,7 @@
 #define PARSER_LABEL_IMG_HPP
 
 #include <QRectF>
+#include <QSize>
 #include <QString>
 
 #include <vector>
@@ -16,11 +17,12 @@ public:
         struct object
         {
             QString label_;
-            QRectF rect_;
+            QRectF rect_;            
         };
 
         QString abs_file_path_;
         std::vector<object> objects_;
+        QSize sizes_;
 
         void print() const;
     };

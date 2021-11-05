@@ -74,6 +74,7 @@ image_mover::image_mover(QWidget *parent) :
         image_index_ = settings.value(state_index).toUInt();
         load_images(image_index_);
     }
+    ui->labelImage->setScaledContents(false);
 }
 
 image_mover::~image_mover()

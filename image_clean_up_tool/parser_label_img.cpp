@@ -28,6 +28,21 @@ QRectF parse_bndbox(QDomElement &elem)
     return rect;
 }
 
+QSize parse_img_size(QDomElement &elem)
+{
+    QSize size;
+    while(!elem.isNull()){        
+        if(elem.tagName() == "width"){
+            size.setWidth(elem.firstChild().toText().data().toInt());
+        }else if(elem.tagName() == "height"){
+            size.setHeight(elem.firstChild().toText().data().toInt());
+        }
+        elem = elem.nextSibling().toElement();
+    }
+
+    return size;
+}
+
 parser_label_img::parse_data parse_xml(const QString &fname)
 {
     QFile file(QFileInfo(fname).absoluteFilePath());
@@ -53,6 +68,10 @@ parser_label_img::parse_data parse_xml(const QString &fname)
                     child = child.nextSibling().toElement();
                 }
                 result.objects_.emplace_back(obj);
+            }else if(dom_elem.tagName() == "size"){
+                auto child = dom_elem.firstChild().toElement();
+                result.sizes_ = parse_img_size(child);
+                qDebug()<<result.sizes_;
             }
 
             dom_elem = dom_elem.nextSibling().toElement();
