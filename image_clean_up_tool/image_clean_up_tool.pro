@@ -37,6 +37,7 @@ SOURCES += \
     convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
     image_mover.cpp \
+    image_mover_mult.cpp \
     labels_check.cpp \
     labels_update.cpp \
     main.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
     image_mover.hpp \
+    image_mover_mult.hpp \
     labels_check.hpp \
     labels_update.hpp \
     mainwindow.hpp \
@@ -94,6 +96,7 @@ FORMS += \
     convert_yolo_detect_results.ui \
     generate_image_list.ui \
     image_mover.ui \
+    image_mover_mult.ui \
     labels_check.ui \
     mainwindow.ui \
     mask_adjustment_widget.ui \
