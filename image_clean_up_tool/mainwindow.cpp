@@ -8,6 +8,8 @@
 #include "convert_yolo_detect_results.hpp"
 #include "generate_image_list.hpp"
 #include "image_mover.hpp"
+#include "image_mover_mult.hpp"
+#include "image_cropper.hpp"
 #include "labels_check.hpp"
 #include "mask_adjustment_widget.hpp"
 #include "remove_images.hpp"
@@ -19,7 +21,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->tabWidget->addTab(new image_cropper, tr("crop image"));
     ui->tabWidget->addTab(new image_mover, tr("move image"));
+    //ui->tabWidget->addTab(new image_mover_mult, tr("move images"));
     ui->tabWidget->addTab(new mask_adjustment_widget, tr("Mask adjustment"));
     ui->tabWidget->addTab(new remove_images, tr("Remove images"));
     ui->tabWidget->addTab(new split_data, tr("Split data"));
