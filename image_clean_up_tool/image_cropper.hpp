@@ -20,7 +20,13 @@ private slots:
 
     void on_pushButtonSplit_clicked();
 
+    void on_pushButtonSeectFolder_clicked();
+
+    void on_pushButtonSplitImages_clicked();
+
 private:
+    bool split_image(QString const &img_url) const;
+
     Ui::image_cropper *ui;
 };
 
