@@ -10,6 +10,7 @@
 #include <QFileInfo>
 #include <QImageReader>
 #include <QKeyEvent>
+#include <QKeySequence>
 #include <QImage>
 #include <QMessageBox>
 #include <QSettings>
@@ -23,13 +24,10 @@
 
 namespace{
 
-QString const state_button_1("state_button_1");
-QString const state_button_2("state_button_2");
-QString const state_button_3("state_button_3");
-QString const state_button_4("state_button_4");
-QString const state_button_5("state_button_5");
 QString const state_image_folder("state_image_folder");
 QString const state_index("state_index");
+QString const state_table_folders("state_table_folders");
+QString const state_table_keys("state_table_keys");
 
 QString create_unique_name_to_move(QString const &target_dir, QString const &img_url)
 {
@@ -52,21 +50,6 @@ image_mover::image_mover(QWidget *parent) :
     setFocusPolicy(Qt::StrongFocus);
 
     QSettings settings("image_clean_up_tool", "image_mover");
-    if(settings.contains(state_button_1)){
-        ui->lineEdit_1->setText(settings.value(state_button_1).toString());
-    }
-    if(settings.contains(state_button_2)){
-        ui->lineEdit_2->setText(settings.value(state_button_2).toString());
-    }
-    if(settings.contains(state_button_3)){
-        ui->lineEdit_3->setText(settings.value(state_button_3).toString());
-    }
-    if(settings.contains(state_button_4)){
-        ui->lineEdit_4->setText(settings.value(state_button_4).toString());
-    }
-    if(settings.contains(state_button_5)){
-        ui->lineEdit_5->setText(settings.value(state_button_5).toString());
-    }
     if(settings.contains(state_image_folder)){
         ui->lineEditImageFolder->setText(settings.value(state_image_folder).toString());
     }
@@ -74,46 +57,45 @@ image_mover::image_mover(QWidget *parent) :
         image_index_ = settings.value(state_index).toUInt();
         load_images(image_index_);
     }
+    if(settings.contains(state_table_folders)){
+        auto const folders = settings.value(state_table_folders).toList();
+        ui->tableWidget->setRowCount(folders.size());
+        for(int i = 0; i != folders.size(); ++i){
+            ui->tableWidget->setItem(i, 1, new QTableWidgetItem(folders[i].toString()));
+        }
+    }
+    if(settings.contains(state_table_keys)){
+        auto const vals = settings.value(state_table_keys).toList();
+        ui->tableWidget->setRowCount(vals.size());
+        for(int i = 0; i != vals.size(); ++i){
+            ui->tableWidget->setItem(i, 0, new QTableWidgetItem(vals[i].toString()));
+        }
+    }
     ui->labelImage->setScaledContents(false);
 }
 
 image_mover::~image_mover()
 {
     QSettings settings("image_clean_up_tool", "image_mover");
-    settings.setValue(state_button_1, ui->lineEdit_1->text());
-    settings.setValue(state_button_2, ui->lineEdit_2->text());
-    settings.setValue(state_button_3, ui->lineEdit_3->text());
-    settings.setValue(state_button_4, ui->lineEdit_4->text());
-    settings.setValue(state_button_5, ui->lineEdit_5->text());
     settings.setValue(state_image_folder, ui->lineEditImageFolder->text());
     settings.setValue(state_index, image_index_);
+    QStringList table_folders, table_keys;
+    for(int i = 0; i != ui->tableWidget->rowCount(); ++i){
+        if(ui->tableWidget->item(i, 1)){
+            table_folders.push_back(ui->tableWidget->item(i, 1)->text());
+        }else{
+            table_folders.push_back("");
+        }
+        if(ui->tableWidget->item(i, 0)){
+            table_keys.push_back(ui->tableWidget->item(i, 0)->text());
+        }else{
+            table_keys.push_back("");
+        }
+    }
+    settings.setValue(state_table_folders, table_folders);
+    settings.setValue(state_table_keys, table_keys);
 
     delete ui;
-}
-
-void image_mover::on_pushButtonSelectFolder_1_clicked()
-{
-    select_folder(ui->lineEdit_1);
-}
-
-void image_mover::on_pushButtonSelectFolder_2_clicked()
-{
-    select_folder(ui->lineEdit_2);
-}
-
-void image_mover::on_pushButtonSelectFolder_3_clicked()
-{
-    select_folder(ui->lineEdit_3);
-}
-
-void image_mover::on_pushButtonSelectFolder_4_clicked()
-{
-    select_folder(ui->lineEdit_4);
-}
-
-void image_mover::on_pushButtonSelectFolder_5_clicked()
-{
-    select_folder(ui->lineEdit_5);
 }
 
 void image_mover::on_pushButtonSelectImageFolder_clicked()
@@ -155,7 +137,7 @@ void image_mover::show_image()
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
                                                                     static_cast<int>(cimg.step[0]),
                                                              QImage::Format_RGB888).copy()));
-                ui->labelImageName->setText(url);                                
+                ui->labelImageName->setText(url);
             }else{
                 qDebug()<<QString("Cannot read image %1").arg(url);
                 on_pushButtonNext_clicked();
@@ -164,7 +146,7 @@ void image_mover::show_image()
             qDebug()<<QString("Cannot read image %1").arg(url);
             on_pushButtonNext_clicked();
         }
-    }    
+    }
 }
 
 void image_mover::on_pushButtonPrev_clicked()
@@ -188,17 +170,21 @@ void image_mover::on_pushButtonNext_clicked()
 void image_mover::keyPressEvent(QKeyEvent *event)
 {
     qDebug()<<__func__<<event->key();
-    if(event->key() == Qt::Key_1){
-        move_file(ui->lineEdit_1->text());
-    }else if(event->key() == Qt::Key_2){
-        move_file(ui->lineEdit_2->text());
-    }else if(event->key() == Qt::Key_3){
-        move_file(ui->lineEdit_3->text());
-    }else if(event->key() == Qt::Key_4){
-        move_file(ui->lineEdit_4->text());
-    }else if(event->key() == Qt::Key_5){
-        move_file(ui->lineEdit_5->text());
-    }else if(event->key() == Qt::Key_Left){
+    for(int i = 0; i != ui->tableWidget->rowCount(); ++i){
+        auto const &text = ui->tableWidget->item(i, 0)->text();
+        if(!text.isEmpty()){
+            auto const key = QKeySequence(text)[0];
+            if(key == event->key()){
+                auto const &folder = ui->tableWidget->item(i, 1)->text();
+                if(!folder.isEmpty()){
+                    move_file(folder);
+                }
+                break;
+            }
+        }
+    }
+
+    if(event->key() == Qt::Key_Left){
         on_pushButtonPrev_clicked();
     }else if(event->key() == Qt::Key_Right){
         on_pushButtonNext_clicked();
@@ -225,12 +211,16 @@ void image_mover::load_images(size_t image_index)
     qDebug()<<__func__<<": image size = "<<images_urls_.size();
     image_index_ = (image_index + 1) <= images_urls_.size() ? image_index : 0;
     ui->spinBoxIndex->setRange(1, static_cast<int>(images_urls_.size()));
-    qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxIndex->minimum()<<", "<<ui->spinBoxIndex->maximum();    
+    ui->spinBoxIndex->setValue(0);
+    qDebug()<<__func__<<" range of spinbox = "<<ui->spinBoxIndex->minimum()<<", "<<ui->spinBoxIndex->maximum();
     show_image();
 }
 
 void image_mover::move_file(const QString &target_dir)
 {    
+    if(!QDir(target_dir).exists()){
+        QDir().mkpath(target_dir);
+    }
     auto const from = images_urls_[image_index_];
     auto const to = create_unique_name_to_move(target_dir, images_urls_[image_index_]);
     if(auto const success = QDir().rename(from, to); success){
@@ -264,3 +254,17 @@ void image_mover::on_pushButtonRestore_clicked()
         steps_record_.pop_back();
     }
 }
+
+void image_mover::on_pushButtonAddNewKey_clicked()
+{
+    ui->tableWidget->insertRow(ui->tableWidget->rowCount());
+}
+
+
+void image_mover::on_pushButtonDeleteKey_clicked()
+{
+    if(ui->tableWidget->rowCount() > 0){
+        ui->tableWidget->removeRow(ui->tableWidget->rowCount() - 1);
+    }
+}
+

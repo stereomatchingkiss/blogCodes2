@@ -18,17 +18,7 @@ public:
     explicit image_mover(QWidget *parent = nullptr);
     ~image_mover() override;
 
-private slots:
-    void on_pushButtonSelectFolder_1_clicked();
-
-    void on_pushButtonSelectFolder_2_clicked();
-
-    void on_pushButtonSelectFolder_3_clicked();
-
-    void on_pushButtonSelectFolder_4_clicked();
-
-    void on_pushButtonSelectFolder_5_clicked();
-
+private slots:    
     void on_pushButtonSelectImageFolder_clicked();
 
     void on_pushButtonLoadImages_clicked();
@@ -40,6 +30,10 @@ private slots:
     void on_spinBoxIndex_valueChanged(int arg1);
 
     void on_pushButtonRestore_clicked();
+
+    void on_pushButtonAddNewKey_clicked();
+
+    void on_pushButtonDeleteKey_clicked();
 
 private:
     void keyPressEvent(QKeyEvent *event) override;
