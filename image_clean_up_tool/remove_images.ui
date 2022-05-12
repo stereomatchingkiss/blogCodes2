@@ -51,20 +51,6 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QCheckBox" name="checkBoxRecursive">
-            <property name="text">
-             <string>remove  image recursive</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QCheckBox" name="checkBoxMultiThread">
-            <property name="text">
-             <string>multi threads</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -215,6 +201,20 @@
       </layout>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBoxRecursive">
+     <property name="text">
+      <string>remove  image recursive</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBoxMultiThread">
+     <property name="text">
+      <string>multi threads</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="labelImageSize">
