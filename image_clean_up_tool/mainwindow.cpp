@@ -13,6 +13,7 @@
 #include "labels_check.hpp"
 #include "mask_adjustment_widget.hpp"
 #include "remove_images.hpp"
+#include "show_folders_details.hpp"
 #include "split_data.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -23,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tabWidget->addTab(new image_cropper, tr("crop image"));
     ui->tabWidget->addTab(new image_mover, tr("move image"));
+    ui->tabWidget->addTab(new show_folders_details, tr("Show folder details"));
     //ui->tabWidget->addTab(new image_mover_mult, tr("move images"));
     ui->tabWidget->addTab(new mask_adjustment_widget, tr("Mask adjustment"));
     ui->tabWidget->addTab(new remove_images, tr("Remove images"));
@@ -33,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->addTab(new convert_yolo_detect_results, tr("Convert yolo detect results"));
     ui->tabWidget->addTab(new change_wrong_image_suffix, tr("Change wrong image suffix"));
     ui->tabWidget->addTab(new check_images_state, tr("Check image state"));
-    ui->tabWidget->addTab(new cluster_similar_images, tr("Cluster similar images"));
+    ui->tabWidget->addTab(new cluster_similar_images, tr("Cluster similar images"));    
 }
 
 MainWindow::~MainWindow()
