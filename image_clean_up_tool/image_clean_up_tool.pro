@@ -36,6 +36,7 @@ SOURCES += \
     convert_label_img_labels.cpp \
     convert_yolo_detect_results.cpp \
     generate_image_list.cpp \
+    image_cropper.cpp \
     image_mover.cpp \
     image_mover_mult.cpp \
     labels_check.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
     roi/rubber_band_base.cpp \
     roi/rubber_band_points.cpp \
     roi/rubber_band_rect.cpp \
+    show_folders_details.cpp \
     split_data.cpp \
     utils/iterator_create.cpp \
     utils/montage.cpp \
@@ -66,6 +68,7 @@ HEADERS += \
     convert_label_img_labels.hpp \
     convert_yolo_detect_results.hpp \
     generate_image_list.hpp \
+    image_cropper.hpp \
     image_mover.hpp \
     image_mover_mult.hpp \
     labels_check.hpp \
@@ -82,6 +85,7 @@ HEADERS += \
     roi/rubber_band_base.hpp \
     roi/rubber_band_points.hpp \
     roi/rubber_band_rect.hpp \
+    show_folders_details.hpp \
     split_data.hpp \
     utils/iterator_create.hpp \
     utils/montage.hpp \
@@ -95,6 +99,7 @@ FORMS += \
     convert_label_img_labels.ui \
     convert_yolo_detect_results.ui \
     generate_image_list.ui \
+    image_cropper.ui \
     image_mover.ui \
     image_mover_mult.ui \
     labels_check.ui \
@@ -102,6 +107,7 @@ FORMS += \
     mask_adjustment_widget.ui \
     remove_images.ui \
     roi/roi_configure.ui \
+    show_folders_details.ui \
     split_data.ui
 
 # Default rules for deployment.
