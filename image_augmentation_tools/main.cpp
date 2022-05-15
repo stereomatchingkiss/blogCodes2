@@ -1,5 +1,7 @@
 #include "mainwindow.hpp"
 
+#include "algo/image_process.hpp"
+#include "algo/nanodet.hpp"
 #include "algo/saliency_image_generator.hpp"
 
 #include <QApplication>
@@ -185,7 +187,7 @@ void synthesize_random_data()
     }
 
     std::vector<std::string> bg_urls;
-    for(auto const &it : fs::directory_iterator("textures/")){
+    for(auto const &it : fs::directory_iterator("textures2/")){
         bg_urls.emplace_back(it.path().string());
     }
 
@@ -196,10 +198,12 @@ void synthesize_random_data()
     std::uniform_int_distribution<std::mt19937::result_type> random_texture(0, bg_urls.size() - 1);
     std::uniform_int_distribution<std::mt19937::result_type> random_coins(0, coins_urls.size() - 1);
     std::uniform_int_distribution<std::mt19937::result_type> random_coins_num(2, 5);
+    std::uniform_int_distribution<std::mt19937::result_type> random_resize_policy(0, 1);
+    std::uniform_real_distribution<> random_real(0.0, 1.0);
     int constexpr morph_size = 2;
     int constexpr max_dims = 500;
     auto const element = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(2 * morph_size + 1, 2 * morph_size + 1));
-    for(size_t i = 0; i != 200; ++i){
+    for(size_t i = 0; i != 20; ++i){
         std::vector<cv::Rect> rects;
         auto const texture_path = bg_urls[random_texture(gen)];
         //auto const texture_path = bg_urls[1];
@@ -215,12 +219,22 @@ void synthesize_random_data()
         }
         auto const coins_size = random_coins_num(gen);
         std::cout<<"texture size = "<<texture.size()<<", coins size = "<<coins_size<<std::endl;
+        auto const resize_policy = random_resize_policy(gen);
         for(size_t j = 0; j != coins_size; ++j){
             auto const &curl = coins_urls[random_coins(gen)];
             auto coin_img = cv::imread(curl.im_path_);
             auto mask_img = cv::imread(curl.mask_path_, cv::IMREAD_GRAYSCALE);
+            if(random_real(gen) > 0.5){
+                cv::flip(coin_img, coin_img, 1);
+            }
             cv::morphologyEx(mask_img, mask_img, cv::MORPH_OPEN, element);
-            resize_fg_and_bg(coin_img, mask_img, texture.size(), coins_size);
+            if(resize_policy == 0){
+                int constexpr coin_dim = 100;
+                cv::resize(coin_img, coin_img, cv::Size(coin_dim, coin_dim), 0, 0, cv::INTER_NEAREST);
+                cv::resize(mask_img, mask_img, cv::Size(coin_dim, coin_dim), 0, 0, cv::INTER_NEAREST);
+            }else{
+                resize_fg_and_bg(coin_img, mask_img, texture.size(), coins_size);
+            }
             std::cout<<"sizes of coins = "<<curl.im_path_<<", "<<curl.mask_path_<<std::endl;
             std::cout<<texture.size()<<","<<coin_img.size()<<std::endl;
             if(coin_img.rows < texture.rows && coin_img.cols < texture.cols){
@@ -233,14 +247,35 @@ void synthesize_random_data()
             }
         }
         if(!rects.empty()){
-            generate_labelme_json("gen_labels/" + std::to_string(i) + ".json",
+            size_t const index = 1100 + i;
+            generate_labelme_json("gen_labels/" + std::to_string(index) + ".json",
                                   texture.size(),
-                                  QString("../gen_images/%1.jpg").arg(i),
+                                  QString("../gen_images/%1.jpg").arg(index),
                                   rects);
-            cv::imwrite("gen_images/" + std::to_string(i) + ".jpg", texture);
+            cv::imwrite("gen_images/" + std::to_string(index) + ".jpg", texture);
         }
     }
     std::cout<<coins_urls.size()<<std::endl;
+}
+
+void crop_coins()
+{
+    namespace fs = std::filesystem;
+
+    nanodet net("models_coins/v5/detect.param", "models_coins/v5/detect.bin", 1);
+    net.set_swap_rgb(true);
+    fs::create_directory("crop_coins");
+    size_t index = 0;
+    for(auto const &it : fs::directory_iterator("E:/computer_vision_dataset/coins/japan/temps/50/dsplit")){
+        if(auto const img = cv::imread(it.path().string()); !img.empty()){
+            auto const bboxes = net.predict(img, 0.4f, 0.3f);
+            std::cout<<bboxes.size()<<std::endl;
+            for(auto const &box : bboxes){
+                auto const crop_img = img(box.to_cv_rect(img.cols, img.rows));
+                cv::imwrite("crop_coins/" + std::to_string(index++) + ".jpg", crop_img);
+            }
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -249,7 +284,8 @@ int main(int argc, char *argv[])
     //MainWindow w;
     //w.show();
 
-    synthesize_random_data();
+    crop_coins();
+    //synthesize_random_data();
 
     //return a.exec();
 }

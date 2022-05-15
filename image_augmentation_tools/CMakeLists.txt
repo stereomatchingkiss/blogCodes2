@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(image_augmentation_tools VERSION 0.1 LANGUAGES CXX)
 
+add_definitions(-DFMT_HEADER_ONLY)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -32,6 +34,10 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.hpp
         mainwindow.ui
+        algo/image_process.hpp
+        algo/image_process.cpp
+        algo/nanodet.hpp
+        algo/nanodet.cpp
         algo/saliency_image_generator.hpp
         algo/saliency_image_generator.cpp
 )
@@ -58,6 +64,9 @@ else()
         )
     endif()
 endif()
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${3RDLIBS_PATH}/boost/boost_1_76_0)
+target_include_directories(${PROJECT_NAME} PRIVATE ${3RDLIBS_PATH}/fmt/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS} ncnn Qt${QT_VERSION_MAJOR}::Widgets)
 
