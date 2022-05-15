@@ -72,6 +72,10 @@ image_mover::image_mover(QWidget *parent) :
         }
     }
     ui->labelImage->setScaledContents(false);
+
+    auto *event_eater = new scroll_area_key_press_eater;
+    ui->scrollArea->installEventFilter(event_eater);
+    connect(event_eater, &scroll_area_key_press_eater::key_press, this, &image_mover::keyPressEvent);
 }
 
 image_mover::~image_mover()
@@ -268,3 +272,20 @@ void image_mover::on_pushButtonDeleteKey_clicked()
     }
 }
 
+scroll_area_key_press_eater::scroll_area_key_press_eater() : QObject()
+{
+
+}
+
+bool scroll_area_key_press_eater::eventFilter(QObject*, QEvent *event)
+{
+    qDebug()<<"scroll area event filter : "<<event->type();
+    if(event->type() == QEvent::KeyPress){
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        if(ke->key() == Qt::Key_Left || ke->key() == Qt::Key_Right){
+           emit key_press(ke);
+           return true;
+        }
+    }
+    return QObject::event(event);
+}

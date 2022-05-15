@@ -11,6 +11,19 @@ class image_mover;
 
 class QLineEdit;
 
+class scroll_area_key_press_eater : public QObject
+{
+    Q_OBJECT
+public:
+    scroll_area_key_press_eater();
+
+signals:
+    void key_press(QKeyEvent *event);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
+};
+
 class image_mover : public QWidget
 {
     Q_OBJECT
@@ -35,7 +48,7 @@ private slots:
 
     void on_pushButtonDeleteKey_clicked();
 
-private:
+private:    
     void keyPressEvent(QKeyEvent *event) override;
 
     void load_images(size_t image_index);
