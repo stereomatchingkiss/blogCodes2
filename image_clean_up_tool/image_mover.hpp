@@ -15,7 +15,7 @@ class scroll_area_key_press_eater : public QObject
 {
     Q_OBJECT
 public:
-    scroll_area_key_press_eater();
+    explicit scroll_area_key_press_eater(QObject *parent);
 
 signals:
     void key_press(QKeyEvent *event);

@@ -73,7 +73,7 @@ image_mover::image_mover(QWidget *parent) :
     }
     ui->labelImage->setScaledContents(false);
 
-    auto *event_eater = new scroll_area_key_press_eater;
+    auto *event_eater = new scroll_area_key_press_eater(this);
     ui->scrollArea->installEventFilter(event_eater);
     connect(event_eater, &scroll_area_key_press_eater::key_press, this, &image_mover::keyPressEvent);
 }
@@ -272,7 +272,8 @@ void image_mover::on_pushButtonDeleteKey_clicked()
     }
 }
 
-scroll_area_key_press_eater::scroll_area_key_press_eater() : QObject()
+scroll_area_key_press_eater::scroll_area_key_press_eater(QObject *parent) :
+    QObject(parent)
 {
 
 }
