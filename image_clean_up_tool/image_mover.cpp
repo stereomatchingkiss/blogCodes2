@@ -122,10 +122,11 @@ void image_mover::show_image()
 {
     if((image_index_ + 1) <= images_urls_.size()){
         auto const url = images_urls_[image_index_];
+        qDebug()<<"url = "<<url;
         QFile file(url);
         if(file.open(QIODevice::ReadOnly)){
             auto buffer = file.readAll();
-            auto cimg = cv::imdecode(cv::Mat(1, buffer.size(), CV_8U, buffer.data()), cv::IMREAD_COLOR);
+            auto cimg = cv::imdecode(cv::Mat(1, buffer.size(), CV_8U, buffer.data()), cv::IMREAD_UNCHANGED);
             if(!cimg.empty()){
                 set_number(QSize(cimg.cols, cimg.rows));
                 if(cimg.cols > cimg.rows){
@@ -137,10 +138,18 @@ void image_mover::show_image()
                         cv::resize(cimg, cimg, cv::Size(static_cast<int>(480.0/cimg.rows * cimg.cols), 480));
                     }
                 }
-                cv::cvtColor(cimg, cimg, cv::COLOR_BGR2RGB);
+                if(cimg.channels() == 4){
+                    cv::cvtColor(cimg, cimg, cv::COLOR_BGRA2RGBA);
+                }
+                if(cimg.channels() == 3){
+                    cv::cvtColor(cimg, cimg, cv::COLOR_BGR2RGBA);
+                }
+                if(cimg.channels() == 1){
+                    cv::cvtColor(cimg, cimg, cv::COLOR_GRAY2RGB);
+                }
                 ui->labelImage->setPixmap(QPixmap::fromImage(QImage(cimg.data, cimg.cols, cimg.rows,
                                                                     static_cast<int>(cimg.step[0]),
-                                                             QImage::Format_RGB888).copy()));
+                                                             QImage::Format_RGBA8888).copy()));
                 ui->labelImageName->setText(url);
             }else{
                 qDebug()<<QString("Cannot read image %1").arg(url);
