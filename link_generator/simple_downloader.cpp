@@ -92,8 +92,7 @@ void simple_downloader::download()
             //QSslError ignoreNOErrors(QSslError::NoError);
             //expectedSslErrors.append(ignoreNOErrors);
             //reply->ignoreSslErrors(expectedSslErrors);
-            connect(reply, static_cast<void(QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
-                    this, &simple_downloader::network_error);
+            connect(reply, &QNetworkReply::errorOccurred, this, &simple_downloader::network_error);
             connect(reply, &QNetworkReply::downloadProgress, this, &simple_downloader::download_progress);
             connect(reply, &QNetworkReply::finished, this, &simple_downloader::download_finished);
         }else{
@@ -109,8 +108,8 @@ void simple_downloader::download_finished()
     if(auto *reply = qobject_cast<QNetworkReply*>(sender()); reply){
         if(reply->error() == QNetworkReply::NoError){
             qDebug()<<"download finish no error";
-            QString save_at = ui->tableWidgetDownloadInfo->item(current_download_row_, SaveAt)->
-                    data(Qt::DisplayRole).toString();
+            QString const save_at =
+                    ui->tableWidgetDownloadInfo->item(current_download_row_, SaveAt)->data(Qt::DisplayRole).toString();
             QString file_name = ui->tableWidgetDownloadInfo->item(current_download_row_, Link)->
                     data(Qt::DisplayRole).toString();
             ui->tableWidgetDownloadInfo->removeRow(current_download_row_);
