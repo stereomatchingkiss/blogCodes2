@@ -23,6 +23,8 @@ private slots:
 
     void on_pushButtonGenLinks_clicked();
 
+    void on_pushButtonOpenSaveAt_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -30,21 +30,16 @@ MainWindow::MainWindow(QWidget *parent) :
     if(settings.contains("mainwindow/geometry")){
         restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
     }
-
-    connect(ui->pushButtonGenLinks, &QPushButton::clicked, [this]()
-    {
-        on_pushButtonGenLinks_clicked();
-    });
-    connect(ui->pushButtonAddDownloadLink, &QPushButton::clicked, [this]()
-    {
-        on_pushButtonAddDownloadLink_clicked();
-    });
+    if(settings.contains("save_at")){
+        ui->lineEditSaveAt->setText(settings.value("save_at").toString());
+    }
 }
 
 MainWindow::~MainWindow()
 {
     QSettings settings("tham soft", "link generator");
     settings.setValue("mainwindow/geometry", saveGeometry());
+    settings.setValue("save_at", ui->lineEditSaveAt->text());
 
     delete ui;
 }
@@ -52,7 +47,7 @@ MainWindow::~MainWindow()
 void MainWindow::generate_link(int sharp_size, QString const &link_text)
 {
     result_.clear();
-    QRegularExpression reg("#+");
+    static QRegularExpression reg("#+");
     int from = ui->lineEditFrom->text().toInt();
     int to = ui->lineEditTo->text().toInt();
     if(from > to){
@@ -70,17 +65,29 @@ void MainWindow::generate_link(int sharp_size, QString const &link_text)
 
 void MainWindow::on_pushButtonAddDownloadLink_clicked()
 {    
-    QSettings settings("tham soft", "link generator");
-    QString const dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                          settings.value("dir").toString(),
-                                                          QFileDialog::ShowDirsOnly
-                                                          | QFileDialog::DontResolveSymlinks);
+    auto download_func = [this](){
+        if(QDir().mkpath(ui->lineEditSaveAt->text())){
+            auto const &links = ui->plainTextEditResult->toPlainText().split("\n");
+            downloader_->add_files(links, ui->lineEditSaveAt->text());
+            downloader_->show();
+            downloader_->raise();
+        }else{
+            QMessageBox::warning(this, tr("Link generator"), tr("Cannot create folder, please try a new one"));
+        }
+    };
 
-    auto const &links = ui->plainTextEditResult->toPlainText().split("\n");
-    downloader_->add_files(links, dir);
-    settings.setValue("dir", dir);
-    downloader_->show();
-    downloader_->raise();
+    QSettings settings("tham soft", "link generator");
+    if(QDir(ui->lineEditSaveAt->text()).exists()){
+        int const ret =
+                QMessageBox::warning(this, tr("Link generator"),
+                                     tr("The folder exist already, do you want to download files into the same folder?"),
+                                     QMessageBox::Yes | QMessageBox::No);
+        if(ret == QMessageBox::Yes){
+            download_func();
+        }
+    }else{
+        download_func();
+    }
 }
 
 void MainWindow::on_pushButtonGenLinks_clicked()
@@ -88,7 +95,7 @@ void MainWindow::on_pushButtonGenLinks_clicked()
     qDebug()<<__func__;
     if(ui->spinBoxNumPos->value() != -1){
         auto link_text = ui->lineEditLink->text();
-        QRegularExpression reg("(\\d+)");
+        static QRegularExpression reg("(\\d+)");
         auto iter = reg.globalMatch(link_text);
         int index = 0;
         while(iter.hasNext()){
@@ -103,7 +110,7 @@ void MainWindow::on_pushButtonGenLinks_clicked()
         }
     }else{
         auto link_text = ui->lineEditLink->text();
-        QRegularExpression reg("(\\d+)(?!.*\\d)");
+        static QRegularExpression reg("(\\d+)(?!.*\\d)");
         auto match = reg.match(link_text);
         if(match.hasMatch()){
             link_text.replace(reg, QChar('#'));
@@ -111,3 +118,13 @@ void MainWindow::on_pushButtonGenLinks_clicked()
         generate_link(1, link_text);
     }
 }
+
+void MainWindow::on_pushButtonOpenSaveAt_clicked()
+{
+    QSettings settings("tham soft", "link generator");
+    QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                      ui->lineEditSaveAt->text(),
+                                      QFileDialog::ShowDirsOnly
+                                      | QFileDialog::DontResolveSymlinks);
+}
+
