@@ -122,9 +122,10 @@ void MainWindow::on_pushButtonGenLinks_clicked()
 void MainWindow::on_pushButtonOpenSaveAt_clicked()
 {
     QSettings settings("tham soft", "link generator");
-    QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                      ui->lineEditSaveAt->text(),
-                                      QFileDialog::ShowDirsOnly
-                                      | QFileDialog::DontResolveSymlinks);
+    auto const dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                       ui->lineEditSaveAt->text(),
+                                                       QFileDialog::ShowDirsOnly
+                                                       | QFileDialog::DontResolveSymlinks);
+    ui->lineEditSaveAt->setText(dir);
 }
 
