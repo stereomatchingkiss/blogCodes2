@@ -19,16 +19,17 @@ cv::Mat read_img(std::string const &img_location);
 void test_stitching(std::string const &folder,
                     std::string const &img1_name,
                     std::string const &img2_name,
+                    int mode,
                     std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher);
 
 int main(int argc, char *argv[])try
 {            
     if(argc < 5){
         cerr<<"Argument must not less than 4. They are folder of images, \n"
-           <<"name of left image, name of right image, and stitch mode. Mode "
-             "0 will use feature stitch, 1 will use Stitcher class of opencv.\n"
-             "Example:\n"
-             "stitching ../../computer_vision_dataset/stitching/images/ bryce_left_02.png bryce_right_02.png 0";
+             <<"name of left image, name of right image, and stitch mode. Mode "
+                "0 will use feature stitch, 1 will use Stitcher class of opencv.\n"
+                "Example:\n"
+                "stitching ../../computer_vision_dataset/stitching/images/ bryce_left_02.png bryce_right_02.png 0";
 
         return -1;
     }
@@ -37,34 +38,34 @@ int main(int argc, char *argv[])try
     std::string const img1_location(argv[2]);
     std::string const img2_location(argv[3]);
 
-    int const mode = std::stoi(argv[4]);
-    if(mode == 0){
-        measure_elapsed_time([&]()
-        {
-            test_stitching(folder, img1_location, img2_location, [](cv::Mat const &img1, cv::Mat const &img2)
-            {
-                feature_stitch fs;
-                return fs.stitch_images(img1, img2, stitch_direction::horizontal, 0.75, 4.0, false);
-            });
-        });
+    if(int const mode = std::stoi(argv[4]); mode == 0){
+        auto func = [&](){
+            test_stitching(folder, img1_location, img2_location, mode, [](cv::Mat const &img1, cv::Mat const &img2)
+                           {
+                               feature_stitch fs;
+                               return fs.stitch_images(img1, img2, stitch_direction::horizontal, 0.75, 4.0, false);
+                           });
+        } ;
+        measure_elapsed_time(func);
     }else{
-        measure_elapsed_time([&]()
+        auto func = [&]()
         {
-            test_stitching(folder, img1_location, img2_location, [](cv::Mat const &img1, cv::Mat const &img2)
-            {
-                cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA, true);
-                std::vector<cv::Mat> imgs{img1, img2};
-                cv::Mat stitch_result;
-                cv::Stitcher::Status const status = stitcher->stitch(imgs, stitch_result);
-                if(status != cv::Stitcher::OK){
-                    cerr<<"can't stich images by cv::Stitcher, error code = "<<int(status) << endl;
-                    throw std::runtime_error("can't stich images by cv::Stitcher, error code = " +
-                                             std::to_string(static_cast<int>(status)));
-                }
+            test_stitching(folder, img1_location, img2_location, mode, [](cv::Mat const &img1, cv::Mat const &img2)
+                           {
+                               cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
+                               std::vector<cv::Mat> imgs{img1, img2};
+                               cv::Mat stitch_result;
+                               cv::Stitcher::Status const status = stitcher->stitch(imgs, stitch_result);
+                               if(status != cv::Stitcher::OK){
+                                   cerr<<"can't stich images by cv::Stitcher, error code = "<<int(status) << endl;
+                                   throw std::runtime_error("can't stich images by cv::Stitcher, error code = " +
+                                                            std::to_string(static_cast<int>(status)));
+                               }
 
-                return std::make_pair(stitch_result, cv::Mat());
-            });
-        });
+                               return std::make_pair(stitch_result, cv::Mat());
+                           });
+        };
+        measure_elapsed_time(func);
     }
 
     return 0;
@@ -93,10 +94,11 @@ cv::Mat read_img(std::string const &img_location)
 void test_stitching(std::string const &folder,
                     std::string const &img1_name,
                     std::string const &img2_name,
+                    int mode,
                     std::function<std::pair<cv::Mat, cv::Mat>(cv::Mat const&, cv::Mat const&)> stitcher)
 {
-    auto img1 = read_img(folder + img1_name);
-    auto img2 = read_img(folder + img2_name);
+    auto img1 = read_img(folder + "/" + img1_name);
+    auto img2 = read_img(folder + "/" + img2_name);
 
     std::cout<<img2.size()<<","<<img1.size()<<std::endl;
     cv::resize(img1, img1, cv::Size(400, static_cast<int>(img1.rows * 400.0/img1.cols)));
@@ -113,7 +115,11 @@ void test_stitching(std::string const &folder,
 
     if(!stitch_result.empty()){
         //cv::imshow("stitch_result", stitch_result);
-        cv::imwrite(img1_name.substr(0, pos1) + "_stitch_resut.jpg", stitch_result);
+        if(mode == 0){
+            cv::imwrite(img1_name.substr(0, pos1) + "_feature_stitch_result.jpg", stitch_result);
+        }else{
+            cv::imwrite(img1_name.substr(0, pos1) + "_opencv_stitch_result.jpg", stitch_result);
+        }
     }
     if(!matches_points.empty()){
         //cv::imshow("matches_points", matches_points);
