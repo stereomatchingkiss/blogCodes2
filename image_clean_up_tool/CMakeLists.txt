@@ -59,6 +59,9 @@ set(PROJECT_SOURCES
     utils/iterator_create.hpp utils/iterator_create.cpp
     utils/montage.hpp utils/montage.cpp
     utils/utility.hpp utils/utility.cpp
+
+    ${PLUGIN_LIBS_PATH}/utils/qtable_item_utils.hpp ${PLUGIN_LIBS_PATH}/utils/qtable_item_utils.cpp
+    ${PLUGIN_LIBS_PATH}/utils/utility.hpp ${PLUGIN_LIBS_PATH}/utils/utility.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -66,6 +69,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         ui/widget_open_image_viewer.hpp ui/widget_open_image_viewer.cpp ui/widget_open_image_viewer.ui
+        ui/widget_export_open_image_viewer_to_other_format.hpp ui/widget_export_open_image_viewer_to_other_format.cpp ui/widget_export_open_image_viewer_to_other_format.ui
+        structure/open_image_detector_info.hpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET face_recognition_tasks APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
