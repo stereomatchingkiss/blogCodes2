@@ -1,6 +1,8 @@
 #include "widget_open_image_viewer.hpp"
 #include "ui_widget_open_image_viewer.h"
 
+#include "widget_export_open_image_viewer_to_other_format.hpp"
+
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -12,7 +14,8 @@
 
 widget_open_image_viewer::widget_open_image_viewer(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::widget_open_image_viewer)
+    ui(new Ui::widget_open_image_viewer),
+    widget_export_open_image_viewer_to_other_format_(std::make_unique<widget_export_open_image_viewer_to_other_format>())
 {
     ui->setupUi(this);
 
@@ -29,25 +32,7 @@ void widget_open_image_viewer::on_pushButtonLoad_clicked()
 {
     load_key_to_labels();
     load_images_path();
-    if(QFile file(ui->lineEditFolder->text() + "/labels/detections.csv"); file.open(QIODevice::ReadOnly)){
-        QTextStream stream(&file);
-        QString line;
-        line = stream.readLine();
-        while(!stream.atEnd()){
-            line = stream.readLine();
-            auto const sline = line.split(",");
-            if(images_base_name_.contains(sline[0])){
-                if(auto it = detector_info_list_.find(sline[0]); it != std::end(detector_info_list_)){
-                    it->second.emplace_back(strs_to_detection_info(sline));
-                }else{
-                    std::vector<detection_info> div;
-                    div.emplace_back(strs_to_detection_info(sline));
-                    detector_info_list_.emplace(sline[0], std::move(div));
-                }
-            }
-        }
-    }
-    qDebug()<<"detector_info_list_ size = "<<detector_info_list_.size();
+    load_creator_info_list();
 
     if(!detector_info_list_.empty()){
         ui->spinBoxSelectImage->setMaximum(static_cast<int>(detector_info_list_.size() - 1));
@@ -78,15 +63,14 @@ void widget_open_image_viewer::load_key_to_labels()
             auto const sline = line.split(",");
             if(sline.size() >= 2){
                 key_to_labels_.emplace(sline[0], sline[1]);
-                qDebug()<<sline;
             }
         }
     }
 }
 
-widget_open_image_viewer::detection_info widget_open_image_viewer::strs_to_detection_info(QStringList const &input) const
+open_image_detector_info widget_open_image_viewer::strs_to_detection_info(QStringList const &input) const
 {
-    detection_info di;
+    open_image_detector_info di;
     di.label_ = input[2];
     di.xmin_ = input[4].toFloat();
     di.xmax_ = input[5].toFloat();
@@ -136,5 +120,52 @@ void widget_open_image_viewer::draw_detection_info(QImage &img, QString const &i
             }
         }
     }
+}
+
+void widget_open_image_viewer::load_creator_info_list()
+{
+    unique_labels_.clear();
+    if(QFile file(ui->lineEditFolder->text() + "/labels/detections.csv"); file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        QString line;
+        line = stream.readLine();
+        while(!stream.atEnd()){
+            line = stream.readLine();
+            auto const sline = line.split(",");
+            if(images_base_name_.contains(sline[0])){
+                if(auto it = detector_info_list_.find(sline[0]); it != std::end(detector_info_list_)){
+                    it->second.emplace_back(strs_to_detection_info(sline));
+                }else{
+                    std::vector<open_image_detector_info> div;
+                    div.emplace_back(strs_to_detection_info(sline));
+                    detector_info_list_.emplace(sline[0], std::move(div));
+                }
+                unique_labels_.emplace(sline[2]);
+            }
+        }
+    }
+    qDebug()<<"detector_info_list_ size = "<<detector_info_list_.size();
+}
+
+
+void widget_open_image_viewer::on_pushButtonExportToOtherFormat_clicked()
+{
+    QStringList temps;
+    for(auto const &val : unique_labels_){
+        if(auto it = key_to_labels_.find(val); it != std::end(key_to_labels_)){
+            temps.push_back(key_to_labels_[val]);
+        }
+    }
+    temps.sort();
+    for(auto const &val : temps){
+        qDebug()<<val;
+    }
+
+    widget_export_open_image_viewer_to_other_format_->update_table(temps);
+
+    widget_export_open_image_viewer_to_other_format_->set_detector_info_list(&detector_info_list_);
+    widget_export_open_image_viewer_to_other_format_->set_key_to_labels(&key_to_labels_);
+
+    widget_export_open_image_viewer_to_other_format_->show();
 }
 
