@@ -134,13 +134,13 @@ void convert_yolo_detect_results::on_pushButtonConvert_clicked()
         auto doc = QJsonDocument::fromJson(file.readAll());
         auto const img_arrays = doc.array();
         qDebug()<<__func__<<": array size = "<<img_arrays.size();
-        for(auto const &arr : img_arrays){
-            qDebug()<<arr;
+        for(int i = 0; i != img_arrays.size(); ++i){
+            qDebug()<<img_arrays[i];
             QDomDocument dom;
             auto root = dom.createElement("annotation");
             dom.appendChild(root);
 
-            auto const fname = arr["filename"].toString();
+            auto const fname = img_arrays[i]["filename"].toString();
             QFileInfo finfo(fname) ;
             add_folder_to_xml(dom, root, fname);
             add_child_to_xml(dom, root, "filename", finfo.fileName());
@@ -149,7 +149,7 @@ void convert_yolo_detect_results::on_pushButtonConvert_clicked()
             auto const img_size = add_size_to_xml(dom, root, fname);
             add_child_to_xml(dom, root, "segmented", "0");
 
-            auto const objs = arr["objects"].toArray();
+            auto const objs = img_arrays[i]["objects"].toArray();
             qDebug()<<__func__<<": objs size = "<<objs.size();
             for(auto const &obj : objs){
                 add_object_to_xml(dom, root, obj.toObject(), img_size);

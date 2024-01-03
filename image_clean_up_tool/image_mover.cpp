@@ -186,8 +186,7 @@ void image_mover::keyPressEvent(QKeyEvent *event)
     for(int i = 0; i != ui->tableWidget->rowCount(); ++i){
         auto const &text = ui->tableWidget->item(i, 0)->text();
         if(!text.isEmpty()){
-            auto const key = QKeySequence(text)[0];
-            if(key == event->key()){
+            if(QKeySequence(text)[0].key() == event->key()){
                 auto const &folder = ui->tableWidget->item(i, 1)->text();
                 if(!folder.isEmpty()){
                     move_file(folder);

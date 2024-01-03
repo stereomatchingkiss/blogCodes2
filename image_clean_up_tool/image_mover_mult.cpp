@@ -13,6 +13,8 @@
 #include <QSettings>
 #include <QTableWidget>
 
+#include <algorithm>
+
 namespace{
 
 QString const state_load_image_path("state_load_image_path");
@@ -101,7 +103,7 @@ void image_mover_mult::on_pushButtonSelectImageFolder_clicked()
 
 void image_mover_mult::show_page(int index)
 {
-    auto const max_size = std::min(index * max_item_per_page, images_urls_.size());
+    auto const max_size = std::min(index * max_item_per_page, static_cast<int>(images_urls_.size()));
     qDebug()<<__func__<<max_size;
     ui->tableWidget->setRowCount(max_size);
     for(int i = 0; i != max_size; ++i){
