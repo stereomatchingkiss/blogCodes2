@@ -139,6 +139,7 @@ void widget_open_image_viewer::draw_detection_info(QImage &img, QString const &i
 void widget_open_image_viewer::load_creator_info_list()
 {
     unique_labels_.clear();
+    detector_info_list_.clear();
     if(QFile file(ui->lineEditFolder->text() + "/labels/detections.csv"); file.open(QIODevice::ReadOnly)){
         QTextStream stream(&file);
         QString line;
