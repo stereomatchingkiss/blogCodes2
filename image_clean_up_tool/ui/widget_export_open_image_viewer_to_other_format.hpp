@@ -27,6 +27,12 @@ public:
 private slots:
     void on_pushButtonExport_clicked();
 
+    void on_pushButtonSaveSelectedItems_clicked();
+
+    void on_pushButtonLoadSelectedItems_clicked();
+
+    void on_radioButtonShowSelectedItems_clicked();
+
 private:
     Ui::widget_export_open_image_viewer_to_other_format *ui;
 
