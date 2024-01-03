@@ -7,10 +7,17 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QSettings>
 #include <QTextStream>
 
 #include <QPainter>
 #include <QPen>
+
+namespace{
+
+QString const state_open_image_folder("state_open_image_folder");
+
+}
 
 widget_open_image_viewer::widget_open_image_viewer(QWidget *parent) :
     QWidget(parent),
@@ -19,12 +26,19 @@ widget_open_image_viewer::widget_open_image_viewer(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->lineEditFolder->setText("C:/Users/pc/fiftyone/open-images-v7/validation");
     ui->spinBoxSelectImage->setMaximum(0);
+
+    QSettings settings;
+    if(settings.contains(state_open_image_folder)){
+        ui->lineEditFolder->setText(settings.value(state_open_image_folder).toString());
+    }
 }
 
 widget_open_image_viewer::~widget_open_image_viewer()
 {
+    QSettings settings;
+    settings.setValue(state_open_image_folder, ui->lineEditFolder->text());
+
     delete ui;
 }
 
