@@ -16,7 +16,10 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTabWidget" name="tabWidget"/>
+     <widget class="QStackedWidget" name="stackedWidget"/>
+    </item>
+    <item>
+     <widget class="QComboBox" name="comboBoxPage"/>
     </item>
    </layout>
   </widget>
