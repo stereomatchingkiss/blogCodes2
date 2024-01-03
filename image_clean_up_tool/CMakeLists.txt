@@ -62,6 +62,7 @@ set(PROJECT_SOURCES
 
     ${PLUGIN_LIBS_PATH}/utils/qtable_item_utils.hpp ${PLUGIN_LIBS_PATH}/utils/qtable_item_utils.cpp
     ${PLUGIN_LIBS_PATH}/utils/utility.hpp ${PLUGIN_LIBS_PATH}/utils/utility.cpp
+    ${PLUGIN_LIBS_PATH}/json/json_utils.hpp ${PLUGIN_LIBS_PATH}/json/json_utils.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
