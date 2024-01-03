@@ -24,7 +24,7 @@ void check_has_unicode_chars(QFileInfoList const &im_info_list)
     for(auto const &im_info : im_info_list){
         auto const bname = im_info.completeBaseName();
         for(QChar charecter : bname){
-            if(charecter > 127){
+            if(charecter.unicode() > 127){
                 qDebug()<<im_info.absoluteFilePath();
                 continue;
             }

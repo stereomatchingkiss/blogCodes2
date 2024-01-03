@@ -4,7 +4,7 @@
 #include "rubber_band_points.hpp"
 #include "rubber_band_rect.hpp"
 
-#include "config/config_utils.hpp"
+#include "../config/config_utils.hpp"
 
 #include <QGraphicsScene>
 
