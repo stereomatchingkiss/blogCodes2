@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(3RDLIBS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../3rdLibs)
 set(PLUGIN_LIBS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../libs)
 set(BOOST_LIBS_PATH ${3RDLIBS_PATH}/boost/boost_1_81_0)
+set(DLIB_PATH ${3RDLIBS_PATH}/dlib/build/install)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Multimedia Xml)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia Xml)
@@ -90,10 +91,12 @@ if(ANDROID OR WIN32)
     target_include_directories(${PROJECT_NAME} PRIVATE ${PLUGIN_LIBS_PATH})
     target_include_directories(${PROJECT_NAME} PRIVATE ${BOOST_LIBS_PATH})
     target_include_directories(${PROJECT_NAME} PRIVATE roi)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${DLIB_PATH}/include)
 
     target_link_libraries(${PROJECT_NAME}
                           PRIVATE ${OpenCV_LIBS}
                           PRIVATE ${OPENCV_CV_PATH}/x64/vc17/lib/opencv_img_hash480.lib
+                          PRIVATE ${DLIB_PATH}/lib/dlib19.24.99_release_64bit_msvc1937.lib
                           #PRIVATE ncnn
                           PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
                           PRIVATE Qt${QT_VERSION_MAJOR}::Multimedia                          
