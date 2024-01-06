@@ -72,6 +72,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ui/widget_open_image_viewer.hpp ui/widget_open_image_viewer.cpp ui/widget_open_image_viewer.ui
         ui/widget_export_open_image_viewer_to_other_format.hpp ui/widget_export_open_image_viewer_to_other_format.cpp ui/widget_export_open_image_viewer_to_other_format.ui
         structure/open_image_detector_info.hpp
+        ui/widget_move_files_to_other_folder.hpp ui/widget_move_files_to_other_folder.cpp ui/widget_move_files_to_other_folder.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET face_recognition_tasks APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
