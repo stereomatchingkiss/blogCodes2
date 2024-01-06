@@ -15,6 +15,7 @@
 #include "show_folders_details.hpp"
 #include "split_data.hpp"
 
+#include "ui/widget_move_files_to_other_folder.hpp"
 #include "ui/widget_open_image_viewer.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     str_to_widget_.emplace(tr("crop image"), new image_cropper);
     str_to_widget_.emplace(tr("Generate image list"), new generate_image_list);
     str_to_widget_.emplace(tr("Mask adjustment"), new mask_adjustment_widget);
+    str_to_widget_.emplace(tr("Move files to other folder"), new widget_move_files_to_other_folder);
     str_to_widget_.emplace(tr("move image"), new image_mover);
     str_to_widget_.emplace(tr("Remove images"), new remove_images);
     str_to_widget_.emplace(tr("Show folder details"), new show_folders_details);
