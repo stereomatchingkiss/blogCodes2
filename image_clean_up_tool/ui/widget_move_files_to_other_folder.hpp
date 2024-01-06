@@ -15,6 +15,9 @@ public:
     explicit widget_move_files_to_other_folder(QWidget *parent = nullptr);
     ~widget_move_files_to_other_folder();
 
+private slots:
+    void on_pushButtonMove_clicked();
+
 private:
     Ui::widget_move_files_to_other_folder *ui;
 };
