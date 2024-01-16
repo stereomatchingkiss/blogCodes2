@@ -32,23 +32,22 @@ struct simple_threshold_func
     }
 };
 
-cv::Mat create_random_mat()
+void create_random_mat(cv::Mat &img)
 {
-    cv::Mat img(640, 480, CV_8UC3);
     cv::randu(img, cv::Scalar(0, 0, 0), cv::Scalar(255, 255, 255));
-
-    return img;
 }
 
 int main()
-{    
-    auto img = create_random_mat();
+{
+    cv::Mat img(640, 480, CV_8UC3);
+    create_random_mat(img);
 
     {
         timeEstimate es;
         img.forEach<pixel_type>(simple_threshold_func());
     }
 
+    create_random_mat(img);
     //lambda expression work too
     {
         timeEstimate es;
@@ -58,6 +57,7 @@ int main()
                                 });
     }
 
+    create_random_mat(img);
     {
         timeEstimate es;
         std::for_each(std::execution::par, img.ptr<cv::Vec3b>(), img.ptr<cv::Vec3b>() + img.total(), [](auto &pixel)
