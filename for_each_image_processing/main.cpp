@@ -63,13 +63,9 @@ int main()
         std::for_each(std::execution::par, img.ptr<cv::Vec3b>(), img.ptr<cv::Vec3b>() + img.total(), [](auto &pixel)
                       {
                           if(std::pow(static_cast<double>(pixel[0])/10.0 , 2.5) > 50){
-                              pixel[0] = 255;
-                              pixel[1] = 255;
-                              pixel[2] = 255;
+                              pixel = 255;
                           }else{
-                              pixel[0] = 125;
-                              pixel[1] = 125;
-                              pixel[2] = 125;
+                              pixel = 125;
                           }
                       });
     }
