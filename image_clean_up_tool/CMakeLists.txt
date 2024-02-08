@@ -103,7 +103,7 @@ if(ANDROID OR WIN32)
 
     target_link_libraries(${PROJECT_NAME}
                           PRIVATE ${OpenCV_LIBS}
-                          PRIVATE ${OPENCV_CV_PATH}/x64/vc17/lib/opencv_img_hash480.lib
+                          PRIVATE ${OPENCV_CV_PATH}/x64/vc17/lib/opencv_img_hash490.lib
                           PRIVATE ${DLIB_PATH}/lib/dlib19.24.99_release_64bit_msvc1937.lib
                           #PRIVATE ncnn
                           PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
