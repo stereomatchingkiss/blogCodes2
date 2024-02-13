@@ -48,7 +48,9 @@ private slots:
 
     void on_pushButtonDeleteKey_clicked();
 
-private:    
+    void on_pushButtonOpenImage_clicked();
+
+private:
     void keyPressEvent(QKeyEvent *event) override;
 
     void load_images(size_t image_index);

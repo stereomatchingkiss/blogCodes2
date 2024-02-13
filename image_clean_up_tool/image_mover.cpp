@@ -4,6 +4,7 @@
 #include "utils/iterator_create.hpp"
 
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
 #include <QFileDialog>
@@ -298,3 +299,10 @@ bool scroll_area_key_press_eater::eventFilter(QObject*, QEvent *event)
     }
     return QObject::event(event);
 }
+
+void image_mover::on_pushButtonOpenImage_clicked()
+{
+    qDebug()<<__func__<<":"<<ui->labelImageName->text();
+    QDesktopServices::openUrl(ui->labelImageName->text());
+}
+
