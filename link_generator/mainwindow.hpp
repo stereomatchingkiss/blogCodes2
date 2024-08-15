@@ -25,6 +25,10 @@ private slots:
 
     void on_pushButtonOpenSaveAt_clicked();
 
+    void on_pushButtonSaveDownloadLink_clicked();
+
+    void on_pushButtonLoadDownloadLinks_clicked();
+
 private:
     Ui::MainWindow *ui;
 

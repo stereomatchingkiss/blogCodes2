@@ -55,7 +55,7 @@ void MainWindow::generate_link(int sharp_size, QString const &link_text)
     }
     for(int i = from; i <= to; ++i){
         auto const num =
-                QString("%1").arg(i, std::max(sharp_size, ui->spinBoxFiledWidth->value()), 10, QChar('0'));
+            QString("%1").arg(i, std::max(sharp_size, ui->spinBoxFiledWidth->value()), 10, QChar('0'));
         auto link_text_cpy = link_text;
         qDebug()<<link_text_cpy;
         result_.push_back(link_text_cpy.replace(reg, num));
@@ -79,9 +79,9 @@ void MainWindow::on_pushButtonAddDownloadLink_clicked()
     QSettings settings("tham soft", "link generator");
     if(QDir(ui->lineEditSaveAt->text()).exists()){
         int const ret =
-                QMessageBox::warning(this, tr("Link generator"),
-                                     tr("The folder exist already, do you want to download files into the same folder?"),
-                                     QMessageBox::Yes | QMessageBox::No);
+            QMessageBox::warning(this, tr("Link generator"),
+                                 tr("The folder exist already, do you want to download files into the same folder?"),
+                                 QMessageBox::Yes | QMessageBox::No);
         if(ret == QMessageBox::Yes){
             download_func();
         }
@@ -125,7 +125,45 @@ void MainWindow::on_pushButtonOpenSaveAt_clicked()
     auto const dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
                                                        ui->lineEditSaveAt->text(),
                                                        QFileDialog::ShowDirsOnly
-                                                       | QFileDialog::DontResolveSymlinks);
+                                                           | QFileDialog::DontResolveSymlinks);
     ui->lineEditSaveAt->setText(dir);
+}
+
+
+void MainWindow::on_pushButtonSaveDownloadLink_clicked()
+{
+    if(QFile::exists(ui->lineEditSaveDownloadLink->text())){
+        if(QFile file(ui->lineEditSaveDownloadLink->text()); file.open(QIODevice::WriteOnly)){
+            auto const [urls, save_at] = downloader_->get_files_url();
+            qDebug()<<__func__<<": "<<urls.size();
+            QTextStream stream(&file);
+            for(int i = 0; i != urls.size(); ++i){
+                stream<<urls[i]<<","<<save_at[i]<<"\n";
+            }
+        }
+    }else{
+        QMessageBox::warning(this, tr("Warning"), tr("File do not exist"));
+    }
+}
+
+
+void MainWindow::on_pushButtonLoadDownloadLinks_clicked()
+{
+    auto const fname = QFileDialog::getOpenFileName(this, tr("Load urls"), "", tr("File (*.txt)"));
+    if(QFile file(fname); file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        auto const lines = stream.readAll().split("\n");
+        QStringList links, save_at;
+        for(int i = 0; i != lines.size(); ++i){
+            auto const line = lines[i].split(",");
+            if(line.size() == 2){
+                links.emplaceBack(line[0]);
+                save_at.emplaceBack(line[1]);
+                QDir().mkpath(line[1]);
+            }
+        }
+
+        downloader_->add_files(links, save_at);
+    }
 }
 

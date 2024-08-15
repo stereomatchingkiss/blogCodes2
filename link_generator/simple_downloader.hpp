@@ -21,6 +21,8 @@ public:
     ~simple_downloader();
 
     void add_files(QStringList links, QString const &save_at);
+    void add_files(QStringList const &links, QStringList const &save_at);
+    std::pair<QStringList, QStringList> get_files_url() const;
     void download();
 
 private slots:
@@ -32,7 +34,9 @@ private slots:
 
     void on_pushButtonDownload_clicked();
 
-private:    
+    void on_pushButtonRedownloadFailure_clicked();
+
+private:
     void download_progress(qint64 bytes_received, qint64 bytes_total);
 
 

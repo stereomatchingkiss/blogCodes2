@@ -58,15 +58,46 @@ void simple_downloader::add_files(QStringList links, QString const &save_at)
         ui->tableWidgetDownloadInfo->setItem(origin_row_count, SaveAt, new QTableWidgetItem(save_at));
         ++origin_row_count;
     }
+
+    if(current_download_row_ >= ui->tableWidgetDownloadInfo->rowCount()){
+        current_download_row_ = 0;
+    }
+}
+
+void simple_downloader::add_files(QStringList const &links, QStringList const &save_at)
+{
+    qDebug()<<"table widget row count:"<<ui->tableWidgetDownloadInfo->rowCount();
+    int origin_row_count = ui->tableWidgetDownloadInfo->rowCount();
+    for(size_t i = 0; i != links.size(); ++i){
+        qDebug()<<"add link:"<<links[i];
+        ui->tableWidgetDownloadInfo->insertRow(origin_row_count);
+        ui->tableWidgetDownloadInfo->setItem(origin_row_count, Link, new QTableWidgetItem(links[i]));
+        ui->tableWidgetDownloadInfo->setItem(origin_row_count, State, new QTableWidgetItem("new link"));
+        ui->tableWidgetDownloadInfo->setItem(origin_row_count, SaveAt, new QTableWidgetItem(save_at[i]));
+        ++origin_row_count;
+    }
+
+    if(current_download_row_ >= ui->tableWidgetDownloadInfo->rowCount()){
+        current_download_row_ = 0;
+    }
+}
+
+std::pair<QStringList, QStringList> simple_downloader::get_files_url() const
+{
+    QStringList files, urls;
+    for(int i = 0; i != ui->tableWidgetDownloadInfo->rowCount(); ++i){
+        files.emplaceBack(ui->tableWidgetDownloadInfo->item(i, Link)->text());
+        urls.emplaceBack(ui->tableWidgetDownloadInfo->item(i, SaveAt)->text());
+    }
+
+    return {files, urls};
 }
 
 void simple_downloader::download()
-{    
-    auto link = ui->tableWidgetDownloadInfo->item(current_download_row_, Link);
-    if(link){
-        qDebug()<<"link exist:"<<link->data(Qt::DisplayRole).toString();
-        auto state = ui->tableWidgetDownloadInfo->item(current_download_row_, State);
-        if(state){
+{
+    if(auto const link = ui->tableWidgetDownloadInfo->item(current_download_row_, Link)){
+        qDebug()<<"link exist:"<<link->data(Qt::DisplayRole).toString();        
+        if(auto const state = ui->tableWidgetDownloadInfo->item(current_download_row_, State); state){
             qDebug()<<"state:"<<state->data(Qt::DisplayRole).toString();
             auto const download_link = link->data(Qt::DisplayRole).toString();
             //{'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
@@ -80,7 +111,8 @@ void simple_downloader::download()
             //GET /media/photos/11916/00032.jpg HTTP/1.1
             //Host: 18comic.org
             //cache-control: no-cache
-            request.setRawHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36");
+            request.setRawHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) "
+                                               "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36");
             //request.setRawHeader("Host", "18comic.org");
             //request.setRawHeader("cache-control", "no-cache");
             //request.setRawHeader("GET", "/media/photos/11916/00032.jpg HTTP/1.1");
@@ -95,12 +127,10 @@ void simple_downloader::download()
             connect(reply, &QNetworkReply::errorOccurred, this, &simple_downloader::network_error);
             connect(reply, &QNetworkReply::downloadProgress, this, &simple_downloader::download_progress);
             connect(reply, &QNetworkReply::finished, this, &simple_downloader::download_finished);
-        }else{
-            return;
         }
     }else{
         setEnabled(true);
-    }
+    }    
 }
 
 void simple_downloader::download_finished()
@@ -131,7 +161,7 @@ void simple_downloader::download_finished()
                 download();
             }
         }
-    }
+    }    
 }
 
 void simple_downloader::download_with_different_suffix()
@@ -171,7 +201,9 @@ void simple_downloader::on_pushButtonClearAll_clicked()
 }
 
 void simple_downloader::on_pushButtonDownload_clicked()
-{ 
+{
+    setEnabled(false);
+    current_download_row_ = 0;
     download();
 }
 
@@ -179,3 +211,13 @@ void simple_downloader::download_progress(qint64 bytes_received, qint64 bytes_to
 {
     qDebug()<<__func__<<": progress = "<<bytes_received<<"/"<<bytes_total;
 }
+
+void simple_downloader::on_pushButtonRedownloadFailure_clicked()
+{
+    for(int i = 0; i != ui->tableWidgetDownloadInfo->rowCount(); ++i){
+        ui->tableWidgetDownloadInfo->item(i, State)->setText("new link");
+    }
+
+    download();
+}
+
