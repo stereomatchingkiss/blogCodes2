@@ -50,6 +50,8 @@ private slots:
 
     void on_pushButtonOpenImage_clicked();
 
+    void on_pushButtonSaveSettings_clicked();
+
 private:
     void keyPressEvent(QKeyEvent *event) override;
 

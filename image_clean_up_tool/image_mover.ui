@@ -46,6 +46,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="pushButtonSaveSettings">
+           <property name="text">
+            <string>Save settings</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="pushButtonOpenImage">
            <property name="text">
             <string>open image</string>

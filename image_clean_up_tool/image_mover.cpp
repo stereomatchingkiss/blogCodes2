@@ -81,24 +81,7 @@ image_mover::image_mover(QWidget *parent) :
 
 image_mover::~image_mover()
 {
-    QSettings settings("image_clean_up_tool", "image_mover");
-    settings.setValue(state_image_folder, ui->lineEditImageFolder->text());
-    settings.setValue(state_index, image_index_);
-    QStringList table_folders, table_keys;
-    for(int i = 0; i != ui->tableWidget->rowCount(); ++i){
-        if(ui->tableWidget->item(i, 1)){
-            table_folders.push_back(ui->tableWidget->item(i, 1)->text());
-        }else{
-            table_folders.push_back("");
-        }
-        if(ui->tableWidget->item(i, 0)){
-            table_keys.push_back(ui->tableWidget->item(i, 0)->text());
-        }else{
-            table_keys.push_back("");
-        }
-    }
-    settings.setValue(state_table_folders, table_folders);
-    settings.setValue(state_table_keys, table_keys);
+    on_pushButtonSaveSettings_clicked();
 
     delete ui;
 }
@@ -304,5 +287,28 @@ void image_mover::on_pushButtonOpenImage_clicked()
 {
     qDebug()<<__func__<<":"<<ui->labelImageName->text();
     QDesktopServices::openUrl(ui->labelImageName->text());
+}
+
+
+void image_mover::on_pushButtonSaveSettings_clicked()
+{
+    QSettings settings("image_clean_up_tool", "image_mover");
+    settings.setValue(state_image_folder, ui->lineEditImageFolder->text());
+    settings.setValue(state_index, image_index_);
+    QStringList table_folders, table_keys;
+    for(int i = 0; i != ui->tableWidget->rowCount(); ++i){
+        if(ui->tableWidget->item(i, 1)){
+           table_folders.push_back(ui->tableWidget->item(i, 1)->text());
+        }else{
+           table_folders.push_back("");
+        }
+        if(ui->tableWidget->item(i, 0)){
+           table_keys.push_back(ui->tableWidget->item(i, 0)->text());
+        }else{
+           table_keys.push_back("");
+        }
+    }
+    settings.setValue(state_table_folders, table_folders);
+    settings.setValue(state_table_keys, table_keys);
 }
 
