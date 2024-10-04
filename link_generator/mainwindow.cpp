@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
     if(settings.contains("save_at")){
         ui->lineEditSaveAt->setText(settings.value("save_at").toString());
     }
+    if(settings.contains("save_download_link")){
+        ui->lineEditSaveDownloadLink->setText(settings.value("save_download_link").toString());
+    }
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +43,7 @@ MainWindow::~MainWindow()
     QSettings settings("tham soft", "link generator");
     settings.setValue("mainwindow/geometry", saveGeometry());
     settings.setValue("save_at", ui->lineEditSaveAt->text());
+    settings.setValue("save_download_link", ui->lineEditSaveDownloadLink->text());
 
     delete ui;
 }
@@ -132,17 +136,13 @@ void MainWindow::on_pushButtonOpenSaveAt_clicked()
 
 void MainWindow::on_pushButtonSaveDownloadLink_clicked()
 {
-    if(QFile::exists(ui->lineEditSaveDownloadLink->text())){
-        if(QFile file(ui->lineEditSaveDownloadLink->text()); file.open(QIODevice::WriteOnly)){
-            auto const [urls, save_at] = downloader_->get_files_url();
-            qDebug()<<__func__<<": "<<urls.size();
-            QTextStream stream(&file);
-            for(int i = 0; i != urls.size(); ++i){
-                stream<<urls[i]<<","<<save_at[i]<<"\n";
-            }
+    if(QFile file(ui->lineEditSaveDownloadLink->text()); file.open(QIODevice::WriteOnly)){
+        auto const [urls, save_at] = downloader_->get_files_url();
+        qDebug()<<__func__<<": "<<urls.size();
+        QTextStream stream(&file);
+        for(int i = 0; i != urls.size(); ++i){
+            stream<<urls[i]<<","<<save_at[i]<<"\n";
         }
-    }else{
-        QMessageBox::warning(this, tr("Warning"), tr("File do not exist"));
     }
 }
 
@@ -165,5 +165,14 @@ void MainWindow::on_pushButtonLoadDownloadLinks_clicked()
 
         downloader_->add_files(links, save_at);
     }
+}
+
+
+void MainWindow::on_pushButtonNormalizeUrl_clicked()
+{
+    auto txt = ui->lineEditSaveAt->text();
+    txt.replace(" ", "_");
+    txt = txt.toLower();
+    ui->lineEditSaveAt->setText(txt);
 }
 

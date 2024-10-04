@@ -29,6 +29,8 @@ private slots:
 
     void on_pushButtonLoadDownloadLinks_clicked();
 
+    void on_pushButtonNormalizeUrl_clicked();
+
 private:
     Ui::MainWindow *ui;
 
