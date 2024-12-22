@@ -26,8 +26,7 @@ public:
     void download();
 
 private slots:
-    void download_finished();
-    void download_with_different_suffix();
+    void download_finished();    
     void network_error(QNetworkReply::NetworkError code);
 
     void on_pushButtonClearAll_clicked();
@@ -35,6 +34,8 @@ private slots:
     void on_pushButtonDownload_clicked();
 
     void on_pushButtonRedownloadFailure_clicked();
+
+    void on_pushButtonChangeSuffix_clicked();
 
 private:
     void download_progress(qint64 bytes_received, qint64 bytes_total);

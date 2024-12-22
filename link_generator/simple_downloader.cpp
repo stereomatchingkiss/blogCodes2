@@ -139,53 +139,24 @@ void simple_downloader::download_finished()
         if(reply->error() == QNetworkReply::NoError){
             qDebug()<<"download finish no error";
             QString const save_at =
-                    ui->tableWidgetDownloadInfo->item(current_download_row_, SaveAt)->data(Qt::DisplayRole).toString();
+                ui->tableWidgetDownloadInfo->item(current_download_row_, SaveAt)->data(Qt::DisplayRole).toString();
             QString file_name = ui->tableWidgetDownloadInfo->item(current_download_row_, Link)->
-                    data(Qt::DisplayRole).toString();
+                                data(Qt::DisplayRole).toString();
             ui->tableWidgetDownloadInfo->removeRow(current_download_row_);
             file_name = QFileInfo(file_name).fileName();
             if(QFile file(save_at + "/" + QFileInfo(save_at).baseName() + "_" + file_name);
-                    file.open(QIODevice::WriteOnly)){
+                file.open(QIODevice::WriteOnly)){
                 file.write(reply->readAll());
             }
             reply->deleteLater();
             reply = nullptr;
             download();
         }else{
-            qDebug()<<"download finish with error:"<<reply->errorString();
-            auto *item = ui->tableWidgetDownloadInfo->item(current_download_row_, State);
-            if(item->data(Qt::DisplayRole).toString() == "new link"){
-                download_with_different_suffix();
-            }else{
-                ++current_download_row_;
-                download();
-            }
+            ui->tableWidgetDownloadInfo->item(current_download_row_, State)->setText("Fail");
+            ++current_download_row_;
+            download();
         }
     }    
-}
-
-void simple_downloader::download_with_different_suffix()
-{
-    auto *item = ui->tableWidgetDownloadInfo->item(current_download_row_, Link);
-    QString img_link(item->data(Qt::DisplayRole).toString());
-    QFileInfo finfo(item->data(Qt::DisplayRole).toString());
-    qDebug()<<__func__<<"full link:"<<item->data(Qt::DisplayRole).toString();
-    qDebug()<<__func__<<finfo.fileName()<<","<<finfo.completeBaseName();
-    if(finfo.suffix().toLower() != "png"){
-        auto const suffix = finfo.suffix().toLower();
-        if(suffix == "jpg"){
-            item->setData(Qt::DisplayRole, img_link.replace(".jpg", ".png"));
-        }else{
-            item->setData(Qt::DisplayRole, img_link.replace(".jpeg", ".png"));
-        }
-    }else{
-        item->setData(Qt::DisplayRole, img_link.replace(".png", ".jpg"));
-    }
-
-    auto *state_item = ui->tableWidgetDownloadInfo->item(current_download_row_, State);
-    state_item->setData(Qt::DisplayRole, "Change suffix, download again");
-
-    download();
 }
 
 void simple_downloader::network_error(QNetworkReply::NetworkError)
@@ -219,5 +190,24 @@ void simple_downloader::on_pushButtonRedownloadFailure_clicked()
     }
 
     download();
+}
+
+void simple_downloader::on_pushButtonChangeSuffix_clicked()
+{
+    for(int i = 0; i != ui->tableWidgetDownloadInfo->rowCount(); ++i){
+        if(auto *item = ui->tableWidgetDownloadInfo->item(i, Link)){
+            QString img_link(item->data(Qt::DisplayRole).toString());
+            // Check if a dot was found and is part of a suffix
+            if (int dot_index = img_link.lastIndexOf('.'); dot_index != -1) {
+                // Replace the suffix
+                img_link = img_link.left(dot_index) + "." + ui->lineEditChangeSuffix->text();
+                item->setData(Qt::DisplayRole, img_link);
+            }
+        }
+
+        ui->tableWidgetDownloadInfo->item(i, State)->setText("new link");
+    }
+
+    current_download_row_ = 0;
 }
 
