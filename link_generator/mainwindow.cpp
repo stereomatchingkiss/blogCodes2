@@ -171,8 +171,10 @@ void MainWindow::on_pushButtonLoadDownloadLinks_clicked()
 void MainWindow::on_pushButtonNormalizeUrl_clicked()
 {
     auto txt = ui->lineEditSaveAt->text();
-    txt.replace(" ", "_");
+    txt = txt.trimmed();
     txt = txt.toLower();
+    txt.replace(" ", "_");
+    txt.replace("-", "_");
     ui->lineEditSaveAt->setText(txt);
 }
 
